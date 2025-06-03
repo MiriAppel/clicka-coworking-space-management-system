@@ -25,10 +25,10 @@ The project is divided into four specialized teams:
 
 ### Team-Specific PRDs
 
-- [Core & Integration Team PRD](https://docs.google.com/document/d/clicka-core-prd) - Detailed requirements for the Core & Integration team
-- [Lead & Customer Team PRD](https://docs.google.com/document/d/clicka-customer-prd) - Detailed requirements for the Lead & Customer team
-- [Workspace Team PRD](https://docs.google.com/document/d/clicka-workspace-prd) - Detailed requirements for the Workspace team
-- [Billing Team PRD](https://docs.google.com/document/d/clicka-billing-prd) - Detailed requirements for the Billing team
+- [Core & Integration Team PRD](https://docs.google.com/document/d/1zY0obLnfAxFCcjhbrUWT6YQrnnYyVebWMYno9TBXh3g/edit) - Detailed requirements for the Core & Integration team
+- [Lead & Customer Team PRD](https://docs.google.com/document/d/1Bb54Wl1Sht-LuXd7P-cez7w9SruZA9e-fIM7LnjnWBY/edit) - Detailed requirements for the Lead & Customer team
+- [Workspace Team PRD](https://docs.google.com/document/d/1VOJploYM8rujgqBFKP4iauCVlFr2xx2p1Q5-qhrI9cI/edit) - Detailed requirements for the Workspace team
+- [Billing Team PRD](https://docs.google.com/document/d/1mSwUL5TC2BKnVCzCVBGFSM0tQHYWiYSGutr2q4MQqJg/edit) - Detailed requirements for the Billing team
 
 ### API Documentation
 The API documentation is generated from the TypeScript definitions. You can view it [here:](types)
