@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@mui/material"
-import './leadAndCustomer.css'
+import '../Css/leadAndCustomer.css'
 
 export const LeadAndCustomer = () => {
 
