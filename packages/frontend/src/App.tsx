@@ -41,8 +41,7 @@ function App() {
         <h2>Co-working Space Management System</h2>
       </header>
       <div className='menu' style={{ backgroundColor: 'black' }}>
-        <Button variant="outlined" onClick={() => { navigate('/core&integration') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Core & Integration</Button>
-        <Button variant="outlined" onClick={() => { navigate('/lead&customer') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Lead & Customer</Button>
+        <Button variant="outlined" onClick={() => { navigate('/leadAndCustomer') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Lead & Customer</Button>
         <Button variant="outlined" onClick={() => { navigate('/workspaceMap') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Workspace</Button>
         <Button variant="outlined" onClick={() => { navigate('/billing') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Billing</Button>
       </div>

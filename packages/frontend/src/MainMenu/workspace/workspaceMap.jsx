@@ -6,11 +6,8 @@ export const WorkspaceMap = () => {
 
     const navigate = useNavigate()
 
-    return <div className="WorkspaceMap">
-        {/* <div className="Workspace-header"> */}
+    return <div className="workspaceMap">
             <h1>WorkspaceMap</h1>
             <Button variant="outlined" onClick={() => { navigate('/') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Back</Button>
-        {/* </div> */}
-
     </div>
 }
