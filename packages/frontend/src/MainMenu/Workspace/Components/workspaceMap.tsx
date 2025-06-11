@@ -8,7 +8,7 @@ export const WorkspaceMap = () => {
 
 const spaceStatus = () => {
     // fetch('http://localhost:3001/api/workspace/status')
-    return 
+    return ""
 }
 
 
@@ -20,7 +20,6 @@ const spaceStatus = () => {
                 <div onMouseMove={()=>{}}>Desk 1</div>
                 <div onMouseMove={()=>{}}>Desk 2</div>
             </div> 
-            <div className={spaceStatus()} onMouseMove={()=>{}} >Lounge</div>
             <div className="lounge" onMouseMove={()=>{}}>Lounge</div>
             <div className="openSpace" onMouseMove={()=>{}}>Open Space</div>
             <div className="meetingRoom" onMouseMove={()=>{}}>Meeting Room</div>
