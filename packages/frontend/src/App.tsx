@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import { LoginWithGoogle } from './components/LoginButton';
 
 // Simple component to demonstrate the project
 function App() {
@@ -49,7 +51,9 @@ function App() {
           )}
         </div>
       </header>
+      <LoginWithGoogle />
     </div>
+    
   );
 }
 
