@@ -10,4 +10,5 @@ export const LeadAndCustomer = () => {
         <h1>Lead & Customer</h1>
         <Button variant="outlined" onClick={() => { navigate('/') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Back</Button>
     </div>
+    
 }
