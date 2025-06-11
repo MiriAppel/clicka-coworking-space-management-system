@@ -3344,6 +3344,7 @@ clean-css@^5.2.2:
     source-map "~0.6.0"
 
 "clicka-backend@file:C:\\Users\\user1\\Desktop\\clicka\\packages\\backend":
+
   version "1.0.0"
   resolved "file:packages/backend"
   dependencies:
@@ -3357,6 +3358,7 @@ clean-css@^5.2.2:
     pg "^8.16.0"
 
 "clicka-frontend@file:C:\\Users\\user1\\Desktop\\clicka\\packages\\frontend":
+
   version "0.1.0"
   resolved "file:packages/frontend"
   dependencies:
@@ -4687,6 +4689,7 @@ etag@^1.8.1, etag@~1.8.1:
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
 "etl@file:C:\\Users\\user1\\Desktop\\clicka\\packages\\ETL":
+
   version "1.0.0"
   resolved "file:packages/ETL"
   dependencies:
