@@ -1,6 +1,26 @@
 // customer-types.d.ts
 
-import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse, DateRangeFilter } from './core';
+import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
+
+export enum TimelineEventType {
+    LEAD_CREATED = 'LEAD_CREATED',
+    INTERACTION = 'INTERACTION',
+    CONVERSION = 'CONVERSION',
+    CONTRACT_SIGNED = 'CONTRACT_SIGNED',
+    WORKSPACE_ASSIGNED = 'WORKSPACE_ASSIGNED',
+    PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
+    STATUS_CHANGE = 'STATUS_CHANGE',
+    NOTE_ADDED = 'NOTE_ADDED'
+}
+
+export enum ContractStatus {
+    DRAFT = 'DRAFT',
+    PENDING_SIGNATURE = 'PENDING_SIGNATURE',
+    SIGNED = 'SIGNED',
+    ACTIVE = 'ACTIVE',
+    EXPIRED = 'EXPIRED',
+    TERMINATED = 'TERMINATED'
+}
 
 // Workspace type enum
 export enum WorkspaceType {
@@ -9,14 +29,7 @@ export enum WorkspaceType {
   OPEN_SPACE = 'OPEN_SPACE',
   KLIKAH_CARD = 'KLIKAH_CARD'
 }
-export enum TimelineEventType {
-  Lead = 'lead',
-  Interaction = 'interaction',
-  Contract = 'contract',
-  Payment = 'payment',
-  ExitNotice = 'exitNotice',
-  StatusChange = 'statusChange'
-}
+
 
 // Customer status enum
 export enum CustomerStatus {
@@ -50,6 +63,42 @@ export interface CustomerPeriod {
   updatedAt: DateISO;
 }
 
+export interface Contract {
+    id: ID;
+    customerId: ID;
+    version: number;
+    status: ContractStatus;
+    signDate?: DateISO;
+    startDate: DateISO;
+    endDate?: DateISO;
+    terms?: ContractTerms;
+    documents: FileReference[];
+    modifications: ContractModification[];
+    signedBy?: string;
+    witnessedBy?: string;
+    createdAt: DateISO;
+    updatedAt: DateISO;
+}
+
+export interface ContractModification {
+    id: ID;
+    date: DateISO;
+    description: string;
+    modifiedByUserId: ID;
+    approvedByUserId?: ID;
+    documentChanges?: FileReference[]; // References to new/updated contract documents
+}
+
+export interface ContractTerms {
+    workspaceType: WorkspaceType;
+    workspaceCount: number;
+    monthlyRate: number;
+    duration: number; // months
+    renewalTerms: string;
+    terminationNotice: number; // days
+    specialConditions?: string[];
+}
+
 // Payment method
 export interface PaymentMethod {
   id: ID;
@@ -61,20 +110,6 @@ export interface PaymentMethod {
   isActive: boolean;
   createdAt: DateISO;
   updatedAt: DateISO;
-}
-
-export interface TimelineEvent {
-  id: ID;
-  type: TimelineEventType;
-  date: string; // ISO date string
-  title: string; // כותרת קצרה לאירוע
-  description?: string; // תיאור מפורט יותר (אופציונלי)
-  relatedId?: string; // קישור לאובייקט (למשל leadId, contractId)
-}
-
-export interface CustomerTimeline {
-  customerId: ID;
-  events: TimelineEvent[];
 }
 
 // Customer model
@@ -200,4 +235,50 @@ export interface ConvertLeadToCustomerRequest {
     creditCardHolderPhone?: string;
   };
   contractDocuments?: FileReference[];
+}
+
+export interface SavedSearch {
+    id: ID;
+    name: string;
+    userId: ID;
+    searchRequest: CustomerSearchRequest;
+    isPublic: boolean; // Whether the saved search is public or private
+    createdAt: DateISO;
+    updatedAt: DateISO;
+}
+
+export interface CustomerSearchRequest {
+    query?: string; // Full-text search query
+    filters?: CustomerFilter[]; // Array of filters
+    sortBy?: string; // Field to sort by
+    sortDirection?: 'asc' | 'desc'; // Sort direction
+    page?: number; // Current page number for pagination
+    limit?: number; // Number of items per page
+}
+
+export interface CustomerFilter {
+    field: keyof Customer; // Keyof Customer interface to ensure valid field names
+    operator: 'equals' | 'contains' | 'startsWith' | 'greaterThan' | 'lessThan' | 'between' | 'in';
+    value?: any; // Value for single-value operators
+    values?: any[]; // Values for 'in' operator
+}
+
+export interface CustomerTimeline {
+    customerId: ID;
+    events: TimelineEvent[];
+    totalEvents: number; // For pagination, total count of events
+    dateRange?: DateRangeFilter; // Applied date range filter
+}
+export interface TimelineEvent {
+  id: ID;
+  type: TimelineEventType;
+  date: string; // ISO date string
+  title: string; // כותרת קצרה לאירוע
+  description?: string; // תיאור מפורט יותר (אופציונלי)
+  relatedId?: string; // קישור לאובייקט (למשל leadId, contractId)
+}
+
+export interface DateRangeFilter {
+    startDate?: DateISO;
+    endDate?: DateISO;
 }

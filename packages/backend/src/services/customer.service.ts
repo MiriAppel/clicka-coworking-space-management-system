@@ -1,38 +1,38 @@
 import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "../types/core";
 import { CustomerModel, TimelineEventModel } from "../models/customer.model";
-import{AddContractDocumentRequest, ConvertLeadToCustomerRequest, Customer, CustomerStatus, CustomerTimeline, GetCustomersRequest, RecordExitNoticeRequest} from '../types/customer'
+import{AddContractDocumentRequest, Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerFilter, CustomerStatus, CustomerTimeline, GetCustomersRequest, RecordExitNoticeRequest, TimelineEvent, UpdateCustomerRequest} from '../types/customer'
 
 export const getAllCustomers = async (): Promise<CustomerModel[]> => {
     //אמור לשלוף את כל הלקוחות
     return []; // להחזיר מערך של לקוחות
 }
 
-export const getCustomerById = async (id: string): Promise<CustomerModel | null> =>{
+export const getCustomerById = async (id: string): Promise<GetCustomersRequest | null> =>{
     //שולף לקוח לפי ID
 return null;
 }
 
-export const getCustomerByName = async (name:string):Promise<CustomerModel | null>=>{
+export const getCustomerByName = async (name:string):Promise<GetCustomersRequest | null>=>{
     //שולף לקוח לפי שם
 return null;
 }
 
-export const getCustomerByEmail = async (email:string):Promise<CustomerModel|null>=>{
+export const getCustomerByEmail = async (email:string):Promise<GetCustomersRequest|null>=>{
     //שולף לקוח לפי אימייל
     return null;
 }
 
-export const getCustomerByPhone = async (phone:string):Promise<CustomerModel|null>=>{
+export const getCustomerByPhone = async (phone:string):Promise<GetCustomersRequest|null>=>{
     //שולף לקוח לפי טלפון
     return null;
 }
 
-export const getCustomerByStatus = async (status:CustomerStatus):Promise<CustomerModel[]|null>=>{
+export const getCustomerByStatus = async (status:CustomerStatus):Promise<GetCustomersRequest[]|null>=>{
     //שליפת לקוחות לפי סטטוס
     return [];
 }
 
-export const getByDateJoin= async (dateFrom:Date,dateEnd:Date):Promise<CustomerModel[]|null>=>{
+export const getByDateJoin= async (dateFrom:Date,dateEnd:Date):Promise<GetCustomersRequest[]|null>=>{
     //חיפוש לקוחות לפי תאריך הצטרפות(מ- עד)
     return null;
 }
@@ -49,7 +49,7 @@ export const getAllStatus = async () : Promise<CustomerStatus[]|null>=>{
     //קבלת מצבי סטטוס אפשריים
     return null;
 }
-export const getCustomersToNotify=async(id:ID):Promise<CustomerModel[]|null>=>{
+export const getCustomersToNotify=async(id:ID):Promise<GetCustomersRequest[]|null>=>{
     //מחזיר את כל הלקוחות שיש לעדכן אותם על שינוי בסטטוס שלהם
     return null;
 }
@@ -74,7 +74,7 @@ export const postContractDocument=async (document:AddContractDocumentRequest):Pr
 export const deleteContractDocument= async(id:ID):Promise<void>=>{//איזה מסמך?
     //מחיקת מסמך מהחוזה
 }
-export const postNewContract = async(id:ID):Promise<void>=>{
+export const postNewContract = async(data: Contract):Promise<void>=>{
     //יצירת חוזה חדש
 }
 
@@ -85,32 +85,65 @@ export const exportToFile = async(req:GetCustomersRequest) :Promise<Buffer|null>
 export const patchStatus = async(id:ID):Promise<void>=>{
     //עדכון הסטטוס
 }
-export const patchCustomer=async(id:ID):Promise<void>=>{
+export const patchCustomer=async(id:ID, data: UpdateCustomerRequest):Promise<void>=>{
     //מעדכן חלק מפרטי הלקוח
 }
 
 
-//  export const getAllContracts = async (): Promise<ContractModel[]> => {
-//     // אמור לשלוף את כל החוזים
-//     return []; // להחזיר מערך של חוזים
-// }
-// export const updateContractTerms = async (contactId: ID, terms: any): Promise<ContractModel> => {
-//     // אמור לעדכן את תנאי החוזה עבור החוזה עם ה-contactId הנתון
-//     return; // להחזיר את החוזה המעודכן
-// }
-// export const getContractById = async (contactId: ID): Promise<ContractModel> => {
-//     // אמור לקבל את החוזה עבור ה-contactId הנתון
-//     return; // להחזיר את החוזה
-// }
-// export const getAllContractsByCustomerId = async (customerId: ID): Promise<ContractModel[]> => {
-//     // אמור לשלוף את כל החוזים עבור הלקוח עם ה-customerId הנתון
-//     return []; // להחזיר מערך של חוזים
-// }
-// export const getContractsEndingSoon = async (days: number = 30): Promise<ContractModel[]> => {
-//     // אמור לשלוף את החוזים שהתוקף שלהם מסתיים בעוד 30 יום
-//     return []; // להחזיר מערך של חוזים
-// }
-// export const getCustomerHistory = async (customerId: ID): Promise<CustomerHistoryModel[]> => {
+ export const getAllContracts = async (): Promise<Contract[]> => {
+    // אמור לשלוף את כל החוזים
+    return []; // להחזיר מערך של חוזים
+}
+export const updateContractTerms = async (contactId: ID, terms: any): Promise<Contract> => {
+    // אמור לעדכן את התנאים של החוזה עבור ה-contactId הנתון
+    // הנח שהחוזה הוא אובייקט עם מזהה, תנאים, תאריכים, סטטוס וכו'
+
+    const contract: Contract = {
+        id: contactId,
+        terms: terms,
+        startDate: new Date().toISOString() as DateISO,
+        endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString() as DateISO,
+        customerId: "customer-id", // הנח שהחוזה שייך ללקוח עם מזהה זה
+        status: ContractStatus.ACTIVE, // הנח שהחוזה פעיל
+        signDate: undefined, // הנח שהחוזה לא נחתם עדיין
+        documents: [], // הנח שאין מסמכים כרגע
+        modifications: [],
+        version: 1, // הנח שהחוזה הוא גרסה 1
+        createdAt: new Date().toISOString() as DateISO,
+        updatedAt: new Date().toISOString() as DateISO,
+        signedBy: undefined, // הנח שהחוזה לא נחתם על ידי אף אחד
+        witnessedBy: undefined // הנח שהחוזה לא נחתם על ידי עדים
+    };
+    return contract ; // להחזיר את החוזה המעודכן
+}
+export const getContractById = async (contactId: ID): Promise<Contract> => {
+    // אמור לקבל את החוזה עבור ה-contactId הנתון
+    const contract: Contract = {
+        id: contactId,
+        startDate: new Date().toISOString() as DateISO,
+        endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString() as DateISO,
+        customerId: "customer-id", // הנח שהחוזה שייך ללקוח עם מזהה זה
+        status: ContractStatus.ACTIVE, // הנח שהחוזה פעיל
+        signDate: undefined, // הנח שהחוזה לא נחתם עדיין
+        documents: [], // הנח שאין מסמכים כרגע
+        modifications: [],
+        version: 1, // הנח שהחוזה הוא גרסה 1
+        createdAt: new Date().toISOString() as DateISO,
+        updatedAt: new Date().toISOString() as DateISO,
+        signedBy: undefined, // הנח שהחוזה לא נחתם על ידי אף אחד
+        witnessedBy: undefined // הנח שהחוזה לא נחתם על ידי עדים
+    };
+    return contract; // להחזיר את החוזה
+}
+export const getAllContractsByCustomerId = async (customerId: ID): Promise<Contract[]> => {
+    // אמור לשלוף את כל החוזים עבור הלקוח עם ה-customerId הנתון
+    return []; // להחזיר מערך של חוזים
+}
+export const getContractsEndingSoon = async (days: number = 30): Promise<Contract[]> => {
+    // אמור לשלוף את החוזים שהתוקף שלהם מסתיים בעוד 30 יום
+    return []; // להחזיר מערך של חוזים
+}
+// export const getCustomerHistory = async (customerId: ID): Promise<CustomerHistory[]> => {
 //     // אמור לשלוף את ההיסטוריה של הלקוח עם ה-customerId הנתון
 //     return []; // להחזיר מערך של היסטוריית לקוח
 // }
@@ -118,47 +151,47 @@ export const patchCustomer=async(id:ID):Promise<void>=>{
 export const getCustomersByPage = async (page: number = 1, pageSize: number = 50): Promise<PaginatedResponse<CustomerModel>> => {
     // אמור לשלוף 50 לקוחות בעמוד הנתון
     return {
-        items: [], // להחזיר מערך של לקוחות
-        total: 0, // להחזיר את המספר הכולל של הלקוחות
-        page: page,
-        pageSize: pageSize
+        data: [],
+        meta: {
+            currentPage: page,
+            totalPages: 1,
+            pageSize: pageSize,
+            totalCount: 0,
+            hasNext: false,
+            hasPrevious: false,
+        }
+    };
+
+}
+
+export const getCustomerTimeline = async (customerId: ID): Promise<CustomerTimeline> => {
+    return {
+        customerId: customerId,
+        events: [],
+        totalEvents: 0,
     };
 }
 
-export const getCustomerTimeline = async (customerId: ID, fromDate?: DateISO, toDate?: DateISO, page?: number, limit?: number): Promise<CustomerTimeline> => {
-    // אמור לשלוף את כל האינטראקציות של לקוח לפי מזהה
-    // אפשר להוסיף פילטרים לפי תאריך, עמוד ומגבלה
-    // להחזיר את האינטראקציות של הלקוח
-    const timeLine: CustomerTimeline = {
-        customerId,
-        events: []
-    };
-    return timeLine;
-}
-
-export const addTimelineEvent = async (customerId: ID, event: { type: string; date: DateISO; description?: string }): Promise<void> => {
+export const addTimelineEvent = async (data: TimelineEvent): Promise<void> => {
     // אמור להוסיף אירוע לאינטראקציות של לקוח
     // האירוע יכול לכלול סוג, תאריך ותיאור
     // להחזיר את האירוע שנוסף
 }
 
-export const exportTimeline = async (customerId: ID, filters?: TimelineFilters): Promise<FileReference> => {
-    // אמור לייצא את האינטראקציות של לקוח לקובץ CSV
-    // אפשר להוסיף פילטרים כמו תאריך, סוג אינטראקציה וכו'
-    // להחזיר את המידע של הקובץ שנוצר
-    // דוגמה למידע של קובץ שנוצר
-    const file: FileReference = {
+export const exportTimeline = async (customerId: ID, filters?:CustomerFilter ): Promise<FileReference> => {
+    // אמור לייצא את היסטוריית האירועים של לקוח לקובץ
+    // להחזיר קישור לקובץ המיוצא
+    return {
         id: "file-id",
-        name: "timeline-export.csv",
-        path: "/exports/timeline-export.csv",
-        mimeType: "application/csv",
-        size: 1024,
-        url: "https://example.com/exports/timeline-export.csv",
-        googleDriveId: undefined,
+        name: "timeline-export.json",
+        path: `/exports/${customerId}/timeline-export.json`,
+        mimeType: "application/json",
+        size: 0, // גודל הקובץ, ניתן לחשב לאחר הייצוא   
+        url: `https://example.com/exports/${customerId}/timeline-export.json`,
         createdAt: new Date().toISOString() as DateISO,
-        updatedAt: new Date().toISOString() as DateISO
-    }
-    return  file
+        updatedAt: new Date().toISOString() as DateISO,
+    };
+
 }
 
 

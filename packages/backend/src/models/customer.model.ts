@@ -1,6 +1,6 @@
 
 import { DateISO, FileReference, ID } from "../types/core";
-import { AddContractDocumentRequest, CompleteCustomerExitRequest, ConvertLeadToCustomerRequest, CreateCustomerRequest, Customer, CustomerDeskChangeRequest, CustomerPeriod, CustomerStatus, CustomerTimeline, ExitReason, ExtendCustomerContractRequest, GetCustomersRequest, PaymentMethod, RecordExitNoticeRequest, TimelineEvent, TimelineEventType, UpdateCustomerRequest, WorkspaceType } from "../types/customer";
+import { AddContractDocumentRequest, CompleteCustomerExitRequest, ConvertLeadToCustomerRequest, CreateCustomerRequest, Customer, CustomerDeskChangeRequest, CustomerPeriod, CustomerStatus, CustomerTimeline, DateRangeFilter, ExitReason, ExtendCustomerContractRequest, GetCustomersRequest, PaymentMethod, RecordExitNoticeRequest, TimelineEvent, TimelineEventType, UpdateCustomerRequest, WorkspaceType } from "../types/customer";
 
 export class CustomerModel implements Customer {
 
@@ -296,11 +296,21 @@ export class CustomerTimelineModel implements CustomerTimeline{
 
     customerId: ID;
     events: TimelineEvent[];
-
-    constructor(customerId: ID, events: TimelineEvent[] = []) {
+    totalEvents: number;
+    dateRange?: DateRangeFilter | undefined;
+    
+    constructor(
+        customerId: string,
+        events: TimelineEvent[] = [],
+        totalEvents: number = 0,
+        dateRange?: DateRangeFilter
+    ) {
         this.customerId = customerId;
         this.events = events;
+        this.totalEvents = totalEvents;
+        this.dateRange = dateRange;
     }
+
 }
 
 
@@ -343,6 +353,8 @@ export class CompleteCustomerExitRequestModel implements CompleteCustomerExitReq
         this.finalNotes = finalNotes;
     }
 }
+
+
 
 export class AddContractDocumentRequestModel implements AddContractDocumentRequest {
 

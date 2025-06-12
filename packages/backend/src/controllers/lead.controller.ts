@@ -157,3 +157,62 @@ export const checkIfLeadBecomesCustomer = async (req: Request, res: Response) =>
         res.status(500).json({ message: 'Error checking if lead becomes customer', error });
     }
 };
+
+export const getAllInteractions = async (req: Request, res: Response) => { 
+    try {
+        const interactions = await leadService.getAllInteractions();
+        res.status(200).json(interactions);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching interactions', error });
+    }
+};
+ 
+export const convertCsvToLeads = async (req: Request, res: Response) => {
+    const csvData: string = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
+    try {
+        await leadService.convertCsvToLeads(csvData);
+        res.status(200).json({ message: 'Leads converted from CSV' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error converting CSV to leads', error });
+    }
+}
+
+export const checkIfFullLead = async (req: Request, res: Response) => {
+    const leadData: UpdateLeadRequestModel = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
+    try {
+        const isFull = await leadService.checkIfFullLead(leadData);
+        res.status(200).json({ isFull });
+    } catch (error) {
+        res.status(500).json({ message: 'Error checking if lead is full', error });
+    }
+}
+
+export const checkIfFullInteraction = async (req: Request, res: Response) => {
+    const interactionData: LeadInteraction = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
+    try {
+        const isFull = await leadService.checkIfFullInteraction(interactionData);
+        res.status(200).json({ isFull });
+    } catch (error) {
+        res.status(500).json({ message: 'Error checking if interaction is full', error });
+    }
+}
+
+export const deleteInteraction = async (req: Request, res: Response) => {
+    const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
+    try {
+        await leadService.deleteInteraction(id);
+        res.status(200).json({ message: 'Interaction deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting interaction', error });
+    }
+}
+
+export const getOpenReminders = async (req: Request, res: Response) => {
+    try {
+        const openReminders = await leadService.getOpenReminders();
+        res.status(200).json(openReminders);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching open reminders', error });
+    }
+}
+
