@@ -1,6 +1,6 @@
 
 import { DateISO, FileReference, ID } from "../types/core";
-import { AddContractDocumentRequest, CompleteCustomerExitRequest, ConvertLeadToCustomerRequest, CreateCustomerRequest, Customer, CustomerDeskChangeRequest, CustomerPeriod, CustomerStatus, ExitReason, ExtendCustomerContractRequest, GetCustomersRequest, PaymentMethod, RecordExitNoticeRequest, UpdateCustomerRequest, WorkspaceType } from "../types/customer";
+import { AddContractDocumentRequest, CompleteCustomerExitRequest, ConvertLeadToCustomerRequest, CreateCustomerRequest, Customer, CustomerDeskChangeRequest, CustomerPeriod, CustomerStatus, CustomerTimeline, ExitReason, ExtendCustomerContractRequest, GetCustomersRequest, PaymentMethod, RecordExitNoticeRequest, TimelineEvent, TimelineEventType, UpdateCustomerRequest, WorkspaceType } from "../types/customer";
 
 export class CustomerModel implements Customer {
 
@@ -264,6 +264,42 @@ export class GetCustomersRequestModel implements GetCustomersRequest {
         this.limit = params.limit ?? 10;
         this.sortBy = params.sortBy;
         this.sortDirection = params.sortDirection;
+    }
+}
+
+export class TimelineEventModel implements TimelineEvent{
+    id: ID;
+    type: TimelineEventType;
+    date: string; // ISO date string
+    title: string; // כותרת קצרה לאירוע
+    description?: string; // תיאור מפורט יותר (אופציונלי)
+    relatedId?: string; 
+
+    constructor(
+        id: ID,
+        type: TimelineEventType,
+        date: string,
+        title: string,
+        description?: string,
+        relatedId?: string
+    ) {
+        this.id = id;
+        this.type = type;
+        this.date = date;
+        this.title = title;
+        this.description = description;
+        this.relatedId = relatedId;
+    }
+}
+
+export class CustomerTimelineModel implements CustomerTimeline{
+
+    customerId: ID;
+    events: TimelineEvent[];
+
+    constructor(customerId: ID, events: TimelineEvent[] = []) {
+        this.customerId = customerId;
+        this.events = events;
     }
 }
 

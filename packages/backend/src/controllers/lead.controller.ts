@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import * as leadService from "../services/lead.service"
 import { LeadModel, UpdateLeadRequestModel } from '../models/lead.model';
+import { LeadInteraction, LeadStatus } from '../types/lead';
 export const getAllLeads = async (res: Response) => {
     try{
         // מזמן את ה service כדי לקבל את כל הלידים
@@ -72,9 +73,10 @@ export const addInteractionToLead = async (req: Request, res: Response) => {
     }
 }
 export const updateInteractions = async (req: Request, res: Response) => {
-    const csvData: string = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
+    const data: LeadInteraction = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
+    const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
     try {
-        await leadService.UpDateInteractiones(csvData);
+        await leadService.UpdateInteractione(data , id);
         res.status(200).json({ message: 'Interactions updated from CSV' });
     } catch (error) {
         res.status(500).json({ message: 'Error updating interactions', error });
@@ -88,3 +90,70 @@ export const getLeadToRemind = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching leads to remind', error });
     }
 }
+
+export const getLeadByEmail = async (req: Request, res: Response) => {
+    const { email } = req.params;
+    try {
+        const lead = await leadService.getLeadByEmail(email);
+        if (lead) {
+            res.status(200).json(lead);
+        } else {
+            res.status(404).json({ message: 'Lead not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching lead by email', error });
+    }
+};
+export const getLeadByPhone = async (req: Request, res: Response) => {
+    const { phone } = req.params;
+    try {
+        const lead = await leadService.getLeadByPhone(phone);
+        if (lead) {
+            res.status(200).json(lead);
+        } else {
+            res.status(404).json({ message: 'Lead not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching lead by phone', error });
+    }
+};
+export const getLeadByName = async (req: Request, res: Response) => {
+    const { name } = req.params;
+    try {
+        const lead = await leadService.getLeadByName(name);
+        if (lead) {
+            res.status(200).json(lead);
+        } else {
+            res.status(404).json({ message: 'Lead not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching lead by name', error });
+    }
+};
+export const getLeadByStatus = async (req: Request, res: Response) => {
+    const { status }: any = req.params; // הנח שהסטטוס נמצא בפרמטרים של הבקשה
+    try {
+        const leads = await leadService.getLeadByStatus(status);
+        res.status(200).json(leads);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching leads by status', error });
+    }
+};
+export const getLeadBySource = async (req: Request, res: Response) => {
+    const { source } = req.params;
+    try {
+        const leads = await leadService.getLeadBySource(source);
+        res.status(200).json(leads);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching leads by source', error });
+    }
+};
+export const checkIfLeadBecomesCustomer = async (req: Request, res: Response) => {
+    const { leadId } = req.params;
+    try {
+        const isCustomer = await leadService.checkIfLeadBecomesCustomer(leadId);
+        res.status(200).json({ isCustomer });
+    } catch (error) {
+        res.status(500).json({ message: 'Error checking if lead becomes customer', error });
+    }
+};

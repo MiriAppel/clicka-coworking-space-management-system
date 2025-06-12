@@ -1,6 +1,6 @@
 // customer-types.d.ts
 
-import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
+import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse, DateRangeFilter } from './core';
 
 // Workspace type enum
 export enum WorkspaceType {
@@ -8,6 +8,14 @@ export enum WorkspaceType {
   DESK_IN_ROOM = 'DESK_IN_ROOM',
   OPEN_SPACE = 'OPEN_SPACE',
   KLIKAH_CARD = 'KLIKAH_CARD'
+}
+export enum TimelineEventType {
+  Lead = 'lead',
+  Interaction = 'interaction',
+  Contract = 'contract',
+  Payment = 'payment',
+  ExitNotice = 'exitNotice',
+  StatusChange = 'statusChange'
 }
 
 // Customer status enum
@@ -53,6 +61,20 @@ export interface PaymentMethod {
   isActive: boolean;
   createdAt: DateISO;
   updatedAt: DateISO;
+}
+
+export interface TimelineEvent {
+  id: ID;
+  type: TimelineEventType;
+  date: string; // ISO date string
+  title: string; // כותרת קצרה לאירוע
+  description?: string; // תיאור מפורט יותר (אופציונלי)
+  relatedId?: string; // קישור לאובייקט (למשל leadId, contractId)
+}
+
+export interface CustomerTimeline {
+  customerId: ID;
+  events: TimelineEvent[];
 }
 
 // Customer model
