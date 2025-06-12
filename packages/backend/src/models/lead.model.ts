@@ -1,4 +1,4 @@
-import { Lead } from "../../../types/lead";
+import { Lead } from "../types/lead";
 
 export class LeadModel implements Lead {
     id: string;
@@ -16,10 +16,10 @@ export class LeadModel implements Lead {
     }
 }
 
-export class LeadInteraction implements Lead.Interaction {
+export class LeadInteraction implements LeadInteraction {
     id: string;
     leadId: string;
-    type: Lead.InteractionType;
+    type: LeadInteractionType;
     date: Date;
     notes: string;
     userId: string;
@@ -30,7 +30,7 @@ export class LeadInteraction implements Lead.Interaction {
     constructor(
         id: string,
         leadId: string,
-        type: Lead.InteractionType,
+        type: LeadInteractionType,
         date: Date,
         notes: string,
         userId: string,
@@ -50,7 +50,7 @@ export class LeadInteraction implements Lead.Interaction {
     }
 }
 
-export class CreateLeadRequest implements Lead.CreateRequest {
+export class CreateLeadRequest implements LeadCreateRequest {
     name: string;
     phone: string;
     email: string;
