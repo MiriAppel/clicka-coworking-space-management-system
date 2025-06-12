@@ -1,6 +1,6 @@
-
-
-import { LeadModel, LeadInteraction } from '../models/lead.model'; 
+import { LeadModel, LeadInteractionModel, UpdateLeadRequestModel, CreateLeadRequestModel } from '../models/lead.model'; 
+import { ID } from '../types/core';
+import { LeadStatus } from '../types/lead';
 
 export const getAllLeads = async (): Promise<LeadModel[]> => {
     //אמור לשלוף את כל הלידים
@@ -13,7 +13,7 @@ export const getLeadById = async (id: string): Promise<LeadModel | null> => {
     return null;
 }
 
-export const createLead = async (leadData: LeadModel): Promise<LeadModel> => {
+export const createLead = async (leadData: CreateLeadRequestModel): Promise<void> => {
     // אמור ליצור ליד חדש
     //בדיקת טלפון ומייל תקינים
     // בדיקה אם הם קיימים
@@ -21,31 +21,33 @@ export const createLead = async (leadData: LeadModel): Promise<LeadModel> => {
     // טיפול בקלט מעורב עברי- אנגלי
     // תמיכה בקבצים מצורפים לתיעוד אינטראקציה
     // שילוב עם מערכת דוא"ל לרישום אוטומטי
-    return leadData; // להחזיר את הליד שנוצר
+    // יצירת אינטרקציה ראשונית עם ליד- לזמן את הפונקציה addInteractionToLead
 }
 
-export const GetSourcesLeadById = async (id: string): Promise<String[]> => {
+export const GetSourcesLeadById = async (id: ID): Promise<String[]> => {
     // אמור לשלוף את מקורות הליד לפי מזהה
     return []; // להחזיר מערך של מקורות הליד
 }
 
-export const fullUpdateLead = async (leadData: LeadModel): Promise<LeadModel> => {
-    // אמור לעדכן ליד קיים
-    return leadData; // להחזיר את הליד המעודכן
+export const updatedLead = async (id: ID, leadData: UpdateLeadRequestModel): Promise<LeadModel> => {
+    //הפונקציה מזמנת את הפונקציה checkIfFullLead 
+    //אם זה עדכון חלקי זה שולח ל patch
+    // אם זה עדכון מלא זה שולח ל put
+    return leadData as LeadModel; // להחזיר את הליד המעודכן
 }
 
-export const addLeadFromCSV = async (csvData: string) => {
+export const addLeadFromCSV = async (csvData: string): Promise<void> => {
     // אמור להוסיף לידים מקובץ CSV
     // עיבוד קובץ CSV והמרתו למערך של לידים
 }
 
-export const addInteractionToLead = async (leadId: string, interactionData: LeadInteraction): Promise<void> => {
+export const addInteractionToLead = async (leadId: ID, interactionData: LeadInteractionModel): Promise<void> => {
     // מוסיף אינטרקציה במערך של אינטרקציות ליד
 }
 
-export const UpDateInteractiones = async (csvData: string) => {
-    // אמור לעדכן אינטרקציות ליד מקובץ CSV
-    // עיבוד קובץ CSV והמרתו למערך של אינטרקציות ליד
+export const UpdateInteractione = async (date: LeadInteractionModel, id: ID) => {
+    // אמור לעדכן אינטרקציה קיימת בליד
+    // מחפש את האינטרקציה לפי מזהה ומעדכן אותה עם הפונקציה checkIfFullInteraction
 }
 
 export const GetLeadToRemined = (): Promise<LeadModel[]> => {
@@ -53,4 +55,72 @@ export const GetLeadToRemined = (): Promise<LeadModel[]> => {
     // להחזיר מערך של לידים שדורשים מעקב
     return Promise.resolve([]);
 }
+
+export const convertCsvToLeads = (csvData: string): Promise<LeadModel[]> => {
+    // אמור להמיר קובץ CSV למערך של לידים
+    // עיבוד קובץ CSV והמרתו למערך של לידים
+    return Promise.resolve([]);
+}
+
+export const getAllInteractions = async (): Promise<LeadInteractionModel[]> => {
+    // אמור לשלוף את כל האינטרקציות
+    // להחזיר מערך של אינטרקציות ליד
+    return [];
+}   
+
+export const checkIfFullLead = async (leadData: UpdateLeadRequestModel): Promise<boolean> => {
+    // אמור לבדוק אם הליד מלא
+    return true; // להחזיר true או false בהתאם למצב הליד
+}
+
+export const checkIfFullInteraction = async (leadData: LeadInteractionModel): Promise<boolean> => {
+    // אמור לבדוק אם הליד מלא
+    return true; // להחזיר true או false בהתאם למצב הליד
+}
+
+export const deleteInteraction = async (id: ID): Promise<void> => {
+    // אמור למחוק אינטרקציה לפי מזהה
+    // מחפש את האינטרקציה לפי מזהה ומוחק אותה
+}
+
+export const getOpenReminders = async (): Promise<LeadModel[]> => {
+    // אמור לשלוף לידים עם תזכורות פתוחות
+    // להחזיר מערך של לידים עם תזכורות פתוחות
+    return [];
+}
+
+export const getLeadByEmail = async (email: string): Promise<LeadModel | null> => {
+    // אמור לשלוף ליד לפי כתובת דוא"ל
+    // להחזיר את הליד שנמצא או null אם לא נמצא
+    return null;
+}
+export const getLeadByPhone = async (phone: string): Promise<LeadModel | null> => {
+    // אמור לשלוף ליד לפי מספר טלפון
+    // להחזיר את הליד שנמצא או null אם לא נמצא
+    return null;
+}
+export const getLeadByName = async (name: string): Promise<LeadModel | null> => {
+    // אמור לשלוף ליד לפי שם
+    // להחזיר את הליד שנמצא או null אם לא נמצא
+    return null;
+}
+export const getLeadByStatus = async (status: LeadStatus): Promise<LeadModel[]> => {
+    // אמור לשלוף לידים לפי סטטוס
+    // להחזיר מערך של לידים עם הסטטוס המבוקש
+    return [];
+}
+
+export const getLeadBySource = async (source: string): Promise<LeadModel[]> => {
+    // אמור לשלוף לידים לפי מקור
+    // להחזיר מערך של לידים עם המקור המבוקש
+    return [];
+}
+
+export const checkIfLeadBecomesCustomer = async (leadId: ID): Promise<boolean> => {
+    // אמור לבדוק אם ליד הפך ללקוח
+    // בדיקה עם הפונקציה getLeadByStatus או getLeadById
+    return false; // להחזיר true אם הליד הפך ללקוח, אחרת false
+}
+
+
 

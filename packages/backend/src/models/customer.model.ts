@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import { DateISO, FileReference, ID } from "../types/core";
 import { AddContractDocumentRequest, CompleteCustomerExitRequest, ConvertLeadToCustomerRequest, CreateCustomerRequest, Customer, CustomerDeskChangeRequest, CustomerPeriod, CustomerStatus, ExitReason, ExtendCustomerContractRequest, GetCustomersRequest, PaymentMethod, RecordExitNoticeRequest, UpdateCustomerRequest, WorkspaceType } from "../types/customer";
 
@@ -12,7 +12,7 @@ export class CustomerModel implements Customer {
     businessName: string;
     businessType: string;
     status: CustomerStatus[];
-    currentWorkspaceType?: WorkspaceType;
+    currentWorkspaceType: WorkspaceType[];
     workspaceCount: number;
     contractSignDate?: DateISO;
     contractStartDate?: DateISO;
@@ -34,6 +34,7 @@ export class CustomerModel implements Customer {
         businessName: string,
         businessType: string,
         status: CustomerStatus[],
+        currentWorkspaceType: WorkspaceType[],
         workspaceCount: number,
         contractSignDate?: DateISO,
         contractStartDate?: DateISO,
@@ -54,6 +55,7 @@ export class CustomerModel implements Customer {
         this.businessName = businessName;
         this.businessType = businessType;
         this.status = status;
+        this.currentWorkspaceType = currentWorkspaceType;
         this.workspaceCount = workspaceCount;
         this.contractSignDate = contractSignDate;
         this.contractStartDate = contractStartDate;

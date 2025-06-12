@@ -65,7 +65,7 @@ export interface Customer {
   businessName: string;
   businessType: string;
   status: CustomerStatus[];
-  currentWorkspaceType?: WorkspaceType;
+  currentWorkspaceType?: WorkspaceType[];
   workspaceCount: number;
   contractSignDate?: DateISO;
   contractStartDate?: DateISO;
