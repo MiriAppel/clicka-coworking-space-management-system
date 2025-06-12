@@ -1,27 +1,79 @@
+import { DateISO, ID } from "../types/core";
+import { WorkspaceType } from "../types/customer";
+import { AddLeadInteractionRequest, CreateLeadRequest, GetLeadsRequest, InteractionType, Lead, LeadInteraction, LeadSource, LeadStatus, UpdateLeadRequest } from "../types/lead";
 
+export class LeadModel implements Lead {
 
-<<<<<<< HEAD
-export class LeadInteraction implements LeadInteraction {
-    id: string;
-    leadId: string;
-    type: LeadInteractionType;
-    date: Date;
-    notes: string;
-    userId: string;
-    userEmail: string;
-    createdAt: Date;
-    updatedAt: Date;
+    id: ID;
+    name: string;
+    phone: string;
+    email: string;
+    businessType: string;
+    interestedIn: WorkspaceType[];
+    source: LeadSource;
+    status: LeadStatus;
+    contactDate?: DateISO;
+    followUpDate?: DateISO;
+    notes?: string;
+    interactions: LeadInteraction[];
+    createdAt: DateISO;
+    updatedAt: DateISO;
 
     constructor(
-        id: string,
-        leadId: string,
-        type: LeadInteractionType,
-        date: Date,
+        id: ID,
+        name: string,
+        phone: string,
+        email: string,
+        businessType: string,
+        interestedIn: WorkspaceType[],
+        source: LeadSource,
+        status: LeadStatus,
+        contactDate?: DateISO,
+        followUpDate?: DateISO,
+        notes?: string,
+        interactions: LeadInteraction[] = [],
+        createdAt: DateISO = new Date().toISOString(),
+        updatedAt: DateISO = new Date().toISOString()
+    ) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.businessType = businessType;
+        this.interestedIn = interestedIn;
+        this.source = source;
+        this.status = status;
+        this.contactDate = contactDate;
+        this.followUpDate = followUpDate;
+        this.notes = notes;
+        this.interactions = interactions;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+}
+
+export class LeadInteractionModel implements LeadInteraction {
+
+    id: ID;
+    leadId: ID;
+    type: InteractionType;
+    date: DateISO;
+    notes: string;
+    userId: ID;
+    userEmail: string;
+    createdAt: DateISO;
+    updatedAt: DateISO;
+
+    constructor(
+        id: ID,
+        leadId: ID,
+        type: InteractionType,
+        date: DateISO,
         notes: string,
-        userId: string,
+        userId: ID,
         userEmail: string,
-        createdAt: Date,
-        updatedAt: Date
+        createdAt: DateISO = new Date().toISOString(),
+        updatedAt: DateISO = new Date().toISOString()
     ) {
         this.id = id;
         this.leadId = leadId;
@@ -35,25 +87,26 @@ export class LeadInteraction implements LeadInteraction {
     }
 }
 
-export class CreateLeadRequest implements LeadCreateRequest {
+export class CreateLeadRequestModel implements CreateLeadRequest {
+
     name: string;
     phone: string;
     email: string;
     businessType: string;
-    interestedIn: Lead.WorkspaceType[];
-    source: Lead.Source;
+    interestedIn: WorkspaceType[];
+    source: LeadSource;
     notes?: string;
-    followUpDate?: Date;
+    followUpDate?: DateISO;
 
     constructor(
         name: string,
         phone: string,
         email: string,
         businessType: string,
-        interestedIn: Lead.WorkspaceType[],
-        source: Lead.Source,
+        interestedIn: WorkspaceType[],
+        source: LeadSource,
         notes?: string,
-        followUpDate?: Date
+        followUpDate?: DateISO
     ) {
         this.name = name;
         this.phone = phone;
@@ -66,26 +119,26 @@ export class CreateLeadRequest implements LeadCreateRequest {
     }
 }
 
-export class UpdateLeadRequest implements Lead.UpdateRequest {
+export class UpdateLeadRequestModel implements UpdateLeadRequest {
     name?: string;
     phone?: string;
     email?: string;
     businessType?: string;
-    interestedIn?: Lead.WorkspaceType[];
-    source?: Lead.Source;
-    status?: Lead.Status;
-    followUpDate?: Date;
+    interestedIn?: WorkspaceType[];
+    source?: LeadSource;
+    status?: LeadStatus;
+    followUpDate?: DateISO;
     notes?: string;
-
+    
     constructor(
         name?: string,
         phone?: string,
         email?: string,
         businessType?: string,
-        interestedIn?: Lead.WorkspaceType[],
-        source?: Lead.Source,
-        status?: Lead.Status,
-        followUpDate?: Date,
+        interestedIn?: WorkspaceType[],
+        source?: LeadSource,
+        status?: LeadStatus,
+        followUpDate?: DateISO,
         notes?: string
     ) {
         this.name = name;
@@ -98,52 +151,60 @@ export class UpdateLeadRequest implements Lead.UpdateRequest {
         this.followUpDate = followUpDate;
         this.notes = notes;
     }
+
 }
 
-export class GetLeadsRequest implements Lead.GetRequest {
-    status?: Lead.Status[];
-    source?: Lead.Source[];
-    interestedIn?: Lead.WorkspaceType[];
+export class GetLeadsRequestModel implements GetLeadsRequest {
+
+    status?: LeadStatus[];
+    source?: LeadSource[];
+    interestedIn?: WorkspaceType[];
+    followUpDateFrom?: DateISO;
+    followUpDateTo?: DateISO;
+    search?: string;
     page?: number;
     limit?: number;
+    sortBy?: string;
+    sortDirection?: 'asc' | 'desc';
 
     constructor(
-        status?: Lead.Status[],
-        source?: Lead.Source[],
-        interestedIn?: Lead.WorkspaceType[],
-        page: number = 1,
-        limit: number = 10
+        status?: LeadStatus[],
+        source?: LeadSource[],
+        interestedIn?: WorkspaceType[],
+        followUpDateFrom?: DateISO,
+        followUpDateTo?: DateISO,
+        search?: string,
+        page?: number,
+        limit?: number,
+        sortBy?: string,
+        sortDirection?: 'asc' | 'desc'
     ) {
         this.status = status;
         this.source = source;
         this.interestedIn = interestedIn;
+        this.followUpDateFrom = followUpDateFrom;
+        this.followUpDateTo = followUpDateTo;
+        this.search = search;
         this.page = page;
         this.limit = limit;
+        this.sortBy = sortBy;
+        this.sortDirection = sortDirection;
     }
 }
 
-export class AddLeadInteractionRequest implements Lead.AddInteractionRequest {
-    leadId: string;
-    type: Lead.InteractionType;
-    date: Date;
+export class AddLeadInteractionRequestModel implements AddLeadInteractionRequest {
+    type: InteractionType;
+    date: DateISO;
     notes: string;
-    userId: string;
-    userEmail: string;
 
     constructor(
-        leadId: string,
-        type: Lead.InteractionType,
-        date: Date,
-        notes: string,
-        userId: string,
-        userEmail: string
+        type: InteractionType,
+        date: DateISO,
+        notes: string
     ) {
-        this.leadId = leadId;
         this.type = type;
         this.date = date;
         this.notes = notes;
-        this.userId = userId;
-        this.userEmail = userEmail;
     }
 }
 
