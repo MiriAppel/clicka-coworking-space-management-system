@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "paths": {
-      "@types/*": ["src/types/*"]
+      "@types/*": ["../../types/*"]
     }
   },
   "include": ["src/**/*", "src/types/**/*"],

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { DateISO, FileReference, ID } from "../types/core";
 import { AddContractDocumentRequest, CompleteCustomerExitRequest, ConvertLeadToCustomerRequest, CreateCustomerRequest, Customer, CustomerDeskChangeRequest, CustomerPeriod, CustomerStatus, ExitReason, ExtendCustomerContractRequest, GetCustomersRequest, PaymentMethod, RecordExitNoticeRequest, UpdateCustomerRequest, WorkspaceType } from "../types/customer";
 
@@ -384,8 +385,9 @@ export class ConvertLeadToCustomerRequestModel implements ConvertLeadToCustomerR
         this.notes = notes;
         this.paymentMethod = paymentMethod;
         this.contractDocuments = contractDocuments;
-    }
+    } 
 }
+
 
 
 

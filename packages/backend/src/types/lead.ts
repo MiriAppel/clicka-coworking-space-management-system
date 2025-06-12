@@ -3,7 +3,6 @@
 import { ID, DateISO, ApiResponse, PaginatedResponse } from './core';
 import { WorkspaceType } from './customer';
 
-
 // Lead status enum
 export enum LeadStatus {
   NEW = 'NEW',

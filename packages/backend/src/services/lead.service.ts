@@ -1,6 +1,6 @@
 // lead.service.ts
 
-import { LeadModel, LeadInteraction } from '../models/lead.model'; 
+import { LeadModel } from '../types/lead'; 
 
 export const getAllLeads = async (): Promise<LeadModel[]> => {
     //אמור לשלוף את כל הלידים
@@ -10,7 +10,6 @@ export const getAllLeads = async (): Promise<LeadModel[]> => {
 export const getLeadById = async (id: string): Promise<LeadModel | null> => {
     // אמור לשלוף ליד לפי מזהה
     // להחזיר את הליד שנמצא או null אם לא נמצא
-    return null;
 }
 
 export const createLead = async (leadData: LeadModel): Promise<LeadModel> => {
@@ -34,22 +33,7 @@ export const fullUpdateLead = async (leadData: LeadModel): Promise<LeadModel> =>
     return leadData; // להחזיר את הליד המעודכן
 }
 
-export const addLeadFromCSV = async (csvData: string) => {
-    // אמור להוסיף לידים מקובץ CSV
-    // עיבוד קובץ CSV והמרתו למערך של לידים
-}
 
-export const addInteractionToLead = async (leadId: string, interactionData: LeadInteraction): Promise<void> => {
-    // מוסיף אינטרקציה במערך של אינטרקציות ליד
-}
 
-export const UpDateInteractiones = async (csvData: string) => {
-    // אמור לעדכן אינטרקציות ליד מקובץ CSV
-    // עיבוד קובץ CSV והמרתו למערך של אינטרקציות ליד
-}
 
-export const GetLeadToRemined = (): Promise<LeadModel[]> => {
-    // אמור לשלוף לידים שדורשים תזכורת
-    return Promise.resolve([]); // להחזיר מערך של לידים שדורשים תזכורת
-}
 
