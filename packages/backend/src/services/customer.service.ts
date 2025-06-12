@@ -1,6 +1,6 @@
 import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "../types/core";
 import { CustomerModel, TimelineEventModel } from "../models/customer.model";
-import{Customer, CustomerStatus, CustomerTimeline} from '../types/customer'
+import{AddContractDocumentRequest, ConvertLeadToCustomerRequest, Customer, CustomerStatus, CustomerTimeline, GetCustomersRequest, RecordExitNoticeRequest} from '../types/customer'
 
 export const getAllCustomers = async (): Promise<CustomerModel[]> => {
     //אמור לשלוף את כל הלקוחות
@@ -37,9 +37,58 @@ export const getByDateJoin= async (dateFrom:Date,dateEnd:Date):Promise<CustomerM
     return null;
 }
 
+export const getHistoryChanges = async (id:ID) :Promise<CustomerModel|null>=>{
+    //קבלת הסטוריית שינויים של משתמש לפי ID
+return null;
+}
+export const getStatusChanges = async (id:ID):Promise<CustomerStatus[]|null>=>{
+    //מחזיר את הסטוריית הסטטוסים של משתמש לפי ID
+    return null;
+}
+export const getAllStatus = async () : Promise<CustomerStatus[]|null>=>{
+    //קבלת מצבי סטטוס אפשריים
+    return null;
+}
+export const getCustomersToNotify=async(id:ID):Promise<CustomerModel[]|null>=>{
+    //מחזיר את כל הלקוחות שיש לעדכן אותם על שינוי בסטטוס שלהם
+    return null;
+}
+
 export const putCustomer = async (id:ID):Promise<void>=>{
 //עדכון פרטי לקוח
 }
+
+
+export const postExitNotice = async (exitNotice:RecordExitNoticeRequest):Promise<void>=>{
+    //הודעת עזיבה
+}
+export const convertLeadToCustomer =async(newCustomer:ConvertLeadToCustomerRequest):Promise<CustomerModel|null>=>{
+    //קריאה לפונקציה getLeadById
+    //המרה של ליד ללקוח
+    //אין אפשרות של החזרת NULL זה רק בשביל החתימה
+    return null;
+}
+export const postContractDocument=async (document:AddContractDocumentRequest):Promise<void>=>{
+    //הוספת מסמך לחוזה
+}
+export const deleteContractDocument= async(id:ID):Promise<void>=>{//איזה מסמך?
+    //מחיקת מסמך מהחוזה
+}
+export const postNewContract = async(id:ID):Promise<void>=>{
+    //יצירת חוזה חדש
+}
+
+export const exportToFile = async(req:GetCustomersRequest) :Promise<Buffer|null>=>{
+    //ייצוא תוצאות חיפוש לקובץ
+    return null;
+}
+export const patchStatus = async(id:ID):Promise<void>=>{
+    //עדכון הסטטוס
+}
+export const patchCustomer=async(id:ID):Promise<void>=>{
+    //מעדכן חלק מפרטי הלקוח
+}
+
 
 //  export const getAllContracts = async (): Promise<ContractModel[]> => {
 //     // אמור לשלוף את כל החוזים
@@ -111,3 +160,5 @@ export const exportTimeline = async (customerId: ID, filters?: TimelineFilters):
     }
     return  file
 }
+
+

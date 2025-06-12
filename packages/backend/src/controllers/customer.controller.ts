@@ -154,3 +154,4 @@ export const postExitNotice = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error posting exit notice', error });
     }
 }
+
