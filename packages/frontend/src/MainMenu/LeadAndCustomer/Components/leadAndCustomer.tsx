@@ -2,12 +2,15 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@mui/material"
 import '../Css/leadAndCustomer.css'
 
+// יש לנו מצגת עם פירוט של כל העמודים יותר מפורט מה צריך להיות
+
 export const LeadAndCustomer = () => {
 
     const navigate  = useNavigate()
 
     return <div className='leadAndCustomer'>
         <h1>Lead & Customer</h1>
+        <Button variant="outlined" onClick={() => { navigate('/customers') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Customers</Button>
         <Button variant="outlined" onClick={() => { navigate('/') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Back</Button>
     </div>
 }
