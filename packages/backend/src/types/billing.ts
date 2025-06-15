@@ -41,12 +41,17 @@ export interface BillingItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
-  taxRate: number;
-  taxAmount: number;
+  //לא בשימוש
+  // taxRate: number;
+  // taxAmount: number;
   workspaceType?: WorkspaceType;
   bookingId?: ID;
-  createdAt: DateISO;
-  updatedAt: DateISO;
+  //לא בשימוש
+  // createdAt: DateISO;
+  // updatedAt: DateISO;
+  //הוספת שדות
+  period_start:DateISO 
+  period_end:DateISO 
 }
 
 // Invoice model
@@ -60,14 +65,26 @@ export interface Invoice {
   dueDate: DateISO;
   items: BillingItem[];
   subtotal: number;
-  taxTotal: number;
+  //לא בשימוש
+  // taxTotal: number;
+  //הוספת שדות במקום
+  tax_amount:number
+  tax_rate:number
   total: number;
   amountPaid: number;
+  //הוספת שדה
+  paid_date: DateISO 
   balance: number;
   notes?: string;
   pdfFile?: FileReference;
-  paymentDueReminder?: boolean;
-  paymentDueReminderSentAt?: DateISO;
+  //לא בשימוש
+  // paymentDueReminder?: boolean;
+  // paymentDueReminderSentAt?: DateISO;
+  //הוספה שדות במקום 
+  billingPeriodStart :DateISO
+  billingPeriodEnd :DateISO
+  templateId:ID 
+  //
   createdAt: DateISO;
   updatedAt: DateISO;
 }

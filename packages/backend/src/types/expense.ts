@@ -1,7 +1,6 @@
 // expense-types.d.ts
 
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core-types';
-
 // Expense category enum
 export enum ExpenseCategory {
   RENT = 'RENT',
@@ -51,11 +50,16 @@ export interface Vendor {
   address?: string;
   website?: string;
   taxId?: string;
+  paymentTerms?: string;
+  preferredPaymentMethod?: PaymentMethod;
+  category?: VendorCategory;
+  status?: VendorStatus;
   notes?: string;
+  documents?: FileReference[];
   createdAt: DateISO;
   updatedAt: DateISO;
 }
-
+ 
 // Expense model
 export interface Expense {
   id: ID;
@@ -77,6 +81,23 @@ export interface Expense {
   notes?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
+}
+export enum PaymentMethod {
+  BankTransfer = 'BankTransfer',   
+  CreditCard = 'CreditCard',      
+  Cash = 'Cash',                  
+  Other = 'Other'                 
+}
+export enum VendorStatus {
+  Active = 'Active',
+  Inactive = 'Inactive',
+  Suspended = 'Suspended'
+}
+export enum VendorCategory {
+  Equipment = 'Equipment',
+  Services = 'Services',
+  Maintenance = 'Maintenance',
+  Other = 'Other'
 }
 
 // Create vendor request
