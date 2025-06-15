@@ -2,6 +2,7 @@ import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "
 import { CustomerModel, TimelineEventModel } from "../models/customer.model";
 import{AddContractDocumentRequest, Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerFilter, CustomerStatus, CustomerTimeline, GetCustomersRequest, RecordExitNoticeRequest, TimelineEvent, UpdateCustomerRequest} from '../types/customer'
 import { supabase } from "../db/supabaseClient";
+import e from "cors";
 
 export const getAllCustomers = async (): Promise<CustomerModel[]> => {
 
@@ -148,16 +149,27 @@ export const getByDateJoin= async (dateFrom:Date, dateEnd:Date):Promise<GetCusto
 }
 
 export const getStatusChanges = async (id:ID):Promise<CustomerStatus[]|null>=>{
-    //מחזיר את הסטוריית הסטטוסים של משתמש לפי ID
-    return null;
+   
+    const customer: GetCustomersRequest | null = await getCustomerById(id);
+
+    if (customer && customer.status) {
+        const statuses: CustomerStatus[] = customer.status;
+        return statuses;
+    } else {
+        console.warn(`No status changes found for customer with ID: ${id}`);
+        return null; 
+    }
 }
-export const getAllStatus = async () : Promise<CustomerStatus[]|null>=>{
-    //קבלת מצבי סטטוס אפשריים
-    return null;
+
+export const getAllStatus = async () : Promise<CustomerStatus[]|null> => {
+
+    return Object.values(CustomerStatus) as CustomerStatus[];
 }
-export const getCustomersToNotify=async(id:ID):Promise<GetCustomersRequest[]|null>=>{
-    //מחזיר את כל הלקוחות שיש לעדכן אותם על שינוי בסטטוס שלהם
-    return null;
+
+export const getCustomersToNotify=async(id:ID):Promise<GetCustomersRequest[]|null> => {
+
+    
+
 }
 
 export const putCustomer = async (id:ID):Promise<void>=>{
