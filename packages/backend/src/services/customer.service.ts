@@ -2,7 +2,7 @@ import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "
 import { CustomerModel, TimelineEventModel } from "../models/customer.model";
 import{AddContractDocumentRequest, Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerFilter, CustomerStatus, CustomerTimeline, GetCustomersRequest, RecordExitNoticeRequest, TimelineEvent, UpdateCustomerRequest} from '../types/customer'
 import { supabase } from "../db/supabaseClient";
-import e from "cors";
+
 
 export const getAllCustomers = async (): Promise<CustomerModel[]> => {
 
@@ -161,14 +161,15 @@ export const getStatusChanges = async (id:ID):Promise<CustomerStatus[]|null>=>{
     }
 }
 
-export const getAllStatus = async () : Promise<CustomerStatus[]|null> => {
+export const getAllStatus = async (): Promise<CustomerStatus[]|null> => {
 
     return Object.values(CustomerStatus) as CustomerStatus[];
 }
 
-export const getCustomersToNotify=async(id:ID):Promise<GetCustomersRequest[]|null> => {
+export const getCustomersToNotify = async(id:ID): Promise<GetCustomersRequest[]|null> => {
 
-    
+exp
+
 
 }
 

@@ -1,444 +1,179 @@
+import { FileReference } from "../types/core";
+import { Contract, Customer, CustomerPeriod, CustomerStatus, PaymentMethod, WorkspaceType } from "../types/customer";
 
-import { DateISO, FileReference, ID } from "../types/core";
-import { AddContractDocumentRequest, CompleteCustomerExitRequest, ConvertLeadToCustomerRequest, CreateCustomerRequest, Customer, CustomerDeskChangeRequest, CustomerPeriod, CustomerStatus, CustomerTimeline, DateRangeFilter, ExitReason, ExtendCustomerContractRequest, GetCustomersRequest, PaymentMethod, RecordExitNoticeRequest, TimelineEvent, TimelineEventType, UpdateCustomerRequest, WorkspaceType } from "../types/customer";
 
-export class CustomerModel implements Customer {
+export class CustomerModel implements Customer   {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  idNumber: string;
+  businessName: string;
+  businessType: string;
+  status: CustomerStatus;
+  currentWorkspaceType?: WorkspaceType[];
+  workspaceCount: number;
+  contractSignDate?: string;
+  contractStartDate?: string;
+  billingStartDate?: string;
+  notes?: string;
+  invoiceName?: string;
+  contractDocuments?: FileReference[];
+  paymentMethods: PaymentMethod[];
+  periods: CustomerPeriod[];
+  contracts: Contract[];
+  createdAt: string;
+  updatedAt: string;
 
-    id: ID;
-    name: string;
-    phone: string;
-    email: string;
-    idNumber: string;
-    businessName: string;
-    businessType: string;
-    status: CustomerStatus[];
-    currentWorkspaceType: WorkspaceType[];
-    workspaceCount: number;
-    contractSignDate?: DateISO;
-    contractStartDate?: DateISO;
-    billingStartDate?: DateISO;
-    notes?: string;
-    invoiceName?: string;
-    contractDocuments?: FileReference[];
-    paymentMethods: PaymentMethod[];
-    periods: CustomerPeriod[];
-    createdAt: DateISO;
-    updatedAt: DateISO;
+  constructor(
+    id: string,
+    name: string,
+    phone: string,
+    email: string,
+    idNumber: string,
+    businessName: string,
+    businessType: string,
+    status: CustomerStatus,
+    workspaceCount: number,
+    createdAt: string,
+    updatedAt: string,
+    currentWorkspaceType?: WorkspaceType[],
+    contractSignDate?: string,
+    contractStartDate?: string,
+    billingStartDate?: string,
+    notes?: string,
+    invoiceName?: string,
+    contractDocuments?: FileReference[],
+    paymentMethods: PaymentMethod[] = [],
+    periods: CustomerPeriod[] = [],
+    contracts: Contract[] = []
+  ) {
+    this.id = id;
+    this.name = name;
+    this.phone = phone;
+    this.email = email;
+    this.idNumber = idNumber;
+    this.businessName = businessName;
+    this.businessType = businessType;
+    this.status = status;
+    this.currentWorkspaceType = currentWorkspaceType;
+    this.workspaceCount = workspaceCount;
+    this.contractSignDate = contractSignDate;
+    this.contractStartDate = contractStartDate;
+    this.billingStartDate = billingStartDate;
+    this.notes = notes;
+    this.invoiceName = invoiceName;
+    this.contractDocuments = contractDocuments;
+    this.paymentMethods = paymentMethods;
+    this.periods = periods;
+    this.contracts = contracts;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
-    constructor(
-        id: ID,
-        name: string,
-        phone: string,
-        email: string,
-        idNumber: string,
-        businessName: string,
-        businessType: string,
-        status: CustomerStatus[],
-        currentWorkspaceType: WorkspaceType[],
-        workspaceCount: number,
-        contractSignDate?: DateISO,
-        contractStartDate?: DateISO,
-        billingStartDate?: DateISO,
-        notes?: string,
-        invoiceName?: string,
-        contractDocuments?: FileReference[],
-        paymentMethods: PaymentMethod[] = [],
-        periods: CustomerPeriod[] = [],
-        createdAt: DateISO = new Date().toISOString(),
-        updatedAt: DateISO = new Date().toISOString()
-    ) {
-        this.id = id;
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.idNumber = idNumber;
-        this.businessName = businessName;
-        this.businessType = businessType;
-        this.status = status;
-        this.currentWorkspaceType = currentWorkspaceType;
-        this.workspaceCount = workspaceCount;
-        this.contractSignDate = contractSignDate;
-        this.contractStartDate = contractStartDate;
-        this.billingStartDate = billingStartDate;
-        this.notes = notes;
-        this.invoiceName = invoiceName;
-        this.contractDocuments = contractDocuments;
-        this.paymentMethods = paymentMethods;
-        this.periods = periods;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }   
-}
-
-export class CustomerPeriodModel implements CustomerPeriod {
-
-    id: ID;
-    customerId: ID;
-    entryDate: DateISO;
-    exitDate?: DateISO;
-    exitNoticeDate?: DateISO;
-    exitReason?: ExitReason;
-    exitReasonDetails?: string;
-    createdAt: DateISO;
-    updatedAt: DateISO;
-
-    constructor(
-        id: ID,
-        customerId: ID,
-        entryDate: DateISO,
-        exitDate?: DateISO,
-        exitNoticeDate?: DateISO,
-        exitReason?: ExitReason,
-        exitReasonDetails?: string,
-        createdAt: DateISO = new Date().toISOString(),
-        updatedAt: DateISO = new Date().toISOString()
-    ) {
-        this.id = id;
-        this.customerId = customerId;
-        this.entryDate = entryDate;
-        this.exitDate = exitDate;
-        this.exitNoticeDate = exitNoticeDate;
-        this.exitReason = exitReason;
-        this.exitReasonDetails = exitReasonDetails;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-}
-
-export class PaymentMethodModel implements PaymentMethod {
-
-    id: ID;
-    customerId: ID;
-    creditCardLast4?: string;
-    creditCardExpiry?: string;
-    creditCardHolderIdNumber?: string;
-    creditCardHolderPhone?: string;
-    isActive: boolean;
-    createdAt: DateISO;
-    updatedAt: DateISO;
-
-    constructor(
-        id: ID,
-        customerId: ID,
-        creditCardLast4?: string,
-        creditCardExpiry?: string,
-        creditCardHolderIdNumber?: string,
-        creditCardHolderPhone?: string,
-        isActive: boolean = true,
-        createdAt: DateISO = new Date().toISOString(),
-        updatedAt: DateISO = new Date().toISOString()
-    ) {
-        this.id = id;
-        this.customerId = customerId;
-        this.creditCardLast4 = creditCardLast4;
-        this.creditCardExpiry = creditCardExpiry;
-        this.creditCardHolderIdNumber = creditCardHolderIdNumber;
-        this.creditCardHolderPhone = creditCardHolderPhone;
-        this.isActive = isActive;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-}
-
-export class CreateCustomerRequestModel implements CreateCustomerRequest {
-
-    name: string;
-    phone: string;
-    email: string;
-    idNumber: string;
-    businessName: string;
-    businessType: string;
-    workspaceType: WorkspaceType;
-    workspaceCount: number;
-    contractSignDate: DateISO;
-    contractStartDate: DateISO;
-    billingStartDate: DateISO;
-    notes?: string;
-    invoiceName?: string;
-    paymentMethod?: {
-        creditCardLast4?: string;
-        creditCardExpiry?: string;
-        creditCardHolderIdNumber?: string;
-        creditCardHolderPhone?: string;
+  toDatabaseFormat() {
+    return {
+      id: this.id,
+      name: this.name,
+      phone: this.phone,
+      email: this.email,
+      idNumber: this.idNumber,
+      businessName: this.businessName,
+      businessType: this.businessType,
+      status: this.status,
+      currentWorkspaceType: this.currentWorkspaceType,
+      workspaceCount: this.workspaceCount,
+      contractSignDate: this.contractSignDate,
+      contractStartDate: this.contractStartDate,
+      billingStartDate: this.billingStartDate,
+      notes: this.notes,
+      invoiceName: this.invoiceName,
+      contractDocuments: this.contractDocuments ? this.contractDocuments.map(doc => ({
+        id: doc.id,
+        name: doc.name,
+        path: doc.path,
+        mimeType: doc.mimeType,
+        size: doc.size,
+        url: doc.url,
+        googleDriveId: doc.googleDriveId,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt
+      })) : [],
+      paymentMethods: this.paymentMethods.map(pm => ({
+        id: pm.id,
+        customerId: pm.customerId,
+        creditCardLast4: pm.creditCardLast4,
+        creditCardExpiry: pm.creditCardExpiry,
+        creditCardHolderIdNumber: pm.creditCardHolderIdNumber,
+        creditCardHolderPhone: pm.creditCardHolderPhone,
+        isActive: pm.isActive,
+        createdAt: pm.createdAt,
+        updatedAt: pm.updatedAt
+      })),
+      periods: this.periods.map(period => ({
+        id: period.id,
+        customerId: period.customerId,
+        entryDate: period.entryDate,
+        exitDate: period.exitDate,
+        exitNoticeDate: period.exitNoticeDate,
+        exitReason: period.exitReason,
+        exitReasonDetails: period.exitReasonDetails,
+        createdAt: period.createdAt,
+        updatedAt: period.updatedAt
+      })),
+      contracts: this.contracts.map(contract => ({
+        id: contract.id,
+        customerId: contract.customerId,
+        version: contract.version,
+        status: contract.status,
+        startDate: contract.startDate,
+        signDate: contract.signDate,
+        endDate: contract.endDate,
+        terms: contract.terms ? {
+          workspaceType: contract.terms.workspaceType,
+          workspaceCount: contract.terms.workspaceCount,
+          monthlyRate: contract.terms.monthlyRate,
+          duration: contract.terms.duration,
+          renewalTerms: contract.terms.renewalTerms,
+          terminationNotice: contract.terms.terminationNotice,
+          specialConditions: contract.terms.specialConditions
+        } : undefined,
+        documents: contract.documents ? contract.documents.map(doc => ({
+          id: doc.id,
+          name: doc.name,
+          path: doc.path,
+          mimeType: doc.mimeType,
+          size: doc.size,
+          url: doc.url,
+          googleDriveId: doc.googleDriveId,
+          createdAt: doc.createdAt,
+          updatedAt: doc.updatedAt
+        })) : [],
+        modifications: contract.modifications ? contract.modifications.map(mod => ({
+          id: mod.id,
+          date: mod.date,
+          description: mod.description,
+          modifiedByUserId: mod.modifiedByUserId,
+          approvedByUserId: mod.approvedByUserId,
+          documentChanges: mod.documentChanges ? mod.documentChanges.map(doc => ({
+            id: doc.id,
+            name: doc.name,
+            path: doc.path,
+            mimeType: doc.mimeType,
+            size: doc.size,
+            url: doc.url,
+            googleDriveId: doc.googleDriveId,
+            createdAt: doc.createdAt,
+            updatedAt: doc.updatedAt
+          })) : []
+        })) : [],
+        signedBy: contract.signedBy,
+        witnessedBy: contract.witnessedBy,
+        createdAt: contract.createdAt,
+        updatedAt: contract.updatedAt
+      })),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
     };
-    contractDocuments?: FileReference[];
-
-    constructor(
-        name: string,
-        phone: string,
-        email: string,
-        idNumber: string,
-        businessName: string,
-        businessType: string,
-        workspaceType: WorkspaceType,
-        workspaceCount: number,
-        contractSignDate: DateISO,
-        contractStartDate: DateISO,
-        billingStartDate: DateISO,
-        notes?: string,
-        invoiceName?: string,
-        paymentMethod?: {
-            creditCardLast4?: string;
-            creditCardExpiry?: string;
-            creditCardHolderIdNumber?: string;
-            creditCardHolderPhone?: string;
-            },
-        contractDocuments?: FileReference[]
-    ) {
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.idNumber = idNumber;
-        this.businessName = businessName;
-        this.businessType = businessType;
-        this.workspaceType = workspaceType;
-        this.workspaceCount = workspaceCount;
-        this.contractSignDate = contractSignDate;
-        this.contractStartDate = contractStartDate;
-        this.billingStartDate = billingStartDate;
-        this.notes = notes;
-        this.invoiceName = invoiceName;
-        this.paymentMethod = paymentMethod;
-        this.contractDocuments = contractDocuments;
-    }
+  }
 }
-
-export class UpdateCustomerRequestModel implements UpdateCustomerRequest {
-
-    name?: string;
-    phone?: string;
-    email?: string;
-    idNumber?: string;
-    businessName?: string;
-    businessType?: string;
-    notes?: string;
-    invoiceName?: string;
-
-    constructor(
-        name?: string,
-        phone?: string,
-        email?: string,
-        idNumber?: string,
-        businessName?: string,
-        businessType?: string,
-        notes?: string,
-        invoiceName?: string
-    ) {
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.idNumber = idNumber;
-        this.businessName = businessName;
-        this.businessType = businessType;
-        this.notes = notes;
-        this.invoiceName = invoiceName;
-    }
-}
-
-export class GetCustomersRequestModel implements GetCustomersRequest {
-
-    status?: CustomerStatus[];
-    workspaceType?: WorkspaceType[];
-    businessType?: string;
-    search?: string;
-    page?: number;
-    limit?: number;
-    sortBy?: string;
-    sortDirection?: 'asc' | 'desc';
-
-    constructor(params: {
-        status?: CustomerStatus[];
-        workspaceType?: WorkspaceType[];
-        businessType?: string;
-        search?: string;
-        page?: number;
-        limit?: number;
-        sortBy?: string;
-        sortDirection?: 'asc' | 'desc';
-    } = {}) {
-        this.status = params.status;
-        this.workspaceType = params.workspaceType;
-        this.businessType = params.businessType;
-        this.search = params.search;
-        this.page = params.page ?? 1;
-        this.limit = params.limit ?? 10;
-        this.sortBy = params.sortBy;
-        this.sortDirection = params.sortDirection;
-    }
-}
-
-export class TimelineEventModel implements TimelineEvent{
-    id: ID;
-    type: TimelineEventType;
-    date: string; // ISO date string
-    title: string; // כותרת קצרה לאירוע
-    description?: string; // תיאור מפורט יותר (אופציונלי)
-    relatedId?: string; 
-
-    constructor(
-        id: ID,
-        type: TimelineEventType,
-        date: string,
-        title: string,
-        description?: string,
-        relatedId?: string
-    ) {
-        this.id = id;
-        this.type = type;
-        this.date = date;
-        this.title = title;
-        this.description = description;
-        this.relatedId = relatedId;
-    }
-}
-
-export class CustomerTimelineModel implements CustomerTimeline{
-
-    customerId: ID;
-    events: TimelineEvent[];
-    totalEvents: number;
-    dateRange?: DateRangeFilter | undefined;
-    
-    constructor(
-        customerId: string,
-        events: TimelineEvent[] = [],
-        totalEvents: number = 0,
-        dateRange?: DateRangeFilter
-    ) {
-        this.customerId = customerId;
-        this.events = events;
-        this.totalEvents = totalEvents;
-        this.dateRange = dateRange;
-    }
-
-}
-
-
-export class RecordExitNoticeRequestModel implements RecordExitNoticeRequest {
-
-    exitNoticeDate: DateISO;
-    plannedExitDate: DateISO;
-    exitReason: ExitReason;
-    exitReasonDetails?: string;
-
-    constructor(
-        exitNoticeDate: DateISO,
-        plannedExitDate: DateISO,
-        exitReason: ExitReason,
-        exitReasonDetails?: string
-    ) {
-        this.exitNoticeDate = exitNoticeDate;
-        this.plannedExitDate = plannedExitDate;
-        this.exitReason = exitReason;
-        this.exitReasonDetails = exitReasonDetails;
-    }
-}
-
-export class CompleteCustomerExitRequestModel implements CompleteCustomerExitRequest {
-
-    actualExitDate: DateISO;
-    exitReason: ExitReason;
-    exitReasonDetails?: string;
-    finalNotes?: string;
-
-    constructor(
-        actualExitDate: DateISO,
-        exitReason: ExitReason,
-        exitReasonDetails?: string,
-        finalNotes?: string
-    ) {
-        this.actualExitDate = actualExitDate;
-        this.exitReason = exitReason;
-        this.exitReasonDetails = exitReasonDetails;
-        this.finalNotes = finalNotes;
-    }
-}
-
-
-
-export class AddContractDocumentRequestModel implements AddContractDocumentRequest {
-
-    document: FileReference;
-    description?: string;
-
-    constructor(document: FileReference, description?: string) {
-        this.document = document;
-        this.description = description;
-    }
-}
-
-export class CustomerDeskChangeRequestModel implements CustomerDeskChangeRequest {
-
-    newWorkspaceType: WorkspaceType;
-    newWorkspaceCount: number;
-    effectiveDate: DateISO;
-    notes?: string;
-
-    constructor(newWorkspaceType: WorkspaceType, newWorkspaceCount: number, effectiveDate: DateISO, notes?: string) {
-        this.newWorkspaceType = newWorkspaceType;
-        this.newWorkspaceCount = newWorkspaceCount;
-        this.effectiveDate = effectiveDate;
-        this.notes = notes;
-    }
-}
-
-export class ExtendCustomerContractRequestModel implements ExtendCustomerContractRequest {
-
-    newEndDate: DateISO;
-    notes?: string;
-
-    constructor(newEndDate: DateISO, notes?: string) {
-        this.newEndDate = newEndDate;
-        this.notes = notes;
-    }
-}
-
-export class ConvertLeadToCustomerRequestModel implements ConvertLeadToCustomerRequest {
-
-    leadId: ID;
-    workspaceType: WorkspaceType;
-    workspaceCount: number;
-    contractSignDate: DateISO;
-    contractStartDate: DateISO;
-    billingStartDate: DateISO;
-    notes?: string;
-    paymentMethod?: {
-        creditCardLast4?: string;
-        creditCardExpiry?: string;
-        creditCardHolderIdNumber?: string;
-        creditCardHolderPhone?: string;
-    };
-    contractDocuments?: FileReference[];
-
-    constructor(
-        leadId: ID,
-        workspaceType: WorkspaceType,
-        workspaceCount: number,
-        contractSignDate: DateISO,
-        contractStartDate: DateISO,
-        billingStartDate: DateISO,
-        notes?: string,
-        paymentMethod?: {
-            creditCardLast4?: string;
-            creditCardExpiry?: string;
-            creditCardHolderIdNumber?: string;
-            creditCardHolderPhone?: string;
-        },
-        contractDocuments?: FileReference[]
-    ) {
-        this.leadId = leadId;
-        this.workspaceType = workspaceType;
-        this.workspaceCount = workspaceCount;
-        this.contractSignDate = contractSignDate;
-        this.contractStartDate = contractStartDate;
-        this.billingStartDate = billingStartDate;
-        this.notes = notes;
-        this.paymentMethod = paymentMethod;
-        this.contractDocuments = contractDocuments;
-    } 
-}
-
-
-
-
-
