@@ -5,8 +5,10 @@ export class CalendarConflict {
   bookingId: ID;
   googleEventId: string;
   conflictType: 'TIME_OVERLAP' | 'ROOM_CONFLICT' | 'PERMISSION_ERROR';
+      //             חפיפה_של_זמן/ קונפליקט_חדר/ שגיאת_הרשאה
   description: string;
   suggestedResolution: string;
+    //          פתרון מוצע  
 
   constructor(params: {
     bookingId: ID;
@@ -14,6 +16,7 @@ export class CalendarConflict {
     conflictType: 'TIME_OVERLAP' | 'ROOM_CONFLICT' | 'PERMISSION_ERROR';
     description: string;
     suggestedResolution: string;
+  
   }) {
     this.bookingId = params.bookingId;
     this.googleEventId = params.googleEventId;

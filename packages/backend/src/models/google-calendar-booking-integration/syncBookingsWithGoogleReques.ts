@@ -6,7 +6,7 @@ export class SyncBookingsWithGoogleRequest {
   startDate?: DateISO;
   endDate?: DateISO;
   forceSync?: boolean;
-
+// אם יש צורך בכפיית סינכרון
   constructor(params: {
     roomId?: ID;
     startDate?: DateISO;
