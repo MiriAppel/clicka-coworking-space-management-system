@@ -2,7 +2,7 @@ import { CalendarConflict } from "../models/google-calendar-booking-integration/
 import { CalendarSync, CalendarSyncStatus } from "../models/google-calendar-booking-integration/calendarSync";
 import { SyncBookingsWithGoogleRequest } from "../models/google-calendar-booking-integration/syncBookingsWithGoogleReques";
 
-export const syncBookingsWithGoogle=async(request: SyncBookingsWithGoogleRequest):Promise< CalendarSyncStatus>=>{
+export const syncBookingsWithGoogle=async(request: SyncBookingsWithGoogleRequest):Promise<CalendarSyncStatus>=>{
      //Google Calendar פונקציה זו תסנכרן את ההזמנות עם 
      // בצורה דו כיוונית
     //  CalendarSyncStatus-ותחזיר אובייקט עם מצב הסנכרון 
