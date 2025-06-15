@@ -1,7 +1,7 @@
 
 import { handleGoogleAuthCode } from '../controllers/authController';
 
-const express = require('express')
+import express from 'express';
 const router = express.Router();
 
 router.post('/google', handleGoogleAuthCode);

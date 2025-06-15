@@ -1,10 +1,11 @@
 import { google } from 'googleapis';
+import dotenv from 'dotenv';
 
+dotenv.config(); 
 //parameters for Google OAuth2 from environment variables
-const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID!;
-const CLIENT_SECRET = process.env.REACT_APP_GOOGLE_CLIENT_SECRET!;
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI!;
-
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 
 export const oauth2Client = new google.auth.OAuth2(
     CLIENT_ID,

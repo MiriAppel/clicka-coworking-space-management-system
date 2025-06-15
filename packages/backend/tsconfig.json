@@ -3,7 +3,7 @@
     "target": "ES2020",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "../..", // Set to the monorepo root
+    "rootDir": "../..", // Set to the monorepo root"rootDir": "./src"
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

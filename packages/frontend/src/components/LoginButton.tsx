@@ -10,8 +10,10 @@ export const LoginWithGoogle = () => {
         flow: 'auth-code',
         onSuccess: async (codeResponse) => {
             try {
+                console.log('Code received from Google:', codeResponse);
+                
                 const response = await axiosInstance.post(
-                    '/google',
+                    '/api/google',
                     { code: codeResponse.code },
                     {
                         headers: {

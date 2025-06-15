@@ -1,7 +1,7 @@
 // pricing-types.d.ts
 
-import { ApiResponse, ID } from './core-types';
-import { WorkspaceType } from './customer-types';
+import { ApiResponse, ID } from './core';
+import { WorkspaceType } from './customer';
 
 // Pricing tier
 export interface PricingTier {

@@ -1,4 +1,4 @@
-// core-types.d.ts
+// core.d.ts
 
 // ID type (string for UUIDs, or number for auto-increment)
 export type ID = string;

@@ -1,6 +1,6 @@
-// customer-types.d.ts
+// customer.d.ts
 
-import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core-types';
+import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
 // Workspace type enum
 export enum WorkspaceType {
