@@ -1,0 +1,18 @@
+{
+  "name": "clicka-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true, 
+  "scripts": {
+    "start:backend": "yarn workspace clicka-backend dev",
+    "start:frontend": "yarn workspace clicka-frontend start",
+    "build": "yarn workspaces run build"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
