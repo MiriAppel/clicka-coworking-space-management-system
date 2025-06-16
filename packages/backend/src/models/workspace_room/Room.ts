@@ -1,5 +1,9 @@
 import {ID,DateISO} from "../core";
 import{RoomStatus,MeetingRoomManagement,RoomFeature} from "../core"
+import { BookingRules } from "./BookingRules";
+import { OccupancyAlert } from "../workspace_traking/OccupancyAlert";
+import { OccupancySnapshot } from "../workspace_traking/OccupancySnapshot";
+import { RoomFaeature } from "./RoomFaeature";
 export class Room {
     id: ID;
     name: string;
@@ -14,9 +18,20 @@ export class Room {
     location: string;
     equipment: string[];
     bookingRules: RoomStatus;
+    nextMaintenanceDate?: DateISO;
     createdAt: DateISO;
     updatedAt: DateISO;
-  
+  // קשר: חדר אחד -> כלל הזמנה אחד (לפי roomId)
+  rules?: BookingRules;
+
+  // קשר: חדר אחד -> כמה התראות תפוסה
+  occupancyAlerts?: OccupancyAlert[];
+
+  // קשר: חדר אחד -> כמה תמונות/פיצ'רים (RoomFaeature)
+  roomFeatures?: RoomFaeature[];
+
+  // קשר: חדר אחד -> כמה snapshots
+  occupancySnapshots?: OccupancySnapshot[];
     constructor(
       id: ID,
       name: string,
@@ -29,6 +44,7 @@ export class Room {
       location: string,
       equipment: string[],
       bookingRules: RoomStatus,
+      nextMaintenanceDate: DateISO,
       createdAt: DateISO,
       updatedAt: DateISO,
       description?: string,
@@ -47,6 +63,7 @@ export class Room {
       this.location = location;
       this.equipment = equipment;
       this.bookingRules = bookingRules;
+      this.nextMaintenanceDate = nextMaintenanceDate;
       this.createdAt = createdAt;
       this.updatedAt = updatedAt;
     }
@@ -66,9 +83,11 @@ export class Room {
         location: this.location,
         equipment: this.equipment,
         bookingRules: this.bookingRules,
+        nextMaintenanceDate:this.nextMaintenanceDate,
         createdAt: this.createdAt,
         updatedAt: this.updatedAt
       };
     }
+    
   }
   

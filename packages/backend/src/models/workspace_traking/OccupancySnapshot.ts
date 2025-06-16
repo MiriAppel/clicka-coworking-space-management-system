@@ -1,7 +1,9 @@
 import { ID, DateISO,WorkSpaceType } from "../core";
-
+import { Room } from "../workspace_room/Room";
 export class OccupancySnapshot {
   id: ID;
+  customerId:string | undefined;
+  roomid!:string;
   date: DateISO;
   totalSpace: number;
   OccupiendSpaces: number;
@@ -15,9 +17,12 @@ export class OccupancySnapshot {
     };
   };
   createdAt: DateISO;
-
+  // קשר: snapshot שייך לחדר אחד
+  room?: Room;
   constructor(
     id: ID,
+    customerId:string,
+    roomid:string,
     date: DateISO,
     totalSpace: number,
     OccupiendSpaces: number,
@@ -33,6 +38,8 @@ export class OccupancySnapshot {
     createdAt: DateISO
   ) {
     this.id = id;
+    this.customerId=customerId;
+    this.roomid=roomid;
     this.date = date;
     this.totalSpace = totalSpace;
     this.OccupiendSpaces = OccupiendSpaces;
@@ -45,6 +52,8 @@ export class OccupancySnapshot {
   toDatabaseFormat() {
     return {
       id: this.id,
+      customerId:this.customerId,
+      roomid:this.roomid,
       date: this.date,
       totalSpace: this.totalSpace,
       OccupiendSpaces: this.OccupiendSpaces,
