@@ -7,7 +7,7 @@ export const getAllLeads = async (): Promise<LeadModel[]> => {
     return []; // להחזיר מערך של לידים
 }
 
-export const getLeadById = async (id: string): Promise<LeadModel | null> => {
+export const getLeadById = async (id: string): Promise<LeadModel > => {
     // אמור לשלוף ליד לפי מזהה
     // להחזיר את הליד שנמצא או null אם לא נמצא
     return null;

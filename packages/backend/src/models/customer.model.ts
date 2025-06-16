@@ -1,9 +1,9 @@
-import { FileReference } from "../types/core";
-import { Contract, Customer, CustomerPeriod, CustomerStatus, PaymentMethod, WorkspaceType } from "../types/customer";
+import { DateISO, FileReference, ID } from "../types/core";
+import { Contract, Customer, CustomerPeriod, CustomerStatus, ExitReason, PaymentMethod, RecordExitNoticeRequest, WorkspaceType } from "../types/customer";
 
 
 export class CustomerModel implements Customer   {
-  id: string;
+  id?: ID;
   name: string;
   phone: string;
   email: string;
@@ -22,8 +22,8 @@ export class CustomerModel implements Customer   {
   paymentMethods: PaymentMethod[];
   periods: CustomerPeriod[];
   contracts: Contract[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: DateISO;
+  updatedAt: DateISO;
 
   constructor(
     id: string,
@@ -35,8 +35,8 @@ export class CustomerModel implements Customer   {
     businessType: string,
     status: CustomerStatus,
     workspaceCount: number,
-    createdAt: string,
-    updatedAt: string,
+    createdAt: DateISO,
+    updatedAt: DateISO,
     currentWorkspaceType?: WorkspaceType[],
     contractSignDate?: string,
     contractStartDate?: string,
@@ -71,12 +71,12 @@ export class CustomerModel implements Customer   {
     this.updatedAt = updatedAt;
   }
 
-  toDatabaseFormat() {
+  toDatabaseFormat?() {
     return {
       id: this.id,
       name: this.name,
-      phone: this.phone,
       email: this.email,
+      phone: this.phone,
       idNumber: this.idNumber,
       businessName: this.businessName,
       businessType: this.businessType,
@@ -88,92 +88,46 @@ export class CustomerModel implements Customer   {
       billingStartDate: this.billingStartDate,
       notes: this.notes,
       invoiceName: this.invoiceName,
-      contractDocuments: this.contractDocuments ? this.contractDocuments.map(doc => ({
-        id: doc.id,
-        name: doc.name,
-        path: doc.path,
-        mimeType: doc.mimeType,
-        size: doc.size,
-        url: doc.url,
-        googleDriveId: doc.googleDriveId,
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt
-      })) : [],
-      paymentMethods: this.paymentMethods.map(pm => ({
-        id: pm.id,
-        customerId: pm.customerId,
-        creditCardLast4: pm.creditCardLast4,
-        creditCardExpiry: pm.creditCardExpiry,
-        creditCardHolderIdNumber: pm.creditCardHolderIdNumber,
-        creditCardHolderPhone: pm.creditCardHolderPhone,
-        isActive: pm.isActive,
-        createdAt: pm.createdAt,
-        updatedAt: pm.updatedAt
-      })),
-      periods: this.periods.map(period => ({
-        id: period.id,
-        customerId: period.customerId,
-        entryDate: period.entryDate,
-        exitDate: period.exitDate,
-        exitNoticeDate: period.exitNoticeDate,
-        exitReason: period.exitReason,
-        exitReasonDetails: period.exitReasonDetails,
-        createdAt: period.createdAt,
-        updatedAt: period.updatedAt
-      })),
-      contracts: this.contracts.map(contract => ({
-        id: contract.id,
-        customerId: contract.customerId,
-        version: contract.version,
-        status: contract.status,
-        startDate: contract.startDate,
-        signDate: contract.signDate,
-        endDate: contract.endDate,
-        terms: contract.terms ? {
-          workspaceType: contract.terms.workspaceType,
-          workspaceCount: contract.terms.workspaceCount,
-          monthlyRate: contract.terms.monthlyRate,
-          duration: contract.terms.duration,
-          renewalTerms: contract.terms.renewalTerms,
-          terminationNotice: contract.terms.terminationNotice,
-          specialConditions: contract.terms.specialConditions
-        } : undefined,
-        documents: contract.documents ? contract.documents.map(doc => ({
-          id: doc.id,
-          name: doc.name,
-          path: doc.path,
-          mimeType: doc.mimeType,
-          size: doc.size,
-          url: doc.url,
-          googleDriveId: doc.googleDriveId,
-          createdAt: doc.createdAt,
-          updatedAt: doc.updatedAt
-        })) : [],
-        modifications: contract.modifications ? contract.modifications.map(mod => ({
-          id: mod.id,
-          date: mod.date,
-          description: mod.description,
-          modifiedByUserId: mod.modifiedByUserId,
-          approvedByUserId: mod.approvedByUserId,
-          documentChanges: mod.documentChanges ? mod.documentChanges.map(doc => ({
-            id: doc.id,
-            name: doc.name,
-            path: doc.path,
-            mimeType: doc.mimeType,
-            size: doc.size,
-            url: doc.url,
-            googleDriveId: doc.googleDriveId,
-            createdAt: doc.createdAt,
-            updatedAt: doc.updatedAt
-          })) : []
-        })) : [],
-        signedBy: contract.signedBy,
-        witnessedBy: contract.witnessedBy,
-        createdAt: contract.createdAt,
-        updatedAt: contract.updatedAt
-      })),
+      contractDocuments: this.contractDocuments,
+      paymentMethods: this.paymentMethods,
+      periods: this.periods,
+      contracts: this.contracts,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     };
   }
+}
+
+export class exit_noticesModel implements RecordExitNoticeRequest {
+
+  customerId: ID;
+  exitNoticeDate: string;
+  plannedExitDate: string;
+  exitReason: ExitReason;
+  exitReasonDetails?: string | undefined;
+
+    constructor(data: {
+    customerId: ID;
+    exitNoticeDate: string;
+    plannedExitDate: string;
+    exitReason: ExitReason;
+    exitReasonDetails?: string;
+  }) {
+    this.customerId = data.customerId;
+    this.exitNoticeDate = data.exitNoticeDate;
+    this.plannedExitDate = data.plannedExitDate;
+    this.exitReason = data.exitReason;
+    this.exitReasonDetails = data.exitReasonDetails;
+  }
+
+  toDatabaseFormat() {
+    return {
+      customer_id: this.customerId,
+      exit_notice_date: this.exitNoticeDate,
+      planned_exit_date: this.plannedExitDate,
+      exit_reason: this.exitReason,
+      exit_reason_details: this.exitReasonDetails ?? null,
+    };
+  }
+  
 }

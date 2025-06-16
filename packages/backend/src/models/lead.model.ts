@@ -3,7 +3,9 @@ import { WorkspaceType } from '../types/customer';
 import { Lead, LeadInteraction } from '../types/lead';
 
 export class LeadModel implements Lead {
-  id: string;
+  
+  id?: ID;
+  idNumber: ID;
   name: string;
   phone: string;
   email: string;
@@ -19,7 +21,8 @@ export class LeadModel implements Lead {
   updatedAt: string;
 
     constructor( 
-    id: string,
+    id: ID,
+    idNumber: ID,
     name: string,
     phone: string,
     email: string,
@@ -35,6 +38,7 @@ export class LeadModel implements Lead {
     updatedAt: string
   ) {
     this.id = id;
+    this.idNumber = idNumber;
     this.name = name;
     this.phone = phone;
     this.email = email;
@@ -53,6 +57,7 @@ export class LeadModel implements Lead {
   toDatabaseFormat() {
     return {
       id: this.id,
+      idNumber: this.idNumber,
       name: this.name,
       phone: this.phone,
       email: this.email,
