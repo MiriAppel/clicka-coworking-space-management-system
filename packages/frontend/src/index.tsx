@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
 import { BrowserRouter, Router } from 'react-router-dom';
 import { routing } from './routing';
+
 
 
 const root = ReactDOM.createRoot(
@@ -12,10 +14,12 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+
   <BrowserRouter>
     {routing()}
   </BrowserRouter>
  </React.StrictMode>
+
 );
 
 // If you want to start measuring performance in your app, pass a function

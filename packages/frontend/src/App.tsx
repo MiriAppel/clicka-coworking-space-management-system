@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,6 +11,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   //////
   const navigate = useNavigate();
+
 
 
 
@@ -36,6 +38,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+<<<<<<< HEAD
         <h3>welcome to our world</h3>
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
@@ -45,6 +48,27 @@ function App() {
         <Button variant="outlined" onClick={() => { navigate('/workspaceMap') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Workspace</Button>
         <Button variant="outlined" onClick={() => { navigate('/billing') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Billing</Button>
       </div>
+=======
+        <h1>Chabad Tefen Tefillin Project</h1>
+        <div className="api-status">
+          <h2>API Connection Status</h2>
+          {loading ? (
+            <p>Checking API connection...</p>
+          ) : error ? (
+            <div className="error-message">
+              <p>{error}</p>
+              <p>Please start the backend server and refresh this page.</p>
+            </div>
+          ) : (
+            <div className="success-message">
+              <p>✅ Connected to API</p>
+              <p>Status: {healthStatus?.status}</p>
+              <p>Last checked: {new Date(healthStatus?.timestamp || '').toLocaleString()}</p>
+            </div>
+          )}
+        </div>
+      </header>
+>>>>>>> workspacebranch
     </div>
   );
 }
