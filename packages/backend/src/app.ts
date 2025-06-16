@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
+import cookieParser from "cookie-parser";
 
 // Create Express app
 const app = express();
@@ -12,6 +13,7 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(json());
+app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 
 // Health check endpoint

@@ -1,9 +1,9 @@
 // report-types.d.ts
 
-import { ApiResponse, DateRangeFilter } from './core-types';
-import { WorkspaceType } from './customer-types';
-import { ExpenseCategory } from './expense-types';
-import { BillingItemType } from './billing-types';
+import { ApiResponse, DateRangeFilter } from './core';
+import { WorkspaceType } from './customer';
+import { ExpenseCategory } from './expense';
+import { BillingItemType } from './billing';
 
 // Time period enum
 export enum TimePeriod {
