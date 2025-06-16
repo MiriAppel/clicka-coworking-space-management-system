@@ -4,8 +4,8 @@ import { Lead, LeadInteraction } from '../types/lead';
 
 export class LeadModel implements Lead {
   
-  id?: ID;
-  idNumber: ID;
+  id: ID; // PK
+  idNumber: ID; // FK
   name: string;
   phone: string;
   email: string;
@@ -16,7 +16,7 @@ export class LeadModel implements Lead {
   contactDate?: string | undefined;
   followUpDate?: string | undefined;
   notes?: string | undefined;
-  interactions: LeadInteraction[];
+  interactions: LeadInteraction[]; // כל אינטראקציה שייכת לליד אחד, אבל ליד יכול להכיל הרבה אינטראקציות (שיחות, תזכורות, ביקורים וכו׳).
   createdAt: string;
   updatedAt: string;
 

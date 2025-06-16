@@ -2,12 +2,13 @@ import { ID, DateISO } from '../types/core';
 import { LeadInteraction } from '../types/lead';
 
 export class LeadInteractionModel implements LeadInteraction {
-  id: ID;
-  leadId: ID;
+
+  id: ID; // PK
+  leadId: ID; // FK
   type: InteractionType;
   date: DateISO;
   notes: string;
-  userId: ID;
+  userId: ID; 
   userEmail: string;
   createdAt: DateISO;
   updatedAt: DateISO;

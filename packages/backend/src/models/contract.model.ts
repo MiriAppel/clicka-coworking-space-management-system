@@ -1,11 +1,12 @@
 import path from "path";
-import { DateISO, FileReference } from "../types/core";
+import { DateISO, FileReference, ID } from "../types/core";
 import { Contract, ContractModification, ContractStatus, ContractTerms, WorkspaceType } from "../types/customer";
 
 
 export class ContractModel implements Contract {
-  id?: string;
-  customerId: string;
+  
+  id: ID; // PK
+  customerId: ID; // FK.  כל חוזה שייך ללקוח אחד בלבד. אבל ללקוח יכולים להיות כמה חוזים לאורך זמן – למשל, הוא חתם שוב אחרי שנה, או שינה תנאים.
   version: number;
   status: ContractStatus;
   signDate?: string;
@@ -20,8 +21,8 @@ export class ContractModel implements Contract {
   updatedAt: DateISO;
 
   constructor(
-    id: string,
-    customerId: string,
+    id: ID,
+    customerId: ID,
     version: number,
     status: ContractStatus,
     startDate: string,

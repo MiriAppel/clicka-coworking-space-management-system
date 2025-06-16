@@ -4,15 +4,15 @@ import { Contract, Customer, CustomerPeriod, CustomerStatus, ExitReason, Payment
 
 
 export class CustomerModel implements Customer   {
-  id?: ID;
+  id: ID; //PK
   name: string;
   phone: string;
   email: string;
-  idNumber: string;
+  idNumber: string; //identity card
   businessName: string;
   businessType: string;
   status: CustomerStatus;
-  currentWorkspaceType?: WorkspaceType[];
+  currentWorkspaceType?: WorkspaceType;
   workspaceCount: number;
   contractSignDate?: string;
   contractStartDate?: string;
@@ -20,10 +20,10 @@ export class CustomerModel implements Customer   {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-  paymentMethods: PaymentMethod[];
+  paymentMethods: PaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
   paymentMethodsType?: PaymentMethodType;    
   periods: CustomerPeriod[];
-  contracts: Contract[];
+  contracts: Contract[];  // One customer can have several contracts. 1:N
   createdAt: DateISO;
   updatedAt: DateISO;
 
@@ -39,7 +39,7 @@ export class CustomerModel implements Customer   {
     workspaceCount: number,
     createdAt: DateISO,
     updatedAt: DateISO,
-    currentWorkspaceType?: WorkspaceType[],
+    currentWorkspaceType?: WorkspaceType,
     contractSignDate?: string,
     contractStartDate?: string,
     billingStartDate?: string,
@@ -101,38 +101,4 @@ export class CustomerModel implements Customer   {
       updatedAt: this.updatedAt
     };
   }
-}
-
-export class exit_noticesModel implements RecordExitNoticeRequest {
-
-  customerId: ID;
-  exitNoticeDate: string;
-  plannedExitDate: string;
-  exitReason: ExitReason;
-  exitReasonDetails?: string | undefined;
-
-    constructor(data: {
-    customerId: ID;
-    exitNoticeDate: string;
-    plannedExitDate: string;
-    exitReason: ExitReason;
-    exitReasonDetails?: string;
-  }) {
-    this.customerId = data.customerId;
-    this.exitNoticeDate = data.exitNoticeDate;
-    this.plannedExitDate = data.plannedExitDate;
-    this.exitReason = data.exitReason;
-    this.exitReasonDetails = data.exitReasonDetails;
-  }
-
-  toDatabaseFormat() {
-    return {
-      customer_id: this.customerId,
-      exit_notice_date: this.exitNoticeDate,
-      planned_exit_date: this.plannedExitDate,
-      exit_reason: this.exitReason,
-      exit_reason_details: this.exitReasonDetails ?? null,
-    };
-  }
-  
 }

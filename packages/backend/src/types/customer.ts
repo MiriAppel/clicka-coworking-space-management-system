@@ -104,10 +104,10 @@ export interface ContractTerms {
 export interface PaymentMethod {
   id: ID;
   customerId: ID;
-  creditCardLast4: string;
-  creditCardExpiry: string;
-  creditCardHolderIdNumber: string;
-  creditCardHolderPhone: string;
+  creditCardLast4?: string;
+  creditCardExpiry?: string;
+  creditCardHolderIdNumber?: string;
+  creditCardHolderPhone?: string;
   isActive: boolean;
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -123,7 +123,7 @@ export interface Customer {
   businessName: string;
   businessType: string;
   status: CustomerStatus;
-  currentWorkspaceType?: WorkspaceType[];
+  currentWorkspaceType?: WorkspaceType;
   workspaceCount: number;
   contractSignDate?: DateISO;
   contractStartDate?: DateISO;
@@ -144,7 +144,6 @@ export interface CreateCustomerRequest {
   phone: string;
   email: string;
   idNumber: string;
-  businessName: string;
   businessType: string;
   workspaceType: WorkspaceType;
   workspaceCount: number;
@@ -152,7 +151,6 @@ export interface CreateCustomerRequest {
   contractStartDate: DateISO;
   billingStartDate: DateISO;
   notes?: string;
-  invoiceName?: string;
   paymentMethod?: {
     creditCardLast4?: string;
     creditCardExpiry?: string;
@@ -187,7 +185,6 @@ export interface GetCustomersRequest {
 
 // Record exit notice request
 export interface RecordExitNoticeRequest {
-  customerId: ID;
   exitNoticeDate: DateISO;
   plannedExitDate: DateISO;
   exitReason: ExitReason;
@@ -225,7 +222,7 @@ export interface ExtendCustomerContractRequest {
 // Convert lead to customer request
 export interface ConvertLeadToCustomerRequest {
   leadId: ID;
-  workspaceType: WorkspaceType[];
+  workspaceType: WorkspaceType;
   businessName: string;
   invoiceName: string;
   workspaceCount: number;
@@ -234,61 +231,47 @@ export interface ConvertLeadToCustomerRequest {
   billingStartDate: DateISO;
   notes?: string;
   paymentMethod?: {
-  id: ID;
-  customerId: ID;
-  creditCardLast4: string;
-  creditCardExpiry: string;
-  creditCardHolderIdNumber: string;
-  creditCardHolderPhone: string;
-  isActive: boolean;
-  createdAt: DateISO;
-  updatedAt: DateISO;
+    creditCardLast4?: string;
+    creditCardExpiry?: string;
+    creditCardHolderIdNumber?: string;
+    creditCardHolderPhone?: string;
   };
   contractDocuments?: FileReference[];
 }
 
-export interface SavedSearch {
-    id: ID;
-    name: string;
-    userId: ID;
-    searchRequest: CustomerSearchRequest;
-    isPublic: boolean; // Whether the saved search is public or private
-    createdAt: DateISO;
-    updatedAt: DateISO;
-}
+// export interface SavedSearch {
+//     id: ID;
+//     name: string;
+//     userId: ID;
+//     searchRequest: CustomerSearchRequest;
+//     isPublic: boolean; // Whether the saved search is public or private
+//     createdAt: DateISO;
+//     updatedAt: DateISO;
+// }
 
-export interface CustomerSearchRequest {
-    query?: string; // Full-text search query
-    filters?: CustomerFilter[]; // Array of filters
-    sortBy?: string; // Field to sort by
-    sortDirection?: 'asc' | 'desc'; // Sort direction
-    page?: number; // Current page number for pagination
-    limit?: number; // Number of items per page
-}
+// export interface CustomerSearchRequest {
+//     query?: string; // Full-text search query
+//     filters?: CustomerFilter[]; // Array of filters
+//     sortBy?: string; // Field to sort by
+//     sortDirection?: 'asc' | 'desc'; // Sort direction
+//     page?: number; // Current page number for pagination
+//     limit?: number; // Number of items per page
+// }
 
-export interface CustomerFilter {
-    field: keyof Customer; // Keyof Customer interface to ensure valid field names
-    operator: 'equals' | 'contains' | 'startsWith' | 'greaterThan' | 'lessThan' | 'between' | 'in';
-    value?: any; // Value for single-value operators
-    values?: any[]; // Values for 'in' operator
-}
+// export interface CustomerFilter {
+//     field: keyof Customer; // Keyof Customer interface to ensure valid field names
+//     operator: 'equals' | 'contains' | 'startsWith' | 'greaterThan' | 'lessThan' | 'between' | 'in';
+//     value?: any; // Value for single-value operators
+//     values?: any[]; // Values for 'in' operator
+// }
 
-export interface CustomerTimeline {
-    customerId: ID;
-    events: TimelineEvent[];
-    totalEvents: number; // For pagination, total count of events
-    dateRange?: DateRangeFilter; // Applied date range filter
-}
-export interface TimelineEvent {
-  id?: ID;//זה אופצניולי כי זה צריך ליצור לבד בdb
-  type: TimelineEventType;
-  date: string; // ISO date string
-  title: string; // כותרת קצרה לאירוע
-  description?: string; // תיאור מפורט יותר (אופציונלי)
-  relatedId?: string; // קישור לאובייקט (למשל leadId, contractId)
-}
+// export interface CustomerTimeline {
+//     customerId: ID;
+//     totalEvents: number; // For pagination, total count of events
+//     dateRange?: DateRangeFilter; // Applied date range filter
+// }
 
-export interface DateRangeFilter {
-    startDate?: DateISO;
-    endDate?: DateISO;
-}
+// export interface DateRangeFilter {
+//     startDate?: DateISO;
+//     endDate?: DateISO;
+// }

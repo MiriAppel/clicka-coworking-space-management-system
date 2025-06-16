@@ -1,10 +1,11 @@
+import { ID } from "../types/core";
 import { CustomerPeriod, ExitReason } from "../types/customer";
 
 
 export class CustomerPeriodModel implements CustomerPeriod {
 
-  id: string;
-  customerId: string;
+  id: ID; // PK
+  customerId: ID; // FK. לקוח יכול להיות פעיל בכמה תקופות שונות (לדוגמה: עזב וחזר), לכן יש טבלת תקופות נפרדת.
   entryDate: string;
   exitDate?: string;
   exitNoticeDate?: string;
@@ -14,8 +15,8 @@ export class CustomerPeriodModel implements CustomerPeriod {
   updatedAt: string;
 
   constructor(
-    id: string,
-    customerId: string,
+    id: ID,
+    customerId: ID,
     entryDate: string,
     createdAt: string,
     updatedAt: string,
