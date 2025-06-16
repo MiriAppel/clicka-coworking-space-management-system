@@ -1,3 +1,4 @@
+import { PaymentMethodType } from "../types/billing";
 import { DateISO, FileReference, ID } from "../types/core";
 import { Contract, Customer, CustomerPeriod, CustomerStatus, ExitReason, PaymentMethod, RecordExitNoticeRequest, WorkspaceType } from "../types/customer";
 
@@ -20,6 +21,7 @@ export class CustomerModel implements Customer   {
   invoiceName?: string;
   contractDocuments?: FileReference[];
   paymentMethods: PaymentMethod[];
+  paymentMethodsType?: PaymentMethodType;    
   periods: CustomerPeriod[];
   contracts: Contract[];
   createdAt: DateISO;
@@ -45,6 +47,7 @@ export class CustomerModel implements Customer   {
     invoiceName?: string,
     contractDocuments?: FileReference[],
     paymentMethods: PaymentMethod[] = [],
+    paymentMethodsType?: PaymentMethodType,
     periods: CustomerPeriod[] = [],
     contracts: Contract[] = []
   ) {
@@ -65,6 +68,7 @@ export class CustomerModel implements Customer   {
     this.invoiceName = invoiceName;
     this.contractDocuments = contractDocuments;
     this.paymentMethods = paymentMethods;
+    this.paymentMethodsType = paymentMethodsType;
     this.periods = periods;
     this.contracts = contracts;
     this.createdAt = createdAt;
@@ -90,6 +94,7 @@ export class CustomerModel implements Customer   {
       invoiceName: this.invoiceName,
       contractDocuments: this.contractDocuments,
       paymentMethods: this.paymentMethods,
+      paymentMethodsType: this.paymentMethodsType,
       periods: this.periods,
       contracts: this.contracts,
       createdAt: this.createdAt,

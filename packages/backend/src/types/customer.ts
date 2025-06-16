@@ -1,5 +1,6 @@
 // customer-types.d.ts
 
+import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
 export enum TimelineEventType {
@@ -131,6 +132,7 @@ export interface Customer {
   invoiceName?: string;
   contractDocuments?: FileReference[];
   paymentMethods: PaymentMethod[];
+  paymentMethodsType?: PaymentMethodType;
   periods: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
