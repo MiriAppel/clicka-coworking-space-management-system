@@ -1,7 +1,12 @@
 import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "../types/core";
-import { CustomerModel, TimelineEventModel } from "../models/customer.model";
-import{AddContractDocumentRequest, Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerFilter, CustomerStatus, CustomerTimeline, GetCustomersRequest, RecordExitNoticeRequest, TimelineEvent, UpdateCustomerRequest} from '../types/customer'
+import { CustomerModel, exit_noticesModel } from "../models/customer.model";
+import{AddContractDocumentRequest, Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerFilter, CustomerStatus, CustomerTimeline, ExitReason, GetCustomersRequest, RecordExitNoticeRequest, TimelineEvent, TimelineEventType, UpdateCustomerRequest, CustomerPeriod} from '../types/customer'
 import { supabase } from "../db/supabaseClient";
+import { error } from "console";
+import { randomBytes, randomInt } from "crypto";
+import { LeadModel } from "../models/lead.model";
+import { getLeadById } from "./lead.service";
+
 
 export const getAllCustomers = async (): Promise<CustomerModel[]> => {
 
@@ -58,7 +63,7 @@ export const getCustomerByName = async (name:string):Promise<GetCustomersRequest
 
     if (!data) {
         console.warn(`No customer found with name: ${name}`);
-        return null; 
+        return null;
     }
 
     return data as GetCustomersRequest[];
@@ -148,31 +153,152 @@ export const getByDateJoin= async (dateFrom:Date, dateEnd:Date):Promise<GetCusto
 }
 
 export const getStatusChanges = async (id:ID):Promise<CustomerStatus[]|null>=>{
-    //מחזיר את הסטוריית הסטטוסים של משתמש לפי ID
-    return null;
-}
-export const getAllStatus = async () : Promise<CustomerStatus[]|null>=>{
-    //קבלת מצבי סטטוס אפשריים
-    return null;
-}
-export const getCustomersToNotify=async(id:ID):Promise<GetCustomersRequest[]|null>=>{
-    //מחזיר את כל הלקוחות שיש לעדכן אותם על שינוי בסטטוס שלהם
-    return null;
+   
+    const customer: GetCustomersRequest | null = await getCustomerById(id);
+
+    if (customer && customer.status) {
+        const statuses: CustomerStatus[] = customer.status;
+        return statuses;
+    } else {
+        console.warn(`No status changes found for customer with ID: ${id}`);
+        return null; 
+    }
 }
 
-export const putCustomer = async (id:ID):Promise<void>=>{
-//עדכון פרטי לקוח
+export const getAllStatus = async (): Promise<CustomerStatus[]|null> => {
+
+    return Object.values(CustomerStatus) as CustomerStatus[];
+}
+
+export const getCustomersToNotify = async(id: ID): Promise<GetCustomersRequest[] | null> => {
+
+    return [];
+}
+
+export const putCustomer = async (id: ID, customerToUpdate: CustomerModel): Promise<void>=>{
+
+    const { data, error } = await supabase
+        .from('customer')
+        .update(customerToUpdate)
+        .eq('id',id)
+
+    if (error) {
+        console.error('Error updating customer:', error);
+        throw new Error('Failed to update customer');
+    }
+
+}
+
+export const getExitReasonDisplay = async (reason: ExitReason): Promise<string> => {
+
+    switch (reason) {
+        case ExitReason.RELOCATION: return "מעבר דירה";
+        case ExitReason.BUSINESS_CLOSED: return "סגירת עסק";
+        case ExitReason.PRICE: return "מחיר";
+        case ExitReason.WORK_FROM_HOME: return "עבודה מהבית";
+        case ExitReason.SPACE_NEEDS: return "צרכי חלל";
+        case ExitReason.DISSATISFACTION: return "חוסר שביעות רצון";
+        case ExitReason.OTHER: return "אחר";
+        default: return reason;
+    }
+}
+
+export const postExitNotice = async (exitNotice: RecordExitNoticeRequest): Promise<void> => {
+
+   //עדכון הסטטוס 
+   patchStatus(exitNotice.customerId, CustomerStatus.NOTICE_GIVEN);
+
+   const { data, error } = await supabase
+        .from('exit_noticesModel')
+        .insert(exitNotice)
+
+    if (error) {
+        console.error('Insert failed:', error);
+    } else {
+        console.log('Insert successful:', data);
+    }
+
+    const timeline: TimelineEvent = {
+
+        type: TimelineEventType.STATUS_CHANGE,
+        date: exitNotice.exitNoticeDate,
+        title: `הודעת עזיבה התקבלה (${getExitReasonDisplay(exitNotice.exitReason)})`, // כותרת יותר אינפורמטיבית
+        description: `תאריך הודעה: ${exitNotice.exitNoticeDate}, תאריך עזיבה מתוכנן: ${exitNotice.plannedExitDate}` +
+                 (exitNotice.exitReasonDetails ? ` - פרטים נוספים: ${exitNotice.exitReasonDetails}` : ''),   
+        relatedId: exitNotice.customerId
+
+    };
+
+    await addTimelineEvent(timeline);
+
+    //ליצור התראה שהלקוח עוזה - קשור לקבוצה 1
+
+    // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
+    // קשור לקבוצת billing
+
 }
 
 
-export const postExitNotice = async (exitNotice:RecordExitNoticeRequest):Promise<void>=>{
-    //הודעת עזיבה
-}
-export const convertLeadToCustomer =async(newCustomer:ConvertLeadToCustomerRequest):Promise<CustomerModel|null>=>{
-    //קריאה לפונקציה getLeadById
-    //המרה של ליד ללקוח
-    //אין אפשרות של החזרת NULL זה רק בשביל החתימה
-    return null;
+export const convertLeadToCustomer =async(newCustomer: ConvertLeadToCustomerRequest): Promise<CustomerModel> => {
+
+    const lead: LeadModel = await getLeadById(newCustomer.leadId);
+
+    // המרה של ליד ללקוח
+    const customerData: CustomerModel = {
+        name: lead.name,
+        email: lead?.email,
+        phone: lead?.phone,
+        idNumber: lead?.idNumber,
+        businessName: newCustomer.businessName,
+        businessType: lead?.businessType,
+        status: CustomerStatus.ACTIVE,
+        currentWorkspaceType: newCustomer.workspaceType,
+        workspaceCount: newCustomer.workspaceCount,
+        contractSignDate: newCustomer.contractSignDate,
+        contractStartDate: newCustomer.contractStartDate,
+        billingStartDate: newCustomer.billingStartDate,
+        notes: newCustomer.notes,
+        invoiceName: newCustomer.invoiceName,
+        contractDocuments: newCustomer.contractDocuments,
+        paymentMethods: newCustomer.paymentMethod ? [newCustomer.paymentMethod] : [],
+        periods: [],
+        contracts: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+
+    //לפני היצירה יש לבדוק שהחלל באמת פנוי צריך לפנות לקבוצה 3
+
+    // יצירת לקוח במסד הנתונים
+    const { data, error } = await supabase
+        .from('customers')
+        .insert([customerData])
+        .single();
+
+    if (error) {
+        console.error('Error converting lead to customer:', error);
+        throw new Error('Failed to convert lead to customer');
+    }
+
+    //יש להעביר את פרטי הלקוח והחוזה למערכת החיוב (של Team 4 - Billing) לצורך חישוב תמחור והכנת חיובים ראשוניים.
+
+    // קריאה לשירותי התראות/מייל מתאימים לאחר המרה מוצלחת קשור לקבוצה 1
+
+    // עדכון סטטוס הליד ל-CONVERTED
+    await updateLeadStatus(lead.id, 'CONVERTED');
+
+    const timeline: TimelineEvent = {
+
+        type: TimelineEventType.CONVERSION,
+        date: new Date().toISOString(),
+        title: 'ליד הומר ללקוח',
+        description: `ליד ${lead.id} הומר ללקוח חדש ${customerData.id}.`,
+        relatedId: lead.id
+    };
+
+    await addTimelineEvent(timeline);
+
+    return data as CustomerModel;
 }
 export const postContractDocument=async (document:AddContractDocumentRequest):Promise<void>=>{
     //הוספת מסמך לחוזה
@@ -188,7 +314,7 @@ export const exportToFile = async(req:GetCustomersRequest) :Promise<Buffer|null>
     //ייצוא תוצאות חיפוש לקובץ
     return null;
 }
-export const patchStatus = async(id:ID):Promise<void>=>{
+export const patchStatus = async(id:ID, statusToUpdate: CustomerStatus):Promise<void>=>{
     //עדכון הסטטוס
 }
 export const patchCustomer=async(id:ID, data: UpdateCustomerRequest):Promise<void>=>{
@@ -300,4 +426,9 @@ export const exportTimeline = async (customerId: ID, filters?:CustomerFilter ): 
 
 }
 
+
+
+function updateLeadStatus(id: string | undefined, arg1: string) {
+    throw new Error("Function not implemented.");
+}
 

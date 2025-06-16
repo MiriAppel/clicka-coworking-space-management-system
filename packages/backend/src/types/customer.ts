@@ -103,10 +103,10 @@ export interface ContractTerms {
 export interface PaymentMethod {
   id: ID;
   customerId: ID;
-  creditCardLast4?: string;
-  creditCardExpiry?: string;
-  creditCardHolderIdNumber?: string;
-  creditCardHolderPhone?: string;
+  creditCardLast4: string;
+  creditCardExpiry: string;
+  creditCardHolderIdNumber: string;
+  creditCardHolderPhone: string;
   isActive: boolean;
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -114,14 +114,14 @@ export interface PaymentMethod {
 
 // Customer model
 export interface Customer {
-  id: ID;
+  id?: ID;
   name: string;
   phone: string;
   email: string;
   idNumber: string;
   businessName: string;
   businessType: string;
-  status: CustomerStatus[];
+  status: CustomerStatus;
   currentWorkspaceType?: WorkspaceType[];
   workspaceCount: number;
   contractSignDate?: DateISO;
@@ -185,6 +185,7 @@ export interface GetCustomersRequest {
 
 // Record exit notice request
 export interface RecordExitNoticeRequest {
+  customerId: ID;
   exitNoticeDate: DateISO;
   plannedExitDate: DateISO;
   exitReason: ExitReason;
@@ -222,17 +223,24 @@ export interface ExtendCustomerContractRequest {
 // Convert lead to customer request
 export interface ConvertLeadToCustomerRequest {
   leadId: ID;
-  workspaceType: WorkspaceType;
+  workspaceType: WorkspaceType[];
+  businessName: string;
+  invoiceName: string;
   workspaceCount: number;
   contractSignDate: DateISO;
   contractStartDate: DateISO;
   billingStartDate: DateISO;
   notes?: string;
   paymentMethod?: {
-    creditCardLast4?: string;
-    creditCardExpiry?: string;
-    creditCardHolderIdNumber?: string;
-    creditCardHolderPhone?: string;
+  id: ID;
+  customerId: ID;
+  creditCardLast4: string;
+  creditCardExpiry: string;
+  creditCardHolderIdNumber: string;
+  creditCardHolderPhone: string;
+  isActive: boolean;
+  createdAt: DateISO;
+  updatedAt: DateISO;
   };
   contractDocuments?: FileReference[];
 }
@@ -270,7 +278,7 @@ export interface CustomerTimeline {
     dateRange?: DateRangeFilter; // Applied date range filter
 }
 export interface TimelineEvent {
-  id: ID;
+  id?: ID;//זה אופצניולי כי זה צריך ליצור לבד בdb
   type: TimelineEventType;
   date: string; // ISO date string
   title: string; // כותרת קצרה לאירוע
