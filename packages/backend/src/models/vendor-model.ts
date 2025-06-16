@@ -1,17 +1,18 @@
 import { ID, DateISO, FileReference } from '../types/core';
-import { Vendor, PaymentMethod, VendorCategory, VendorStatus } from '../types/expense';
+import { Vendor, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms } from '../types/expense';
 
 export class VendorModel implements Vendor {
   id: ID;
   name: string;
-  contactName?: string;
+  contact_name?: string;
   phone?: string;
   email?: string;
   address?: string;
   website?: string;
-  taxId?: string;
-  paymentTerms?: string;
-  preferredPaymentMethod?: PaymentMethod;
+  tax_id?: string;
+  //הוספת enum סוג התשלום שהספק דורש
+  payment_terms?: PaymentTerms;
+  preferred_payment_method?: PaymentMethod;
   category?: VendorCategory;
   status?: VendorStatus;
   notes?: string;
@@ -24,14 +25,14 @@ export class VendorModel implements Vendor {
     name: string;
     createdAt: DateISO;
     updatedAt: DateISO;
-    contactName?: string;
+    contact_name?: string;
     phone?: string;
     email?: string;
     address?: string;
     website?: string;
-    taxId?: string;
-    paymentTerms?: string;
-    preferredPaymentMethod?: PaymentMethod;
+    tax_id?: string;
+    payment_terms?: PaymentTerms;
+    preferred_payment_method?: PaymentMethod;
     category?: VendorCategory;
     status?: VendorStatus;
     notes?: string;
@@ -39,14 +40,14 @@ export class VendorModel implements Vendor {
   }) {
     this.id = params.id;
     this.name = params.name;
-    this.contactName = params.contactName;
+    this.contact_name = params.contact_name;
     this.phone = params.phone;
     this.email = params.email;
     this.address = params.address;
     this.website = params.website;
-    this.taxId = params.taxId;
-    this.paymentTerms = params.paymentTerms;
-    this.preferredPaymentMethod = params.preferredPaymentMethod;
+    this.tax_id = params.tax_id;
+    this.payment_terms = params.payment_terms;
+    this.preferred_payment_method = params.preferred_payment_method;
     this.category = params.category;
     this.status = params.status;
     this.notes = params.notes;
@@ -59,14 +60,14 @@ export class VendorModel implements Vendor {
     return {
       id: this.id,
       name: this.name,
-      contactName: this.contactName,
+      contact_name: this.contact_name,
       phone: this.phone,
       email: this.email,
       address: this.address,
       website: this.website,
-      taxId: this.taxId,
-      paymentTerms: this.paymentTerms,
-      preferredPaymentMethod: this.preferredPaymentMethod,
+      tax_id: this.tax_id,
+      payment_terms: this.payment_terms,
+      preferred_payment_method: this.preferred_payment_method,
       category: this.category,
       status: this.status,
       notes: this.notes,

@@ -48,22 +48,8 @@ function createPricingTierWithHistory(request: PricingTierCreateRequest, created
   // כאן אפשר להוסיף לוגיקה של ביטול שכבה קיימת:
   // למשל: deactivateOldPricingTier(request.workspaceType);
 
-  // יצירת רשומת התמחור החדשה
-  const pricingTier: PricingTier = {
-    id: generateId(),
-    workspaceType: request.workspaceType,
-    year1Price: request.year1Price,
-    year2Price: request.year2Price,
-    year3Price: request.year3Price,
-    year4Price: request.year4Price,
-    effectiveDate: request.effectiveDate,
-    active: true,
-    createdBy: createdBy,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-
-  return pricingTier;
+  // שלב 3: יצירה בפועל באמצעות הפונקציה הקיימת
+  return createPricingTier(request, createdBy);
 }
 /**
  * מחזירה את כל היסטוריית התמחור עבור סוג סביבת עבודה מסוים,
@@ -175,7 +161,7 @@ function updatePricingTier(id: ID, update: Partial<PricingTier>, updatedBy: ID):
  * @param updatedBy - מזהה המשתמש שמבצע את הפעולה
  * @returns רשומת תמחור לא פעילה לשמירה במסד הנתונים
  */
-function deactivatePricingTier(tier: PricingTier, updatedBy: ID): PricingTier {
+function deletePricingTier(tier: PricingTier, updatedBy: ID): PricingTier {
   // בדיקה שהתקבלה רשומת תמחור תקינה
   // בדיקה שהתקבל מזהה משתמש תקין
   // יוצרת עותק חדש מהרשומה, שבו מסמנים את הרשומה כלא פעילה

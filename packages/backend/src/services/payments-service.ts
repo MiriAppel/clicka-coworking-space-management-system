@@ -1,5 +1,5 @@
 export class PaymentService {
-  recordPayment(request: PaymentRecordRequest, recordedBy: ID): Payment {
+ updatePayment(request: PaymentRecordRequest, recordedBy: ID): Payment {
     // אימות מזהה לקוח (נניח שמבוצע ברמת שירות או קריאה חיצונית)
     // אימות חשבונית אם צורפה
     // יצירת אובייקט תשלום חדש

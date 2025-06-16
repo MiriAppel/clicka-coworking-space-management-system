@@ -44,14 +44,14 @@ export enum ExpensePaymentMethod {
 export interface Vendor {
   id: ID;
   name: string;
-  contactName?: string;
+  contact_name?: string;
   phone?: string;
   email?: string;
   address?: string;
   website?: string;
-  taxId?: string;
-  paymentTerms?: string;
-  preferredPaymentMethod?: PaymentMethod;
+  tax_id?: string;
+  payment_terms?: string;
+  preferred_payment_method?: PaymentMethod;
   category?: VendorCategory;
   status?: VendorStatus;
   notes?: string;
@@ -63,21 +63,21 @@ export interface Vendor {
 // Expense model
 export interface Expense {
   id: ID;
-  vendorId: ID;
-  vendorName: string;
+  vendor_id: ID;
+  vendor_name: string;
   category: ExpenseCategory;
   description: string;
   amount: number;
   tax?: number;
   date: DateISO;
-  dueDate?: DateISO;
-  paidDate?: DateISO;
+  due_date?: DateISO;
+  paid_date?: DateISO;
   status: ExpenseStatus;
-  paymentMethod?: ExpensePaymentMethod;
+  payment_method?: ExpensePaymentMethod;
   reference?: string;
-  invoiceNumber?: string;
-  invoiceFile?: FileReference;
-  receiptFile?: FileReference;
+  invoice_number?: string;
+  invoice_file?: FileReference;
+  receipt_file?: FileReference;
   notes?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -185,4 +185,10 @@ export interface MarkExpenseAsPaidRequest {
   paymentMethod: ExpensePaymentMethod;
   reference?: string;
   notes?: string;
+}
+export enum PaymentTerms {
+  NET_15 = 'Net 15',
+  NET_30 = 'Net 30',
+  EOM = 'End of Month',
+  COD = 'Cash on Delivery'
 }

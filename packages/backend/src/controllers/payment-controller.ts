@@ -1,8 +1,8 @@
 // payment.controller.ts
 import { Request, Response } from 'express';
-import { paymentService } from '../services/payment.service';
+import { paymentService } from '../services/payments-service';
 
-export const paymentController = {
+export const payment = {
   async recordPayment(req: Request, res: Response) {
     try {
       const payment = await paymentService.recordPayment(req.body, req.user.id);

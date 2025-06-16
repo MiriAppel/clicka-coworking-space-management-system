@@ -3,68 +3,68 @@ import { ID, DateISO, FileReference } from '../types/core';
 
 export class ExpenseModel implements Expense {
   id: ID;
-  vendorId: ID;
-  vendorName: string;
+  vendor_id: ID;
+  vendor_name: string;
   category: ExpenseCategory;
   description: string;
   amount: number;
   tax?: number;
   date: DateISO;
-  dueDate?: DateISO;
-  paidDate?: DateISO;
+  due_date?: DateISO;
+  paid_date?: DateISO;
   status: ExpenseStatus;
-  paymentMethod?: ExpensePaymentMethod;
+  payment_method?: ExpensePaymentMethod;
   reference?: string;
-  invoiceNumber?: string;
-  invoiceFile?: FileReference;
-  receiptFile?: FileReference;
+  invoice_number?: string;
+  invoice_file?: FileReference;
+  receipt_file?: FileReference;
   notes?: string;
-  approvedBy?: ID; 
+  approved_by?: ID; 
   approvedAt?: DateISO; 
   createdAt: DateISO;
   updatedAt: DateISO;
 
   constructor(
     id: ID,
-    vendorId: ID,
-    vendorName: string,
+    vendor_id: ID,
+    vendor_name: string,
     category: ExpenseCategory,
     description: string,
     amount: number,
     tax: number | undefined,
     date: DateISO,
-    dueDate: DateISO | undefined,
-    paidDate: DateISO | undefined,
+    due_date: DateISO | undefined,
+    paid_date: DateISO | undefined,
     status: ExpenseStatus,
-    paymentMethod: ExpensePaymentMethod | undefined,
+    payment_method: ExpensePaymentMethod | undefined,
     reference: string | undefined,
-    invoiceNumber: string | undefined,
-    invoiceFile: FileReference | undefined,
-    receiptFile: FileReference | undefined,
+    invoice_number: string | undefined,
+    invoice_file: FileReference | undefined,
+    receipt_file: FileReference | undefined,
     notes: string | undefined,
-    approvedBy: ID | undefined,
+    approved_by: ID | undefined,
     approvedAt: DateISO | undefined,
     createdAt: DateISO,
     updatedAt: DateISO
   ) {
     this.id = id;
-    this.vendorId = vendorId;
-    this.vendorName = vendorName;
+    this.vendor_id = vendor_id;
+    this.vendor_name = vendor_name;
     this.category = category;
     this.description = description;
     this.amount = amount;
     this.tax = tax;
     this.date = date;
-    this.dueDate = dueDate;
-    this.paidDate = paidDate;
+    this.due_date = due_date;
+    this.paid_date = paid_date;
     this.status = status;
-    this.paymentMethod = paymentMethod;
+    this.payment_method = payment_method;
     this.reference = reference;
-    this.invoiceNumber = invoiceNumber;
-    this.invoiceFile = invoiceFile;
-    this.receiptFile = receiptFile;
+    this.invoice_number = invoice_number;
+    this.invoice_file = invoice_file;
+    this.receipt_file = receipt_file;
     this.notes = notes;
-    this.approvedBy = approvedBy;
+    this.approved_by = approved_by;
     this.approvedAt = approvedAt;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -72,23 +72,23 @@ export class ExpenseModel implements Expense {
   toDatabaseFormat() {
 return {
 id: this.id,
-vendorId: this.vendorId,
-vendorName: this.vendorName,
+vendor_id: this.vendor_id,
+vendor_name: this.vendor_name,
 category: this.category,
 description: this.description,
 amount: this.amount,
 tax: this.tax,
 date: this.date,
-dueDate: this.dueDate,
-paidDate: this.paidDate,
+due_date: this.due_date,
+paid_date: this.paid_date,
 status: this.status,
-paymentMethod: this.paymentMethod,
+payment_method: this.payment_method,
 reference: this.reference,
-invoiceNumber: this.invoiceNumber,
-invoiceFile: this.invoiceFile,
-receiptFile: this.receiptFile,
+invoice_number: this.invoice_number,
+invoice_file: this.invoice_file,
+receipt_file: this.receipt_file,
 notes: this.notes,
-approvedBy: this.approvedBy,
+approved_by: this.approved_by,
 approvedAt: this.approvedAt,
 createdAt: this.createdAt,
 updatedAt: this.updatedAt,
