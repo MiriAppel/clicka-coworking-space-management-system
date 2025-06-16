@@ -1,6 +1,7 @@
 import { CalendarConflict } from "../models/google-calendar-booking-integration/calendarConflict";
 import { CalendarSync, CalendarSyncStatus } from "../models/google-calendar-booking-integration/calendarSync";
 import { SyncBookingsWithGoogleRequest } from "../models/google-calendar-booking-integration/syncBookingsWithGoogleReques";
+import { ID } from "../types/core";
 
 export const syncBookingsWithGoogle=async(request: SyncBookingsWithGoogleRequest):Promise<CalendarSyncStatus>=>{
      //Google Calendar פונקציה זו תסנכרן את ההזמנות עם 
@@ -27,8 +28,14 @@ export const detectCalendarConflicts=async(calendar:CalendarSync):Promise<Calend
 //  היא תבדוק האם יש חפיפות בזמנים או בעיות אחרות  
 // ROOM_CONFLICT או PERMISSION_ERROR.
 //ותןסיף קונפליקטים לרשימה אם ישנם
+//ע"י createConflict
    return conflicts; 
 }
+export const createConflict=async(bookingId: ID,googleEventId: string):Promise<CalendarConflict|null>=>{
+   //פונקציה זו תיצור אובייקט קונפליקט עבור קונפליקטים שזוהו בdetectCalendarConflicts
+   return null
+
+}  
 export const solveCalendarConflict=async(conflict:CalendarConflict):Promise<void>=>{
    // פונקציה זו תקבל קונפליקט ובהתאם 
    //   תבצע שינוי בפרטי ההזמנה type ל
@@ -43,12 +50,7 @@ export const getCalendarByRoom = async (roomId: string): Promise<CalendarSync|nu
 return null;
 }
 
-// export const shareCalendar = async (calendarId: string, email: string): Promise<void> => {
-//     //  שימוש ב-Google Calendar API כדי לשתף את לוח השנה עם כתובת מייל
-// }
-// export const manageCalendarPermissions = async (calendarId: string, permissions: any): Promise<void> => {
-//     //    הלוגיקה לניהול ההרשאות,  באמצעות Google Calendar API
-// }
+
 export const manageCalendarPermissions = async (calendarId: string, email: string, role?: string): Promise<void> => {
     //Google Calendar API כדי לנהל את ההרשאות
     // לדוגמה, אפשר להשתמש ב-ACL (Access Control Lists) כדי להוסיף או לעדכן הרשאות
