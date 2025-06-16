@@ -9,10 +9,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "paths": {
-      "@types/*": ["../../types/*"]
-    }
+    // "paths": {
+    //   "@types/*": ["src/types/*"]
+    // }
   },
-  "include": ["src/**/*", "../../types/**/*"],
+  "include": ["src/**/*", "src/types/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

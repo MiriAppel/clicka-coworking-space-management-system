@@ -1,6 +1,6 @@
 // booking-types.d.ts
 
-import { ID, DateISO, ApiResponse, PaginatedResponse } from './core-types';
+import { ID, DateISO, ApiResponse, PaginatedResponse } from './core';
 
 // Room type enum
 export enum RoomType {
