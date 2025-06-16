@@ -198,9 +198,9 @@ export const checkIfFullInteraction = async (req: Request, res: Response) => {
 }
 
 export const deleteInteraction = async (req: Request, res: Response) => {
-    const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
+    const {leadId, id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
     try {
-        await leadService.deleteInteraction(id);
+        await leadService.deleteInteraction(leadId ,id);
         res.status(200).json({ message: 'Interaction deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting interaction', error });
