@@ -2,16 +2,24 @@
 import { Request, Response } from 'express';
 import * as customerService from '../services/customer.service';
 import { AddContractDocumentRequest, Contract, ConvertLeadToCustomerRequest, CustomerStatus, TimelineEvent, UpdateCustomerRequest } from '../types/customer';
+import { ParsedQs } from 'qs';
+
+
 export const getAllCustomers = async (req: Request, res: Response) => {
+
     try {
         const customers = await customerService.getAllCustomers();
         res.status(200).json(customers);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching customers', error });
     }
+
 }
+
 export const getCustomerById = async (req: Request, res: Response) => {
+
     const { id } = req.params;
+
     try {
         const customer = await customerService.getCustomerById(id);
         if (customer) {
@@ -22,64 +30,26 @@ export const getCustomerById = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Error fetching customer', error });
     }
+
 }
-export const getCustomerByName = async (req: Request, res: Response) => {
-    const { name } = req.params;
+
+export const getCustomerByFilter = async (req: Request, res: Response) => {
+
+    const filters = req.query;
+
     try {
-        const customer = await customerService.getCustomerByName(name);
-        if (customer) {
-            res.status(200).json(customer);
+        const customers = await customerService.filterCustomers(filters);
+
+        if (customers.length > 0) {
+            res.status(200).json(customers);
         } else {
-            res.status(404).json({ message: 'Customer not found' });
+            res.status(404).json({ message: 'No customers found' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching customer', error });
+        res.status(500).json({ message: 'Error filtering customers', error });
     }
 }
-export const getCustomerByEmail = async (req: Request, res: Response) => {
-    const { email } = req.params;
-    try {
-        const customer = await customerService.getCustomerByEmail(email);
-        if (customer) {
-            res.status(200).json(customer);
-        } else {
-            res.status(404).json({ message: 'Customer not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching customer', error });
-    }
-}
-export const getCustomerByPhone = async (req: Request, res: Response) => {
-    const { phone } = req.params;
-    try {
-        const customer = await customerService.getCustomerByPhone(phone);
-        if (customer) {
-            res.status(200).json(customer);
-        } else {
-            res.status(404).json({ message: 'Customer not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching customer', error });
-    }
-}
-export const getCustomerByStatus = async (req: Request, res: Response) => {
-    const { status } = req.params;
-    try {
-        const customers = await customerService.getCustomerByStatus(status as CustomerStatus);
-        res.status(200).json(customers);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching customers by status', error });
-    }
-}
-export const getByDateJoin = async (req: Request, res: Response) => {
-    const { dateFrom, dateEnd } = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
-    try {
-        const customers = await customerService.getByDateJoin(dateFrom, dateEnd);
-        res.status(200).json(customers);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching customers by join date', error });
-    }
-}
+
 export const getHistoryChanges = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
@@ -94,6 +64,7 @@ export const getHistoryChanges = async (req: Request, res: Response) => {
     }
 }
 
+//Returns the possible client status modes
 export const getAllStatus = async (req: Request, res: Response) => {
     try {
         const statuses = await customerService.getAllStatus();
@@ -102,6 +73,7 @@ export const getAllStatus = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching all statuses', error });
     }
 }
+
 export const exportToFile = async (req: Request, res: Response) => {
     const requestData = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
     try {
@@ -111,6 +83,7 @@ export const exportToFile = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error exporting to file', error });
     }
 }
+
 export const patchStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
@@ -120,6 +93,7 @@ export const patchStatus = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error updating status', error });
     }
 }
+
 export const putCustomer = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
@@ -129,6 +103,7 @@ export const putCustomer = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error updating customer', error });
     }
 }
+
 export const getCustomersToNotify = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
@@ -138,6 +113,7 @@ export const getCustomersToNotify = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching customers to notify', error });
     }
 }
+
 export const postExitNotice = async (req: Request, res: Response) => {
     const exitNotice = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
     try {
@@ -147,7 +123,6 @@ export const postExitNotice = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error posting exit notice', error });
     }
 }
-
 
 export const getCustomersByPage = async (req: Request, res: Response) => {
     // קבלת page ו-pageSize מתוך שאילתת ה-URL (query parameters)
@@ -163,7 +138,6 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
     }
 }
 
-
 export const getStatusChanges = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
@@ -174,8 +148,6 @@ export const getStatusChanges = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching status changes', error});
     }
 }
-
-
 
 export const patchCustomer = async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -188,7 +160,6 @@ export const patchCustomer = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error patching customer', error});
     }
 }
-
 
 export const convertLeadToCustomer = async (req: Request, res: Response) => {
     const newCustomerData: ConvertLeadToCustomerRequest = req.body;
@@ -204,7 +175,6 @@ export const convertLeadToCustomer = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error converting lead to customer', error });
     }
 }
-
 
 export const getAllContracts = async (req: Request, res: Response) => {
     try {
@@ -293,7 +263,6 @@ export const deleteContractDocument = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error deleting contract document', error});
     }
 }
-
 
 export const getCustomerTimeline = async (req: Request, res: Response) => {
     const { customerId } = req.params; // נניח customerId מגיע בנתיב ה-URL

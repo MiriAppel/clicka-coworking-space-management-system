@@ -64,12 +64,12 @@ export interface CustomerPeriod {
 }
 
 export interface Contract {
-    id: ID;
+    id?: ID;
     customerId: ID;
     version: number;
     status: ContractStatus;
     signDate?: DateISO;
-    startDate: DateISO;
+    startDate?: DateISO;
     endDate?: DateISO;
     terms?: ContractTerms;
     documents: FileReference[];

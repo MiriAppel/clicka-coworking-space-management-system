@@ -2,10 +2,9 @@ import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "
 import { CustomerModel, exit_noticesModel } from "../models/customer.model";
 import{AddContractDocumentRequest, Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerFilter, CustomerStatus, CustomerTimeline, ExitReason, GetCustomersRequest, RecordExitNoticeRequest, TimelineEvent, TimelineEventType, UpdateCustomerRequest, CustomerPeriod} from '../types/customer'
 import { supabase } from "../db/supabaseClient";
-import { error } from "console";
-import { randomBytes, randomInt } from "crypto";
 import { LeadModel } from "../models/lead.model";
 import { getLeadById } from "./lead.service";
+import { ContractModel } from "../models/contract.model";
 
 
 export const getAllCustomers = async (): Promise<CustomerModel[]> => {
@@ -152,18 +151,18 @@ export const getByDateJoin= async (dateFrom:Date, dateEnd:Date):Promise<GetCusto
     return data as GetCustomersRequest[];
 }
 
-export const getStatusChanges = async (id:ID):Promise<CustomerStatus[]|null>=>{
+// export const getStatusChanges = async (id:ID): Promise<CustomerStatus[] | null> => {
    
-    const customer: GetCustomersRequest | null = await getCustomerById(id);
+//     const customer: GetCustomersRequest | null = await getCustomerById(id);
 
-    if (customer && customer.status) {
-        const statuses: CustomerStatus[] = customer.status;
-        return statuses;
-    } else {
-        console.warn(`No status changes found for customer with ID: ${id}`);
-        return null; 
-    }
-}
+//     if (customer && customer.status) {
+//         const statuses: CustomerStatus[] = customer.status;
+//         return statuses;
+//     } else {
+//         console.warn(`No status changes found for customer with ID: ${id}`);
+//         return null; 
+//     }
+// }
 
 export const getAllStatus = async (): Promise<CustomerStatus[]|null> => {
 
@@ -305,9 +304,31 @@ export const convertLeadToCustomer =async(newCustomer: ConvertLeadToCustomerRequ
 
     return data as CustomerModel;
 }
-export const postContractDocument=async (document:AddContractDocumentRequest):Promise<void>=>{
-    //הוספת מסמך לחוזה
+
+export const postContractDocument = async (document: AddContractDocumentRequest, id: ID): Promise<void> => {
+    
+    const contract: ContractModel = {
+
+        customerId: id,
+        version: 1,
+        status: ContractStatus.DRAFT,
+        signDate: undefined,
+        startDate: undefined,
+        endDate: undefined,
+        terms: undefined,
+        documents: [],
+        modifications: [],
+        signedBy: undefined,
+        witnessedBy: undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+
+    }
+
+
+
 }
+
 export const deleteContractDocument= async(id:ID):Promise<void>=>{//איזה מסמך?
     //מחיקת מסמך מהחוזה
 }
@@ -435,5 +456,12 @@ export const exportTimeline = async (customerId: ID, filters?:CustomerFilter ): 
 
 function updateLeadStatus(id: string | undefined, arg1: string) {
     throw new Error("Function not implemented.");
+}
+
+
+export const filterCustomers = async (filter: any): Promise<any> => {
+
+
+
 }
 

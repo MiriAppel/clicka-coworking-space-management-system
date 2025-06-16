@@ -1,23 +1,23 @@
 import path from "path";
-import { FileReference } from "../types/core";
+import { DateISO, FileReference } from "../types/core";
 import { Contract, ContractModification, ContractStatus, ContractTerms, WorkspaceType } from "../types/customer";
 
 
 export class ContractModel implements Contract {
-  id: string;
+  id?: string;
   customerId: string;
   version: number;
   status: ContractStatus;
   signDate?: string;
-  startDate: string;
+  startDate?: string;
   endDate?: string;
   terms?: ContractTerms;
   documents: FileReference[];
   modifications: ContractModification[];
   signedBy?: string;
   witnessedBy?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: DateISO;
+  updatedAt: DateISO;
 
   constructor(
     id: string,
@@ -32,8 +32,8 @@ export class ContractModel implements Contract {
     signDate?: string,
     endDate?: string,
     terms?: ContractTerms,
-    signedBy?: string,
-    witnessedBy?: string
+    signedBy?: DateISO,
+    witnessedBy?: DateISO
   ) {
     this.id = id;
     this.customerId = customerId;
@@ -51,7 +51,7 @@ export class ContractModel implements Contract {
     this.updatedAt = updatedAt;
   }
 
-  toDatabaseFormat() {
+  toDatabaseFormat?() {
     return {
       id: this.id,
       customerId: this.customerId,
@@ -134,7 +134,7 @@ export class ContractTermsModel implements ContractTerms {
     this.specialConditions = specialConditions;
   }
 
-  toDatabaseFormat() {
+  toDatabaseFormat?() {
     return {
       workspaceType: this.workspaceType,
       workspaceCount: this.workspaceCount,
