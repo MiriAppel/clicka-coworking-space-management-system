@@ -241,7 +241,12 @@ export const postExitNotice = async (exitNotice: RecordExitNoticeRequest): Promi
 
 export const convertLeadToCustomer =async(newCustomer: ConvertLeadToCustomerRequest): Promise<CustomerModel> => {
 
-    const lead: LeadModel = await getLeadById(newCustomer.leadId);
+    // const lead: LeadModel = await getLeadById(newCustomer.leadId);
+    const leadData = await getLeadById(newCustomer.leadId);
+    if (!leadData) {
+        throw new Error("Lead not found");
+    }
+    const lead: LeadModel = leadData;
 
     // המרה של ליד ללקוח
     const customerData: CustomerModel = {

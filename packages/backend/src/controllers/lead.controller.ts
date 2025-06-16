@@ -1,7 +1,9 @@
 import { Request, Response } from 'express'
 import * as leadService from "../services/lead.service"
-import { LeadModel, UpdateLeadRequestModel } from '../models/lead.model';
+import { LeadModel} from '../models/lead.model';
+import {UpdateLeadRequestModel }from '../models/LeadRequests'
 import { LeadInteraction, LeadStatus } from '../types/lead';
+import { LeadInteractionModel } from '../models/LeadInteraction';
 export const getAllLeads = async (res: Response) => {
     try{
         // מזמן את ה service כדי לקבל את כל הלידים
@@ -73,7 +75,7 @@ export const addInteractionToLead = async (req: Request, res: Response) => {
     }
 }
 export const updateInteractions = async (req: Request, res: Response) => {
-    const data: LeadInteraction = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
+    const data: LeadInteractionModel = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
     const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
     try {
         await leadService.UpdateInteractione(data , id);
@@ -188,7 +190,7 @@ export const checkIfFullLead = async (req: Request, res: Response) => {
 }
 
 export const checkIfFullInteraction = async (req: Request, res: Response) => {
-    const interactionData: LeadInteraction = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
+    const interactionData: LeadInteractionModel = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
     try {
         const isFull = await leadService.checkIfFullInteraction(interactionData);
         res.status(200).json({ isFull });

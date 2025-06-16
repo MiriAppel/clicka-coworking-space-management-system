@@ -1,4 +1,6 @@
-import {LeadModel,LeadInteractionModel,UpdateLeadRequestModel,CreateLeadRequestModel,} from "../models/lead.model";
+import {LeadModel} from "../models/lead.model";
+import { LeadInteractionModel } from "../models/LeadInteraction";
+import { UpdateLeadRequestModel, CreateLeadRequestModel } from "../models/LeadRequests";
 import { ID } from "../types/core";
 import { LeadStatus } from "../types/lead";
 import { supabase } from "../db/supabaseClient";
