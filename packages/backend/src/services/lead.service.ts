@@ -74,6 +74,11 @@ export const getAllInteractions = async (): Promise<LeadInteractionModel[]> => {
   return [];
 };
 
+export const checkIfFullLead = async (leadData: UpdateLeadRequestModel): Promise<boolean> => {
+    // אמור לבדוק אם הליד מלא
+    return true; // להחזיר true או false בהתאם למצב הליד
+}
+
 export const checkIfFullInteraction = async (leadData: LeadInteractionModel): Promise<boolean> => {
   // אמור לבדוק אם הליד מלא
   return false;
