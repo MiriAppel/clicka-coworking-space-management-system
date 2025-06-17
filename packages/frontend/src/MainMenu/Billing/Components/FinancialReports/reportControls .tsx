@@ -9,68 +9,23 @@ import { ReportParameters, ReportType } from '../../../../../../backend/src/type
 import { DateRangeFilter, ID } from '../../../../../../backend/src/types/core';
 import { ExpenseCategory } from '../../../../../../backend/src/types/expense';
 import { WorkspaceType } from '../../../../../../backend/src/types/customer';
+import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReportsStore';
 
 // כפתורי "צור דוח" ו"איפוס"
 const ReportControls = () => {
+  const { validateReportParameters, resetReportParameters,
+    handleReportTypeChange, handleDateRangeChange, handleCategoryChange,
+    handleVendorChange, handleWorkspaceTypeChange, handleGroupByChange
+  } = useFinancialReportsStore();
 
-//functions
-// טיפול באימות פרמטרים של דוחות
-const validateReportParameters = (parameters: ReportParameters): ValidationResult => {
-  // אימות סוג דוח
-  // אימות טווח תאריכים
-  // אימות קטגוריות (רק לדוחות הוצאות ורווח והפסד)
-  // אימות סוגי סביבות עבודה (רק לדוחות הכנסות ותפוסה)
-  // אימות ספקים (רק לדוחות הוצאות ורווח והפסד)
-  // אימות לקוחות (רק לדוחות הכנסות ויתרות לקוחות)
-  // אימות קיבוץ
-  // אימות אפשרויות נוספות
-   return {} as ValidationResult;
-}
-// איפוס פרמטרים של דוח
-const resetReportParameters = (): void => {
-  // Implementation will go here
-};
-
-// שינוי סוג דוח
-const handleReportTypeChange = (type: ReportType): void => {
-  // Implementation will go here
-};
-
-// שינוי טווח תאריכים
-const handleDateRangeChange = (dateRange: DateRangeFilter): void => {
-  // Implementation will go here
-};
-
-// שינוי קטגוריות
-const handleCategoryChange = (categories: ExpenseCategory[]): void => {
-  // Implementation will go here
-};
-
-// שינוי ספקים
-const handleVendorChange = (vendorIds: ID[]): void => {
-  // Implementation will go here
-};
-
-// שינוי סוגי סביבות עבודה
-const handleWorkspaceTypeChange = (workspaceTypes: WorkspaceType[]): void => {
-  // Implementation will go here
-};
-
-// שינוי קיבוץ
-const handleGroupByChange = (groupBy: 'month' | 'quarter' | 'year'): void => {
-  // Implementation will go here
-};
+  //functions
+  //in the store
 
 
 
 
-
-
-
-
-
-return <div>
+  return <div>
     <h1>Report Controls</h1>
-</div>
+  </div>
 }
 export default ReportControls;   

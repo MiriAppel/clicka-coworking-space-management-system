@@ -1,14 +1,12 @@
 import { SupplierFilter } from "../../../../../../backend/src/types/supplierFilter";
 import { ID } from "../../../../../../backend/src/types/core";
 import { Vendor } from "../../../../../../backend/src/types/expense";
+import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 export const SupplierList = ()=>{
-
+const {fetchSuppliers,handleDeleteSupplier}=useSupplierStore();
 //functions
+//in the store
 
-// שליפת כל הספקים מהשרת
-const fetchSuppliers = async (): Promise<Vendor[]> => {
-     return {} as Vendor[];
-};
 
 // חיפוש ספקים לפי שם/קטגוריה/סטטוס
 const handleSearch = (query: string): void => {};
@@ -21,9 +19,6 @@ const handleSelectSupplier = (vendorId: ID): void => {};
 
 // פתיחת טופס הוספת ספק חדש
 const handleAddSupplier = (): void => {};
-
-// מחיקת ספק
-const handleDeleteSupplier = async (vendorId: ID): Promise<void> => {};
 
 // רענון הרשימה (למשל אחרי הוספה/מחיקה)
 const refreshSupplierList = (): void => {};

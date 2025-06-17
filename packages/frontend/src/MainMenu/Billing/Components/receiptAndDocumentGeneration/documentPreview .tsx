@@ -1,11 +1,11 @@
 import { GeneratedDocument } from "../../../../../../backend/src/types/document";
 import { ID } from "../../../../../../backend/src/types/core";
+import { useReceiptAndDocumentsStore } from "../../../../Stores/Billing/receiptAndDocumentsStore";
 export const DocumentPreview = () => {
+  const {fetchDocumentForPreview}=useReceiptAndDocumentsStore();
  //functions
-// שליפת מסמך לתצוגה
-const fetchDocumentForPreview = async (documentId: ID): Promise<GeneratedDocument> => {
- return {} as GeneratedDocument;
-};
+ //in the store
+
 
   return (
     <div>

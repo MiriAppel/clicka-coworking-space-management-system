@@ -1,41 +1,26 @@
 import { Expense, ExpenseCategory } from "../../../../../../backend/src/types/expense";
 import { ID } from "../../../../../../backend/src/types/core";
 import { ExpenseFilter } from "../../../../../../backend/src/types/expenseFilter";
-//כל השגיאות בקובץ זה בגלל שהפונקציות הכתובות עוד לא מומשו
+import { useExpenseStore } from "../../../../Stores/Billing/expenseStore";
 export const ExpenseManagement = () => {
-//functions
-// שליפת כל ההוצאות
-const getAllExpenses = async (): Promise<Expense[]> => {
-    return [];
-};
 
-// יצירת הוצאה חדשה
-const createExpense = async (expenseData: Expense): Promise<Expense> => {
-     return {} as Expense;
-};
+    const { fetchExpenses,createExpense,updateExpense,deleteExpense
+    } = useExpenseStore();
+    //in the store
+    //functions
 
-// עדכון הוצאה קיימת
-const updateExpense = async (expenseId: ID, updatedExpenseData: Expense): Promise<Expense> => {
-    return {} as Expense;
-};
+    // רענון רשימת הוצאות
+    const refreshExpenseList = (): Promise<void> => {
+        return  fetchExpenses();
+    };
 
-// מחיקת הוצאה
-const deleteExpense = async (expenseId: ID): Promise<void> => {
-   return;
-};
+    // סינון הוצאות לפי קטגוריה/ספק/תאריכים
+    const filterExpenses = (filter: ExpenseFilter): Promise<Expense[]> => {
+        return {} as Promise<Expense[]>;
+    };
 
-// רענון רשימת הוצאות
-const refreshExpenseList = (): Promise<Expense[]> => {
-    return getAllExpenses();
-};
-
-// סינון הוצאות לפי קטגוריה/ספק/תאריכים
-const filterExpenses = (filter: ExpenseFilter): Promise<Expense[]> => {
-    return {} as Promise<Expense[]>;
-};
-
-// מעבר לכרטיס הוצאה
-const handleSelectExpense = (expenseId: ID): void => {};
+    // מעבר לכרטיס הוצאה
+    const handleSelectExpense = (expenseId: ID): void => { };
 
     return (
         <div>
@@ -44,4 +29,3 @@ const handleSelectExpense = (expenseId: ID): void => {};
     )
 }
 
-   

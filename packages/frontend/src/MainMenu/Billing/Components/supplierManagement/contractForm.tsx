@@ -1,44 +1,25 @@
 
 import { ID } from "../../../../../../backend/src/types/core";
+import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 
 
 export const ContractForm = () => {
+    const { fetchContractDetails, handleFieldChange, validateContractForm,
+        handleCreateContract, handleUpdateContract
+    } = useSupplierStore();
+
+
+
 
     //functions
+    //in the store
 
-    // שליפת פרטי חוזה לעריכה (אם יש)
-    const fetchContractDetails = async (contractId: ID): Promise<any> => { };
-
-    // טיפול בשינוי ערך שדה בטופס
-    const handleFieldChange = (field: string, value: any): void => { };
-
-    // ולידציה של הטופס לפני שליחה
-    const validateContractForm = (data: any): boolean => {
-        return false;
-    };
-
-    // שליחת טופס יצירת חוזה חדש
-    const handleCreateContract = async (data: any): Promise<any> => { };
-
-    // שליחת טופס עדכון חוזה קיים
-    const handleUpdateContract = async (contractId: ID, data: any): Promise<any> => { };
 
     // איפוס הטופס
     const resetForm = (): void => { };
 
     // סגירת הטופס (ביטול/סיום)
     const handleCloseForm = (): void => { };
-
-
-
-
-
-
-
-
-
-
-
 
 
     return (

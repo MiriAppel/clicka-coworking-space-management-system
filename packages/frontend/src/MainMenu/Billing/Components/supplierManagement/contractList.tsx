@@ -1,15 +1,12 @@
 import { ID } from "../../../../../../backend/src/types/core";
+import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 
 export const ContractList = () => {
-
+const{fetchContractsByVendor,handleDeleteContract}=useSupplierStore();
 //functions
 
+//in the store
 
-// שליפת כל החוזים של ספק מסוים
-const fetchContractsByVendor = async (vendorId: ID): Promise<any[]> => {
-//any בקובץ האפיון אין ממשק -חוזה ולכן הםונקציה מחזירה 
- return {} as any[];
-};
 
 // פתיחת טופס הוספת חוזה חדש
 const handleAddContract = (): void => {};
@@ -17,11 +14,8 @@ const handleAddContract = (): void => {};
 // פתיחת טופס עריכת חוזה קיים
 const handleEditContract = (contractId: ID): void => {};
 
-// מחיקת חוזה
-const handleDeleteContract = async (contractId: ID): Promise<void> => {};
-
 // רענון רשימת החוזים
-const refreshContractList = (vendorId: ID): Promise<any[]> => {
+const refreshContractList = (vendorId: ID): Promise<any> => {
     return fetchContractsByVendor(vendorId);
 };
 
