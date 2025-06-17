@@ -1,7 +1,8 @@
 import { DateISO } from "../../types/core";
 import { WorkspaceType } from "../../types/customer";
-import { AvailabilityQuery } from "./availabilityQuery";
-import { AvailableSpace } from "./availableSpace";
+import { AvailabilityQuery } from "./AvailabilityQuery";
+import { AvailableSpace } from "./AvailableSpace";
+
 
 // מחלקה לתוצאות זמינות
 export class AvailabilityResult {

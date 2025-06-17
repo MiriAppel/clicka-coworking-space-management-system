@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import * as CalendarService from '../services/google-calendar-booking-integration.service ';
+import * as CalendarService from '../services/GoogleCalendarBookingIntegrationService ';
 
-import { SyncBookingsWithGoogleRequest } from '../models/google-calendar-booking-integration/syncBookingsWithGoogleReques';
-import { CalendarSync, CalendarSyncStatus } from '../models/google-calendar-booking-integration/calendarSync';
+import { SyncBookingsWithGoogleRequest } from '../models/GoogleCalendarBookingIntegration/SyncBookingsWithGoogleReques';
+import { CalendarSync, CalendarSyncStatus } from '../models/GoogleCalendarBookingIntegration/CalendarSync';
 
 export const syncBookingsController = async (req: Request, res: Response) => {
     try {

@@ -1,6 +1,7 @@
-import { CalendarConflict } from "../models/google-calendar-booking-integration/calendarConflict";
-import { CalendarSync, CalendarSyncStatus } from "../models/google-calendar-booking-integration/calendarSync";
-import { SyncBookingsWithGoogleRequest } from "../models/google-calendar-booking-integration/syncBookingsWithGoogleReques";
+
+import { CalendarConflict } from "../models/GoogleCalendarBookingIntegration/CalendarConflict";
+import { CalendarSync, CalendarSyncStatus } from "../models/GoogleCalendarBookingIntegration/CalendarSync";
+import { SyncBookingsWithGoogleRequest } from "../models/GoogleCalendarBookingIntegration/SyncBookingsWithGoogleReques";
 import { ID } from "../types/core";
 
 export const syncBookingsWithGoogle=async(request: SyncBookingsWithGoogleRequest):Promise<CalendarSyncStatus>=>{
