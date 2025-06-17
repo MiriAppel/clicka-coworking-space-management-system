@@ -1,5 +1,5 @@
-import { ID } from "../types/core";
-import { CustomerPeriod, ExitReason } from "../types/customer";
+import { ID } from "../../../../types/core";
+import { CustomerPeriod, ExitReason } from "../../../../types/customer";
 
 
 export class CustomerPeriodModel implements CustomerPeriod {

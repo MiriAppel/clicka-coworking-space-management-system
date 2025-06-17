@@ -1,13 +1,15 @@
 
 import { Request, Response } from 'express';
-import * as customerService from '../services/customer.service';
-import { ConvertLeadToCustomerRequest, UpdateCustomerRequest } from '../types/customer';
+import { customerService } from '../services/customer.service';
+import { ConvertLeadToCustomerRequest, UpdateCustomerRequest } from '../../../../types/customer';
 
+
+const serviceCustomer = new customerService();
 
 export const getAllCustomers = async (req: Request, res: Response) => {
 
     try {
-        const customers = await customerService.getAllCustomers();
+        const customers = await serviceCustomer.getAll()
         res.status(200).json(customers);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching customers', error });
@@ -108,7 +110,7 @@ export const patchCustomer = async (req: Request, res: Response) => {
     const { id } = req.params;
     const updateData: UpdateCustomerRequest = req.body; // נתוני העדכון החלקיים
     try {
-        await customerService.patchCustomer(id, updateData);
+        await customerService.getAll()
         res.status(200).json({ message: 'Customer updated successfully (PATCH)' });
     } catch (error) {
         console.error('Error in patchCustomer controller:', error);

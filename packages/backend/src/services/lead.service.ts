@@ -1,8 +1,8 @@
 import {LeadModel} from "../models/lead.model";
 import { LeadInteractionModel } from "../models/LeadInteraction";
 import { UpdateLeadRequestModel, CreateLeadRequestModel } from "../models/LeadRequests";
-import { ID } from "../types/core";
-import { LeadStatus } from "../types/lead";
+import { ID } from "../../../../types/core";
+import { LeadStatus } from "../../../../types/lead";
 import { supabase } from "../db/supabaseClient";
 
 export const getAllLeads = async (): Promise<LeadModel[]> => {
