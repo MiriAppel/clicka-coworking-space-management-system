@@ -1,6 +1,6 @@
 import { ContractModel } from "../models/contract.model";
-import { DateISO, FileReference, ID } from "../types/core";
-import { AddContractDocumentRequest, Contract, ContractStatus } from "../types/customer";
+import { DateISO, FileReference, ID } from "../../../../types/core";
+import { AddContractDocumentRequest, Contract, ContractStatus } from "../../../../types/customer";
 
 
 

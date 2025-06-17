@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as contractService from '../services/contract.service'
-import { AddContractDocumentRequest, Contract } from '../types/customer';
-import { ID } from '../types/core';
+import { AddContractDocumentRequest, Contract } from '../../../../types/customer';
+import { ID } from '../../../../types/core';
 
 
 // קבלת כל החוזים
