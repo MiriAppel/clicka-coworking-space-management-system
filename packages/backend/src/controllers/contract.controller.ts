@@ -1,7 +1,13 @@
+import { Request, Response } from 'express';
+import * as contractService from '../services/contract.service'
+import { AddContractDocumentRequest, Contract } from '../types/customer';
+import { ID } from '../types/core';
+
+
 // קבלת כל החוזים
 export const getAllContracts = async (req: Request, res: Response) => {
     try {
-        const contracts = await customerService.getAllContracts();
+        const contracts = await contractService.getAllContracts();
         res.status(200).json(contracts);
     } catch (error) {
         console.error('Error in getAllContracts controller:', error);
@@ -13,7 +19,7 @@ export const getAllContracts = async (req: Request, res: Response) => {
 export const getContractById = async (req: Request, res: Response) => {
     const { contractId } = req.params; // שם הפרמטר בנתיב ה-URL
     try {
-        const contract = await customerService.getContractById(contractId);
+        const contract = await contractService.getContractById(contractId);
         res.status(200).json(contract);
     } catch (error) {
         console.error('Error in getContractById controller:', error);
@@ -37,7 +43,7 @@ export const getContractById = async (req: Request, res: Response) => {
 export const getContractsEndingSoon = async (req: Request, res: Response) => {
     const days = parseInt(req.query.days as string) || 30; // קבלת מספר הימים כפרמטר שאילתה
     try {
-        const contracts = await customerService.getContractsEndingSoon(days);
+        const contracts = await contractService.getContractsEndingSoon(days);
         res.status(200).json(contracts);
     } catch (error) {
         console.error('Error in getContractsEndingSoon controller:', error);
@@ -48,7 +54,7 @@ export const getContractsEndingSoon = async (req: Request, res: Response) => {
 export const postNewContract = async (req: Request, res: Response) => {
     const contractData: Contract = req.body;
     try {
-        await customerService.postNewContract(contractData);
+        await contractService.postNewContract(contractData);
         res.status(201).json({ message: 'New contract created successfully' });
     } catch (error) {
         console.error('Error in postNewContract controller:', error);
@@ -58,9 +64,9 @@ export const postNewContract = async (req: Request, res: Response) => {
 
 // הוספת טופס לחוזה
 export const postContractDocument = async (req: Request, res: Response) => {
-    const documentData: AddContractDocumentRequest = req.body;
+    const {documentData, customerId }= req.body;//-----------------------------מזהה לקוח או חוזה??????????????????
     try {
-        await customerService.postContractDocument(documentData);
+        await contractService.postContractDocument(documentData,customerId);
         res.status(200).json({ message: 'Contract document added successfully' });
     } catch (error) {
         console.error('Error in postContractDocument controller:', error);
@@ -71,7 +77,7 @@ export const postContractDocument = async (req: Request, res: Response) => {
 export const deleteContractDocument = async (req: Request, res: Response) => {
     const { id } = req.params; // נניח שזה ID של המסמך
     try {
-        await customerService.deleteContractDocument(id);
+        await contractService.deleteContractDocument(id);
         res.status(200).json({ message: 'Contract document deleted successfully' });
     } catch (error) {
         console.error('Error in deleteContractDocument controller:', error);
