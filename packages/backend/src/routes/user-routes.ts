@@ -1,20 +1,22 @@
 import { Router } from "express";
 import { UserController } from "../controllers/user-controller";
-import { authenticateTokenFromCookie } from "../middleware/auth-middleware";
+import { authenticateTokenFromCookie ,authorizeUser}  from "../middleware/auth-middleware";
 
 const userController = new UserController();
 const userRouter = Router();
 
 //לברר איזה הרשאות יש לכל משתמש
 
-userRouter.post("/users",authenticateTokenFromCookie, userController.createUser.bind(userController));
+userRouter.get("/loginByGoogleId/:googleId", authenticateTokenFromCookie, userController.loginByGoogleId.bind(userController));
 
-userRouter.get("/users",authenticateTokenFromCookie, userController.getAllUsers.bind(userController));
+userRouter.post("/createUser",authenticateTokenFromCookie,authorizeUser('ADMIN'), userController.createUser.bind(userController));
 
-userRouter.get("/users/:id",authenticateTokenFromCookie, userController.getUserById.bind(userController));
+userRouter.get("/getAllUsers",authenticateTokenFromCookie, userController.getAllUsers.bind(userController));
 
-userRouter.put("/users/:id",authenticateTokenFromCookie, userController.updateUser.bind(userController));
+userRouter.get("/getUserById/:id",authenticateTokenFromCookie, userController.getUserById.bind(userController));
 
-userRouter.delete("/users/:id",authenticateTokenFromCookie, userController.deleteUser.bind(userController));
+userRouter.put("/updateUser/:id",authenticateTokenFromCookie, userController.updateUser.bind(userController));
+
+userRouter.delete("/deleteUser/:id",authenticateTokenFromCookie, userController.deleteUser.bind(userController));
 
 export default userRouter;

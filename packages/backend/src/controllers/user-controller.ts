@@ -31,15 +31,30 @@ export class UserController {
         }
     }
 
-    async getUserByGoogleId(req: Request, res: Response) {
+    async loginByGoogleId(req: Request, res: Response) {
         const googleId = req.params.googleId;
         const result = await this.userService.getUserByGoogleId(googleId);
+        
         if (result) {
+            // שליפת ה-role מתוך ה-result
+            const role = result.role;
+    
+            // הגדרת cookie עם ה-role
+            const expirationDays = 7; // מספר הימים שהעוגיה תהיה זמינה
+            const date = new Date();
+            date.setTime(date.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+    
+            // שמירת ה-cookie עם ה-role
+            res.cookie('session', role, { expires: date, httpOnly: true }); // httpOnly כדי למנוע גישה דרך JavaScript
+    
             res.status(200).json(result);
         } else {
             res.status(404).json({ error: "User not found" });
         }
     }
+    
+
     async updateUser(req: Request, res: Response) {
         const userId = req.params.id;
         const updatedData = req.body;
