@@ -1,16 +1,18 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from "@mui/material"
+import { Button } from '../../Common/Components/BaseComponents/Button';
 import '../Css/leadAndCustomer.css'
 
 // יש לנו מצגת עם פירוט של כל העמודים יותר מפורט מה צריך להיות
 
 export const LeadAndCustomer = () => {
 
-    const navigate  = useNavigate()
+    const navigate = useNavigate()
 
-    return <div className='leadAndCustomer'>
+    return <div className='leadAndCustomer' style={{ direction: 'rtl' }}>
         <h1>Lead & Customer</h1>
-        <Button variant="outlined" onClick={() => { navigate('/customers') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Customers</Button>
-        <Button variant="outlined" onClick={() => { navigate('/') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Back</Button>
+        <Button variant="primary" size="sm" onClick={() => navigate('customers')}>לקוחות</Button>
+        <Button variant="primary" size="sm" onClick={() => navigate('leads')}>מתעניינים</Button>
+        <Button variant="primary" size="sm" onClick={() => navigate('contractManagement')}>חוזים</Button>
+        <Button variant="primary" size="sm" onClick={() => navigate('/')}>Back</Button>
     </div>
 }
