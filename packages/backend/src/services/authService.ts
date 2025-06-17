@@ -24,7 +24,7 @@ export const exchangeCodeAndFetchUser = async (code: string):Promise<LoginRespon
     return {
       user,
       token: tokens.access_token,
-      expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString() // תוקף ל-8 שעות
+      expiresAt: tokens.expires_at
     };
   } catch (error) { 
      console.error('שגיאה בהחלפת קוד או בשליפת משתמש:', error);
