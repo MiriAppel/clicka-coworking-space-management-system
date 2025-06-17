@@ -1,8 +1,7 @@
 
 import { Request, Response } from 'express';
 import * as customerService from '../services/customer.service';
-import { AddContractDocumentRequest, Contract, ConvertLeadToCustomerRequest, CustomerStatus, TimelineEvent, UpdateCustomerRequest } from '../types/customer';
-import { ParsedQs } from 'qs';
+import { ConvertLeadToCustomerRequest, UpdateCustomerRequest } from '../types/customer';
 
 
 export const getAllCustomers = async (req: Request, res: Response) => {
@@ -33,7 +32,7 @@ export const getCustomerById = async (req: Request, res: Response) => {
 
 }
 
-export const getCustomerByFilter = async (req: Request, res: Response) => {
+export const getCustomersByFilter = async (req: Request, res: Response) => {
 
     const filters = req.query;
 
@@ -48,34 +47,26 @@ export const getCustomerByFilter = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Error filtering customers', error });
     }
+
 }
 
-// export const getHistoryChanges = async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     try {
-//         const history = await customerService.getHistoryChanges(id);
-//         if (history) {
-//             res.status(200).json(history);
-//         } else {
-//             res.status(404).json({ message: 'History not found' });
-//         }
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error fetching history changes', error });
-//     }
-// }
+
 
 //Returns the possible client status modes
 export const getAllStatus = async (req: Request, res: Response) => {
+
     try {
         const statuses = await customerService.getAllStatus();
         res.status(200).json(statuses);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching all statuses', error });
     }
+
 }
 
 // מקבל את כל הלקוחות שצריך לשלוח להם התראות 
 export const getCustomersToNotify = async (req: Request, res: Response) => {
+
     const { id } = req.params;
     try {
         const customers = await customerService.getCustomersToNotify(id);
@@ -83,6 +74,7 @@ export const getCustomersToNotify = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Error fetching customers to notify', error });
     }
+
 }
 
 // יצירת הודעת עזיבה
@@ -110,18 +102,6 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching paginated customers', error});
     }
 }
-
-// export const getStatusChanges = async (req: Request, res: Response) => {
-//     const { id } = req.params;
-//     try {
-//         const statusChanges = await customerService.getStatusChanges(id);
-//         res.status(200).json(statusChanges);
-//     } catch (error) {
-//         console.error('Error in getStatusChanges controller:', error);
-//         res.status(500).json({ message: 'Error fetching status changes', error});
-//     }
-// }
-
 
 // עדכון מלא/חלקי של לקוח
 export const patchCustomer = async (req: Request, res: Response) => {
@@ -153,10 +133,31 @@ export const convertLeadToCustomer = async (req: Request, res: Response) => {
 }
 
 
+// לשאול את שולמית לגבי זה
+
+// export const getHistoryChanges = async (req: Request, res: Response) => {
+//     const { id } = req.params;
+//     try {
+//         const history = await customerService.getHistoryChanges(id);
+//         if (history) {
+//             res.status(200).json(history);
+//         } else {
+//             res.status(404).json({ message: 'History not found' });
+//         }
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error fetching history changes', error });
+//     }
+// }
 
 
 
-
-
-
-
+// export const getStatusChanges = async (req: Request, res: Response) => {
+//     const { id } = req.params;
+//     try {
+//         const statusChanges = await customerService.getStatusChanges(id);
+//         res.status(200).json(statusChanges);
+//     } catch (error) {
+//         console.error('Error in getStatusChanges controller:', error);
+//         res.status(500).json({ message: 'Error fetching status changes', error});
+//     }
+// }

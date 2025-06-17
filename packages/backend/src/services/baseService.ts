@@ -16,8 +16,8 @@ export class baseService <T> {
             .single()
 
         if (error) {
-        console.error("שגיאה בשליפת נתונים:", error);
-        throw error;
+            console.error("שגיאה בשליפת נתונים:", error);
+            throw error;
         }   
 
         if (!data) {

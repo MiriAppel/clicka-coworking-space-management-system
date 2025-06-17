@@ -1,11 +1,15 @@
 import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "../types/core";
-import { CustomerModel, exit_noticesModel } from "../models/customer.model";
-import{AddContractDocumentRequest, Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerFilter, CustomerStatus, CustomerTimeline, ExitReason, GetCustomersRequest, RecordExitNoticeRequest, TimelineEvent, TimelineEventType, UpdateCustomerRequest, CustomerPeriod} from '../types/customer'
+import { CustomerModel } from "../models/customer.model";
+import{ Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerStatus, ExitReason, GetCustomersRequest, RecordExitNoticeRequest, TimelineEventType, UpdateCustomerRequest, CustomerPeriod} from '../types/customer'
 import { supabase } from "../db/supabaseClient";
 import { LeadModel } from "../models/lead.model";
 import { getLeadById } from "./lead.service";
-import { ContractModel } from "../models/contract.model";
+import { baseService } from "./baseService";
 
+export class customerService extends baseService <CustomerModel> {
+
+    
+}
 
 export const getAllCustomers = async (): Promise<CustomerModel[]> => {
 
@@ -308,6 +312,36 @@ export const convertLeadToCustomer =async(newCustomer: ConvertLeadToCustomerRequ
     return data as CustomerModel;
 }
 
+export const postContractDocument = async (document: AddContractDocumentRequest, id: ID): Promise<void> => {
+    
+    const contract: ContractModel = {
+
+        customerId: id,
+        version: 1,
+        status: ContractStatus.DRAFT,
+        signDate: undefined,
+        startDate: undefined,
+        endDate: undefined,
+        terms: undefined,
+        documents: [],
+        modifications: [],
+        signedBy: undefined,
+        witnessedBy: undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+
+    }
+
+
+
+}
+
+export const deleteContractDocument= async(id:ID):Promise<void>=>{//איזה מסמך?
+    //מחיקת מסמך מהחוזה
+}
+export const postNewContract = async(data: Contract):Promise<void>=>{
+    //יצירת חוזה חדש
+}
 
 
 export const exportToFile = async(req:GetCustomersRequest) :Promise<Buffer|null>=>{
