@@ -10,6 +10,38 @@ export interface GoogleOAuthTokenData {
   tokenType: string;
   scope: string;
 }
+// types/google.ts
+
+// תאריך בפורמט ISO 8601
+export type DateISO = string;
+
+// טווח תאריכים
+export interface TimeRange {
+  start: DateISO;
+  end: DateISO;
+}
+
+// אירוע ליצירה ב־Google Calendar
+export interface CalendarEventInput {
+  summary?: string;
+  description?: string;
+  location?: string;
+  start: {
+    dateTime: DateISO;
+    timeZone?: string;
+  };
+  end: {
+    dateTime: DateISO;
+    timeZone?: string;
+  };
+  attendees?: Array<{ email: string }>;
+  reminders?: {
+    useDefault?: boolean;
+    overrides?: Array<{ method: 'email' | 'popup'; minutes: number }>;
+  };
+  [key: string]: any; // שדה פתוח לשדות נוספים
+}
+
 
 // Google Calendar event
 export interface GoogleCalendarEvent {
@@ -122,6 +154,27 @@ export interface CreateDriveFolderRequest {
   name: string;
   parentFolderId?: string;
   description?: string;
+}
+export interface GmailMessage {
+  id: string;
+  threadId?: string;
+  labelIds?: string[];
+  snippet?: string;
+  historyId?: string;
+  internalDate?: string;
+  payload?: {
+    mimeType?: string;
+    filename?: string;
+    headers?: { name: string; value: string }[];
+    body?: {
+      size?: number;
+      data?: string;
+      attachmentId?: string;
+    };
+    parts?: GmailMessage['payload'][];
+  };
+  sizeEstimate?: number;
+  raw?: string;
 }
 
 // Send email request

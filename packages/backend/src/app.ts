@@ -35,4 +35,14 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
+//google api functions:
+import calendarRouter from './routes/calendar-route';
+app.use('/api', calendarRouter);
+
+import driveRouter from './routes/drive-route';
+app.use('/api', driveRouter);
+
+import gmailRouter from './routes/gmail-route';
+app.use('/api', gmailRouter);
+
 export default app;

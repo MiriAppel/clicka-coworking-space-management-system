@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import { list, get, send } from '../controllers/gmail-controller';
+import { send, list } from '../controllers/gmail-controller';
 
 const router = Router();
 
-router.get('/gmail/v1/users/:userId/messages', list);
-router.get('/gmail/v1/users/:userId/messages/:messageId', get);
-router.post('/gmail/v1/users/:userId/messages/send', send);
+router.post('/gmail/v1/users/me/messages/send', send);
+router.get('/gmail/v1/users/me/messages', list);
 
 export default router;
