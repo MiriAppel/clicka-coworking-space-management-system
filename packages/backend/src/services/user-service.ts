@@ -48,6 +48,22 @@ export class UserService {
         return data; // מחזיר את המשתמש שנמצא
     }
 
+    //  googleId פונקציה לקרוא משתמש לפי  
+    async getUserByGoogleId(googleId: string): Promise<UserModel | null> {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('googleId', googleId)
+            .single();
+
+        if (error) {
+            console.error('Error fetching user by Google ID:', error);
+            return null;
+        }
+
+        return data; // מחזיר את המשתמש שנמצא
+    }
+
     // פונקציה לעדכן משתמש
     async updateUser(id: string, updatedData: Partial<UserModel>): Promise<UserModel | null> {
         const { data, error } = await supabase
