@@ -58,7 +58,7 @@ export const UpdateInteractione = async (date: LeadInteractionModel,id: ID) => {
   // מחפש את האינטרקציה לפי מזהה ומעדכן אותה עם הפונקציה checkIfFullInteraction
 };
 
-export const GetLeadToRemined = (): Promise<LeadModel[]> => {
+export const GetLeadToRemind = (): Promise<LeadModel[]> => {
   // אמור לשלוף לידים שדורשים מעקב
   // להחזיר מערך של לידים שדורשים מעקב
   return Promise.resolve([]);

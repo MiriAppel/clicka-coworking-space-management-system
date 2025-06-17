@@ -271,6 +271,9 @@ export const convertLeadToCustomer =async(newCustomer: ConvertLeadToCustomerRequ
         updatedAt: new Date().toISOString()
     };
 
+    customerData.
+    
+
     //לפני היצירה יש לבדוק שהחלל באמת פנוי צריך לפנות לקבוצה 3
 
     // יצירת לקוח במסד הנתונים
@@ -335,6 +338,7 @@ export const deleteContractDocument= async(id:ID):Promise<void>=>{//איזה מ�
 export const postNewContract = async(data: Contract):Promise<void>=>{
     //יצירת חוזה חדש
 }
+
 
 export const exportToFile = async(req:GetCustomersRequest) :Promise<Buffer|null>=>{
     //ייצוא תוצאות חיפוש לקובץ

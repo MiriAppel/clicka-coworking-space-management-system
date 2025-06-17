@@ -72,33 +72,14 @@ export interface Contract {
     signDate?: DateISO;
     startDate?: DateISO;
     endDate?: DateISO;
-    terms?: ContractTerms;
-    documents: FileReference[];
-    modifications: ContractModification[];
+    terms?: string;
+    documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
     signedBy?: string;
     witnessedBy?: string;
     createdAt: DateISO;
     updatedAt: DateISO;
 }
 
-export interface ContractModification {
-    id: ID;
-    date: DateISO;
-    description: string;
-    modifiedByUserId: ID;
-    approvedByUserId?: ID;
-    documentChanges?: FileReference[]; // References to new/updated contract documents
-}
-
-export interface ContractTerms {
-    workspaceType: WorkspaceType;
-    workspaceCount: number;
-    monthlyRate: number;
-    duration: number; // months
-    renewalTerms: string;
-    terminationNotice: number; // days
-    specialConditions?: string[];
-}
 
 // Payment method
 export interface PaymentMethod {
@@ -131,8 +112,8 @@ export interface Customer {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-  paymentMethods: PaymentMethod[];
-  paymentMethodsType?: PaymentMethodType;
+  //paymentMethods: PaymentMethod[];
+  paymentMethodsType: PaymentMethodType;
   periods: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;

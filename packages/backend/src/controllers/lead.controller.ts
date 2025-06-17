@@ -4,6 +4,8 @@ import { LeadModel} from '../models/lead.model';
 import {UpdateLeadRequestModel }from '../models/LeadRequests'
 import { LeadInteraction, LeadStatus } from '../types/lead';
 import { LeadInteractionModel } from '../models/LeadInteraction';
+
+
 export const getAllLeads = async (res: Response) => {
     try{
         // מזמן את ה service כדי לקבל את כל הלידים
@@ -14,6 +16,8 @@ export const getAllLeads = async (res: Response) => {
        res.status(500).json({ message: 'Error fetching leads', error });
     }
 }
+
+
 export const getLeadById = async (req: Request, res: Response) => {
     const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
     try {
@@ -28,6 +32,7 @@ export const getLeadById = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching lead', error });
     }
 }
+
 export const createLead = async (req: Request, res: Response) => {
     const leadData: LeadModel = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
     try {
@@ -37,6 +42,8 @@ export const createLead = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error creating lead', error });
     }
 }
+
+// קבלת המקור לפי id
 export const getSourcesLeadById = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
@@ -46,7 +53,9 @@ export const getSourcesLeadById = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching sources', error });
     }
 }
-export const fullUpdateLead = async (req: Request, res: Response) => {
+
+// עדכון ליד
+export const patchLead = async (req: Request, res: Response) => {
     const leadData: UpdateLeadRequestModel = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
     const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה 
     try {
@@ -56,7 +65,9 @@ export const fullUpdateLead = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error updating lead', error });
     }
 }
-export const addLeadFromCSV = async (req: Request, res: Response) => {
+
+
+export const postLeadFromCSV = async (req: Request, res: Response) => {
     const csvData: string = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
     try {
         await leadService.addLeadFromCSV(csvData);
@@ -65,7 +76,9 @@ export const addLeadFromCSV = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error adding leads from CSV', error });
     }
 }
-export const addInteractionToLead = async (req: Request, res: Response) => {
+
+// הוספת אינטרקציה לליד קיים
+export const postInteractionToLead = async (req: Request, res: Response) => {
     const { leadId, interactionData } = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
     try {
         await leadService.addInteractionToLead(leadId, interactionData);
@@ -74,7 +87,9 @@ export const addInteractionToLead = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error adding interaction', error });
     }
 }
-export const updateInteractions = async (req: Request, res: Response) => {
+
+// עדכון אינטרקציה
+export const patchInteractions = async (req: Request, res: Response) => {
     const data: LeadInteractionModel = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
     const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
     try {
@@ -84,92 +99,38 @@ export const updateInteractions = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error updating interactions', error });
     }
 }
-export const getLeadToRemind = async (req: Request, res: Response) => {
+
+// המזכירה מקבלת את כל הלידים שלא בוצעה אינטרקציה יותר משבועיים
+export const getLeadsToRemind = async (req: Request, res: Response) => {
     try {
-        const leadsToRemind = await leadService.GetLeadToRemined();
+        const leadsToRemind = await leadService.GetLeadToRemind();
         res.status(200).json(leadsToRemind);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching leads to remind', error });
     }
 }
 
-export const getLeadByEmail = async (req: Request, res: Response) => {
-    const { email } = req.params;
-    try {
-        const lead = await leadService.getLeadByEmail(email);
-        if (lead) {
-            res.status(200).json(lead);
-        } else {
-            res.status(404).json({ message: 'Lead not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching lead by email', error });
-    }
-};
-export const getLeadByPhone = async (req: Request, res: Response) => {
-    const { phone } = req.params;
-    try {
-        const lead = await leadService.getLeadByPhone(phone);
-        if (lead) {
-            res.status(200).json(lead);
-        } else {
-            res.status(404).json({ message: 'Lead not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching lead by phone', error });
-    }
-};
-export const getLeadByName = async (req: Request, res: Response) => {
-    const { name } = req.params;
-    try {
-        const lead = await leadService.getLeadByName(name);
-        if (lead) {
-            res.status(200).json(lead);
-        } else {
-            res.status(404).json({ message: 'Lead not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching lead by name', error });
-    }
-};
-export const getLeadByStatus = async (req: Request, res: Response) => {
-    const { status }: any = req.params; // הנח שהסטטוס נמצא בפרמטרים של הבקשה
-    try {
-        const leads = await leadService.getLeadByStatus(status);
-        res.status(200).json(leads);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching leads by status', error });
-    }
-};
-export const getLeadBySource = async (req: Request, res: Response) => {
-    const { source } = req.params;
-    try {
-        const leads = await leadService.getLeadBySource(source);
-        res.status(200).json(leads);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching leads by source', error });
-    }
-};
-export const checkIfLeadBecomesCustomer = async (req: Request, res: Response) => {
-    const { leadId } = req.params;
-    try {
-        const isCustomer = await leadService.checkIfLeadBecomesCustomer(leadId);
-        res.status(200).json({ isCustomer });
-    } catch (error) {
-        res.status(500).json({ message: 'Error checking if lead becomes customer', error });
-    }
-};
 
-export const getAllInteractions = async (req: Request, res: Response) => { 
+export const getLeadsByFilter = async (req: Request, res: Response) => {
+
+    const filters = req.query;
+
     try {
-        const interactions = await leadService.getAllInteractions();
-        res.status(200).json(interactions);
+        const customers = await leadService.filterLeads(filters);
+
+        if (customers.length > 0) {
+            res.status(200).json(customers);
+        } else {
+            res.status(404).json({ message: 'No customers found' });
+        }
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching interactions', error });
+        res.status(500).json({ message: 'Error filtering customers', error });
     }
-};
+}
+
+
  
-export const convertCsvToLeads = async (req: Request, res: Response) => {
+export const postCsvToLeads = async (req: Request, res: Response) => {
     const csvData: string = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
     try {
         await leadService.convertCsvToLeads(csvData);
@@ -179,42 +140,13 @@ export const convertCsvToLeads = async (req: Request, res: Response) => {
     }
 }
 
-export const checkIfFullLead = async (req: Request, res: Response) => {
-    const leadData: UpdateLeadRequestModel = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
-    try {
-        const isFull = await leadService.checkIfFullLead(leadData);
-        res.status(200).json({ isFull });
-    } catch (error) {
-        res.status(500).json({ message: 'Error checking if lead is full', error });
-    }
-}
-
-export const checkIfFullInteraction = async (req: Request, res: Response) => {
-    const interactionData: LeadInteractionModel = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
-    try {
-        const isFull = await leadService.checkIfFullInteraction(interactionData);
-        res.status(200).json({ isFull });
-    } catch (error) {
-        res.status(500).json({ message: 'Error checking if interaction is full', error });
-    }
-}
-
-export const deleteInteraction = async (req: Request, res: Response) => {
-    const {leadId, id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
-    try {
-        await leadService.deleteInteraction(leadId ,id);
-        res.status(200).json({ message: 'Interaction deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting interaction', error });
-    }
-}
-
-export const getOpenReminders = async (req: Request, res: Response) => {
-    try {
-        const openReminders = await leadService.getOpenReminders();
-        res.status(200).json(openReminders);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching open reminders', error });
-    }
-}
+ //מחזירה את כל הלידים שיש להם תזכורות פתוחות
+// export const getLeadsOpenReminders = async (req: Request, res: Response) => {
+//     try {
+//         const openReminders = await leadService.getOpenReminders();
+//         res.status(200).json(openReminders);
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error fetching open reminders', error });
+//     }
+// }
 

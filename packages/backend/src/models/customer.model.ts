@@ -20,8 +20,8 @@ export class CustomerModel implements Customer   {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-  paymentMethods: PaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
-  paymentMethodsType?: PaymentMethodType;    
+  //paymentMethods: PaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
+  paymentMethodsType: PaymentMethodType;    
   periods: CustomerPeriod[];
   contracts: Contract[];  // One customer can have several contracts. 1:N
   createdAt: DateISO;
@@ -39,6 +39,7 @@ export class CustomerModel implements Customer   {
     workspaceCount: number,
     createdAt: DateISO,
     updatedAt: DateISO,
+    paymentMethodsType: PaymentMethodType,
     currentWorkspaceType?: WorkspaceType,
     contractSignDate?: string,
     contractStartDate?: string,
@@ -46,8 +47,7 @@ export class CustomerModel implements Customer   {
     notes?: string,
     invoiceName?: string,
     contractDocuments?: FileReference[],
-    paymentMethods: PaymentMethod[] = [],
-    paymentMethodsType?: PaymentMethodType,
+    //paymentMethods: PaymentMethod[] = [],
     periods: CustomerPeriod[] = [],
     contracts: Contract[] = []
   ) {
@@ -67,7 +67,7 @@ export class CustomerModel implements Customer   {
     this.notes = notes;
     this.invoiceName = invoiceName;
     this.contractDocuments = contractDocuments;
-    this.paymentMethods = paymentMethods;
+   //this.paymentMethods = paymentMethods;
     this.paymentMethodsType = paymentMethodsType;
     this.periods = periods;
     this.contracts = contracts;
@@ -93,7 +93,7 @@ export class CustomerModel implements Customer   {
       notes: this.notes,
       invoiceName: this.invoiceName,
       contractDocuments: this.contractDocuments,
-      paymentMethods: this.paymentMethods,
+     // paymentMethods: this.paymentMethods,
       paymentMethodsType: this.paymentMethodsType,
       periods: this.periods,
       contracts: this.contracts,
