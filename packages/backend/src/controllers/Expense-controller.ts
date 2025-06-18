@@ -4,7 +4,7 @@ import {
   getAllExpenses,
   updateExpenseStatus,
   getExpenseReport
-} from '../services/Expense';
+} from '../services/Expense-services';
 
 // יצירת הוצאה חדשה
 export const createExpense = async (req: Request, res: Response) => {

@@ -1,11 +1,11 @@
 // payment.controller.ts
 import { Request, Response } from 'express';
-import { paymentService } from '../services/payments-service';
+import { PaymentService } from '../services/payments-service';
 
 export const payment = {
   async recordPayment(req: Request, res: Response) {
     try {
-      const payment = await paymentService.recordPayment(req.body, req.user.id);
+      const payment = await PaymentService.recordPayment(req.body, req.user.id);
       res.status(201).json(payment);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -14,7 +14,7 @@ export const payment = {
 
   async getCustomerBalance(req: Request, res: Response) {
     try {
-      const balance = await paymentService.getCustomerBalance(req.params.customerId);
+      const balance = await PaymentService.getCustomerBalance(req.params.customerId);
       res.json(balance);
     } catch (error) {
       res.status(400).json({ error: error.message });

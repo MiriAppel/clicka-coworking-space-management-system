@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import {Payment, PaymentMethodType} from '../../../types/billing'
 import { ID , DateISO, FileReference } from '../../../types/core';
+=======
+import {Payment, PaymentMethodType} from '../../../../types/billing'
+import { ID , DateISO, FileReference } from '../../../../types/core';
+>>>>>>> 7d5a94d (new good)
 
 export class PaymentModel implements Payment{
      id: ID;

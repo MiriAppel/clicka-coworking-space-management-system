@@ -1,3 +1,5 @@
+import { Expense } from "@types/expense";
+
 const mockExpense: Expense = {
   id: 'exp_001',
   vendor_id: 'vendor_123',

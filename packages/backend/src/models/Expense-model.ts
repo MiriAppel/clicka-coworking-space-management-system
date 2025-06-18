@@ -1,5 +1,6 @@
+
 import { Expense, ExpenseCategory, ExpenseStatus, ExpensePaymentMethod } from '../../../types/expense';
-import { ID, DateISO, FileReference } from '../../../types/core';
+import { ID, DateISO, FileReference } from '../../../../types/core';
 
 export class ExpenseModel implements Expense {
   id: ID;
