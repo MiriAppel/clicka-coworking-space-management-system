@@ -52,7 +52,7 @@ export interface LeadInteraction {
 
 // Lead model
 export interface Lead {
-  id?: ID;
+  id: ID;
   idNumber: ID;
   name: string;
   phone: string;

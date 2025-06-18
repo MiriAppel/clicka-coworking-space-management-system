@@ -55,10 +55,10 @@ export enum ExitReason {
 export interface CustomerPeriod {
   id: ID;
   customerId: ID;
-  entryDate: DateISO;
-  exitDate?: DateISO;
-  exitNoticeDate?: DateISO;
-  exitReason?: ExitReason;
+  entryDate?: DateISO;
+  exitDate: DateISO;
+  exitNoticeDate: DateISO;
+  exitReason: ExitReason;
   exitReasonDetails?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -151,6 +151,7 @@ export interface UpdateCustomerRequest {
   businessType?: string;
   notes?: string;
   invoiceName?: string;
+  status?: CustomerStatus;
 }
 
 // Get customers request
@@ -217,6 +218,7 @@ export interface ConvertLeadToCustomerRequest {
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;
   };
+  paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
 
