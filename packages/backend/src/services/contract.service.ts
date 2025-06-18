@@ -1,7 +1,7 @@
 import { ContractModel } from "../models/contract.model";
 import { DateISO, FileReference, ID } from "../../../../types/core";
-import {Contract,ContractStatus,} from "../../../../types/customer";
 import { baseService } from "./baseService";
+import { Contract, ContractStatus } from "../../../../types/customer";
 
 export class contractService extends baseService<ContractModel> {
   constructor() {
