@@ -1,4 +1,5 @@
 // auth-types.d.ts
+
 import { ID, DateISO, ApiResponse } from '../types/core';
 
 // User role enum

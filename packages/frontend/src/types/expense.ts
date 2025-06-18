@@ -1,7 +1,6 @@
 // expense-types.d.ts
 
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
-
 // Expense category enum
 export enum ExpenseCategory {
   RENT = 'RENT',
@@ -22,23 +21,6 @@ export enum ExpenseCategory {
   PETTY_CASH = 'PETTY_CASH',
   OTHER = 'OTHER'
 }
-export enum VendorCategory {
-  MAINTENANCE = 'MAINTENANCE',
-  UTILITIES = 'UTILITIES',
-  OFFICE_SUPPLIES = 'OFFICE_SUPPLIES',
-  CLEANING = 'CLEANING',
-  PROFESSIONAL_SERVICES = 'PROFESSIONAL_SERVICES',
-  TECHNOLOGY = 'TECHNOLOGY',
-  OTHER = 'OTHER'
-}
-
-// Vendor status enum
-export enum VendorStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  SUSPENDED = 'SUSPENDED'
-}
-
 
 // Expense status enum
 export enum ExpenseStatus {
@@ -80,7 +62,6 @@ export interface Vendor {
  
 // Expense model
 export interface Expense {
-  success: any;
   id: ID;
   vendor_id: ID;
   vendor_name: string;

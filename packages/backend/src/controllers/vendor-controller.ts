@@ -1,4 +1,4 @@
-import { VendorService } from './vendor.service';
+import { VendorService } from '../services/vendor-servic';
 
 export class Vendor_controller {
   private service = new VendorService();

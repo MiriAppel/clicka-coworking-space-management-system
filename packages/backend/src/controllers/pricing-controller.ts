@@ -4,16 +4,16 @@ import {
   createPricingTierWithHistory,
   getCurrentPricingTier,
   getPricingHistory,
-  getAllPricingTiers,
-  getPricingTierById,
+  // getAllPricingTiers,
+  // getPricingTierById,
   updatePricingTier,
   deletePricingTier
-} from "../services/billingService";
+} from "../services/pricing-service";
 
-import { PricingTierCreateRequest, PricingTier, WorkspaceType } from "../../../types";
+import { PricingTierCreateRequest, PricingTier, WorkspaceType } from "../types";
 
 export class PricingController {
-  // יצירת שכבת תמחור חדשה, עם או בלי היסטוריה
+  // ���������� �������� ���������� ��������, ���� ���� ������ ����������������
   static createTier(req: Request, res: Response) {
     try {
       const request: PricingTierCreateRequest = req.body;

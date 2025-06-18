@@ -5,7 +5,7 @@
  * @param createdBy - מזהה המשתמש שמבצע את הפעולה
  * @returns אובייקט PricingTier מוכן לשמירה במסד הנתונים
  */
-function createPricingTier(request: PricingTierCreateRequest, createdBy: ID): PricingTier {
+ export function createPricingTier(request: PricingTierCreateRequest, createdBy: ID): PricingTier {
 // מקרי קצה: מחירים שליליים
 
   // מתבצעת בדיקה האם סוג הסביבה סופק
@@ -37,7 +37,7 @@ function createPricingTier(request: PricingTierCreateRequest, createdBy: ID): Pr
  * @param createdBy - מזהה המשתמש שמבצע את הפעולה
  * @returns אובייקט PricingTier מוכן לשמירה במסד הנתונים
  */
-function createPricingTierWithHistory(request: PricingTierCreateRequest, createdBy: ID): PricingTier {
+export  function createPricingTierWithHistory(request: PricingTierCreateRequest, createdBy: ID): PricingTier {
 // מקרי קצה: מחירים שליליים
 // מקרי קצה: תאריך תחילה אינו יכול להיות בעבר
 // מקרי קצה: קיימת רשומה פעילה לאותו סוג סביבה עם תאריך חופף – מבטלים אותה
@@ -58,7 +58,7 @@ function createPricingTierWithHistory(request: PricingTierCreateRequest, created
  * @param workspaceType - סוג הסביבה (למשל: משרד קטן, טרקלין)
  * @returns מערך של רשומות תמחור ממויינות לפי תאריך תחילה מהישן לחדש
  */
-function getPricingHistory(workspaceType: WorkspaceType): PricingTier[] {
+export  function getPricingHistory(workspaceType: WorkspaceType): PricingTier[] {
   // שלב 1: שליפת כל רשומות התמחור מהמסד עבור סוג הסביבה המבוקש.
 
   // שלב 2: מיון הרשומות לפי תאריך תחילה, כך שהרשומה עם התאריך הכי מוקדם תופיע ראשונה.
@@ -90,7 +90,7 @@ function getPricingHistory(workspaceType: WorkspaceType): PricingTier[] {
  * @param workspaceType - סוג סביבת העבודה (למשל: משרד קטן, חדר ישיבות)
  * @returns רשומת תמחור תקפה לפי תאריך ומצב פעיל, או null אם לא קיימת כזו
  */
-function getCurrentPricingTier(workspaceType: WorkspaceType): PricingTier | null {
+export  function getCurrentPricingTier(workspaceType: WorkspaceType): PricingTier | null {
   // שלב 1: שליפת כל רשומות התמחור מהמסד עבור סוג הסביבה הנתון
   const allTiers = getAllPricingTiersFromDatabase(workspaceType);
 
@@ -132,7 +132,7 @@ function getCurrentPricingTier(workspaceType: WorkspaceType): PricingTier | null
  * @param updatedBy - מזהה המשתמש שמבצע את העדכון
  * @returns אובייקט PricingTier מעודכן לשמירה במסד הנתונים
  */
-function updatePricingTier(id: ID, update: Partial<PricingTier>, updatedBy: ID): PricingTier {
+export  function updatePricingTier(id: ID, update: Partial<PricingTier>, updatedBy: ID): PricingTier {
     // בדיקה אם המזהה חוקי (לא ריק והוא מסוג מחרוזת)
     // בדיקה אם מזהה העדכון תקין
     // נבנה אובייקט חדש שמייצג את התמחור המעודכן
@@ -161,7 +161,7 @@ function updatePricingTier(id: ID, update: Partial<PricingTier>, updatedBy: ID):
  * @param updatedBy - מזהה המשתמש שמבצע את הפעולה
  * @returns רשומת תמחור לא פעילה לשמירה במסד הנתונים
  */
-function deletePricingTier(tier: PricingTier, updatedBy: ID): PricingTier {
+export  function deletePricingTier(tier: PricingTier, updatedBy: ID): PricingTier {
   // בדיקה שהתקבלה רשומת תמחור תקינה
   // בדיקה שהתקבל מזהה משתמש תקין
   // יוצרת עותק חדש מהרשומה, שבו מסמנים את הרשומה כלא פעילה
