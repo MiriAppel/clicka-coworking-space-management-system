@@ -4,8 +4,7 @@ import{ ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, Record
 import { supabase } from "../db/supabaseClient";
 import { getLeadById } from "./lead.service";
 import { baseService } from "./baseService";
-
-
+import { createObjectCsvStringifier } from "csv-writer";
 
 export class customerService extends baseService <CustomerModel> {
 
@@ -20,6 +19,7 @@ export class customerService extends baseService <CustomerModel> {
 
     }
 
+    //לא הבנתי מה היא צריכה לעשות
     getCustomersToNotify = async(id: ID): Promise<GetCustomersRequest[] | null> => {
 
         return [];
@@ -60,7 +60,7 @@ export class customerService extends baseService <CustomerModel> {
 
         //לפני היצירה יש לבדוק שהחלל באמת פנוי צריך לפנות לקבוצה 3
 
-        this.post(customerData);
+        await this.post(customerData);
 
         //יש להעביר את פרטי הלקוח והחוזה למערכת החיוב (של Team 4 - Billing) לצורך חישוב תמחור והכנת חיובים ראשוניים.
 
@@ -76,7 +76,7 @@ export class customerService extends baseService <CustomerModel> {
             status: CustomerStatus.PENDING
         };
 
-        this.patch(updateStatus as CustomerModel, id);
+        await this.patch(updateStatus as CustomerModel, id);
 
         const customerLeav: CustomerModel | null = await this.getById(id);
 
@@ -95,60 +95,95 @@ export class customerService extends baseService <CustomerModel> {
             customerLeav.periods = [period];
         }
 
+        await this.patch(customerLeav ,customerLeav.id);
+
             //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
 
             // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
             // קשור לקבוצת billing
     }
 
-    exportToFile = async(req:GetCustomersRequest) :Promise<Buffer|null>=>{
-         //ייצוא תוצאות חיפוש לקובץ
-        return null;
-    }
-
+    //מחזיר את כל הלקוחות רק של העמוד הראשון
     getCustomersByPage = async (page: number = 1, pageSize: number = 50): Promise<PaginatedResponse<CustomerModel>> => {
-    // אמור לשלוף 50 לקוחות בעמוד הנתון
+    
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize - 1;
+
+        const { data, error, count } = await supabase
+            .from('CustomerModel')
+            .select('*', { count: 'exact' }) // count: 'exact' סופר את כל התוצאות
+            .range(from, to)
+            .order('createdAt', { ascending: false }); // ממיין 
+
+        if (error) {
+            console.error('Error fetching customers by page:', error);
+            throw new Error('Failed to fetch paginated customers');
+        }
+
+        const totalPages = count ? Math.ceil(count / pageSize) : 1;
+
         return {
-            data: [],
+            data: data as CustomerModel[],
             meta: {
                 currentPage: page,
-                totalPages: 1,
-                pageSize: pageSize,
-                totalCount: 0,
-                hasNext: false,
-                hasPrevious: false,
-            }
+                totalPages,
+                pageSize,
+                totalCount: count ?? 0,
+                hasNext: page < totalPages,
+                hasPrevious: page > 1,
+            },
         };
 
     }
-
-    getByDateJoin= async (dateFrom:Date, dateEnd:Date):Promise<GetCustomersRequest[]|null>=>{
-
-        const { data, error } = await supabase
-            .from('customers')
-            .select('*')
-            .gte('date_joined', dateFrom.toISOString())
-            .lte('date_joined', dateEnd.toISOString());
-
-        if (error) {
-            console.error('Error fetching customers by join date:', error);
-            throw new Error('Failed to fetch customers by join date');
-        }
-
-        if (!data || data.length === 0) {
-            console.warn(`No customers found between ${dateFrom} and ${dateEnd}`);
-            return null; 
-        }
-
-        return data as GetCustomersRequest[];
-    }
-
-
-    //ועוד הפונקציות שאין בbase-service והם מיוחדיות רק לcustomer
-
-    
 }
 
+const serviceCustomer = new customerService();
+
+    // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
+export const exportCustomersToFileByFilter = async(filter: Partial <CustomerModel>) :Promise <Buffer|null> => {
+        
+        const customerToExport = await serviceCustomer.getByFilters(filter);
+
+        if (!customerToExport || customerToExport.length === 0) {
+            return null;
+        }
+
+        // פונקציה מהספריה csv-writer
+        const csvStringifier = createObjectCsvStringifier({
+            header: [
+                { id: 'id', title: 'ID' },
+                { id: 'name', title: 'Name' },
+                { id: 'idNumber', title: 'ID Number' },
+                { id: 'businessName', title: 'Business Name' },
+                { id: 'businessType', title: 'Business Type' },
+                { id: 'currentWorkspaceType', title: 'Current Workspace Type' },
+                { id: 'workspaceCount', title: 'Workspace Count' },
+                { id: 'contractSignDate', title: 'Contract Sign Date' },
+                { id: 'billingStartDate', title: 'Billing Start Date' },
+                { id: 'notes', title: 'Notes' },
+                { id: 'invoiceName', title: 'InvoiceName' },
+                { id: 'contractDocuments', title: 'Contract Documents' },
+                { id: 'paymentMethodsType', title: 'Payment Methods Type' },
+                { id: 'notes', title: 'Notes' },
+                { id: 'updatedAt', title: 'Updated At'},
+                { id: 'contracts', title: 'Contracts' },
+                { id: 'phone', title: 'Phone' },
+                { id: 'status', title: 'Status' },
+                { id: 'createdAt', title: 'Created At' },
+            ],
+        });
+
+        const csvHeader = csvStringifier.getHeaderString();
+        const csvBody = csvStringifier.stringifyRecords(customerToExport);
+        const csvFull = csvHeader + csvBody;
+
+        return Buffer.from(csvFull, 'utf-8');
+
+}
+ 
+
+
+// לשאול את שולמית
 
 // export const getStatusChanges = async (id:ID): Promise<CustomerStatus[] | null> => {
    
@@ -164,7 +199,6 @@ export class customerService extends baseService <CustomerModel> {
 // }
 
 
-
 // export const getCustomerHistory = async (customerId: ID): Promise<CustomerHistory[]> => {
 //     // אמור לשלוף את ההיסטוריה של הלקוח עם ה-customerId הנתון
 //     return []; // להחזיר מערך של היסטוריית לקוח
@@ -172,35 +206,8 @@ export class customerService extends baseService <CustomerModel> {
 
 
 
-// export const getCustomerTimeline = async (customerId: ID): Promise<CustomerTimeline> => {
-//     return {
-//         customerId: customerId,
-//         events: [],
-//         totalEvents: 0,
-//     };
-// }
 
-// export const addTimelineEvent = async (data: TimelineEvent): Promise<void> => {
-//     // אמור להוסיף אירוע לאינטראקציות של לקוח
-//     // האירוע יכול לכלול סוג, תאריך ותיאור
-//     // להחזיר את האירוע שנוסף
-// }
 
-// export const exportTimeline = async (customerId: ID, filters?:CustomerFilter ): Promise<FileReference> => {
-//     // אמור לייצא את היסטוריית האירועים של לקוח לקובץ
-//     // להחזיר קישור לקובץ המיוצא
-//     return {
-//         id: "file-id",
-//         name: "timeline-export.json",
-//         path: `/exports/${customerId}/timeline-export.json`,
-//         mimeType: "application/json",
-//         size: 0, // גודל הקובץ, ניתן לחשב לאחר הייצוא   
-//         url: `https://example.com/exports/${customerId}/timeline-export.json`,
-//         createdAt: new Date().toISOString() as DateISO,
-//         updatedAt: new Date().toISOString() as DateISO,
-//     };
-
-// }
 
 
 

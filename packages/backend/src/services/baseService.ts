@@ -6,6 +6,7 @@ export class baseService <T> {
     // בשביל שם המחלקה
     constructor(private tableName: string) {}
 
+
     getById = async (id: ID): Promise <T> => {
 
         const { data, error } = await supabase
@@ -18,10 +19,13 @@ export class baseService <T> {
             console.error("שגיאה בשליפת נתונים:", error);
             throw error;
         }   
+
         if (!data) {
             throw new Error(`לא נמצא רשומה עם מזהה ${id}`);
         }
+
         return data;
+
     }
 
     getByFilters = async (filters: Partial<T>): Promise<T[]> => {
@@ -40,10 +44,12 @@ export class baseService <T> {
         });
 
         const { data, error } = await query;
+
         if (error) {
             console.error("שגיאה בשליפת נתונים עם פילטרים:", error);
             throw error;
         }
+
         return data ?? [];
     }   
 
@@ -59,9 +65,11 @@ export class baseService <T> {
             console.error("שגיאה בשליפת נתונים:", error);
             throw error;
         }               
+
         if (!data || data.length === 0) {
             throw new Error(`לא נמצאו נתונים`);
         }
+
         return data;           
     }
 
@@ -77,8 +85,10 @@ export class baseService <T> {
             console.error("שגיאה בעדכון הנתונים:", error);
             throw error;
         }
+
         if (!data || data.length === 0) 
             throw new Error("לא התקבלה תשובה מהשרת אחרי העדכון");        
+
         return data[0];
     }
 
@@ -93,9 +103,10 @@ export class baseService <T> {
             console.error("שגיאה בהוספת הנתונים:", error);
             throw error;
         }
+
         if (!data || data.length === 0) 
             throw new Error("לא התקבלה תשובה מהשרת אחרי ההוספה");
-
+        
         return data[0]; // מחזיר את מה שנוצר
     }
 
