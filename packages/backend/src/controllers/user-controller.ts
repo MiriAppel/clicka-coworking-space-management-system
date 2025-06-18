@@ -33,7 +33,7 @@ export class UserController {
 
     async loginByGoogleId(req: Request, res: Response) {
         const googleId = req.params.googleId;
-        const result = await this.userService.getUserByGoogleId(googleId);
+        const result = await this.userService.loginByGoogleId(googleId);
         
         if (result) {
             // שליפת ה-role מתוך ה-result

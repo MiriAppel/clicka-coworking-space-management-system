@@ -49,7 +49,7 @@ export class UserService {
     }
 
     //  googleId פונקציה לקרוא משתמש לפי  
-    async getUserByGoogleId(googleId: string): Promise<UserModel | null> {
+    async loginByGoogleId(googleId: string): Promise<UserModel | null> {
         const { data, error } = await supabase
             .from('users')
             .select('*')
