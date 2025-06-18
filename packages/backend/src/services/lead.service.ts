@@ -48,15 +48,6 @@ export const addLeadFromCSV = async (csvData: string): Promise<void> => {
   // עיבוד קובץ CSV והמרתו למערך של לידים
 };
 
-export const addInteractionToLead = async (leadId: ID,interactionData: LeadInteractionModel): Promise<void> => {
-  // מוסיף אינטרקציה במערך של אינטרקציות ליד
-};
-
-export const UpdateInteractione = async (date: LeadInteractionModel,id: ID) => {
-  // אמור לעדכן אינטרקציה קיימת בליד
-  // מחפש את האינטרקציה לפי מזהה ומעדכן אותה עם הפונקציה checkIfFullInteraction
-};
-
 export const GetLeadToRemind = (): Promise<LeadModel[]> => {
   // אמור לשלוף לידים שדורשים מעקב
   // להחזיר מערך של לידים שדורשים מעקב
@@ -69,42 +60,10 @@ export const convertCsvToLeads = (csvData: string): Promise<LeadModel[]> => {
   return Promise.resolve([]);
 };
 
-export const getAllInteractions = async (): Promise<LeadInteractionModel[]> => {
-  // אמור לשלוף את כל האינטרקציות
-  // להחזיר מערך של אינטרקציות ליד
-  return [];
-};
-
 export const checkIfFullLead = async (leadData: UpdateLeadRequest): Promise<boolean> => {
     // אמור לבדוק אם הליד מלא
     return true; // להחזיר true או false בהתאם למצב הליד
 }
-
-export const checkIfFullInteraction = async (leadData: LeadInteractionModel): Promise<boolean> => {
-  // אמור לבדוק אם הליד מלא
-  return false;
-    ; // להחזיר true או false בהתאם למצב הליד
-};
-
-export const deleteInteraction = async (leadId: ID, interactionId: ID): Promise<void> => {
-  const { data, error } = await supabase
-    .from('leads')
-    .select('interactions')
-    .eq('id', leadId)
-    .single();
-
-  if (error || !data?.interactions) throw new Error('Lead not found or error occurred');
-
-  const updated = data.interactions.filter((i: any) => i.id !== interactionId);
-
-  const { error: updateError } = await supabase
-    .from('leads')
-    .update({ interactions: updated })
-    .eq('id', leadId);
-
-  if (updateError) throw new Error('Failed to update interactions');
-};
-
 
 export const getOpenReminders = async (): Promise<LeadModel[]> => {
   // אמור לשלוף לידים עם תזכורות פתוחות
