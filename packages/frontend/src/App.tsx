@@ -15,7 +15,7 @@ function App() {
 
   useEffect(() => {
     // Check API health
-    fetch('http://localhost:3001/api/health')
+    fetch('https://clicka-app-stage.onrender.com/api/health')
       .then(response => {
         if (!response.ok) {
           throw new Error('API server not responding');
