@@ -15,7 +15,7 @@ export class contractService extends baseService<ContractModel> {
     // אמור לעדכן את התנאים של החוזה עבור ה-contactId הנתון
     // הנח שהחוזה הוא אובייקט עם מזהה, תנאים, תאריכים, סטטוס וכו'
 
-    const contract: Contract = {
+    const contract: ContractModel = {
       id: contactId,
       terms: terms,
       startDate: new Date().toISOString() as DateISO,
@@ -32,6 +32,7 @@ export class contractService extends baseService<ContractModel> {
       signedBy: undefined, // הנח שהחוזה לא נחתם על ידי אף אחד
       witnessedBy: undefined, // הנח שהחוזה לא נחתם על ידי עדים
     };
+    await this.patch(contract ,contactId);
     return contract; // להחזיר את החוזה המעודכן
   };
   
