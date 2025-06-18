@@ -1,5 +1,5 @@
-import { GenerateDocumentRequest, GeneratedDocument, DocumentTemplate, DocumentType } from "../../../../../../backend/src/types/document";
-import { ID } from "../../../../../../backend/src/types/core";
+import { GenerateDocumentRequest, GeneratedDocument, DocumentTemplate, DocumentType } from "../../../../../../types/document";
+import { ID } from "../../../../../../types/core";
 import { useReceiptAndDocumentsStore } from "../../../../Stores/Billing/receiptAndDocumentsStore";
 export const ReceiptAndDocumentGeneration = () => {
     const { fetchGeneratedDocuments, fetchDocumentTemplates, generateDocument

@@ -1,6 +1,6 @@
-import { ExpenseFilter } from "../../../../../../backend/src/types/expenseFilter";
-import { Expense } from "../../../../../../backend/src/types/expense";
-import { ID } from "../../../../../../backend/src/types/core";
+import { ExpenseFilter } from "../../../../../../types/expenseFilter";
+import { Expense } from "../../../../../../types/expense";
+import { ID } from "../../../../../../types/core";
 import { useExpenseStore } from "../../../../Stores/Billing/expenseStore";
 
 export const ExpenseList = () => {

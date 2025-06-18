@@ -5,9 +5,9 @@ import {
   GeneratedDocument,
   DocumentTemplate,
   DocumentType,
-} from "../../../../backend/src/types/document";
-import { ValidationResult } from "../../../../backend/src/types/validationResult";
-import { ID } from "../../../../backend/src/types/core";
+} from "../../../../types/document";
+import { ValidationResult } from "../../../../types/validationResult";
+import { ID } from "../../../../types/core";
 
 interface ReceiptAndDocumentsState  {
   documents: GeneratedDocument[];

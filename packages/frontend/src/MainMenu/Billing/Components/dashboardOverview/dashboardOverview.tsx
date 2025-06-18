@@ -1,8 +1,8 @@
-import { FinancialReport, ReportType, ReportParameters } from "../../../../../../backend/src/types/financialReport";
-import { Expense } from "../../../../../../backend/src/types/expense";
-import { Payment } from "../../../../../../backend/src/types/payment";
-import { Invoice } from "../../../../../../backend/src/types/invoice";
-import { ID } from "../../../../../../backend/src/types/core";
+import { FinancialReport, ReportType, ReportParameters } from "../../../../../../types/financialReport";
+import { Expense } from "../../../../../../types/expense";
+import { Payment } from "../../../../../../types/payment";
+import { Invoice } from "../../../../../../types/invoice";
+import { ID } from "../../../../../../types/core";
 import { useDashboardStore } from "../../../../Stores/Billing/dashboardStore";
 
 export const DashboardOverview = () => {

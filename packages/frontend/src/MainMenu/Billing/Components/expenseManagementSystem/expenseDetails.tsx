@@ -1,6 +1,6 @@
-import { Expense } from "../../../../../../backend/src/types/expense";
-import { ID } from "../../../../../../backend/src/types/core";
-import { FileReference } from "../../../../../../backend/src/types/core";
+import { Expense } from "../../../../../../types/expense";
+import { ID } from "../../../../../../types/core";
+import { FileReference } from "../../../../../../types/core";
 import { useExpenseStore } from "../../../../Stores/Billing/expenseStore";
 
 export const ExpenseDetails = () => {

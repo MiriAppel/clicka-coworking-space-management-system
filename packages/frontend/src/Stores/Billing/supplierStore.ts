@@ -5,10 +5,10 @@ import {
   UpdateVendorRequest,
   VendorCategory,
   VendorStatus,
-} from "../../../../backend/src/types/expense";
-import { SupplierFilter } from "../../../../backend/src/types/supplierFilter";
-import { ValidationResult } from "../../../../backend/src/types/validationResult";
-import { FileReference, ID } from "../../../../backend/src/types/core";
+} from "../../../../types/expense";
+import { SupplierFilter } from "../../../../types/supplierFilter";
+import { ValidationResult } from "../../../../types/validationResult";
+import { FileReference, ID } from "../../../../types/core";
 
 interface SupplierState {
   suppliers: Vendor[];

@@ -1,6 +1,6 @@
-import { DocumentTemplate } from "../../../../../../backend/src/types/document";
-import { ValidationResult } from "../../../../../../backend/src/types/validationResult";
-import { ID } from "../../../../../../backend/src/types/core";
+import { DocumentTemplate } from "../../../../../../types/document";
+import { ValidationResult } from "../../../../../../types/validationResult";
+import { ID } from "../../../../../../types/core";
 import { useReceiptAndDocumentsStore } from "../../../../Stores/Billing/receiptAndDocumentsStore";
 export const DocumentTemplateForm = () => {
   const { fetchTemplateDetails, handleFieldChange, validateTemplateForm,

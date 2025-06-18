@@ -1,7 +1,7 @@
-import { ExpenseCategory } from '../../../../../../backend/src/types/expense';
-import { FileReference, ID } from '../../../../../../backend/src/types/core'; // Importing FileReference type
-import type { ExpenseReportByCategoryAndVendor, FinancialReport, ReportData, ReportParameters, ReportType, RevenueReportByWorkspaceAndPeriod } from '../../../../../../backend/src/types/report'; // Importing types from the reportTypes file";
-import { WorkspaceType } from '../../../../../../backend/src/types/customer'; // Importing WorkspaceType type';
+import { ExpenseCategory } from '../../../../../../types/expense';
+import { FileReference, ID } from '../../../../../../types/core'; // Importing FileReference type
+import type { ExpenseReportByCategoryAndVendor, FinancialReport, ReportData, ReportParameters, ReportType, RevenueReportByWorkspaceAndPeriod } from '../../../../../../types/report'; // Importing types from the reportTypes file";
+import { WorkspaceType } from '../../../../../../types/customer'; // Importing WorkspaceType type';
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReportsStore';
 const FinancialReports = () => {
 

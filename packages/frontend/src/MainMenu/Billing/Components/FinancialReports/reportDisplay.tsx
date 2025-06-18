@@ -1,4 +1,4 @@
-import { FinancialReport } from "../../../../../../backend/src/types/report";
+import { FinancialReport } from "../../../../../../types/report";
 import { useFinancialReportsStore } from "../../../../Stores/Billing/financialReportsStore";
 
 const ReportDisplay=()=>{

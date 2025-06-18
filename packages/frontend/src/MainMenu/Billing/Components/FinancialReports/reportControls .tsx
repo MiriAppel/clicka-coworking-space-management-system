@@ -4,11 +4,11 @@
 // סינון לפי קטגוריות
 // בחירת פרמטרים ספציפיים לכל דוח
 
-import { ValidationResult } from '../../../../../../backend/src/types/validationResult';
-import { ReportParameters, ReportType } from '../../../../../../backend/src/types/report';
-import { DateRangeFilter, ID } from '../../../../../../backend/src/types/core';
-import { ExpenseCategory } from '../../../../../../backend/src/types/expense';
-import { WorkspaceType } from '../../../../../../backend/src/types/customer';
+import { ValidationResult } from '../../../../../../types/validationResult';
+import { ReportParameters, ReportType } from '../../../../../../types/report';
+import { DateRangeFilter, ID } from '../../../../../../types/core';
+import { ExpenseCategory } from '../../../../../../types/expense';
+import { WorkspaceType } from '../../../../../../types/customer';
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReportsStore';
 
 // כפתורי "צור דוח" ו"איפוס"
