@@ -1,7 +1,7 @@
 import { LoginRequest, LoginResponse, User } from '../../../../types/auth';
 import { getTokens, getGoogleUserInfo } from '../auth/googleApiClient';
 
-export const exchangeCodeAndFetchUser = async (code: string):Promise<LoginResponse> => {
+export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse> => {
   try {
     const tokens = await getTokens(code);
     if (!tokens.access_token) {
@@ -21,13 +21,20 @@ export const exchangeCodeAndFetchUser = async (code: string):Promise<LoginRespon
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
+    //need to save access token and refresh token in the database nad crypt them
+    // const encryptedAccessToken = encrypt(tokens.access_token);
+    // const encryptedRefreshToken = encrypt(tokens.refresh_token || '');
+    // Save user and tokens to the database here
+    console.log('Access Token:', tokens.access_token);
+    console.log('Refresh Token:', tokens.refresh_token);
     return {
       user,
       token: tokens.access_token,
+      refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
-  } catch (error) { 
-     console.error('שגיאה בהחלפת קוד או בשליפת משתמש:', error);
+  } catch (error) {
+    console.error('שגיאה בהחלפת קוד או בשליפת משתמש:', error);
     throw new Error('ההתחברות עם Google נכשלה');
   }
   // לדוגמה: חיפוש או יצירת משתמש במסד נתונים

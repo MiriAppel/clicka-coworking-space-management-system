@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
-import  router  from './routers/auth';
+import  router  from './routes/auth';
 import { log } from 'console';
 
 // Create Express app

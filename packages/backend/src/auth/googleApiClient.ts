@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
+import axios from 'axios';
 
 dotenv.config();
 //parameters for Google OAuth2 from environment variables
@@ -43,3 +44,28 @@ export async function getGoogleUserInfo(access_token: string) {
   return response.json();
 }
 
+
+export async function refreshAccessToken(refreshToken: string) {
+  const params = new URLSearchParams();
+  params.append('client_id', process.env.GOOGLE_CLIENT_ID!);
+  params.append('client_secret', process.env.GOOGLE_CLIENT_SECRET!);
+  params.append('refresh_token', refreshToken);
+  params.append('grant_type', 'refresh_token');
+
+  try {
+    const response = await axios.post('https://oauth2.googleapis.com/token', params, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+
+    const { access_token, expires_in } = response.data;
+    const expiresAt = new Date(Date.now() + expires_in * 1000).toISOString();
+
+    return {
+      access_token,
+      expires_at: expiresAt,
+    };
+  } catch (error : any) {
+    console.error('שגיאה בקבלת טוקן חדש מגוגל:', error.response?.data || error.message);
+    throw new Error('רענון הטוקן נכשל');
+  }
+}

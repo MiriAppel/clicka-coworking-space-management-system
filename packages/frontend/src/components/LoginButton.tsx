@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/useAuthStore';
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:3001',
+    withCredentials: true, // Ensure cookies are sent with requests
 });
 export const LoginWithGoogle = () => {
     const setUser = useAuthStore((state) => state.setUser);
