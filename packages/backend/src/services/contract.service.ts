@@ -44,25 +44,6 @@ export class contractService extends baseService<ContractModel> {
     return []; // להחזיר מערך של חוזים
   };
 
-  // export const postContractDocument = async (document: AddContractDocumentRequest, id: ID): Promise<void> => {
-
-  //     const contract: ContractModel = {
-
-  //         customerId: id,
-  //         version: 1,
-  //         status: ContractStatus.DRAFT,
-  //         signDate: undefined,
-  //         startDate: undefined,
-  //         endDate: undefined,
-  //         terms: undefined,
-  //         documents: [],
-  //         signedBy: undefined,
-  //         witnessedBy: undefined,
-  //         createdAt: new Date().toISOString(),
-  //         updatedAt: new Date().toISOString()
-  //     }
-  // }
-
   postContractDocument = async (
     documentToAdd: FileReference,
     id: ID
@@ -71,7 +52,9 @@ export class contractService extends baseService<ContractModel> {
     contract.documents.push(documentToAdd);
   };
 
-  deleteContractDocument = async (id: ID): Promise<void> => {
+
+  //מוחק את הקובץ מהמערך שהid documentIdשלו שווה ל
+  deleteContractDocument = async (customerId: ID, documentId: ID): Promise<void> => {
     //איזה מסמך?
     //מחיקת מסמך מהחוזה
   };

@@ -1,19 +1,14 @@
-// import express from 'express';
-// import * as controllerInteraction from '../controllers/interaction.controller'; 
+import express from 'express';
+import * as controllerInteraction from '../controllers/interaction.controller'; 
 
-// const routerInteraction = express.Router();
+const routerInteraction = express.Router();
 
-// //  (GET)
-// routerInteraction.get('/', controllerInteraction.getAllContracts); 
-// routerInteraction.get('ending-soon', controllerInteraction.getContractsEndingSoon); 
-// routerInteraction.get('customer/:customerId', controllerInteraction.getContractById); 
+routerInteraction.get('/', controllerInteraction.getAllInteractions);
 
-// // (POST)
-// routerInteraction.post('/', controllerInteraction.postNewContract); 
-// routerInteraction.post('documents', controllerInteraction.postContractDocument); 
+routerInteraction.post('/', controllerInteraction.postInteractionToLead);
 
+routerInteraction.patch('/:id', controllerInteraction.patchInteractions);
 
-// //  (DELETE)
-// routerInteraction.delete('documents/:id', controllerInteraction.deleteContractDocument); 
+routerInteraction.delete('/:id', controllerInteraction.deleteInteraction);
 
-// export default routerInteraction;
+export default routerInteraction;

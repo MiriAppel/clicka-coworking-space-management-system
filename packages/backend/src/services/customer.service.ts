@@ -2,9 +2,9 @@ import { ID, PaginatedResponse } from "../../../../types/core";
 import { CustomerModel } from "../models/customer.model";
 import{ ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, RecordExitNoticeRequest, UpdateCustomerRequest, CustomerPeriod} from '../../../../types/customer'
 import { supabase } from "../db/supabaseClient";
-import { getLeadById } from "./lead.service";
 import { baseService } from "./baseService";
 import { createObjectCsvStringifier } from "csv-writer";
+import { leadService } from "./lead.service";
 
 export class customerService extends baseService <CustomerModel> {
 
@@ -28,7 +28,9 @@ export class customerService extends baseService <CustomerModel> {
     // המרת ליד ללקוח
     convertLeadToCustomer = async (newCustomer: ConvertLeadToCustomerRequest): Promise <CustomerModel> => {
 
-        const leadData = await getLeadById(newCustomer.leadId);
+        const serviceLead = new leadService();
+        
+        const leadData = await serviceLead.getById(newCustomer.leadId);
 
         if (!leadData) {
             throw new Error('Lead data not found for the provided leadId');
