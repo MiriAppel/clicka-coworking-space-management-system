@@ -4,7 +4,6 @@ import{ ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, Record
 import { supabase } from "../db/supabaseClient";
 import { getLeadById } from "./lead.service";
 import { baseService } from "./baseService";
-import { title } from "process";
 import { createObjectCsvStringifier } from "csv-writer";
 
 export class customerService extends baseService <CustomerModel> {
@@ -61,7 +60,7 @@ export class customerService extends baseService <CustomerModel> {
 
         //לפני היצירה יש לבדוק שהחלל באמת פנוי צריך לפנות לקבוצה 3
 
-        this.post(customerData);
+        await this.post(customerData);
 
         //יש להעביר את פרטי הלקוח והחוזה למערכת החיוב (של Team 4 - Billing) לצורך חישוב תמחור והכנת חיובים ראשוניים.
 
@@ -77,7 +76,7 @@ export class customerService extends baseService <CustomerModel> {
             status: CustomerStatus.PENDING
         };
 
-        this.patch(updateStatus as CustomerModel, id);
+        await this.patch(updateStatus as CustomerModel, id);
 
         const customerLeav: CustomerModel | null = await this.getById(id);
 
@@ -95,6 +94,8 @@ export class customerService extends baseService <CustomerModel> {
             };
             customerLeav.periods = [period];
         }
+
+        await this.patch(customerLeav ,customerLeav.id);
 
             //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
 
