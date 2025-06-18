@@ -1,4 +1,4 @@
-//יצירת הזמנה ע''י לקוח
+// יצירת הזמנה ע''י לקוח
 export async function createOrderByCustomer(id: any) { 
 }
 //פונקציה המאשרת את ההזמנה
@@ -15,9 +15,6 @@ export async function checkValidOrder(id: any) {
 }
 //שליחת הודעת אישור באישור ההזמנה
 export async function messageOnCinfirmation(id: any) { 
-}
-//יצירת הזמנה למשתמשים שהם לא לקוחות
-export async function createOrderByUsers(id: any) { 
 }
 //ניהול התשלום
 export async function paymentManagement(id: any) { 

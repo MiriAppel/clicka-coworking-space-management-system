@@ -1,5 +1,5 @@
 import {TimePeriod} from "../core"
-import { Room } from "../workspace_room/Room";
+import { Room } from "../workspaceRoom/Room";
 export class OccupancyTrend {
     period: TimePeriod;
     customerId!:string;

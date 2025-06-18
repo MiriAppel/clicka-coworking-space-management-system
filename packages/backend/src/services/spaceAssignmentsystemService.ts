@@ -1,4 +1,4 @@
-import {space_assignmentsystem} from '../models/';
+//import {space_assignmentsystem} from '../models/';
 //פונקציה המקצה חדר למשתמש תוך בדיקה שאין התנגשויות
 async function assignCustomerToWorkspace(customerId:any) {
 }
@@ -11,4 +11,10 @@ async function getAssignmentHistoryForCustomer(customerId:any) {
 //פונקציה המקצה ללקוח חדרים מרובים
 async function assignCustomerToWorkspaces(workspaceid:any,customerId:any) {
     
+}
+export default{
+    assignCustomerToWorkspace,
+    unassignCustomerFromWorkspace,
+    getAssignmentHistoryForCustomer,
+    assignCustomerToWorkspaces
 }

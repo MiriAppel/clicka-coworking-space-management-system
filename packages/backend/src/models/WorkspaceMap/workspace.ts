@@ -1,7 +1,7 @@
 
 
 import { MapLayout } from './MapLayout ';
-import { ID, DateISO } from '../core';
+import { ID, DateISO } from '../../types/core';
 
 import{WorkspaceMapItem} from './WorkspaceMapItem';
 

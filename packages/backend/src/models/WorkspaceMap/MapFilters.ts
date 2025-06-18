@@ -1,5 +1,6 @@
 
-import { SpaceStatus ,WorkspaceType} from "../core";
+import { SpaceStatus} from "../../types/workspace";
+import { WorkspaceType } from "../../types/customer";
 export class MapFilters {
 
 workspaceTypes: WorkspaceType[];

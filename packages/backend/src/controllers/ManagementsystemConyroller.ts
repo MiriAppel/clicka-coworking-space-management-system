@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import * as systemService from '../services/ManagementService'
 
-export async function checkAvailabilityQuery(req: Request, res: Response) {
+export async function checkAvailabilityRoom(req: Request, res: Response) {
   try {
     const result = await systemService.checkAvailabilityQuery(req.params.id)
     res.json(result)

@@ -1,9 +1,9 @@
 import { Request,Response } from "express";
-import {space_assignmentsystemService} from '../services/space_assignmentsystemService';
+import spaceAssignmentsystemService from '../services/spaceAssignmentsystemService';
 
 export async function  assignCustomerToWorkspace(req: Request, res: Response) {
     try {
-      const result = space_assignmentsystemService.assignCustomerToWorkspace(req.params.customerId);
+      const result = spaceAssignmentsystemService.assignCustomerToWorkspace(req.params.customerId);
       res.json(result)
     } catch (err) {
        res.status(500).json({ message: "err.message" });
@@ -11,7 +11,7 @@ export async function  assignCustomerToWorkspace(req: Request, res: Response) {
   }
   export async function unassignCustomerFromWorkspace(req: Request, res: Response) {
     try{
-       const result=space_assignmentsystemService.unassignCustomerFromWorkspace(req.params.customerId,req.params.roomid);
+       const result=spaceAssignmentsystemService.unassignCustomerFromWorkspace(req.params.customerId,req.params.roomid);
        res.json(result);
     }
     catch(err){
@@ -20,7 +20,7 @@ export async function  assignCustomerToWorkspace(req: Request, res: Response) {
   }
   export async function getAssignmentHistoryForCustomer(req:Request,res:Response) {
     try{
-        const result=space_assignmentsystemService.getAssignmentHistoryForCustomer(req.params.customerId);
+        const result=spaceAssignmentsystemService.getAssignmentHistoryForCustomer(req.params.customerId);
         res.json(result);
     }
     catch(err){
@@ -29,7 +29,7 @@ export async function  assignCustomerToWorkspace(req: Request, res: Response) {
   }
   export async function assignCustomerToWorkspaces(req:Request,res:Response) {
     try{
-       const result=space_assignmentsystemService.assignCustomerToWorkspaces(req.params.customerId,req.params.workspaceid);
+       const result=spaceAssignmentsystemService.assignCustomerToWorkspaces(req.params.customerId,req.params.workspaceid);
        res.json(result);
     }
     catch(err){

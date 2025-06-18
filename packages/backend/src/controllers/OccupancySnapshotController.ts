@@ -1,5 +1,5 @@
 import { error } from 'console';
-import occupancySnapshotService from'../../services/workspace_traking/OccupancySnapshotService';
+import occupancySnapshotService from'../services/OccupancySnapshotService';
 import { Request, Response } from 'express';
 
 //כדי לראות את תמונת המצב

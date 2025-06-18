@@ -1,4 +1,4 @@
-import {Room} from'../../models/workspace_room/Room';
+import {Room} from'../models/workspaceRoom/Room';
 //יצירת חדר
 async function CreateRoomRequest(body: any) {
     

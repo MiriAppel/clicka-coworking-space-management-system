@@ -1,8 +1,8 @@
 import {ID,DateISO} from "../core";
 import{RoomStatus,MeetingRoomManagement,RoomFeature} from "../core"
 import { BookingRules } from "./BookingRules";
-import { OccupancyAlert } from "../workspace_traking/OccupancyAlert";
-import { OccupancySnapshot } from "../workspace_traking/OccupancySnapshot";
+import { OccupancyAlert } from "../workspaceTraking/OccupancyAlert";
+import { OccupancySnapshot } from "../workspaceTraking/OccupancySnapshot";
 import { RoomFaeature } from "./RoomFaeature";
 export class Room {
     id: ID;

@@ -1,4 +1,4 @@
-import {OccupancyAlert} from'../../models/workspace_traking/OccupancyAlert';
+//import {OccupancyAlert} from'../../models/workspace_traking/OccupancyAlert';
 //להקפיץ טריגר אם הקיבולת מתקרבת לסף
 async function checkAndTriggerAlert(id:any) {
 }

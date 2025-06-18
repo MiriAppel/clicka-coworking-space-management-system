@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import RoomService from '../../services/workspace_room/RoomService';
+import RoomService from '../services/RoomService';
 
 // ליצירת חדר
 export async function CreateRoomRequest(req: Request, res: Response) {
