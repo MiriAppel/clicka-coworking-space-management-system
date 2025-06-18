@@ -37,12 +37,12 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 //google api functions:
 import calendarRouter from './routes/calendar-route';
-app.use('/api', calendarRouter);
+app.use('/api/calendar', calendarRouter);
 
 import driveRouter from './routes/drive-route';
-app.use('/api', driveRouter);
+app.use('/api/drive', driveRouter);
 
 import gmailRouter from './routes/gmail-route';
-app.use('/api', gmailRouter);
-
+app.use('/api/gmail', gmailRouter);
 export default app;
+

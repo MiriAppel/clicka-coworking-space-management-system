@@ -27,11 +27,13 @@ export interface CalendarEventInput {
   description?: string;
   location?: string;
   start: {
-    dateTime: DateISO;
+    dateTime?: DateISO;
+    date?: DateISO;
     timeZone?: string;
   };
   end: {
-    dateTime: DateISO;
+    dateTime?: DateISO;
+    date?: DateISO;
     timeZone?: string;
   };
   attendees?: Array<{ email: string }>;

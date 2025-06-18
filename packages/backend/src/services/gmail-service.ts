@@ -46,20 +46,55 @@ export async function sendEmail(userId: string, request: SendEmailRequest, token
   return res.data;
 }
 
-export async function listEmails(userId: string, token: string) {
+export async function listEmails(
+  userId: string,
+  token: string,
+  options?: {
+    maxResults?: number;
+    q?: string;
+    labelIds?: string[];
+    pageToken?: string;
+  }
+) {
   const gmail = google.gmail({ version: 'v1', auth: getAuth(token) });
-  const listRes = await gmail.users.messages.list({ userId, maxResults: 10 });
 
-  const messages = listRes.data.messages ?? [];
-  const detailed = await Promise.all(messages.map(async msg => {
-    const full = await gmail.users.messages.get({ userId, id: msg.id!, format: 'metadata' });
-    return {
-      id: msg.id,
-      snippet: full.data.snippet,
-      headers: full.data.payload?.headers,
-    };
-  }));
+  let listRes;
+  try {
+    listRes = await gmail.users.messages.list({
+      userId,
+      maxResults: options?.maxResults,
+      q: options?.q,
+      labelIds: options?.labelIds,
+      pageToken: options?.pageToken,
+    });
+  } catch (error) {
+    return [{ error: 'Failed to fetch message list', details: error }];
+  }
+
+  const messages = listRes.data?.messages;
+  if (!messages || messages.length === 0) return [];
+
+  const detailed = await Promise.all(
+    messages.map(async (msg) => {
+      try {
+        const full = await gmail.users.messages.get({
+          userId,
+          id: msg.id!,
+          format: 'metadata',
+        });
+        return {
+          id: msg.id,
+          snippet: full.data.snippet,
+          headers: full.data.payload?.headers,
+        };
+      } catch (err) {
+        return {
+          error: `Failed to fetch message ${msg.id}`,
+          details: err instanceof Error ? err.message : err,
+        };
+      }
+    })
+  );
 
   return detailed;
 }
-
