@@ -1,6 +1,6 @@
-import { ID, DateISO } from '../types/core';
-import { WorkspaceType } from '../types/customer';
-import { Lead, LeadInteraction } from '../types/lead';
+import { ID, DateISO } from '../../../../types/core';
+import { WorkspaceType } from '../../../../types/customer';
+import { Lead, LeadInteraction } from '../../../../types/lead';
 
 export class LeadModel implements Lead {
   

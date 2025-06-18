@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express';
 import * as customerService from '../services/customer.service';
-import { ConvertLeadToCustomerRequest, UpdateCustomerRequest } from '../types/customer';
+import { ConvertLeadToCustomerRequest, UpdateCustomerRequest } from '../../../../types/customer';
 
 
 export const getAllCustomers = async (req: Request, res: Response) => {

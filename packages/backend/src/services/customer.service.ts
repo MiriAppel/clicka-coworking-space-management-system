@@ -1,6 +1,6 @@
-import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "../types/core";
+import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "../../../../types/core";
 import { CustomerModel } from "../models/customer.model";
-import{ Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerStatus, ExitReason, GetCustomersRequest, RecordExitNoticeRequest, TimelineEventType, UpdateCustomerRequest, CustomerPeriod} from '../types/customer'
+import{ Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerStatus, ExitReason, GetCustomersRequest, RecordExitNoticeRequest, TimelineEventType, UpdateCustomerRequest, CustomerPeriod} from '../../../../types/customer'
 import { supabase } from "../db/supabaseClient";
 import { LeadModel } from "../models/lead.model";
 import { getLeadById } from "./lead.service";
