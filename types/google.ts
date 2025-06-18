@@ -1,6 +1,6 @@
 // google-types.d.ts
 
-import { ApiResponse, ID, FileReference } from './core-types';
+import { ApiResponse, ID, FileReference } from './core';
 
 // Google OAuth token data
 export interface GoogleOAuthTokenData {

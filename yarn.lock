@@ -3597,7 +3597,7 @@ clean-css@^5.2.2:
   dependencies:
     source-map "~0.6.0"
 
-"clicka-backend@file:c:\\Users\\User\\Desktop\\clicka-project\\packages\\backend":
+"clicka-backend@file:C:\\Users\\User\\Desktop\\clicka-project\\packages\\backend":
   version "1.0.0"
   resolved "file:packages/backend"
   dependencies:
@@ -3610,7 +3610,7 @@ clean-css@^5.2.2:
     morgan "^1.10.0"
     pg "^8.16.0"
 
-"clicka-frontend@file:c:\\Users\\User\\Desktop\\clicka-project\\packages\\frontend":
+"clicka-frontend@file:C:\\Users\\User\\Desktop\\clicka-project\\packages\\frontend":
   version "0.1.0"
   resolved "file:packages/frontend"
   dependencies:
@@ -4985,7 +4985,7 @@ etag@^1.8.1, etag@~1.8.1:
   resolved "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
-"etl@file:c:\\Users\\User\\Desktop\\clicka-project\\packages\\ETL":
+"etl@file:C:\\Users\\User\\Desktop\\clicka-project\\packages\\ETL":
   version "1.0.0"
   resolved "file:packages/ETL"
   dependencies:
