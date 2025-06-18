@@ -81,27 +81,57 @@ export const SearchCustomer = () => {
         return () => observer.disconnect();
     }, [hasMore]);
 
-    const checkInputType = (input:string) => {
+    const checkInputType = (input: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        // טלפון ישראלי לדוגמה: 05X-XXXXXXX או 05XXXXXXXX
         const phoneRegex = /^05\d[-]?\d{7}$/;
 
-        if (emailRegex.test(input)) {
-            return 'email';
-        } else if (phoneRegex.test(input)) {
-            return 'phone';
-        } else {
-            return 'text';
+        if (emailRegex.test(input)) return 'email';
+        if (phoneRegex.test(input)) return 'phone';
+        return 'text';
+    };
+
+    const normalizeDate = (input: string): string | null => {
+        const clean = input.trim().replace(/\s+/g, "");
+        if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
+
+        const match = clean.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+        if (match) {
+            const [, day, month, year] = match;
+            return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
         }
-    }
+
+        const parsed = new Date(clean);
+        return !isNaN(parsed.getTime()) ? parsed.toISOString().split("T")[0] : null;
+    };
+
+    const isHebrew = (text: string): boolean => /^[\u0590-\u05FF\s]+$/.test(text);
+
+    const translateToHebrew = async (text: string): Promise<string> => {
+        try {
+            const response = await fetch("/api/translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text }),
+            });
+
+            if (!response.ok) throw new Error("Translation failed");
+            const data = await response.json();
+            return data.translatedText;
+        } catch (error) {
+            console.error("Translation error:", error);
+            return text;
+        }
+    };
 
     const searchFromServer = async (input: string) => {
         try {
-            const type = checkInputType(input)
+            const type = checkInputType(input);
             const res = await fetch(`/api/customers/search?query=${encodeURIComponent(type)}`);
             const data = await res.json();
-            //כרגע כשאין API
-            handleSearch(input,false)
+
+            // כרגע אין API פעיל – fallback לחיפוש לוקלי
+            handleSearch(input, false);
+
             const items: Person[] = data.map((item: any) =>
                 item.type === 'customer' ? new Customer(item) : new Lead(item)
             );
@@ -112,44 +142,33 @@ export const SearchCustomer = () => {
         }
     };
 
-    function normalizeDate(input: string): string | null {
-        const clean = input.trim().replace(/\s+/g, "");
-
-        if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
-
-        const match = clean.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
-        if (match) {
-            const [, day, month, year] = match;
-            return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-        }
-
-        const parsed = new Date(clean);
-        if (!isNaN(parsed.getTime())) {
-            return parsed.toISOString().split("T")[0];
-        }
-
-        return null;
-    }
-
     const handleSearch = async (input = searchTerm.trim(), fromServer = false) => {
-        setQuery(input);
-        setSearchTerm(input);
-
-        if (input === '') {
+        if (!input) {
+            setQuery('');
+            setSearchTerm('');
             setResults([]);
             return;
         }
 
+        let searchValue = input;
+
+        if (!isHebrew(searchValue)) {
+            searchValue = await translateToHebrew(searchValue);
+        }
+
+        setQuery(searchValue);
+        setSearchTerm(input);
+
         if (fromServer) {
-            await searchFromServer(input);
+            await searchFromServer(searchValue);
         } else {
-            const lower = input.toLowerCase();
-            const parsedDate = normalizeDate(input);
+            const lower = searchValue.toLowerCase();
+            const parsedDate = normalizeDate(searchValue);
 
             const filtered = data.filter((person) => {
                 const nameMatch = person.name.toLowerCase().includes(lower);
                 const emailMatch = person.email.toLowerCase().includes(lower);
-                const phoneMatch = person.phone.includes(input);
+                const phoneMatch = person.phone.includes(searchValue);
 
                 let dateMatch = false;
                 let statusMatch = false;
@@ -177,7 +196,6 @@ export const SearchCustomer = () => {
         }
     };
 
-
     return (
         <div>
             <Stack spacing={2} direction="row">
@@ -189,13 +207,12 @@ export const SearchCustomer = () => {
                         const value = e.target.value;
                         handleSearch(value, false);
                     }}
-
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             handleSearch(searchTerm, true);
                         }
                     }}
-                ></TextField>
+                />
                 <Button onClick={() => handleSearch(searchTerm, true)}>חפש</Button>
             </Stack>
 
@@ -203,8 +220,8 @@ export const SearchCustomer = () => {
                 {results.map((item, index) => (
                     <ListItem key={index}>
                         <ListItemText
-                            primary={`${item.name} | ${item.email} | ${item.phone} ${item instanceof Customer
-                                ? `| ${item.status.join(", ")} | ${item.currentWorkspaceType.join(", ")} | ${item.contractStartDate}`
+                            primary={`${item.name} | ${item.email} | ${item.phone}${item instanceof Customer
+                                ? ` | ${item.status.join(", ")} | ${item.currentWorkspaceType.join(", ")} | ${item.contractStartDate}`
                                 : ""
                                 }`}
                         />
