@@ -1,5 +1,6 @@
 import express from 'express';
 import * as customerController from '../controllers/customer.controller'; 
+import * as contractController from '../controllers/contract.controller'
 
 const router = express.Router();
 
@@ -30,20 +31,20 @@ router.put('/:id', customerController.putCustomer);
 
 // --- Contract Routes ---
 //  (GET)
-router.get('/contracts', customerController.getAllContracts); 
-router.get('/contracts/ending-soon', customerController.getContractsEndingSoon); 
-router.get('/contracts/customer/:customerId', customerController.getAllContractsByCustomerId); 
-router.get('/contracts/:contractId', customerController.getContractById); 
+router.get('/contracts', contractController.getAllContracts); 
+router.get('/contracts/ending-soon', contractController.getContractsEndingSoon); 
+// router.get('/contracts/customer/:customerId', contractController.getAllContractsByCustomerId); //אפשר לגשת לחוזה רק דרך לקוח
+router.get('/contracts/:contractId', contractController.getContractById); 
 
 // (POST)
-router.post('/contracts', customerController.postNewContract); 
-router.post('/contracts/documents', customerController.postContractDocument); 
+router.post('/contracts', contractController.postNewContract); 
+router.post('/contracts/documents', contractController.postContractDocument); 
 
 //  (PUT)
-router.put('/contracts/:contractId/terms', customerController.updateContractTerms); 
+// router.put('/contracts/:contractId/terms', contractController.updateContractTerms); 
 
 //  (DELETE)
-router.delete('/contracts/documents/:id', customerController.deleteContractDocument); 
+router.delete('/contracts/documents/:id', contractController.deleteContractDocument); 
 
 // --- Timeline Routes ---
 // (GET)
