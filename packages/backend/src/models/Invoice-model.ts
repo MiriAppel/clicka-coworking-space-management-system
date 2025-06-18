@@ -1,5 +1,5 @@
-import {BillingItem, BillingItemType, Invoice, InvoiceStatus} from '../types/billing'
-import { ID , DateISO } from '../types/core';
+import {BillingItem, BillingItemType, Invoice, InvoiceStatus} from '../../../types/billing'
+import { ID , DateISO } from '../../../types/core';
 export class InvoiceModel implements Invoice{
     id: ID;
     invoice_number: string;

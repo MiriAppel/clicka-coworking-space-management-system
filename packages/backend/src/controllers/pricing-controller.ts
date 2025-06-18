@@ -10,7 +10,7 @@ import {
   deletePricingTier
 } from "../services/billingService";
 
-import { PricingTierCreateRequest, PricingTier, WorkspaceType } from "../types";
+import { PricingTierCreateRequest, PricingTier, WorkspaceType } from "../../../types";
 
 export class PricingController {
   // יצירת שכבת תמחור חדשה, עם או בלי היסטוריה

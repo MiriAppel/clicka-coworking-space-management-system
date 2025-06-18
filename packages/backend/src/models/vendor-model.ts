@@ -1,5 +1,5 @@
-import { ID, DateISO, FileReference } from '../types/core';
-import { Vendor, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms } from '../types/expense';
+import { ID, DateISO, FileReference } from '../../../types/core';
+import { Vendor, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms } from '../../../types/expense';
 
 export class VendorModel implements Vendor {
   id: ID;
