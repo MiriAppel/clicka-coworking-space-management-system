@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import * as leadService from "../services/lead.service"
 import { LeadModel} from '../models/lead.model';
 import {UpdateLeadRequestModel }from '../models/LeadRequests'
-import { LeadInteraction, LeadStatus } from '../../../../types/lead';
+import { LeadInteraction, LeadStatus } from '../types/lead';
 import { LeadInteractionModel } from '../models/LeadInteraction';
 
 

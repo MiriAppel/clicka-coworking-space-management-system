@@ -5,8 +5,6 @@ import { supabase } from "../db/supabaseClient";
 import { getLeadById } from "./lead.service";
 import { baseService } from "./baseService";
 
-
-
 export class customerService extends baseService <CustomerModel> {
 
     constructor() {
@@ -146,8 +144,10 @@ export class customerService extends baseService <CustomerModel> {
 
     //ועוד הפונקציות שאין בbase-service והם מיוחדיות רק לcustomer
 
-    
 }
+ 
+
+
 
 
 // export const getStatusChanges = async (id:ID): Promise<CustomerStatus[] | null> => {
@@ -165,6 +165,7 @@ export class customerService extends baseService <CustomerModel> {
 
 
 
+
 // export const getCustomerHistory = async (customerId: ID): Promise<CustomerHistory[]> => {
 //     // אמור לשלוף את ההיסטוריה של הלקוח עם ה-customerId הנתון
 //     return []; // להחזיר מערך של היסטוריית לקוח
@@ -172,35 +173,8 @@ export class customerService extends baseService <CustomerModel> {
 
 
 
-// export const getCustomerTimeline = async (customerId: ID): Promise<CustomerTimeline> => {
-//     return {
-//         customerId: customerId,
-//         events: [],
-//         totalEvents: 0,
-//     };
-// }
 
-// export const addTimelineEvent = async (data: TimelineEvent): Promise<void> => {
-//     // אמור להוסיף אירוע לאינטראקציות של לקוח
-//     // האירוע יכול לכלול סוג, תאריך ותיאור
-//     // להחזיר את האירוע שנוסף
-// }
 
-// export const exportTimeline = async (customerId: ID, filters?:CustomerFilter ): Promise<FileReference> => {
-//     // אמור לייצא את היסטוריית האירועים של לקוח לקובץ
-//     // להחזיר קישור לקובץ המיוצא
-//     return {
-//         id: "file-id",
-//         name: "timeline-export.json",
-//         path: `/exports/${customerId}/timeline-export.json`,
-//         mimeType: "application/json",
-//         size: 0, // גודל הקובץ, ניתן לחשב לאחר הייצוא   
-//         url: `https://example.com/exports/${customerId}/timeline-export.json`,
-//         createdAt: new Date().toISOString() as DateISO,
-//         updatedAt: new Date().toISOString() as DateISO,
-//     };
-
-// }
 
 
 
