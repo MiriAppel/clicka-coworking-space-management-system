@@ -1,7 +1,7 @@
 // billing-types.d.ts
 
-import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core-types';
-import { WorkspaceType } from './customer-types';
+import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
+import { WorkspaceType } from './customer';
 
 // Invoice status enum
 export enum InvoiceStatus {

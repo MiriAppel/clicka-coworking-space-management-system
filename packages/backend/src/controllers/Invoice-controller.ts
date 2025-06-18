@@ -1,4 +1,27 @@
 import { Request, Response } from "express";
+<<<<<<< HEAD
+=======
+//crud functions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> uiBilling
 
 /**
  * בקר ליצירת חשבונית ידנית
@@ -41,7 +64,11 @@ export const generateInvoices = async (_req: Request, res: Response) => {
     }
 
     res.status(201).json({
+<<<<<<< HEAD
       message: נוצרו ${generatedInvoices.length} חשבוניות,
+=======
+      message:` נוצרו ${generatedInvoices.length} חשבוניות`,
+>>>>>>> uiBilling
       invoices: generatedInvoices,
     });
   } catch (error) {

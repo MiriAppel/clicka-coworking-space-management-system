@@ -6,12 +6,14 @@ export const WorkspaceMap = () => {
 
     const navigate = useNavigate()
 
-const spaceStatus = () => {
+const spaceStatus = (): string => {
     // fetch('http://localhost:3001/api/workspace/status')
+<<<<<<< HEAD
     return ""
+=======
+    return "lounge";
+>>>>>>> uiBilling
 }
-
-
     return <div className="workspaceMap">
         <h1>WorkspaceMap</h1>
         <div className="allWorkspaceMap">

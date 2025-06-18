@@ -1,9 +1,117 @@
 // report-types.d.ts
 
-import { ApiResponse, DateRangeFilter } from './core-types';
-import { WorkspaceType } from './customer-types';
-import { ExpenseCategory } from './expense-types';
-import { BillingItemType } from './billing-types';
+import { ApiResponse, DateISO, DateRangeFilter, ID } from './core';
+import { WorkspaceType } from './customer';
+import { ExpenseCategory } from './expense';
+import { BillingItemType } from './billing';
+
+//extra interfaces
+export interface ReportData {
+revenueData: RevenueReportData;
+expenseData: ExpenseReportData;
+// profitLossData: ProfitLossReportData;
+// cashFlowData: CashFlowReportData;
+// customerAgingData: CustomerAgingReportData;
+// occupancyRevenueData: OccupancyRevenueReportData;
+}
+export interface FinancialReport {
+id: ID;
+type: ReportType;
+title: string;
+description?: string;
+parameters: ReportParameters;
+data: ReportData;
+generatedAt: DateISO;
+generatedBy: ID;
+
+}
+export enum ReportType {
+REVENUE = '&#39;REVENUE&#39',
+EXPENSES = '&#39;EXPENSES&#39',
+PROFIT_LOSS = '&#39;PROFIT_LOSS&#39',
+CASH_FLOW = '&#39;CASH_FLOW&#39',
+CUSTOMER_AGING = '&#39;CUSTOMER_AGING&#39',
+OCCUPANCY_REVENUE = '&#39;OCCUPANCY_REVENUE&#39'
+}
+export interface ReportParameters {
+dateRange: DateRangeFilter;
+groupBy?: '&#39;month&#39; | &#39;quarter&#39; | &#39;year&#39';
+categories?: string[];
+customerIds?: ID[];
+includeProjections?: boolean;
+}
+export interface RevenueReportData {
+totalRevenue: number;
+membershipRevenue: number;
+meetingRoomRevenue: number;
+loungeRevenue: number;
+otherRevenue: number;
+breakdown: {
+date: string;
+totalRevenue: number;
+membershipRevenue: number;
+meetingRoomRevenue: number;
+loungeRevenue: number;
+}[];
+}
+export interface ExpenseReportData {
+totalExpenses: number;
+expensesByCategory: {
+category: ExpenseCategory;
+amount: number;
+percentage: number;
+}[];
+monthlyTrend: {
+month: string;
+
+totalExpenses: number;
+topCategories: {
+category: ExpenseCategory;
+amount: number;
+}[];
+}[];
+}
+
+export interface ExpenseReportByCategoryAndVendor {
+  totalExpenses: number;
+  expensesByCategoryAndVendor: {
+    category: ExpenseCategory;
+    vendorId: ID;
+    vendorName: string;
+    amount: number;
+    percentage: number;
+  }[];
+  period: {
+    startDate: DateISO;
+    endDate: DateISO;
+  };
+}
+export interface RevenueReportByWorkspaceAndPeriod {
+  totalRevenue: number;
+  byWorkspaceType: {
+    workspaceType: WorkspaceType;
+    revenue: number;
+    breakdown: {
+      period: string; // לדוג' '2024-06' או 'Q2-2024'
+      revenue: number;
+    }[];
+  }[];
+  period: {
+    startDate: DateISO;
+    endDate: DateISO;
+  };
+}
+
+
+
+
+
+
+//////////////////
+
+
+
+
 
 // Time period enum
 export enum TimePeriod {
