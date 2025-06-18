@@ -1,8 +1,8 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { googleAuthConfig } from '../config/googleAuth';
-import { LoginResponse } from '../../../../types/auth';
-import { useAuthStore } from '../store/useAuthStore';
+import { googleAuthConfig } from '../Config/googleAuth';
+import { LoginResponse } from '../../../../../types/auth';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:3001',
@@ -39,7 +39,7 @@ export const LoginWithGoogle = () => {
     });
 
     return (
-        <button onClick= {() => login()}> התחבר עם Google </button>
+        <button onClick= {() => login()}> Google התחבר עם </button>
     );
 };
 

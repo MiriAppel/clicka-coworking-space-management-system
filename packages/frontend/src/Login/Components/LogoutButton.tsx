@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '../store/useAuthStore'; // ודאי שהנתיב נכון
+import { useAuthStore } from '../../store/useAuthStore'; // ודאי שהנתיב נכון
 import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
@@ -14,7 +14,7 @@ export const LogoutButton = () => {
     try {
       await axiosInstance.post('/api/logout', {}, { withCredentials: true });
       clearAuth();
-      navigate('/login'); // או כל דף אחר
+      navigate('/'); // או כל דף אחר
     } catch (error) {
       console.error('Logout failed:', error);
     }

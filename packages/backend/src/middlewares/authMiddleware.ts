@@ -14,7 +14,7 @@ export const verifySession = (req: Request, res: Response, next: NextFunction) =
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string };
     // שימי את המידע על המשתמש ב-request כדי שיהיה זמין ב-route
-    req.user = payload;
+    // req.user = payload;
     next(); // ממשיכים ל-route הבא
   } catch (err: any) {
     if (err.name === 'TokenExpiredError') {

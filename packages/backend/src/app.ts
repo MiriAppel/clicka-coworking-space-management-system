@@ -1,17 +1,24 @@
-import express from 'express';
+import express, { NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
 import  router  from './routes/auth';
-import { log } from 'console';
+import cookieParser from 'cookie-parser';
+import { Request, Response } from 'express';
+
 
 // Create Express app
 const app = express();
 
 // Apply middlewares
+app.use(cookieParser());
+
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
+  credentials: true, // Allow cookies to be sent with requests
+}));
 app.use(morgan('dev'));
 app.use(json());
 
@@ -20,7 +27,7 @@ app.use(urlencoded({ extended: true }));
 
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {  
+app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 app.use('/api',router)
@@ -28,7 +35,7 @@ app.use('/api',router)
 // TODO: Add routers for different resources
 
 // Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, req: Request, res:Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
     success: false,

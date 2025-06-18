@@ -1,6 +1,6 @@
 import e, { Request, Response } from 'express';
 import * as authService from '../services/authService';
-import { LoginResponse, User } from './../../../../types/auth';
+import { LoginRequest, LoginResponse, User } from './../../../../types/auth';
 import jwt from 'jsonwebtoken';
 import { decrypt } from '../services/cryptoService';
 import { refreshAccessToken } from '../auth/googleApiClient';

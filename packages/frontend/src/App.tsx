@@ -3,7 +3,8 @@ import './App.css';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
-import { LoginWithGoogle } from './components/LoginButton';
+import { LoginWithGoogle } from './Login/Components/LoginButton';
+import { AuthenticationScreen } from './Login/Components/AuthenticationScreen';
 
 // Simple component to demonstrate the project
 function App() {
@@ -42,12 +43,12 @@ function App() {
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
-      <div className='menu' style={{ backgroundColor: 'black' }}>
+      {/* <div className='menu' style={{ backgroundColor: 'black' }}>
         <Button variant="outlined" onClick={() => { navigate('/leadAndCustomer') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Lead & Customer</Button>
         <Button variant="outlined" onClick={() => { navigate('/workspaceMap') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Workspace</Button>
         <Button variant="outlined" onClick={() => { navigate('/billing') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Billing</Button>
-      </div>
-      <LoginWithGoogle />
+      </div> */}
+      <AuthenticationScreen />
     </div>
     
   );
