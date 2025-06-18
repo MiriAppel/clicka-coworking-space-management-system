@@ -13,12 +13,12 @@ export class LeadModel implements Lead {
   interestedIn: WorkspaceType[];
   source: LeadSource;
   status: LeadStatus;
-  contactDate?: string | undefined;
-  followUpDate?: string | undefined;
-  notes?: string | undefined;
   interactions: LeadInteraction[]; // כל אינטראקציה שייכת לליד אחד, אבל ליד יכול להכיל הרבה אינטראקציות (שיחות, תזכורות, ביקורים וכו׳).
   createdAt: string;
   updatedAt: string;
+  contactDate?: string | undefined;
+  followUpDate?: string | undefined;
+  notes?: string | undefined;
 
     constructor( 
     id: ID,
