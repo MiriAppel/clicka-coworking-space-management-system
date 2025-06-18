@@ -16,6 +16,10 @@ app.use(json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://netfree.link");
+  next();
+})
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
