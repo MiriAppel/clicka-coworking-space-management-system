@@ -1,3 +1,5 @@
+import { ID } from "../types/billing";
+
 export class PaymentService {
  updatePayment(request: PaymentRecordRequest, recordedBy: ID): Payment {
     // אימות מזהה לקוח (נניח שמבוצע ברמת שירות או קריאה חיצונית)
@@ -47,4 +49,38 @@ export class PaymentService {
     // סינון לפי מזהה הלקוח
     // מיון תשלומים מהחדש לישן לפי תאריך תשלום
   }
+
+  //לרחל
+  /**
+   * תיעוד תשלום חדש ללקוח ועדכון מצב החשבוניות והיתרה
+   * @param customerId מזהה הלקוח
+   * @param paymentData פרטי התשלום (סכום, תאריך, אמצעי תשלום וכו')
+   * @param recordedBy מי תיעד את התשלום (משתמש/מערכת)
+   * @returns אובייקט תשלום חדש לאחר עדכון החשבוניות והיתרה
+   */
+  recordAndApplyPayment(
+    customerId: ID,
+    paymentData: PaymentRecordRequest,
+    recordedBy: ID
+  ): Payment {
+    // כאן יבוא המימוש בפועל
+  }
+
+  /**
+   * מחזירה דוח גבייה כללי לכל הלקוחות (סיכום מצב גבייה).
+   * @returns Promise<CollectionSummary>
+   */
+  async getCollectionSummaryReport(): Promise<CollectionSummary> {
+
+  }
+
+  /**
+   * מחזירה דוח גבייה מפורט ללקוח מסוים.
+   * @param customerId מזהה הלקוח
+   * @returns Promise<CustomerCollectionReport>
+   */
+  async getCustomerCollectionReport(customerId: ID): Promise<CustomerCollectionReport> {
+  
+  }
+  
 }

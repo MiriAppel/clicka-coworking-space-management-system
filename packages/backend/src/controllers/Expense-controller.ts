@@ -3,8 +3,9 @@ import {
   insertExpense,
   getAllExpenses,
   updateExpenseStatus,
-  getExpenseReport
-} from '../services/Expense';
+  getExpenseReport,
+  getBusinessExpensesForManager
+} from '../services/Expense-services';
 
 // יצירת הוצאה חדשה
 export const createExpense = async (req: Request, res: Response) => {
@@ -40,3 +41,14 @@ export const getReport = async (req: Request, res: Response) => {
 export const getExpensesByVendor = async (req: Request, res: Response) => {
     
 }
+/**
+ * מחזירה את כל ההוצאות העסקיות עבור נחמה המנהלת לצורך ניטור עלויות.
+ */
+export const getBusinessExpensesForManagerController = async (req: Request, res: Response) => {
+    try {
+        const expenses = await getBusinessExpensesForManager();
+        res.status(200).json(expenses);
+    } catch (error) {
+        res.status(500).json({ error: "שגיאה בשליפת ההוצאות העסקיות" });
+    }
+};

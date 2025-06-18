@@ -13,7 +13,7 @@ export class Vendor_controller {
     const input = req.body;
     const isUpdate = Boolean(input.id);
     const vendor = this.service.saveVendorProfile(input, isUpdate);
-    saveVendorToDb(vendor); // או קריאה לפונקציה אחרת
+    saveVendorToDB(vendor); // או קריאה לפונקציה אחרת
     res.status(200).json(vendor);
   }
 
@@ -25,7 +25,7 @@ export class Vendor_controller {
 
   filterVendors(req: Request, res: Response) {
     const filters = req.query;
-    const allVendors = getAllVendorsFromDb(); // פונקציה חיצונית שמחזירה את כל הספקים
+    const allVendors = getAllVendorsFromDB(); // פונקציה חיצונית שמחזירה את כל הספקים
     const filtered = this.service.filterVendors(allVendors, filters);
     res.json(filtered);
   }

@@ -85,6 +85,7 @@ export interface Vendor {
  
 // Expense model
 export interface Expense {
+  success: any;
   id: ID;
   vendor_id: ID;
   vendor_name: string;

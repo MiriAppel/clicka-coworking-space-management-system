@@ -1,3 +1,6 @@
+import { ID } from "../types/billing";
+import { Vendor } from "../types/expense";
+
 export class VendorService {
   getVendorSummary(vendorId: ID): VendorSummary {
     // שליפת כל ההוצאות המשויכות לספק

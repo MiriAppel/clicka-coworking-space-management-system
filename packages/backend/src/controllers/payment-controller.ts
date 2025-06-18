@@ -1,6 +1,6 @@
 // payment.controller.ts
 import { Request, Response } from 'express';
-import { paymentService } from '../services/payments-service';
+import { PaymentService } from '../services/payments-service';
 
 export const payment = {
   async recordPayment(req: Request, res: Response) {
@@ -55,5 +55,18 @@ export const payment = {
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
+  }
+  
+};
+//לרחל
+const paymentService = new PaymentService();
+// תיעוד תשלום חדש
+export const recordPaymentController = (req: Request, res: Response) => {
+  try {
+    const userId: ID = req.user?.id || "SYSTEM";
+    const payment = paymentService.recordPayment(req.body, userId);
+    res.status(201).json(payment);
+  } catch (error) {
+    res.status(400).json({ message: (error as Error).message });
   }
 };

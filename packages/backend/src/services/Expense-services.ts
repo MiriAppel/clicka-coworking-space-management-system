@@ -1,3 +1,5 @@
+import { Expense } from "../types/expense";
+
 const mockExpense: Expense = {
   id: 'exp_001',
   vendor_id: 'vendor_123',
@@ -21,8 +23,8 @@ const mockExpense: Expense = {
   created_at: '2025-06-01',
   updated_at: '2025-06-01',
 };
-export const listExpensesByVendor = async (vendorId: string): Promise<Expense[]> => {
-     
+export const  = async (vendorId: string): Promise<Expense[]> => {
+     listExpensesByVendor
 
 }
 export const insertExpense = async (_expenseData: Partial<Expense>): Promise<Expense> => {
@@ -69,4 +71,12 @@ export const getExpenseReport = async (
     //לשלוף מהטבלה את כל ההוצאות שה־date שלהן בטווח בין startDate ל־endDate. 
   const inRange = mockExpense.date >= startDate && mockExpense.date <= endDate;
   return inRange  ? [mockExpense] : [];
+};
+
+/**
+ * מחזירה את כל ההוצאות העסקיות עבור נחמה המנהלת לצורך ניטור עלויות.
+ */
+export const getBusinessExpensesForManager = async (): Promise<Expense[]> => {
+    // כאן תבוא לוגיקה לשליפת כל ההוצאות העסקיות מהמערכת
+    return [mockExpense]; // דוגמה להחזרת נתונים
 };
