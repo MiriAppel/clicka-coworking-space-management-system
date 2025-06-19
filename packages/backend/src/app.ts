@@ -3,9 +3,11 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
+import translationRouter from './routes/translation.route';
 
 // Create Express app
 const app = express();
+
 
 // Apply middlewares
 app.use(helmet());
@@ -21,10 +23,10 @@ app.get('/api/health', (req, res) => {
 
 // Placeholder for routes
 // TODO: Add routers for different resources
-
+app.use('/translations', translationRouter);
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
+  console.log(err);
   res.status(err.status || 500).json({
     success: false,
     error: {
