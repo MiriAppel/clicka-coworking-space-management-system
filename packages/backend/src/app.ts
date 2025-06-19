@@ -3,6 +3,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
+import routerCstomer from './routes/customer.route';
+import routerContract from './routes/contract.route';
+import routerLead from './routes/lead.route';
+
 
 // Create Express app
 const app = express();
@@ -13,6 +17,11 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use('/api/customers', routerCstomer);
+app.use('/api/leads', routerLead);
+app.use('/api/contract', routerContract);
+// app.use('/api/leadInteraction', routerCstomer);
+
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

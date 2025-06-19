@@ -1,0 +1,220 @@
+// billing-types.d.ts
+
+import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
+import { WorkspaceType } from './customer';
+
+// Invoice status enum
+export enum InvoiceStatus {
+  DRAFT = 'DRAFT',
+  ISSUED = 'ISSUED',
+  PAID = 'PAID',
+  PARTIALLY_PAID = 'PARTIALLY_PAID',
+  OVERDUE = 'OVERDUE',
+  CANCELED = 'CANCELED'
+}
+
+// Payment method enum
+export enum PaymentMethodType {
+  CREDIT_CARD = 'CREDIT_CARD',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  CHECK = 'CHECK',
+  CASH = 'CASH',
+  OTHER = 'OTHER'
+}
+
+// Billing item type enum
+export enum BillingItemType {
+  WORKSPACE = 'WORKSPACE',
+  MEETING_ROOM = 'MEETING_ROOM',
+  LOUNGE = 'LOUNGE',
+  SERVICE = 'SERVICE',
+  DISCOUNT = 'DISCOUNT',
+  OTHER = 'OTHER'
+}
+
+// Billing item model
+export interface BillingItem {
+  id: ID;
+  invoiceId: ID;
+  type: BillingItemType;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  taxRate: number;
+  taxAmount: number;
+  workspaceType?: WorkspaceType;
+  bookingId?: ID;
+  createdAt: DateISO;
+  updatedAt: DateISO;
+}
+
+// Invoice model
+export interface Invoice {
+  id: ID;
+  invoiceNumber: string;
+  customerId: ID;
+  customerName: string;
+  status: InvoiceStatus;
+  issueDate: DateISO;
+  dueDate: DateISO;
+  items: BillingItem[];
+  subtotal: number;
+  taxTotal: number;
+  total: number;
+  amountPaid: number;
+  balance: number;
+  notes?: string;
+  pdfFile?: FileReference;
+  paymentDueReminder?: boolean;
+  paymentDueReminderSentAt?: DateISO;
+  createdAt: DateISO;
+  updatedAt: DateISO;
+}
+
+// Payment model
+export interface Payment {
+  id: ID;
+  customerId: ID;
+  customerName: string;
+  invoiceId?: ID;
+  invoiceNumber?: string;
+  amount: number;
+  method: PaymentMethodType;
+  transactionReference?: string;
+  date: DateISO;
+  notes?: string;
+  receiptFile?: FileReference;
+  createdAt: DateISO;
+  updatedAt: DateISO;
+}
+
+// Create invoice request
+export interface CreateInvoiceRequest {
+  customerId: ID;
+  issueDate: DateISO;
+  dueDate: DateISO;
+  items: {
+    type: BillingItemType;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    taxRate: number;
+    workspaceType?: WorkspaceType;
+    bookingId?: ID;
+  }[];
+  notes?: string;
+}
+
+// Update invoice request
+export interface UpdateInvoiceRequest {
+  status?: InvoiceStatus;
+  issueDate?: DateISO;
+  dueDate?: DateISO;
+  notes?: string;
+}
+
+// Get invoices request
+export interface GetInvoicesRequest {
+  customerId?: ID;
+  status?: InvoiceStatus[];
+  issueDateFrom?: DateISO;
+  issueDateTo?: DateISO;
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
+}
+
+// Record payment request
+export interface RecordPaymentRequest {
+  customerId: ID;
+  invoiceId?: ID;
+  amount: number;
+  method: PaymentMethodType;
+  transactionReference?: string;
+  date: DateISO;
+  notes?: string;
+  receiptFile?: FileReference;
+}
+
+// Update payment request
+export interface UpdatePaymentRequest {
+  invoiceId?: ID;
+  amount?: number;
+  method?: PaymentMethodType;
+  transactionReference?: string;
+  date?: DateISO;
+  notes?: string;
+  receiptFile?: FileReference;
+}
+
+// Get payments request
+export interface GetPaymentsRequest {
+  customerId?: ID;
+  invoiceId?: ID;
+  method?: PaymentMethodType[];
+  dateFrom?: DateISO;
+  dateTo?: DateISO;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortDirection?: 'asc' | 'desc';
+}
+
+// Calculate billing request
+export interface CalculateBillingRequest {
+  customerId: ID;
+  billingPeriod: {
+    startDate: DateISO;
+    endDate: DateISO;
+  };
+  includeWorkspace?: boolean;
+  includeMeetingRooms?: boolean;
+  includeOtherServices?: boolean;
+}
+
+// Calculate billing response
+export interface CalculateBillingResponse {
+  customerId: ID;
+  customerName: string;
+  billingPeriod: {
+    startDate: DateISO;
+    endDate: DateISO;
+  };
+  items: {
+    type: BillingItemType;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+    taxRate: number;
+    taxAmount: number;
+    workspaceType?: WorkspaceType;
+    bookingId?: ID;
+  }[];
+  subtotal: number;
+  taxTotal: number;
+  total: number;
+}
+
+// Generate monthly invoices request
+export interface GenerateMonthlyInvoicesRequest {
+  month: number; // 1-12
+  year: number;
+  issueDate: DateISO;
+  dueDate: DateISO;
+  customerIds?: ID[]; // If not provided, generate for all active customers
+}
+
+// Generate monthly invoices response
+export interface GenerateMonthlyInvoicesResponse {
+  generatedInvoices: number;
+  failedInvoices: Array<{
+    customerId: ID;
+    customerName: string;
+    error: string;
+  }>;
+  invoices: Invoice[];
+}
