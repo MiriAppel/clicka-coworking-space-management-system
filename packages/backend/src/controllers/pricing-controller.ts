@@ -13,7 +13,6 @@ import {
 import { PricingTierCreateRequest, PricingTier, WorkspaceType } from "../types";
 
 export class PricingController {
-  // ���������� �������� ���������� ��������, ���� ���� ������ ����������������
   static createTier(req: Request, res: Response) {
     try {
       const request: PricingTierCreateRequest = req.body;
