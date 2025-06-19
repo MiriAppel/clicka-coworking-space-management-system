@@ -27,7 +27,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="leads" element={<LeadHomePage />} />
             <Route path="leads/:leadId" element={<DetailsOfTheLead />} />
             <Route path="leads/detailsOfTheLead" element={<DetailsOfTheLead />} />
-            <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
+            <Route path="leads/:leadId/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadIntersection />} />
         </Routes>
     );

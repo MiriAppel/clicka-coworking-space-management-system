@@ -7,6 +7,9 @@ import { Link, NavLink } from "react-router-dom";
 import type { Lead } from "../../../../types/lead";
 import { LeadStatus, LeadSource } from "../../../../types/lead";
 
+//הערה חשובה!!
+//בכל המקומות ששולחים שכתוב שצריך לעשות קריאת שרת כדי לקבל בודד מתוך הרשימה אפשר להעביר את כל האובייקט מהקומפוננטה של הרשימה ליחיד
+//אבל זה אולי פחות בטיחותי
 
 //הדף העיקרי של המתעניין וממנו בעצם יש לי קישורים לכל הקומפוננטות של המתעניין -בתחילה שיש לי מתענינים ולקוחות
 //  רק את הדף הזה צריך לראות שלוחצים על מתענינים
@@ -22,7 +25,7 @@ interface ValuesToTable {
 
 export const LeadHomePage = () => {
   const navigate = useNavigate();
-  const [lead, setLead] = useState<Lead[]>([
+  const [leads, setLeads] = useState<Lead[]>([
     {
       id: "1",
       name: "אברהם ישראלי",
@@ -37,7 +40,7 @@ export const LeadHomePage = () => {
       createdAt: "2022-12-01T00:00:00Z"
     }]);
   //יצירת מערך עם ערכים המתאימים לטבלה
-  const valuesToTable: ValuesToTable[] = lead.map(lead => ({
+  const valuesToTable: ValuesToTable[] = leads.map(lead => ({
     name: lead.name,
     status: lead.status,
     linkToDetails: <NavLink to={`:${lead.id}`}>פרטי מתעניין</NavLink>, // קישור
@@ -57,17 +60,17 @@ export const LeadHomePage = () => {
   const deleteLead = (id: string) => {
     //כאן יהיה קריאת שרת למחיקת לקוח ועדכון מחדש של המערך המקומי
     //זה רק דוג' למחיקה מקומית
-    const newCustomers = lead.filter(lead => lead.id !== id);
-    setLead(newCustomers); // עדכון ה-state
+    const newCustomers = leads.filter(lead => lead.id !== id);
+    setLeads(newCustomers); // עדכון ה-state
   }
   const goToAnotherPage = () => {
     navigate("detailsOfTheLead");
     {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
   }
-  const goTointerestedCustomerRegistration = () => {
-    navigate("interestedCustomerRegistration");
-    {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
-  }
+  // const goTointerestedCustomerRegistration = () => {
+  //   navigate("interestedCustomerRegistration");
+  //   {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
+  // }
 
 
   return <div className='leadHomePage'>
@@ -91,9 +94,7 @@ export const LeadHomePage = () => {
     {/*ברגע שלוחצים על הכפתור הוא מעביר אותנו לעמוד הוספת פרטים למתענין*/}
     {/* הקישור הוא לדף פרטי המתעניין אם חסר פרטים הוא יציג רק את הפרטים שחסרים אם חסר את כל הפרטים
    הוא יבקש ממנו את כל הפרטים זה פונקציות שצריכות להעשות לא עשיתי אותם*/ }
-    <Button onClick={goTointerestedCustomerRegistration} variant="primary" size="sm" >רישום מתעניין ללקוח</Button>
-    {/* זה כפתור שמעביר אותי לדף רישום מתעניין ללקוח אני לא רוצה לאבד את הנתוני שכבר יש לי ולכן צריך לעשות משהו 
-כדי לשמור על הנתונים*/ }
+
     {/*(המטרה העיקרית בדף הזה הוא להשתמש בכמה שיותר דברים שאני כבר יודעת ולא צריך להתחיל לתשאל על כל הפרטים שאני יודעת כבר!!
 צריך לעשות פונקצייה שתבדוק אילו פרטים שאני צריכה ללקוח חסר לי עליו ובנוסף אני 
 רוצה לשמור את מי הביא את המתעניין והאינטרקציות הקודמות שלנו איתו כדי שנחמה תדע 

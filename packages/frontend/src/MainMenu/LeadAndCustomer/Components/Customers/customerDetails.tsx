@@ -5,7 +5,6 @@ import { Customer, CustomerStatus, WorkspaceType, ExitReason } from "../../../..
 import { Button } from '../../../Common/Components/BaseComponents/Button';
 import '../../Css/customerDetails.css';
 
-
 export const CustomerDetails = () => {
     const { customerId } = useParams();
 
@@ -68,6 +67,7 @@ export const CustomerDetails = () => {
 
     const editCustomer = () => {
         //כאן יפתח טופס למילוי הפרטים האפשריים לעריכה
+        //מאותחל בכל הפרטים הנוכחחים עם אפשרות לשנות
         //צריך להפעיל קריאת שרת של עריכת לקוח ולעדכן בהתאם את הנתונים
     }
 

@@ -5,7 +5,11 @@ import { NavLink, Outlet } from "react-router";
 import { ExportToExcel } from '../exportToExcel';
 import { useState } from "react";
 import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus, WorkspaceType, ExitReason } from "../../../../types/customer";
+import { Customer, CustomerStatus } from "../../../../types/customer";
+
+//הערה חשובה!!
+//בכל המקומות ששולחים שכתוב שצריך לעשות קריאת שרת כדי לקבל בודד מתוך הרשימה אפשר להעביר את כל האובייקט מהקומפוננטה של הרשימה ליחיד
+//אבל זה אולי פחות בטיחותי
 
 interface ValuesToTable {
     name: string; // שם הלקוח
