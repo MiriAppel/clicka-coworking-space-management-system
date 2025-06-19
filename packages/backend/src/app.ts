@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
-import  router  from './routes/auth';
+import router from './routes/auth';
 import { Request, Response } from 'express';
 
 // Create Express app
@@ -24,10 +24,13 @@ app.use(morgan('dev'));
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
+// הגדרת endpoint בריאות לפני כל ה-use של /api
+app.get('/api/health', (req: Request, res: Response) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Placeholder for routes
 // TODO: Add routers for different resources
-app.use('/api',router)
-
 //google api functions:
 import calendarRouter from './routes/calendar-route';
 app.use('/api/calendar', calendarRouter);
@@ -37,6 +40,8 @@ app.use('/api/drive', driveRouter);
 
 import gmailRouter from './routes/gmail-route';
 app.use('/api/gmail', gmailRouter);
+
+app.use('/api', router)
 
 // Placeholder for routes
 // TODO: Add routers for different resources
