@@ -1,6 +1,4 @@
 // report-types.d.ts
-
-<<<<<<<< HEAD:packages/types/report.ts
 import { ApiResponse, DateISO, DateRangeFilter, ID } from './core';
 import { WorkspaceType } from './customer';
 import { ExpenseCategory } from './expense';
@@ -102,23 +100,6 @@ export interface RevenueReportByWorkspaceAndPeriod {
     endDate: DateISO;
   };
 }
-
-
-
-
-
-
-//////////////////
-
-
-
-
-========
-import { ApiResponse, DateRangeFilter } from './core';
-import { WorkspaceType } from './customer';
-import { ExpenseCategory } from './expense';
-import { BillingItemType } from './billing';
->>>>>>>> 7d5a94d (new good):types/report.ts
 
 // Time period enum
 export enum TimePeriod {

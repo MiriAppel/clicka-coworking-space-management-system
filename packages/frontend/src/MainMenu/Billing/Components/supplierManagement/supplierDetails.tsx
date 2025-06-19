@@ -1,5 +1,5 @@
-import { Vendor, VendorCategory, VendorStatus } from "../../../../../../types/expense";
-import { FileReference, ID } from "../../../../../../types/core";
+import { Vendor, VendorCategory, VendorStatus } from "../../../../../../../types/expense";
+import { FileReference, ID } from "../../../../../../../types/core";
 import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 export const SupplierDetails = () => {
     const { fetchVendorDetails, updateVendorStatus, deleteVendor,

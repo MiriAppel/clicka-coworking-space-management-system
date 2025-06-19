@@ -1,4 +1,4 @@
-import { ExpenseFilter } from "../../../../../../types/expenseFilter";
+import { ExpenseFilter } from "../../../../../../../types/expenseFilter";
 
 export const ExpensesFilter = () => {
 //functions

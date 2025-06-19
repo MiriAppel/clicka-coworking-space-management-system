@@ -1,5 +1,5 @@
-import { ID } from "../types/billing";
-import { Vendor } from "../types/expense";
+import { ID } from "../../../../types/core";
+import { Vendor, VendorCategory, VendorStatus } from "../../../../types/expense";
 
 export class VendorService {
   getVendorSummary(vendorId: ID): VendorSummary {

@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { Expense, ExpenseCategory } from "../../../../types/expense";
-import { ExpenseFilter } from "../../../../types/expenseFilter";
-import { ValidationResult } from "../../../../types/validationResult";
-import { ID, FileReference } from "../../../../types/core";
+import { Expense, ExpenseCategory } from "../../../../../types/expense";
+import { ExpenseFilter } from "../../../../../types/expenseFilter";
+import { ValidationResult } from "../../../../../types/validationResult";
+import { ID, FileReference } from "../../../../../types/core";
 
 interface ExpenseState {
   expenses: Expense[];

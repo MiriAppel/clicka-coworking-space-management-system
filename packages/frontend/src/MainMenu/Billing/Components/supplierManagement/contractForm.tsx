@@ -1,5 +1,5 @@
 
-import { ID } from "../../../../../../types/core";
+import { ID } from "../../../../../../../types/core";
 import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 
 

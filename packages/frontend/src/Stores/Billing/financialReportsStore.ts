@@ -6,11 +6,11 @@ import {
   ReportData,
   ExpenseReportByCategoryAndVendor,
   RevenueReportByWorkspaceAndPeriod,
-} from "../../../..//types/report";
-import { ValidationResult } from "../../../../types/validationResult";
-import { ExpenseCategory } from "../../../../types/expense";
-import { WorkspaceType } from "../../../../types/customer";
-import { FileReference, ID, DateRangeFilter } from "../../../../types/core";
+} from "../../../../../types/report";
+import { ValidationResult } from "../../../../../types/validationResult";
+import { ExpenseCategory } from "../../../../../types/expense";
+import { WorkspaceType } from "../../../../../types/customer";
+import { FileReference, ID, DateRangeFilter } from "../../../../../types/core";
 
 interface FinancialReportsState {
   reports: FinancialReport[];

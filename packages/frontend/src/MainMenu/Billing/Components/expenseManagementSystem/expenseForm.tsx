@@ -1,6 +1,6 @@
-import { Expense, ExpenseCategory } from "../../../../../../types/expense";
-import { ValidationResult } from "../../../../../../types/validationResult";
-import { ID } from "../../../../../../types/core";
+import { Expense, ExpenseCategory } from "../../../../types/expense";
+// import { ValidationResult } from "../../../../types/report";
+import { ID } from "../../../../types/core";
 import { useExpenseStore } from "../../../../Stores/Billing/expenseStore";
 
 export const ExpenseForm = () => {

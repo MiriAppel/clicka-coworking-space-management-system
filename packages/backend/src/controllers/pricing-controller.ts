@@ -10,7 +10,7 @@ import {
   deletePricingTier
 } from "../services/pricing-service";
 
-import { PricingTierCreateRequest, PricingTier, WorkspaceType } from "../types";
+import { PricingTierCreateRequest, PricingTier, WorkspaceType } from "../../../../types";
 
 export class PricingController {
   // ���������� �������� ���������� ��������, ���� ���� ������ ����������������

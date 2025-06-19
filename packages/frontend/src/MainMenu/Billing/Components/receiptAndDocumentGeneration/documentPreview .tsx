@@ -1,5 +1,5 @@
-import { GeneratedDocument } from "../../../../../../types/document";
-import { ID } from "../../../../../../types/core";
+import { GeneratedDocument } from "../../../../../../../types/document";
+import { ID } from "../../../../../../../types/core";
 import { useReceiptAndDocumentsStore } from "../../../../Stores/Billing/receiptAndDocumentsStore";
 export const DocumentPreview = () => {
   const {fetchDocumentForPreview}=useReceiptAndDocumentsStore();

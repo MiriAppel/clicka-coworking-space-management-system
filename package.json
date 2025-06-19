@@ -2,7 +2,7 @@
   "name": "clicka-project",
   "version": "1.0.0",
   "main": "index.js",
-  "private": true, 
+  "private": true,
   "scripts": {
     "start:backend": "yarn workspace clicka-backend dev",
     "start:frontend": "yarn workspace clicka-frontend start",
@@ -14,5 +14,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "zod": "^3.25.67"
+  }
 }

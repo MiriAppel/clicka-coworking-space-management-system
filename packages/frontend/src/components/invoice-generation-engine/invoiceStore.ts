@@ -38,8 +38,8 @@ export const useInvoiceStore = create<InvoiceState>()(
   devtools(
     persist(
       (set, get) => ({
-        // ===== מצב התחלתי =====
-        invoices: [],
+       invoices: [
+    ],
         loading: false,
         error: null,
 
@@ -81,6 +81,7 @@ export const useInvoiceStore = create<InvoiceState>()(
   });
 },
 
+
         // יצירת חשבונית חדשה
         createInvoice: async (newInvoice) => {
           set({ loading: true, error: null });
@@ -100,21 +101,21 @@ export const useInvoiceStore = create<InvoiceState>()(
 
         // עדכון חשבונית קיימת
         updateInvoice: async (id, updates) => {
-          try {
-            const response = await axios.put(`http://localhost:3000/api/invoices/update/${id}`, updates);
-            set((state) => ({
-              invoices: state.invoices.map(invoice =>
-                invoice.id === id ? { ...invoice, ...response.data } : invoice
-              )
-            }));
-            return response.data;
-          } catch (error) {
-            set({ error: 'Error updating invoice' });
-            console.error('Error updating invoice:', error);
-            throw error;
-          }
-        },
-
+  let updatedInvoice: Invoice | undefined;
+  set((state) => {
+    const invoices = state.invoices.map(invoice => {
+      if (invoice.id === id) {
+        updatedInvoice = { ...invoice, ...updates };
+        return updatedInvoice;
+      }
+      return invoice;
+    });
+    return { invoices };
+  });
+  // אם לא נמצא, אפשר להחזיר שגיאה או undefined
+  if (!updatedInvoice) throw new Error('Invoice not found');
+  return updatedInvoice;
+},
         // מחיקת חשבונית
         deleteInvoice: async (id) => {
           try {

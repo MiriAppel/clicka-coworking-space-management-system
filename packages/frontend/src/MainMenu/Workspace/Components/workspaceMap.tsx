@@ -8,11 +8,8 @@ export const WorkspaceMap = () => {
 
 const spaceStatus = (): string => {
     // fetch('http://localhost:3001/api/workspace/status')
-<<<<<<< HEAD
-    return ""
-=======
+    // return ""
     return "lounge";
->>>>>>> uiBilling
 }
     return <div className="workspaceMap">
         <h1>WorkspaceMap</h1>

@@ -1,6 +1,6 @@
 
 import { InvoiceModel } from "./Invoice-model";
-import { ID } from "../../../types/core";
+import { ID } from "../../../../types/core";
 
 // מערך שישמש כ"דאטה בייס" זמני
 export const invoicesMockDb: InvoiceModel[] = [];

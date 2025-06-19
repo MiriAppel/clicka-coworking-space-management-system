@@ -1,6 +1,6 @@
-import { SupplierFilter } from "../../../../../../types/supplierFilter";
-import { ID } from "../../../../../../types/core";
-import { Vendor } from "../../../../../../types/expense";
+import { SupplierFilter } from "../../../../../../../types/supplierFilter";
+import { ID } from "../../../../../../../types/core";
+import { Vendor } from "../../../../../../../types/expense";
 import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 export const SupplierList = ()=>{
 const {fetchSuppliers,handleDeleteSupplier}=useSupplierStore();

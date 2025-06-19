@@ -1,9 +1,9 @@
 
 import { create } from "zustand";
-import { FinancialReport, ReportType, ReportParameters } from "../../../../types/financialReport";
-import { ID } from "../../../../types/core";
-import { Expense } from "../../../../types/expense";
-import { Invoice, Payment } from "../../../../types/billing";
+import { FinancialReport, ReportType, ReportParameters } from "../../../../../types/financialReport";
+import { ID } from "../../../../../types/core";
+import { Expense } from "../../../../../types/expense";
+import { Invoice, Payment } from "../../../../../types/billing";
 
 interface DashboardState  {
   dashboardSummary?: any;

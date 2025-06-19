@@ -1,18 +1,18 @@
-import { Expense } from "../types/expense";
+import { Expense, ExpenseCategory, ExpensePaymentMethod, ExpenseStatus } from "../../../../types/expense";
 
 const mockExpense: Expense = {
   id: 'exp_001',
   vendor_id: 'vendor_123',
   vendor_name: 'Mock Vendor',
-  category: 'office_supplies',
+  category: ExpenseCategory.OFFICE_SUPPLIES,
   description: 'Printer ink',
   amount: 150,
   tax: 17,
   date: '2025-06-01',
   due_date: '2025-06-10',
-  paid_date: null,
-  status: 'pending',
-  payment_method: 'credit_card',
+  paid_date: undefined,
+  status: ExpenseStatus.PENDING,
+  payment_method: ExpensePaymentMethod.CREDIT_CARD,
   reference: 'INV-1001',
   invoice_number: '1001',
   invoice_file: { name: 'invoice.pdf', url: '/files/invoice.pdf' },

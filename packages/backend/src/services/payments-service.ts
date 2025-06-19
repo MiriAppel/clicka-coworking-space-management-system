@@ -1,7 +1,8 @@
-import { ID } from "../types/billing";
+import { Payment } from "../../../../types/billing";
+import { ID } from "../../../../types/core";
 
 export class PaymentService {
- updatePayment(request: PaymentRecordRequest, recordedBy: ID): Payment {
+ updatePayment(request: PaymentRequest, recordedBy: ID): Payment {
     // אימות מזהה לקוח (נניח שמבוצע ברמת שירות או קריאה חיצונית)
     // אימות חשבונית אם צורפה
     // יצירת אובייקט תשלום חדש

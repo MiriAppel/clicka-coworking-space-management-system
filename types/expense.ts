@@ -1,7 +1,5 @@
 // expense-types.d.ts
-
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
-
 // Expense category enum
 export enum ExpenseCategory {
   RENT = 'RENT',
@@ -80,7 +78,6 @@ export interface Vendor {
  
 // Expense model
 export interface Expense {
-  success: any;
   id: ID;
   vendor_id: ID;
   vendor_name: string;
