@@ -1,14 +1,9 @@
-<<<<<<< HEAD
+
 import { BillingItem, BillingItemType, Invoice, InvoiceStatus } from '../../../types/billing'
 import { ID, DateISO } from '../../../types/core';
 import { invoicesMockDb, generateId } from "./invoice-mock-db";
 
 export class InvoiceModel implements Invoice {
-=======
-import {BillingItem, BillingItemType, Invoice, InvoiceStatus} from '../../../../types/billing'
-import { ID , DateISO } from '../../../../types/core';
-export class InvoiceModel implements Invoice{
->>>>>>> 7d5a94d (new good)
     id: ID;
     invoice_number: string;
     customer_id: ID;
