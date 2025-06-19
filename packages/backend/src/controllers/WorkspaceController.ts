@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import * as workspaceService from '../services/workspeceMapService'
+import * as workspaceService from '../services/WorkspeceMapService'
 
 export async function getWorkspaceById(req: Request, res: Response) {
   try {

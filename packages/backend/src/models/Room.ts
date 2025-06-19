@@ -1,8 +1,11 @@
 import {ID,DateISO} from "../controllers/occupancyTrendControllers";
-import{MeetingRoomManagement} from "../controllers/roomController"
+//import{MeetingRoomManagement} from "../controllers/roomController"
 import {RoomStatus} from '../../../../types/booking'
 import { OccupancyAlert } from "./occupancyTrend";
 import { OccupancySnapshot } from "./occupancyTrend";
+export interface MeetingRoomManagement{
+  
+}
 export interface RoomFeature {
   id: ID;
   name: string;

@@ -1,5 +1,5 @@
 import {TimePeriod,ID,DateISO,WorkSpaceType,statusOccupancy} from "../controllers/occupancyTrendControllers"
-import { Room } from "./room";
+import { Room } from "./Room";
 export interface OccupancySnapshot{
   id: ID;
   customerId:string;

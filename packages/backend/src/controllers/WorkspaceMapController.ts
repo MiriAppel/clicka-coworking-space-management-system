@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import * as workspaceMapService from '../services/workspeceMapService'
+import * as workspaceMapService from '../services/WorkspeceMapService'
 export async function getAllWorkspacesMap(req: Request, res: Response) {
   try {
-    const result = await workspaceMapService.getAllmaps()
+    const result = await workspaceMapService.getWorkspaceMapById
     res.json(result)
   } catch (error) {
     res.status(500).json({ error: (error as Error).message })

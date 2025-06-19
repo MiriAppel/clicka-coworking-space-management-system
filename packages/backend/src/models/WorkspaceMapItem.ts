@@ -2,7 +2,7 @@ import { ID, DateISO } from'../../../../types/core';
 
 import { SpaceStatus} from "../../../../types/workspace";
 import { WorkspaceType } from "../../../../types/customer";
-import { MapCoordinates } from './WorkspaceMap';
+import { MapCoordinates } from './workspaceMap';
 export class WorkspaceMapItem {
   workspaceMapId: ID;
   workspaceId: ID;
