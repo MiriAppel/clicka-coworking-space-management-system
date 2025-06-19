@@ -19,7 +19,6 @@ export class InvoiceModel implements Invoice {
     createdAt: DateISO;
     updatedAt: DateISO;
 
-<<<<<<< HEAD
     constructor(
         id: ID,
         invoice_number: string,
@@ -68,57 +67,6 @@ export class InvoiceModel implements Invoice {
             payment_dueReminder_sentAt: this.payment_dueReminder_sentAt,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt
-=======
-constructor(
-    id: ID,
-    invoice_number: string,
-    customer_id: ID,
-    customer_name: string,
-    status: InvoiceStatus,
-    issue_date: DateISO,
-    due_date: DateISO,
-    items: BillingItem[],
-    subtotal: number,
-    tax_total: number,
-    payment_due_reminder?: boolean | undefined,
-    payment_dueReminder_sentAt?: any,
-    createdAt?: DateISO,
-    updatedAt?: DateISO
-) {
-this.id = id;
-this.invoice_number = invoice_number;
-this.customer_id = customer_id;
-this.customer_name = customer_name; 
-this.status = status;
-this.issue_date = issue_date;
-this.due_date = due_date;
-this.items = items;
-this.subtotal = subtotal;
-this.tax_total = tax_total;
-this.payment_due_reminder = payment_due_reminder;
-this.payment_dueReminder_sentAt = payment_dueReminder_sentAt;
-this.createdAt = createdAt ?? new Date().toISOString();
-this.updatedAt = updatedAt ?? new Date().toISOString();
-}
-
-toDatabaseFormat() {
-return {
-    id: this.id,
-    invoice_number: this.invoice_number,
-    customer_id: this.customer_id,
-    customer_name: this.customer_name,
-    status: this.status,
-    issue_date: this.issue_date,
-    due_date: this.due_date,
-    items: this.items.map(item => (item as InvoiceItemModel).toDatabaseFormat()),
-    subtotal: this.subtotal,
-    tax_total: this.tax_total,
-    payment_due_reminder: this.payment_due_reminder,
-    payment_dueReminder_sentAt: this.payment_dueReminder_sentAt,
-    createdAt: this.createdAt,
-    updatedAt: this.updatedAt
->>>>>>> 7d5a94d (new good)
-
         }
     }
 }
