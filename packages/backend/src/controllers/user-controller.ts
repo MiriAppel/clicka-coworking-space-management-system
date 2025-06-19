@@ -6,7 +6,7 @@ export class UserController {
     async createUser(req: Request, res: Response) {
         const result = await this.userService.createUser(req.body);
         if (result) {
-            res.status(201).json(result);
+            res.status(200).json(result);
         } else {
             res.status(500).json({ error: "Failed to create user" });
         }
@@ -43,10 +43,12 @@ export class UserController {
             const expirationDays = 7; // מספר הימים שהעוגיה תהיה זמינה
             const date = new Date();
             date.setTime(date.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
-            const expires = "expires=" + date.toUTCString();
-    
+            
             // שמירת ה-cookie עם ה-role
-            res.cookie('session', role, { expires: date, httpOnly: true }); // httpOnly כדי למנוע גישה דרך JavaScript
+            res.cookie('role', role, { 
+                expires: date, 
+                httpOnly: true // httpOnly כדי למנוע גישה דרך JavaScript
+            });
     
             res.status(200).json(result);
         } else {
