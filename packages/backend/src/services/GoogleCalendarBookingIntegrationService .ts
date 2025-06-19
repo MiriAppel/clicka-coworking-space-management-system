@@ -1,6 +1,6 @@
 
-import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "../models/CalendarSync";
-import {SyncBookingsWithGoogleRequest} from "../models/CalendarSync"
+import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "../models/calendarSync";
+import {SyncBookingsWithGoogleRequest} from "../models/calendarSync"
 import { ID } from "../../../../types/core";
 import {CreateGoogleCalendarEventRequest, DeleteGoogleCalendarEventRequest, GoogleCalendarEvent, UpdateGoogleCalendarEventRequest} from "../../../../types/google"
 

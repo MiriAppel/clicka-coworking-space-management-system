@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import * as CalendarService from '../services/googleCalendarBookingIntegrationService ';
 
-import { SyncBookingsWithGoogleRequest } from '../models/CalendarSync';
-import { CalendarSync, CalendarSyncStatus } from '../models/CalendarSync';
+import { SyncBookingsWithGoogleRequest } from '../models/calendarSync';
+import { CalendarSync, CalendarSyncStatus } from '../models/calendarSync';
 import { UpdateGoogleCalendarEventRequest } from '../../../../types/google';
 import { ID } from '../../../../types/core';
 
