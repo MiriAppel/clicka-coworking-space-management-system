@@ -1,4 +1,4 @@
-import { DateISO, ID } from "../../types/core";
+import { DateISO, ID } from "../../../../types/core";
 
 // מחלקה למקום זמין
 export class AvailableSpace {

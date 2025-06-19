@@ -1,19 +1,24 @@
 import { Router } from 'express';
-import * as CalanderController from '../controllers/google-calendar-booking-integration.controller';
+import * as CalanderController from '../controllers/GoogleCalendarBookingIntegrationController';
 
 const router = Router();
 
 // post
-router.post('/create-calendar-event',CalanderController.createCalendarEvent)
-router.post('/create-conflict',CalanderController.createConflict);
+router.post('/createSync', CalanderController.createCalendarSync);
+router.post('/create', CalanderController.createCalendarEvent);
+
 // get
-router.get('/get-calendar-by-room/:roomId', CalanderController.getCalendarByRoom);
+router.get('/Allevents/:calendarId', CalanderController.getGoogleCalendarEvents);
+router.get('/byRoom/:roomId', CalanderController.getCalendarByRoom);
 // put/patch
-router.put('/sync-bookings', CalanderController.syncBookingsController);
-router.put("/detect-calendar-conflicts",CalanderController.detectCalendarConflicts)
-router.put('/solve-calendar-conflict', CalanderController.solveCalendarConflict);
-router.put('/update-event-onchange-booking',CalanderController.updateEventOnChangeBooking)
-router.put('/manage-calendar-permissions', CalanderController.manageCalendarPermissions);
-router.put('/share-calendar', CalanderController.shareCalendar);
+
+router.put("/conflicts",CalanderController.detectCalendarConflicts)
+// router.put('/solveConflict', CalanderController.solveCalendarConflict);
+router.put('/update',CalanderController.updateEventOnChangeBooking)
+router.put('/updateSync',CalanderController.updateCalendarSync);
+router.put('/managePermissions', CalanderController.manageCalendarPermissions);
+router.put('/share', CalanderController.shareCalendar);
 // delete
+router.delete('/event', CalanderController.deleteEvent);
+router.delete('/enentSync/:eventId', CalanderController.deleteCalendarSyncByEventId);
 export default router;

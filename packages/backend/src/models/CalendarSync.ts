@@ -1,4 +1,4 @@
-import { ID, DateISO } from "../../types/core";
+import { ID, DateISO } from "../../../../types/core";
 
 // מחלקה לסינכרון קלנדר
 export class CalendarSync {
@@ -43,6 +43,21 @@ export enum CalendarSyncStatus {
   PENDING = 'PENDING',
   FAILED = 'FAILED',
   CONFLICT = 'CONFLICT'
+}
+
+export interface SyncBookingsWithGoogleRequest {
+  roomId?: ID;
+  startDate?: DateISO;
+  endDate?: DateISO;
+  forceSync?: boolean;
+}
+
+export interface CalendarConflict {
+  bookingId: ID;
+  googleEventId: string;
+  conflictType: 'TIME_OVERLAP' | 'ROOM_CONFLICT' | 'PERMISSION_ERROR';
+  description: string;
+  suggestedResolution: string;
 }
 
 
