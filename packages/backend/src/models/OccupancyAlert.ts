@@ -1,5 +1,6 @@
-import { ID, DateISO ,statusOccupancy,WorkSpaceType} from "../core";
-import { Room } from "../workspaceRoom/Room";
+import { ID, DateISO ,} from "../../../../types/core";
+import { WorkspaceType } from "../../../../types/customer";
+import { Room } from "./Room";
 export class OccupancyAlert{
     id:ID;
     roomid!:string;
@@ -7,7 +8,7 @@ export class OccupancyAlert{
     type:statusOccupancy;
     threshold:number;
     currentValue:number;
-    workspaceType:WorkSpaceType;
+    workspaceType:WorkspaceType;
     isActive:boolean;
     triggeredAT:DateISO;
       // קשר: התראה שייכת לחדר אחד
@@ -18,7 +19,7 @@ constructor(id:ID,
     type:statusOccupancy,
     threshold:number,
     currentValue:number,
-    workspaceType:WorkSpaceType,
+    workspaceType:WorkspaceType,
     isActive:boolean,
     triggeredAT:DateISO){
         this.id=id;

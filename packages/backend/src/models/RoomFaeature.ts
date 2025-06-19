@@ -1,4 +1,4 @@
-import { ID } from "../core";
+import { ID } from "../../../../types/core";
 import { Room } from "./Room";
 export class RoomFaeature {
     id!: ID;

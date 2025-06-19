@@ -1,8 +1,8 @@
 
-import { CalendarConflict } from "../models/GoogleCalendarBookingIntegration/CalendarConflict";
-import { CalendarSync, CalendarSyncStatus } from "../models/GoogleCalendarBookingIntegration/CalendarSync";
-import { SyncBookingsWithGoogleRequest } from "../models/GoogleCalendarBookingIntegration/SyncBookingsWithGoogleReques";
-import { ID } from "../types/core";
+import { CalendarConflict } from "../models/CalendarConflict";
+import { CalendarSync, CalendarSyncStatus } from "../models/CalendarSync";
+import { SyncBookingsWithGoogleRequest } from "../models/SyncBookingsWithGoogleReques";
+import { ID } from "../../../../types/core";
 
 export const syncBookingsWithGoogle=async(request: SyncBookingsWithGoogleRequest):Promise<CalendarSyncStatus>=>{
      //Google Calendar פונקציה זו תסנכרן את ההזמנות עם 

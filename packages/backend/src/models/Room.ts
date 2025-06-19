@@ -1,8 +1,9 @@
-import {ID,DateISO} from "../core";
-import{RoomStatus,MeetingRoomManagement,RoomFeature} from "../core"
+import {ID,DateISO} from '../../../../types/core';
+import{MeetingRoomManagement,RoomFeature} from ""
+import {RoomStatus} from '../../../../types/booking'
 import { BookingRules } from "./BookingRules";
-import { OccupancyAlert } from "../workspaceTraking/OccupancyAlert";
-import { OccupancySnapshot } from "../workspaceTraking/OccupancySnapshot";
+import { OccupancyAlert } from "./OccupancyAlert";
+import { OccupancySnapshot } from "./OccupancySnapshot";
 import { RoomFaeature } from "./RoomFaeature";
 export class Room {
     id: ID;

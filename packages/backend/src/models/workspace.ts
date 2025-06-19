@@ -1,10 +1,28 @@
-
-
-import { MapLayout } from './MapLayout ';
-import { ID, DateISO } from '../../types/core';
-
+import { ID, DateISO } from '../../../../types/core';
+import { WorkspaceType } from '../.../../../../../types/customer' ;
 import{WorkspaceMapItem} from './WorkspaceMapItem';
+import {SpaceStatus} from '../../../../types/workspace'
+export interface MapLayout {
+  width: number;
+  height: number;
+  backgroundImage?: string;
+  scale: number;
+  viewBox: string;
+}
+export interface MapCoordinates {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation?: number;
+}
+export interface MapFilters {
 
+workspaceTypes: WorkspaceType[];
+  statuses: SpaceStatus[];
+  showOccupantNames: boolean;
+  showAvailableOnly: boolean;
+}
 export class WorkspaceMapModel {
   id: ID;
   name: string;

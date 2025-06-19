@@ -1,5 +1,5 @@
 //מחזיר את הזמינות הנוכחית לכל סוגי חללי העבודה לפי תנאי שאילתה
-export async function checkAvailabilityQuery(id: any) { 
+export async function checkAvailabilityRoom(id: any) { 
 }
 //מחזיר תחזיות תפוסה
 export async function getAvailabilityForecast(id: any) { 

@@ -1,4 +1,5 @@
-import { ID, DateISO, BookingStatus } from '../core';
+import { ID, DateISO,  } from'../../../../types/core';
+import{BookingStatus} from '../../../../types/booking'
 
 export class MapCoordinates {
   id: ID;

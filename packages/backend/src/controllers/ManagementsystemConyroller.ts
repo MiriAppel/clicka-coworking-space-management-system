@@ -3,7 +3,7 @@ import * as systemService from '../services/ManagementService'
 
 export async function checkAvailabilityRoom(req: Request, res: Response) {
   try {
-    const result = await systemService.checkAvailabilityQuery(req.params.id)
+    const result = await systemService.checkAvailabilityRoom(req.params.id)
     res.json(result)
   } catch (error) {
     res.status(500).json({ error: (error as Error).message })

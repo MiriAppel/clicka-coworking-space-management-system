@@ -1,5 +1,33 @@
-import { DateISO, ID } from "../../types/core";
-
+import { DateISO, ID } from "../../../../types/core";
+import {WorkspaceType} from '../../../../types/customer'
+import {DateRangeFilter} from '../../../../types/core'
+export interface AvailabilityQuery {
+  workspaceTypes?: WorkspaceType[];
+  startDate: DateISO;
+  endDate?: DateISO;
+  includeMaintenanceSchedule?: boolean;
+  includeReservedSpaces?: boolean;
+ }
+ export interface AvailabilityResult {
+  query: AvailabilityQuery;
+  availability: {
+    [key in WorkspaceType]: {
+      total: number;
+      available: number;
+      availabilityRate: number;
+      availableSpaces: AvailableSpace[];
+    };
+  };
+}
+export interface AvailabilityForecast {
+  forecastPeriod: DateRangeFilter;
+  projections: {
+    date: DateISO;
+    expectedOccupancy: number;
+    availableCapacity: number;
+    riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  }[];
+}
 // מחלקה למקום זמין
 export class AvailableSpace {
   workspaceId: ID;

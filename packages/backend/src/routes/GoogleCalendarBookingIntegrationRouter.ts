@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import * as CalanderController from '../controllers/google-calendar-booking-integration.controller';
-
+import * as CalanderController from '../controllers/GoogleCalendarBookingIntegrationController'
 const router = Router();
 
 // post

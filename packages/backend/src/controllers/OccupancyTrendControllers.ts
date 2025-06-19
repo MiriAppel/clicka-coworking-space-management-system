@@ -1,4 +1,4 @@
-import { OccupancyTrend } from '../models/workspaceTraking/OccupancyTrend';
+import { OccupancyTrend } from '../models/OccupancyTrend';
 
 // כדי לזהות מגמת תפוסה
 async function getAllTrends(id: any): Promise<OccupancyTrend[]> {
