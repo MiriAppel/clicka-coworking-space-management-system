@@ -27,7 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
   }; //מגדיר את הגדלים עם TAILWIND CSS
   return (
     <button
-      dir={effectiveDir}
+      dir={effectiveDir} 
       aria-label={typeof children === "string" ? children : undefined}
       data-testid={testId}
       className={clsx(//מגדיר את העיצוב של הכפתור בצורה מסודרת
@@ -38,15 +38,15 @@ export const Button: React.FC<ButtonProps> = ({
         className
       )}
       style={{
-      backgroundColor: color,
+      backgroundColor: color, 
       fontFamily:
         effectiveDir === "rtl"
           ? theme.typography.fontFamily.hebrew
           : theme.typography.fontFamily.latin,
-    }} // מגדיר את הטיפוס של הכתב לפי הTHEME
-      {...props} // לוקח את כל ההגדרות של הבוטון
+    }} // מגדיר את הטיפוס של הכתב לפי הTHEME 
+      {...props} // לוקח את כל ההגדרות של הבוטון 
     >
-      {children}
+      {children} 
       {/* לוקח רת התוכן שיש בתוך הBUTTON  */}
     </button>
   );
