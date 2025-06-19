@@ -1,4 +1,4 @@
-import {TimePeriod} from "../types/report"
+import {TimePeriod} from "../../../../types/report"
 import { Room } from "./Room";
 export class OccupancyTrend {
     period: TimePeriod;
