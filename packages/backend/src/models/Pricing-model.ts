@@ -2,6 +2,7 @@
 import {LoungePricing, MeetingRoomPricing, PricingTier} from '../../../../types/pricing'
 import { ID , DateISO } from '../../../../types/core';
 import { WorkspaceType } from '../../../../types/customer';
+
 export class LoungePricingModel implements LoungePricing{
     id: ID;
     eveningRate: number;

@@ -17,6 +17,7 @@ export class InvoiceModel implements Invoice{
     payment_dueReminder_sentAt?: any;
     createdAt: DateISO;
     updatedAt: DateISO;
+
 constructor(
     id: ID,
     invoice_number: string,

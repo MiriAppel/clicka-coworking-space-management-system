@@ -1,6 +1,7 @@
 import { deleteInvoice, getAllInvoices,createInvoice, getInvoiceById, InvoiceModel, updateInvoice } from "../models/Invoice-model";
-import { CreateInvoiceRequest, Invoice } from "../../../types/billing";
-import { ID } from "../../../types/core";
+import { CreateInvoiceRequest, Invoice } from "../../../../types/billing";
+import { ID } from "../../../../types/core";
+import { GeneratedDocument } from "@types/document";
 
 //crud functions
 // יצירת חשבונית חדשה 

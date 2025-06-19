@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createManualInvoice, customizeInvoiceTemplate } from "../services/Invoice-service";
-import { CreateInvoiceRequest } from "../../../types/billing";
+import { CreateInvoiceRequest } from "../../../../types/billing";
 //crud functions
 
 /**
@@ -34,7 +34,7 @@ export const generateInvoices = async (_req: Request, res: Response) => {
           startDate: getStartOfMonth(),
           endDate: getEndOfMonth(),
         },
-        dueDate: getEndOfMonth(),
+        due_Date: getEndOfMonth(),
         items,
         notes: "", // אופציונלי
       };
@@ -74,4 +74,20 @@ export const customizeInvoiceTemplateController = (req: Request, res: Response) 
     res.status(400).json({ message: (error as Error).message });
   }
 };
+
+function getAllActiveCustomers() {
+  throw new Error("Function not implemented.");
+}
+
+function getItemsForCustomer(id: any) {
+  throw new Error("Function not implemented.");
+}
+
+function getStartOfMonth() {
+  throw new Error("Function not implemented.");
+}
+
+function getEndOfMonth() {
+  throw new Error("Function not implemented.");
+}
 

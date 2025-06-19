@@ -2,6 +2,12 @@ import { Payment } from "../../../../types/billing";
 import { ID } from "../../../../types/core";
 
 export class PaymentService {
+  static getCustomerBalance(customerId: string) {
+    throw new Error('Method not implemented.');
+  }
+  static recordPayment(body: any, id: any) {
+    throw new Error('Method not implemented.');
+  }
  updatePayment(request: PaymentRequest, recordedBy: ID): Payment {
     // אימות מזהה לקוח (נניח שמבוצע ברמת שירות או קריאה חיצונית)
     // אימות חשבונית אם צורפה

@@ -70,6 +70,7 @@ export class ExpenseModel implements Expense {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
+  success: any;
   toDatabaseFormat() {
 return {
 id: this.id,

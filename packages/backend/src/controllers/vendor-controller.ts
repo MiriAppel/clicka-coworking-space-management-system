@@ -1,3 +1,4 @@
+import { Vendor } from '@types/expense';
 import { VendorService } from '../services/vendor-servic';
 
 export class Vendor_controller {
@@ -66,5 +67,13 @@ export class Vendor_controller {
       .then(() => res.status(204).send())
       .catch(err => res.status(500).json({ error: err.message }));
   }
+}
+
+function saveVendorToDB(vendor: Vendor) {
+  throw new Error('Function not implemented.');
+}
+
+function getAllVendorsFromDB() {
+  throw new Error('Function not implemented.');
 }
 

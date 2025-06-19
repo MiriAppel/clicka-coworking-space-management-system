@@ -1,5 +1,6 @@
 import { PricingTier } from "@types/pricing";
 import { generateId } from "../models/invoice-mock-db";
+import { WorkspaceType } from "@types/customer";
 
 /**
  *  1 יוצר רשומת תמחור חדשה עבור סוג סביבת עבודה מסוימת ולתאריך התחלה נתון.

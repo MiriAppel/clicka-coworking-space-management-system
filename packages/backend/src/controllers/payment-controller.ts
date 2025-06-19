@@ -50,7 +50,7 @@ export const payment = {
 
   async matchPaymentToInvoice(req: Request, res: Response) {
     try {
-      await paymentService.matchPaymentToInvoice(req.params.customerId, req.body.payment, req.body.invoice);
+      await paymentService.matchPaymentsToInvoice(req.params.customerId, req.body.payment, req.body.invoice);
       res.status(200).json({ message: 'התשלום שויך בהצלחה לחשבונית' });
     } catch (error) {
       res.status(400).json({ error: error.message });
