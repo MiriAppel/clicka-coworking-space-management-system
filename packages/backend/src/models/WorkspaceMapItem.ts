@@ -1,8 +1,8 @@
 import { ID, DateISO } from'../../../../types/core';
 
-import{MapCoordinates} from './workspaceMap';
 import { SpaceStatus} from "../../../../types/workspace";
 import { WorkspaceType } from "../../../../types/customer";
+import { MapCoordinates } from './WorkspaceMap';
 export class WorkspaceMapItem {
   workspaceMapId: ID;
   workspaceId: ID;
