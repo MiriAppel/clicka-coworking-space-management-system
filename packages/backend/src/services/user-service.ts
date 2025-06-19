@@ -7,6 +7,7 @@ const supabaseAnonKey = 'your-anon-key'; // החלף עם ה-Anon Key שלך
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export class UserService {
+
     // פונקציה ליצירת משתמש
     async createUser(user: UserModel): Promise<UserModel | null> {
         const { data, error } = await supabase
@@ -21,27 +22,29 @@ export class UserService {
             const createdUser = data as unknown as UserModel; // המרה לסוג UserModel
             // רישום פעילות המשתמש
             logUserActivity(createdUser.id, 'User created');
-            return createdUser; // החזרת המשתמש שנוצר
+            //החזרת המשתמש שנוצר
+            return createdUser; 
         
     }
         // פונקציה לקבל את כל המשתמשים
-        async getAllUsers(): Promise<UserModel[]| null> {
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-    
-            if (error) {
-                console.error('Error fetching user:', error);
-                return null;
-            }
-            const createdUser = data as UserModel[]; // המרה לסוג UserModel
-            // רישום פעילות המשתמשים
-            createdUser.forEach(user => {
-                logUserActivity(user.id, 'User fetched');
-            });
-            return createdUser; // מחזיר את כל המשתמשים שנמצאו
-         
+    async getAllUsers(): Promise<UserModel[]| null> {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+
+        if (error) {
+            console.error('Error fetching user:', error);
+            return null;
         }
+        const createdUser = data as UserModel[]; // המרה לסוג UserModel
+        // רישום פעילות המשתמשים
+        createdUser.forEach(user => {
+            logUserActivity(user.id, 'User fetched');
+        });
+        // מחזיר את כל המשתמשים שנמצאו
+        return createdUser; 
+        
+    }
 
     // פונקציה לקרוא משתמש לפי ID
     async getUserById(id: string): Promise<UserModel | null> {
@@ -59,7 +62,8 @@ export class UserService {
         const user = data as UserModel; // המרה לסוג UserModel
         // רישום פעילות המשתמש
         logUserActivity(user.id, 'User fetched by ID');
-        return user; // מחזיר את המשתמש שנמצא
+        // מחזיר את המשתמש שנמצא
+        return user;
     }
 
     //  googleId פונקציה לקרוא משתמש לפי  
@@ -78,7 +82,8 @@ export class UserService {
         const user = data as UserModel; // המרה לסוג UserModel
         // רישום פעילות המשתמש
         logUserActivity(user.id, 'User logged in by Google ID');
-        return user; // מחזיר את המשתמש שנמצא
+        // מחזיר את המשתמש שנמצא
+        return user; 
     }
 
     // פונקציה לעדכן משתמש
@@ -95,7 +100,8 @@ export class UserService {
         const user = data as unknown as UserModel; // המרה לסוג UserModel
         // רישום פעילות המשתמש
         logUserActivity(user.id, 'User logged in by Google ID');
-        return user; // מחזיר את המשתמש שנמצא
+        // מחזיר את המשתמש המעודכן
+        return user; 
         
 
     }
@@ -113,6 +119,7 @@ export class UserService {
         }
         // רישום פעילות המשתמש
         logUserActivity(id, 'User deleted');
-        return true; // מחזיר true אם המשתמש נמחק בהצלחה
+        // מחזיר true אם המשתמש נמחק בהצלחה
+        return true; 
     }
 }

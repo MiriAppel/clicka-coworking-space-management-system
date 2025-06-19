@@ -4,14 +4,10 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
 import cookieParser from "cookie-parser";
+import userRouter from './routes/user-routes';
 
 // Create Express app
 const app = express();
-
-app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://netfree.link");
-  next();
-})
 
 // Apply middlewares
 app.use(helmet());
@@ -20,6 +16,7 @@ app.use(morgan('dev'));
 app.use(json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
+app.use(userRouter);
 
 
 // Health check endpoint
