@@ -3,15 +3,11 @@ import './App.css';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-// Simple component to demonstrate the project
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string, timestamp: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  //////
   const navigate = useNavigate();
-
-
 
   useEffect(() => {
     // Check API health
@@ -33,6 +29,7 @@ function App() {
       });
   }, []);
 
+ 
   return (
     <div className="App">
       <header className="App-header">
@@ -40,10 +37,29 @@ function App() {
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
+
       <div className='menu' style={{ backgroundColor: 'black' }}>
-        <Button variant="outlined" onClick={() => { navigate('/leadAndCustomer') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Lead & Customer</Button>
-        <Button variant="outlined" onClick={() => { navigate('/workspaceMap') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Workspace</Button>
-        <Button variant="outlined" onClick={() => { navigate('/billing') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Billing</Button>
+        <Button
+          variant="outlined"
+          onClick={() => navigate('/leadAndCustomer')}
+          sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}
+        >
+          Lead & Customer
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => navigate('/workspaceMap')}
+          sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}
+        >
+          Workspace
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => navigate('/billing')}
+          sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}
+        >
+          Billing
+        </Button>
       </div>
     </div>
   );
