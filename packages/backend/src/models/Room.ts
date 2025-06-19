@@ -1,10 +1,24 @@
-import {ID,DateISO} from '../../../../types/core';
-import{MeetingRoomManagement,RoomFeature} from ""
+import {ID,DateISO} from "../controllers/occupancyTrendControllers";
+import{MeetingRoomManagement} from "../controllers/roomController"
 import {RoomStatus} from '../../../../types/booking'
-import { BookingRules } from "./BookingRules";
-import { OccupancyAlert } from "./OccupancyAlert";
-import { OccupancySnapshot } from "./OccupancySnapshot";
-import { RoomFaeature } from "./RoomFaeature";
+import { OccupancyAlert } from "./occupancyTrend";
+import { OccupancySnapshot } from "./occupancyTrend";
+export interface RoomFeature {
+  id: ID;
+  name: string;
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
+export interface BookingRules{
+  roomId: string;
+  MinimumBookingMiniuts:number;
+  MaximumBookingMiniuts:number;
+  AdvanceBookingDays:number;
+  RequiredApproval:boolean;
+  FreeHoursForKlikcaCard:number;
+}
+
 export class Room {
     id: ID;
     name: string;
@@ -29,10 +43,11 @@ export class Room {
   occupancyAlerts?: OccupancyAlert[];
 
   // קשר: חדר אחד -> כמה תמונות/פיצ'רים (RoomFaeature)
-  roomFeatures?: RoomFaeature[];
+  roomFeatures?: RoomFeature[];
 
   // קשר: חדר אחד -> כמה snapshots
   occupancySnapshots?: OccupancySnapshot[];
+  
     constructor(
       id: ID,
       name: string,
@@ -89,6 +104,6 @@ export class Room {
         updatedAt: this.updatedAt
       };
     }
-    
+  
   }
   

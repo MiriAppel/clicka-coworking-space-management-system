@@ -1,5 +1,5 @@
 import express from 'express'
-import * as RoomReservationController from '../controllers/RoomReservationController'
+import * as RoomReservationController from '../controllers/roomReservationController'
 
 const router = express.Router()
 

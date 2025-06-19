@@ -1,5 +1,34 @@
-import {TimePeriod} from "../../../../types/report"
-import { Room } from "./Room";
+import {TimePeriod,ID,DateISO,WorkSpaceType,statusOccupancy} from "../controllers/occupancyTrendControllers"
+import { Room } from "./room";
+export interface OccupancySnapshot{
+  id: ID;
+  customerId:string;
+  roomId:string;
+  date: DateISO;
+  totalSpace: number;
+  OccupiendSpaces: number;
+  availableSpaces: number;
+  OccupancyRate: number;
+  BreakDown: {
+    [key in WorkSpaceType]: {
+      total: number;
+      occupied: number;
+      occupancyRate: number;
+    };
+  };
+  createdAt: DateISO;
+}
+export interface OccupancyAlert{
+  id:ID;
+  roomId:string;
+  customerId:string ;
+  type:statusOccupancy;
+  threshold:number;
+  currentValue:number;
+  workspaceType:WorkSpaceType;
+  isActive:boolean;
+  triggeredAT:DateISO;
+}
 export class OccupancyTrend {
     period: TimePeriod;
     customerId!:string;

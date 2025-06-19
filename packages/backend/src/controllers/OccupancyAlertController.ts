@@ -1,5 +1,5 @@
 import { Request,Response } from 'express';
-import alertService from'../services/OccupancyAlertService';
+import alertService from'../services/occupancyAlertService';
 //להקפיץ טריגר אם הקיבולת מתקרבת לסף
 export async function  checkAndTriggerAlert(req: Request, res: Response) {
   try {

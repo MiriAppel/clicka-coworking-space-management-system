@@ -1,8 +1,15 @@
 
 //קבלת כל המפות הקיימות
-export async function getAllmaps() {
+// export async function getAllmaps(): Promise<WorkspaceMap[]> {
+//   try {
+//     const maps = await workspaceMapRepository.getAllMaps(); // פעולה שמביאה את כל המפות מהמסד נתונים
+//     return maps;
+//   } catch (error) {
+//     console.error('Failed to fetch workspace maps:', error);
+//     throw new Error('Could not retrieve workspace maps');
+//   }
 
-}
+// }
 // קבלת מפה לפי מזהה
 export async function getWorkspaceMapById(id: any) { 
 }

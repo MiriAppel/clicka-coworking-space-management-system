@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import * as workspaceMapService from '../services/WorkspeceMapService'
+import * as workspaceMapService from '../services/workspeceMapService'
 export async function getAllWorkspacesMap(req: Request, res: Response) {
   try {
     const result = await workspaceMapService.getAllmaps()

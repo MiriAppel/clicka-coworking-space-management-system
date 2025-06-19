@@ -1,5 +1,5 @@
 import express from 'express'
-import * as workspaceMapController from '../controllers/WorkspaceMapController'
+import * as workspaceMapController from '../controllers/workspaceMapController'
 
 const router = express.Router()
 router.get('/', workspaceMapController.getAllWorkspacesMap)

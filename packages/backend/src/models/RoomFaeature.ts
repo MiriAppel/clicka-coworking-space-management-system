@@ -1,5 +1,5 @@
 import { ID } from "../../../../types/core";
-import { Room } from "./Room";
+import { Room } from "./room";
 export class RoomFaeature {
     id!: ID;
     name: string;

@@ -1,6 +1,6 @@
 import { ID, DateISO } from '../../../../types/core';
 import { WorkspaceType } from '../../../../types/customer' ;
-import{WorkspaceMapItem} from './WorkspaceMapItem';
+import{WorkspaceMapItem} from './workspaceMapItem';
 import {SpaceStatus} from '../../../../types/workspace'
 export interface MapLayout {
   width: number;

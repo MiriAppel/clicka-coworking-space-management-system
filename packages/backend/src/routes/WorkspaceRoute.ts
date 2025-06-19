@@ -1,5 +1,5 @@
 import express from 'express'
-import * as workspaceMapController from '../controllers/WorkspaceController'
+import * as workspaceMapController from '../controllers/workspaceController'
 
 const router = express.Router()
 

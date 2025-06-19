@@ -1,5 +1,5 @@
 import { Request,Response } from "express";
-import workspaceInventoryMenagementService from '../services/WorkspaceInventoryMenagementService';
+import workspaceInventoryMenagementService from '../services/workspaceInventoryMenagementService';
 
 export async function  getByAvialableStatus(req: Request, res: Response) {
     try {

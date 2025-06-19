@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import * as RoomreservationService from '../services/RoomReservationService'
+import * as RoomreservationService from '../services/roomReservationService'
 
 export async function createOrderByCustomer(req: Request, res: Response) {
   try {
