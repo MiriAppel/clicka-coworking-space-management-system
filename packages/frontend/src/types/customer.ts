@@ -1,6 +1,8 @@
 // customer-types.d.ts
 
-import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
+import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse , DateRangeFilter } from './core';
+
+//הוספתי לכאן את הממשקים של חוזה וציר זמן - היה חסר!!!
 
 // Workspace type enum
 export enum WorkspaceType {
@@ -179,3 +181,73 @@ export interface ConvertLeadToCustomerRequest {
   };
   contractDocuments?: FileReference[];
 }
+
+// Contract
+
+export enum ContractStatus {
+  DRAFT = 'DRAFT',
+  PENDING_SIGNATURE = 'PENDING_SIGNATURE',
+  SIGNED = 'SIGNED',
+  ACTIVE = 'ACTIVE',
+  EXPIRED = 'EXPIRED',
+  TERMINATED = 'TERMINATED'
+}
+
+export interface ContractTerms {
+  workspaceType: WorkspaceType;
+  workspaceCount: number;
+  monthlyRate: number;
+  duration: number; // months
+  renewalTerms: string;
+  terminationNotice: number; // days
+  specialConditions?: string[];
+}
+
+
+export interface Contract {
+  id: ID;
+  customerId: ID;
+  version: number;
+  status: ContractStatus;
+  signDate?: DateISO;
+  startDate: DateISO;
+  endDate?: DateISO;
+  terms: ContractTerms;
+  documents: FileReference[];
+  // modifications: ContractModification[]; //חסר הישות ContractModification!! 
+  signedBy?: string;
+  witnessedBy?: string;
+  createdAt: DateISO;
+  updatedAt: DateISO;
+}
+
+export interface CustomerTimeline {
+  customerId: ID;
+  events: TimelineEvent[];
+  totalEvents: number;
+  dateRange: DateRangeFilter;
+}
+
+export interface TimelineEvent {
+  id: ID;
+  type: TimelineEventType;
+  date: DateISO;
+  title: string;
+  description: string;
+  userId?: ID;
+  relatedEntityId?: ID;
+  importance: 'low' | 'medium' | 'high';
+  metadata?: Record<string, any>;
+}
+
+export enum TimelineEventType {
+  LEAD_CREATED = 'LEAD_CREATED',
+  INTERACTION = 'INTERACTION',
+  CONVERSION = 'CONVERSION',
+  CONTRACT_SIGNED = 'CONTRACT_SIGNED',
+  WORKSPACE_ASSIGNED = 'WORKSPACE_ASSIGNED',
+  PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
+  STATUS_CHANGE = 'STATUS_CHANGE',
+  NOTE_ADDED = 'NOTE_ADDED'
+}
+
