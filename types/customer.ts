@@ -1,4 +1,5 @@
-// customer-types.d.ts
+
+// customer.d.ts
 
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 

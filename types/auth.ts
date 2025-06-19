@@ -2,6 +2,7 @@
 
 import { ID, DateISO, ApiResponse } from './core';
 
+
 // User role enum
 export enum UserRole {
   ADMIN = 'ADMIN',         // Full access (Nechama)
@@ -34,7 +35,10 @@ export interface LoginRequest {
 export interface LoginResponse {
   user: User;
   token: string;
+
+  refreshToken?: string;
   expiresAt: DateISO;
+  cookie?: string; // Optional cookie for session management
 }
 
 // Register user request

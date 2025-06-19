@@ -44,7 +44,6 @@ export interface CalendarEventInput {
   [key: string]: any; // שדה פתוח לשדות נוספים
 }
 
-
 // Google Calendar event
 export interface GoogleCalendarEvent {
   id: string;
@@ -157,6 +156,7 @@ export interface CreateDriveFolderRequest {
   parentFolderId?: string;
   description?: string;
 }
+
 export interface GmailMessage {
   id: string;
   threadId?: string;
