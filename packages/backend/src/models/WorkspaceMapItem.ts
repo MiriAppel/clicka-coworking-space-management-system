@@ -1,8 +1,8 @@
-import { ID, DateISO } from '../types/core';
+import { ID, DateISO } from'../../../../types/core';
 
-import{MapCoordinates} from '../../../../types/mapcoordinates';
-import { SpaceStatus} from "../types/workspace";
-import { WorkspaceType } from "../types/customer";
+import{MapCoordinates} from './WorkspaceMap';
+import { SpaceStatus} from "../../../../types/workspace";
+import { WorkspaceType } from "../../../../types/customer";
 export class WorkspaceMapItem {
   workspaceMapId: ID;
   workspaceId: ID;
@@ -27,7 +27,7 @@ toDatabaseFormat() {
   return {
     workspaceMapId: this.workspaceMapId,
     workspaceId: this.workspaceId,
-    coordinates: this.coordinates.toDatabaseFormat(), 
+    coordinates: this.coordinates, 
     status: this.status,
     type: this.type,
     occupant: this.occupant

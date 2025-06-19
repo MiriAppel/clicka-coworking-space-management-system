@@ -1,5 +1,5 @@
 import { ID, DateISO } from '../../../../types/core';
-import { WorkspaceType } from '../.../../../../../types/customer' ;
+import { WorkspaceType } from '../../../../types/customer' ;
 import{WorkspaceMapItem} from './WorkspaceMapItem';
 import {SpaceStatus} from '../../../../types/workspace'
 export interface MapLayout {
@@ -43,7 +43,7 @@ export class WorkspaceMapModel {
     return {
       id: this.id,
       name: this.name,
-       layout: this.layout.toDatabaseFormat(),
+       layout: this.layout,
       workspaces: this.workspaces.map(w => w.toDatabaseFormat()),
       lastUpdated: this.lastUpdated,
     };

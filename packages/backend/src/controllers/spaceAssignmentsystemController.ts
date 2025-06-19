@@ -1,5 +1,5 @@
 import { Request,Response } from "express";
-import spaceAssignmentsystemService from '../services/spaceAssignmentsystemService';
+import spaceAssignmentsystemService from '../services/SpaceAssignmentsystemService';
 
 export async function  assignCustomerToWorkspace(req: Request, res: Response) {
     try {
