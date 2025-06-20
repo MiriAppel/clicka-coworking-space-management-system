@@ -1,7 +1,6 @@
 // expense-types.d.ts
 
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
-
 // Expense category enum
 export enum ExpenseCategory {
   RENT = 'RENT',
@@ -45,38 +44,60 @@ export enum ExpensePaymentMethod {
 export interface Vendor {
   id: ID;
   name: string;
-  contactName?: string;
+  contact_name?: string;
   phone?: string;
   email?: string;
   address?: string;
   website?: string;
-  taxId?: string;
+  tax_id?: string;
+  payment_terms?: string;
+  preferred_payment_method?: PaymentMethod;
+  category?: VendorCategory;
+  status?: VendorStatus;
   notes?: string;
+  documents?: FileReference[];
   createdAt: DateISO;
   updatedAt: DateISO;
 }
-
+ 
 // Expense model
 export interface Expense {
   id: ID;
-  vendorId: ID;
-  vendorName: string;
+  vendor_id: ID;
+  vendor_name: string;
   category: ExpenseCategory;
   description: string;
   amount: number;
   tax?: number;
   date: DateISO;
-  dueDate?: DateISO;
-  paidDate?: DateISO;
+  due_date?: DateISO;
+  paid_date?: DateISO;
   status: ExpenseStatus;
-  paymentMethod?: ExpensePaymentMethod;
+  payment_method?: ExpensePaymentMethod;
   reference?: string;
-  invoiceNumber?: string;
-  invoiceFile?: FileReference;
-  receiptFile?: FileReference;
+  invoice_number?: string;
+  invoice_file?: FileReference;
+  receipt_file?: FileReference;
   notes?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
+}
+export enum PaymentMethod {
+  BankTransfer = 'BankTransfer',   
+  CreditCard = 'CreditCard',      
+  Cash = 'Cash',                  
+  Other = 'Other'                 
+}
+export enum VendorStatus {
+  Active = 'Active',
+  Inactive = 'Inactive',
+  Suspended = 'Suspended'
+}
+export enum VendorCategory {
+  Equipment = 'Equipment',
+  Services = 'Services',
+  Maintenance = 'Maintenance',
+  Other = 'Other'
 }
 
 // Create vendor request
@@ -164,4 +185,10 @@ export interface MarkExpenseAsPaidRequest {
   paymentMethod: ExpensePaymentMethod;
   reference?: string;
   notes?: string;
+}
+export enum PaymentTerms {
+  NET_15 = 'Net 15',
+  NET_30 = 'Net 30',
+  EOM = 'End of Month',
+  COD = 'Cash on Delivery'
 }

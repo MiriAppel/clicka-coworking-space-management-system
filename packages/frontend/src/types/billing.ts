@@ -10,7 +10,8 @@ export enum InvoiceStatus {
   PAID = 'PAID',
   PARTIALLY_PAID = 'PARTIALLY_PAID',
   OVERDUE = 'OVERDUE',
-  CANCELED = 'CANCELED'
+  CANCELED = 'CANCELED',
+  SENT = 'SENT',
 }
 
 // Payment method enum
@@ -35,39 +36,50 @@ export enum BillingItemType {
 // Billing item model
 export interface BillingItem {
   id: ID;
-  invoiceId: ID;
+  invoice_id: ID;
   type: BillingItemType;
   description: string;
   quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-  taxRate: number;
-  taxAmount: number;
-  workspaceType?: WorkspaceType;
-  bookingId?: ID;
+  unit_price: number;
+  total_price: number;
+  tax_rate: number;
+  tax_amount: number;
+  workspace_type?: WorkspaceType;
+  booking_id?: ID;
   createdAt: DateISO;
   updatedAt: DateISO;
+  
 }
 
 // Invoice model
 export interface Invoice {
   id: ID;
-  invoiceNumber: string;
-  customerId: ID;
-  customerName: string;
+  invoice_number: string;
+  customer_id: ID;
+  customer_name: string;
   status: InvoiceStatus;
-  issueDate: DateISO;
-  dueDate: DateISO;
+  issue_date: DateISO;
+  due_date: DateISO;
   items: BillingItem[];
   subtotal: number;
-  taxTotal: number;
-  total: number;
-  amountPaid: number;
-  balance: number;
-  notes?: string;
-  pdfFile?: FileReference;
-  paymentDueReminder?: boolean;
-  paymentDueReminderSentAt?: DateISO;
+  tax_total: number;
+  // //הוספת שדות במקום
+  // tax_amount:number
+  // tax_rate:number
+  // total: number;
+  // amountPaid: number;
+  //הוספת שדה
+  // paid_date: DateISO 
+  // balance: number;
+  // notes?: string;
+  // pdfFile?: FileReference;
+  payment_due_reminder?: boolean;
+  payment_dueReminder_sentAt?: DateISO;
+  //הוספה שדות במקום 
+  // billingPeriodStart :DateISO
+  // billingPeriodEnd :DateISO
+  // templateId:ID 
+  //
   createdAt: DateISO;
   updatedAt: DateISO;
 }
@@ -75,16 +87,16 @@ export interface Invoice {
 // Payment model
 export interface Payment {
   id: ID;
-  customerId: ID;
-  customerName: string;
-  invoiceId?: ID;
-  invoiceNumber?: string;
+  customer_id: ID;
+  customer_name: string;
+  invoice_id?: ID;
+  invoice_number?: string;
   amount: number;
   method: PaymentMethodType;
-  transactionReference?: string;
+  transaction_reference?: string;
   date: DateISO;
   notes?: string;
-  receiptFile?: FileReference;
+  receipt_file?: FileReference;
   createdAt: DateISO;
   updatedAt: DateISO;
 }
@@ -217,4 +229,11 @@ export interface GenerateMonthlyInvoicesResponse {
     error: string;
   }>;
   invoices: Invoice[];
+}
+// Payment status enum
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  CANCELED = 'CANCELED'
 }
