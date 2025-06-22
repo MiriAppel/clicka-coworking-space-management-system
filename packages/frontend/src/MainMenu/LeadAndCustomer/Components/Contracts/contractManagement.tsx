@@ -60,9 +60,9 @@ export const ContractManagement = () => {
         customerId: contract.customerId,
         status: contract.status,
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
-        linkToDetails: <NavLink to={`:${contract.customerId}`}>פרטי חוזה</NavLink>, // קישור
+        linkToDetails: <NavLink to={`:${contract.customerId}`} className="text-blue-500 hover:underline">פרטי חוזה</NavLink>, // קישור
         deleteButton: (
-            <Button variant="primary" size="sm" onClick={() => deleteContract(contract.id)}>X</Button>
+            <Button variant="accent" size="sm" onClick={() => deleteContract(contract.id)}>X</Button>
         ),
     }));
 
@@ -82,8 +82,8 @@ export const ContractManagement = () => {
     }
 
     return (
-        <div>
-            <h1>Contract Management</h1>
+        <div className="p-6">
+            <h2 className="text-3xl font-bold text-center text-blue-600 my-4">ניהול חוזים</h2>
             {/* Add your contract management implementation here */}
             <Button variant="primary" size="sm" onClick={() => navigate('new')}>new contract</Button>
 

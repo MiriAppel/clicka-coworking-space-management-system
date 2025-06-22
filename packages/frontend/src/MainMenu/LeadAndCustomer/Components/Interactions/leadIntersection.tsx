@@ -32,8 +32,8 @@ const columns: TableColumn<User>[] = [
 //למטה צריך להיות גרף של תאריכים וכמות האינטרקציות בכל תאריך ושיוכלו ללחוץ על האינטרקציה ולראות עם מי היה האינטרקציה
 export const LeadIntersection = () => {
   return (
-    <div>
-      <h1>LeadIntersection</h1>
+    <div className="p-6">
+            <h2 className="text-xl font-bold mb-4">אינטראקציות של מתעניינים</h2>
       <Table<User> data={users} columns={columns} dir="rtl" />
     </div>
   );

@@ -43,9 +43,9 @@ export const LeadHomePage = () => {
   const valuesToTable: ValuesToTable[] = leads.map(lead => ({
     name: lead.name,
     status: lead.status,
-    linkToDetails: <NavLink to={`:${lead.id}`}>פרטי מתעניין</NavLink>, // קישור
+    linkToDetails: <NavLink to={`:${lead.id}`} className="text-blue-500 hover:underline">פרטי מתעניין</NavLink>, // קישור
     deleteButton: (
-      <Button variant="primary" size="sm" onClick={() => deleteLead(lead.id)}>X</Button>
+      <Button variant="accent" size="sm" onClick={() => deleteLead(lead.id)}>X</Button>
     ),
   }));
 
@@ -64,7 +64,7 @@ export const LeadHomePage = () => {
     setLeads(newCustomers); // עדכון ה-state
   }
   const goToAnotherPage = () => {
-    navigate("detailsOfTheLead");
+    // navigate("detailsOfTheLead");
     {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
   }
   // const goTointerestedCustomerRegistration = () => {
@@ -73,15 +73,14 @@ export const LeadHomePage = () => {
   // }
 
 
-  return <div className='leadHomePage'>
-
-    <h1>leadHomePage</h1>
+  return <div className="p-6">
+    <h2 className="text-3xl font-bold text-center text-blue-600 my-4">מתעניינים</h2>
 
     {/*כאן צריך להיות */}
     {/*input*/}
     {/* של חיפוש והתשובה שתגיע תשלח לפונקצייה של חיפוש לפי סטטוס/שם/ת.ז   */}
 
-    <h3>List of Leads</h3>
+    {/* <h3>List of Leads</h3> */}
     <Button variant="primary" size="sm" onClick={() => navigate('intersections')}>אינטראקציות של מתעניינים</Button>
 
 

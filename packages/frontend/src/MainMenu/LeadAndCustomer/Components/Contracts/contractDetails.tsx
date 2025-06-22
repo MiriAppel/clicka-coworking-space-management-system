@@ -52,7 +52,7 @@ export const ContractDetails = () => {
         //     {/*  כאן מוצגים כל הפרטים של החוזה עבור לקוח מסוים */}
 
         <div className="contract-details">
-            <h2>פרטי החוזה</h2>
+            <h2 className="text-xl font-bold mb-4">פרטי החוזה</h2>
             <Button variant="primary" size="sm" onClick={() => editContract()}>ערוך</Button>
             <p><strong>ID:</strong> {currentContract.id}</p>
             <p><strong>מזהה לקוח:</strong> {currentContract.customerId}</p>

@@ -55,8 +55,8 @@ export const DetailsOfTheLead = () => {
 
     // <Button onClick={} variant="primary" size="sm" > אנטרקציה של המתעניין </Button>  
     //זה כפתור שמעביר אותי לאינטרקציות של המתעניין לא ברור עדיין אם צריך לכל מתעניין בנפרד או רק שיהיה את של כולם ביחד 
-    return <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '5px', maxWidth: '400px' }}>
-        <h2>פרטי המתעניין</h2>
+    return <div className="customer-page p-5">
+        <h2 className="text-xl font-bold mb-4">פרטי המתעניין</h2>
         <Button onClick={handleClick} variant="primary" size="sm" >רישום מתעניין ללקוח</Button>
         <p><strong>שם:</strong> {currentLead.name}</p>
         <p><strong>טלפון:</strong> {currentLead.phone}</p>

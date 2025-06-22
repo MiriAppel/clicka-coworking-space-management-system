@@ -93,9 +93,9 @@ export const CustomersList = () => {
         name: customer.name,
         status: customer.status,
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
-        linkToDetails: <NavLink to={`:${customer.id}`}>פרטי לקוח</NavLink>, // קישור
+        linkToDetails: <NavLink to={`:${customer.id}`} className="text-blue-500 hover:underline">פרטי לקוח</NavLink>, // קישור
         deleteButton: (
-            <Button variant="primary" size="sm" onClick={() => deleteCustomer(customer.id)}>X</Button>
+            <Button variant="accent" size="sm" onClick={() => deleteCustomer(customer.id)}>X</Button>
         ),
     }));
 
@@ -122,8 +122,8 @@ export const CustomersList = () => {
     }
 
     return (
-        <div style={{ direction: "rtl", padding: "20px" }}>
-            <h1 >לקוחות</h1>
+        <div className="p-6">
+            <h2 className="text-3xl font-bold text-center text-blue-600 my-4">לקוחות</h2>
 
             {/* שימוש בקומפוננטה של יצוא לאקסל */}
             <ExportToExcel data={customers} fileName="לקוחות" /><br />
@@ -132,7 +132,7 @@ export const CustomersList = () => {
             {/* אפשרות חיפוש - בחירה לפי מה לחפש ושדה להכנסת ערך לחיפוש - אפשר בקומפוננטה נפרדת */}
             <input type="text" placeholder="הכנס ערך לחיפוש" />
             {/* לא חייבים את הכפתור אפשר בכל לחיצת מקלדת של קלט לחפש */}
-            <Button variant="primary" size="sm" onClick={() => searchCustomer()}>חיפוש</Button>
+            <Button variant="secondary" size="sm" onClick={() => searchCustomer()}>חיפוש</Button>
 
             {/* טבלה של כל הלקוחות עם שם וסטטוס ולכל אחד קישור לקומפוננטה של לקוח בודד שתציג את כל הפרטים המלאים שלו */}
             <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" />
