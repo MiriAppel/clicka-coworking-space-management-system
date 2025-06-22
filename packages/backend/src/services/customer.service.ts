@@ -1,10 +1,11 @@
 import { ID, PaginatedResponse } from "../../../../types/core";
 import { CustomerModel } from "../models/customer.model";
-import{ ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, RecordExitNoticeRequest, UpdateCustomerRequest, CustomerPeriod} from '../../../../types/customer'
+import{ ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, RecordExitNoticeRequest, UpdateCustomerRequest, CustomerPeriod, CreateCustomerRequest} from '../../../../types/customer'
 import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
 import { createObjectCsvStringifier } from "csv-writer";
 import { leadService } from "./lead.service";
+import { PaymentMethodType } from "../../../../types/billing";
 
 export class customerService extends baseService <CustomerModel> {
 
@@ -26,24 +27,24 @@ export class customerService extends baseService <CustomerModel> {
     }
     
     // המרת ליד ללקוח
-    convertLeadToCustomer = async (newCustomer: ConvertLeadToCustomerRequest): Promise <CustomerModel> => {
+    convertLeadToCustomer = async (newCustomer: CreateCustomerRequest, leadId: ID, paymentMethodsType: PaymentMethodType, businessName: string): Promise <CustomerModel> => {
 
         const serviceLead = new leadService();
         
-        const leadData = await serviceLead.getById(newCustomer.leadId);
+        const leadData = await serviceLead.getById(leadId);
 
         if (!leadData) {
             throw new Error('Lead data not found for the provided leadId');
         }
         // המרה של ליד ללקוח
         const customerData: CustomerModel = {
-            id:leadData.id,
-            name: leadData.name,
-            email: leadData.email,
-            phone: leadData.phone,
-            idNumber: leadData.idNumber,
-            businessName: newCustomer.businessName,
-            businessType: leadData.businessType,
+            id: leadId,
+            name: newCustomer.name,
+            email: newCustomer.email,
+            phone: newCustomer.phone,
+            idNumber: newCustomer.idNumber,
+            businessName: businessName,
+            businessType: newCustomer.businessType,
             status: CustomerStatus.ACTIVE,
             currentWorkspaceType: newCustomer.workspaceType,
             workspaceCount: newCustomer.workspaceCount,
@@ -51,9 +52,9 @@ export class customerService extends baseService <CustomerModel> {
             contractStartDate: newCustomer.contractStartDate,
             billingStartDate: newCustomer.billingStartDate,
             notes: newCustomer.notes,
-            invoiceName: newCustomer.invoiceName,
+            invoiceName: "",
             contractDocuments: newCustomer.contractDocuments,
-            paymentMethodsType: newCustomer.paymentMethodType,
+            paymentMethodsType: paymentMethodsType,
             periods: [],
             contracts: [],
             createdAt: new Date().toISOString(),
