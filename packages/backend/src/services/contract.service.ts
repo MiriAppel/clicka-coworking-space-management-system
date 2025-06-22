@@ -41,9 +41,24 @@ export class contractService extends baseService<ContractModel> {
     return []; // להחזיר מערך של חוזים
   };
   getContractsEndingSoon = async (days: number = 30): Promise<Contract[]> => {
-    // אמור לשלוף את החוזים שהתוקף שלהם מסתיים בעוד 30 יום
-    return []; // להחזיר מערך של חוזים
+
+    const today = new Date();
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + days);
+
+    //קודם שולף את כל החוזים
+    const allContracts = await this.getByFilters({}); 
+    
+    // ואז מסנן אותם לפי התאריך
+    return allContracts.filter(contract => {
+
+      if (!contract.endDate) return false;   
+        return new Date(contract.endDate) <= targetDate;
+
+    }); 
+
   };
+  
 
   postContractDocument = async (
     documentToAdd: FileReference,
