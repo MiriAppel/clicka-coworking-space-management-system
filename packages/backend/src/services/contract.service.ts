@@ -2,6 +2,7 @@ import { ContractModel } from "../models/contract.model";
 import { DateISO, FileReference, ID } from "../../../../types/core";
 import { baseService } from "./baseService";
 import { Contract, ContractStatus } from "../../../../types/customer";
+import { supabase } from "../db/supabaseClient";
 
 export class contractService extends baseService<ContractModel> {
   constructor() {
@@ -37,10 +38,33 @@ export class contractService extends baseService<ContractModel> {
   
   getAllContractsByCustomerId = async (customerId: ID): Promise<Contract[]> => {
     // אמור לשלוף את כל החוזים עבור הלקוח עם ה-customerId הנתון
-    return []; // להחזיר מערך של חוזים
-  };
+      const { data, error } = await supabase
+    .from("contracts")
+    .select("*")
+    .eq("customerId", customerId);
+
+  if (error) {
+    console.error("שגיאה בעת שליפת החוזים:", error.message);
+    throw new Error("לא ניתן לשלוף את החוזים עבור לקוח זה.");
+  }
+  return data as Contract[];
+};
+
   getContractsEndingSoon = async (days: number = 30): Promise<Contract[]> => {
     // אמור לשלוף את החוזים שהתוקף שלהם מסתיים בעוד 30 יום
+  const now = new Date();
+  const thresholdDate = new Date();
+  thresholdDate.setDate(now.getDate() + days);
+
+  // נניח שיש לך פונקציה שמחזירה את כל החוזים
+  const allContracts: Contract[] = await this.getAll();
+
+  return allContracts.filter(contract => {
+    if (!contract.endDate) return false;
+    
+    const end = new Date(contract.endDate);
+    return end >= now && end <= thresholdDate;
+  });
     return []; // להחזיר מערך של חוזים
   };
 
@@ -72,8 +96,8 @@ export class contractService extends baseService<ContractModel> {
   };
 
   deleteContractDocument = async (id: ID): Promise<void> => {
-    //איזה מסמך?
     //מחיקת מסמך מהחוזה
+
   };
 
 }
