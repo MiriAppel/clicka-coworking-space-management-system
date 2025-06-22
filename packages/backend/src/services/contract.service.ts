@@ -12,7 +12,7 @@ export class contractService extends baseService<ContractModel> {
   updateContractTerms = async (
     contactId: ID,
     terms: any
-  ): Promise<Contract> => {
+  ): Promise<ContractModel> => {
     // אמור לעדכן את התנאים של החוזה עבור ה-contactId הנתון
     // הנח שהחוזה הוא אובייקט עם מזהה, תנאים, תאריכים, סטטוס וכו'
 

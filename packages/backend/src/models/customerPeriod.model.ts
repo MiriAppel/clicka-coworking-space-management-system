@@ -6,10 +6,10 @@ export class CustomerPeriodModel implements CustomerPeriod {
 
   id: ID; // PK
   customerId: ID; // FK. לקוח יכול להיות פעיל בכמה תקופות שונות (לדוגמה: עזב וחזר), לכן יש טבלת תקופות נפרדת.
-  entryDate?: string;
-  exitDate: string;
-  exitNoticeDate: string;
-  exitReason: ExitReason;
+  entryDate: string;
+  exitDate?: string;
+  exitNoticeDate?: string;
+  exitReason?: ExitReason;
   exitReasonDetails?: string;
   createdAt: string;
   updatedAt: string;
@@ -20,9 +20,9 @@ export class CustomerPeriodModel implements CustomerPeriod {
     entryDate: string,
     createdAt: string,
     updatedAt: string,
-    exitDate: string,
-    exitNoticeDate: string,
-    exitReason: ExitReason,
+    exitDate?: string,
+    exitNoticeDate?: string,
+    exitReason?: ExitReason,
     exitReasonDetails?: string
   ) {
     this.id = id;

@@ -1,6 +1,6 @@
 import { ID, DateISO } from '../../../../types/core';
 import { WorkspaceType } from '../../../../types/customer';
-import { Lead, LeadInteraction } from '../../../../types/lead';
+import { Lead, LeadInteraction, LeadStatus, LeadSource } from '../../../../types/lead';
 
 export class LeadModel implements Lead {
   
@@ -84,26 +84,3 @@ export class LeadModel implements Lead {
     }
   }
 }
-
-export enum LeadStatus {
-  NEW = 'NEW',
-  CONTACTED = 'CONTACTED',
-  INTERESTED = 'INTERESTED',
-  SCHEDULED_TOUR = 'SCHEDULED_TOUR',
-  PROPOSAL_SENT = 'PROPOSAL_SENT',
-  CONVERTED = 'CONVERTED',
-  NOT_INTERESTED = 'NOT_INTERESTED',
-  LOST = 'LOST'
-}
-
-export enum LeadSource {
-  WEBSITE = 'WEBSITE',
-  REFERRAL = 'REFERRAL',
-  SOCIAL_MEDIA = 'SOCIAL_MEDIA',
-  EVENT = 'EVENT',
-  PHONE = 'PHONE',
-  WALK_IN = 'WALK_IN',
-  EMAIL = 'EMAIL',
-  OTHER = 'OTHER'
-}
-

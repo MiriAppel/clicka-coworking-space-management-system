@@ -52,9 +52,7 @@ export class leadService extends baseService <LeadModel> {
   }
   
   checkIfFullLead(lead: UpdateLeadRequest): boolean {
-
     return !!(lead && lead.name && lead.email && lead.businessType && lead.phone && lead.interestedIn); 
-
   }
 
   convertCsvToLeads = (csvData: string): Promise <LeadModel[]> => {
@@ -87,5 +85,4 @@ export class leadService extends baseService <LeadModel> {
     return false;
     
   }
-
 };

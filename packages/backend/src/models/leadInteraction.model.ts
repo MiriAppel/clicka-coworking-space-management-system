@@ -1,5 +1,5 @@
 import { ID, DateISO } from '../../../../types/core';
-import { LeadInteraction } from '../../../../types/lead';
+import { LeadInteraction, InteractionType } from '../../../../types/lead';
 
 export class LeadInteractionModel implements LeadInteraction {
 
@@ -51,14 +51,4 @@ export class LeadInteractionModel implements LeadInteraction {
   }
 
 }
-
-export enum InteractionType {
-  EMAIL = 'EMAIL',
-  PHONE = 'PHONE',
-  MEETING = 'MEETING',
-  TOUR = 'TOUR',
-  NOTE = 'NOTE',
-  DOCUMENT = 'DOCUMENT'
-}
-
 

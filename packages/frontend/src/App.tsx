@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { useNavigate } from 'react-router-dom';
+import {Button} from './MainMenu/Common/Components/BaseComponents/Button'
 
 // Simple component to demonstrate the project
 function App() {
-  const [healthStatus, setHealthStatus] = useState<{status: string, timestamp: string} | null>(null);
+  const [healthStatus, setHealthStatus] = useState<{ status: string, timestamp: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  //////
+  const navigate = useNavigate();
+
+
+
 
   useEffect(() => {
     // Check API health
@@ -29,26 +36,39 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Chabad Tefen Tefillin Project</h1>
-        <div className="api-status">
-          <h2>API Connection Status</h2>
-          {loading ? (
-            <p>Checking API connection...</p>
-          ) : error ? (
-            <div className="error-message">
-              <p>{error}</p>
-              <p>Please start the backend server and refresh this page.</p>
-            </div>
-          ) : (
-            <div className="success-message">
-              <p>✅ Connected to API</p>
-              <p>Status: {healthStatus?.status}</p>
-              <p>Last checked: {new Date(healthStatus?.timestamp || '').toLocaleString()}</p>
-            </div>
-          )}
-        </div>
+      <header className="App-header"> 
+        <h3>welcome to our world</h3>
+        <h1>Clicka</h1>
+        <h2>Co-working Space Management System</h2>
       </header>
+      <div className="space-x-4">
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate('/leadAndCustomer')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Lead & Customer
+      </Button>
+
+      <Button
+        variant="primary"
+        size="lg"
+        onClick={() => navigate('/workspaceMap')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Workspace
+      </Button>
+
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate('/billing')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Billing
+      </Button>
+    </div>
     </div>
   );
 }

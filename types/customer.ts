@@ -55,24 +55,34 @@ export enum ExitReason {
 export interface CustomerPeriod {
   id: ID;
   customerId: ID;
-  entryDate?: DateISO;
-  exitDate: DateISO;
-  exitNoticeDate: DateISO;
-  exitReason: ExitReason;
+  entryDate: DateISO;
+  exitDate?: DateISO;
+  exitNoticeDate?: DateISO;
+  exitReason?: ExitReason;
   exitReasonDetails?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
 }
 
+export interface ContractTerms {
+  workspaceType: WorkspaceType;
+  workspaceCount: number;
+  monthlyRate: number;
+  duration: number; // months
+  renewalTerms: string;
+  terminationNotice: number; // days
+  specialConditions?: string[];
+}
+
 export interface Contract {
-    id?: ID;
+    id: ID;
     customerId: ID;
     version: number;
     status: ContractStatus;
     signDate?: DateISO;
     startDate?: DateISO;
     endDate?: DateISO;
-    terms?: string;
+    terms?: ContractTerms;
     documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
     signedBy?: string;
     witnessedBy?: string;
@@ -96,7 +106,7 @@ export interface PaymentMethod {
 
 // Customer model
 export interface Customer {
-  id?: ID;
+  id: ID;
   name: string;
   phone: string;
   email: string;
@@ -112,8 +122,7 @@ export interface Customer {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-  //paymentMethods: PaymentMethod[];
-  paymentMethodsType: PaymentMethodType;
+  paymentMethods: PaymentMethod[];
   periods: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
