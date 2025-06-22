@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useState } from "react";
-import { Contract, ContractStatus, WorkspaceType } from "../../../../types/customer"
+import { ContractStatus, WorkspaceType, Contract } from "../../../../types/customer"
 import { Button } from '../../../Common/Components/BaseComponents/Button';
 
 export const ContractDetails = () => {
@@ -59,15 +59,15 @@ export const ContractDetails = () => {
             <p><strong>גרסה:</strong> {currentContract.version}</p>
             <p><strong>סטטוס:</strong> {currentContract.status}</p>
             {currentContract.signDate && <p><strong>תאריך חתימה:</strong> {new Date(currentContract.signDate).toLocaleDateString()}</p>}
-            <p><strong>תאריך התחלה:</strong> {new Date(currentContract.startDate).toLocaleDateString()}</p>
+            {currentContract.startDate && <p><strong>תאריך התחלה:</strong> {new Date(currentContract.startDate).toLocaleDateString()}</p>}
             {currentContract.endDate && <p><strong>תאריך סיום:</strong> {new Date(currentContract.endDate).toLocaleDateString()}</p>}
             <h3>תנאים</h3>
-            <p><strong>סוג מקום עבודה:</strong> {currentContract.terms.workspaceType}</p>
-            <p><strong>מספר מקומות עבודה:</strong> {currentContract.terms.workspaceCount}</p>
-            <p><strong>תעריף חודשי:</strong> {currentContract.terms.monthlyRate} ₪</p>
-            <p><strong>משך:</strong> {currentContract.terms.duration} חודשים</p>
-            <p><strong>תנאי חידוש:</strong> {currentContract.terms.renewalTerms}</p>
-            <p><strong>הודעת סיום:</strong> {currentContract.terms.terminationNotice} ימים</p>
+            <p><strong>סוג מקום עבודה:</strong> {currentContract.terms?.workspaceType}</p>
+            <p><strong>מספר מקומות עבודה:</strong> {currentContract.terms?.workspaceCount}</p>
+            <p><strong>תעריף חודשי:</strong> {currentContract.terms?.monthlyRate} ₪</p>
+            <p><strong>משך:</strong> {currentContract.terms?.duration} חודשים</p>
+            <p><strong>תנאי חידוש:</strong> {currentContract.terms?.renewalTerms}</p>
+            <p><strong>הודעת סיום:</strong> {currentContract.terms?.terminationNotice} ימים</p>
             <h3>מסמכים</h3>
             <ul>
                 {currentContract.documents.map(doc => (

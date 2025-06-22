@@ -4,8 +4,7 @@ import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Ta
 
 import { useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
-import type { Lead } from "../../../../types/lead";
-import { LeadStatus, LeadSource } from "../../../../types/lead";
+import { LeadStatus, LeadSource, Lead } from "../../../../types/lead";
 
 
 //הדף העיקרי של המתעניין וממנו בעצם יש לי קישורים לכל הקומפוננטות של המתעניין -בתחילה שיש לי מתענינים ולקוחות
@@ -20,7 +19,7 @@ interface ValuesToTable {
 //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
 
 
-export const LeadHomePage = () => {
+ export const LeadHomePage = () => {
   const navigate = useNavigate();
   const [lead, setLead] = useState<Lead[]>([
     {
@@ -28,6 +27,7 @@ export const LeadHomePage = () => {
       name: "אברהם ישראלי",
       phone: "050-1234567",
       email: "a567@gmail.com",
+      idNumber: "123456789",
       status: LeadStatus.LOST,
       updatedAt: "2023-01-10T00:00:00Z",
       businessType: "עסק קטן",         // לדוגמה

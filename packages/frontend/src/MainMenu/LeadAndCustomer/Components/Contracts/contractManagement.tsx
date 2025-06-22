@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { useNavigate } from 'react-router-dom';
-import { ID } from '../../../../types/core';
-import { Contract, ContractStatus, WorkspaceType } from '../../../../types/customer'; // יש להחליף עם הנתיב הנכון
+import { ID } from "../../../../types/core";
+import { Contract, ContractStatus, WorkspaceType } from "../../../../types/customer"; // יש להחליף עם הנתיב הנכון
 import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
 import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
 

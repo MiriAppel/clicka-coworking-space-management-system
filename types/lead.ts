@@ -39,7 +39,7 @@ export enum InteractionType {
 
 // Lead interaction model
 export interface LeadInteraction {
-  id: ID;
+  id?: ID;
   leadId: ID;
   type: InteractionType;
   date: DateISO;
@@ -53,6 +53,7 @@ export interface LeadInteraction {
 // Lead model
 export interface Lead {
   id: ID;
+  idNumber: ID;
   name: string;
   phone: string;
   email: string;
