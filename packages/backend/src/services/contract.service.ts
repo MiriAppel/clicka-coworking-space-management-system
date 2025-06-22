@@ -40,6 +40,7 @@ export class contractService extends baseService<ContractModel> {
     // אמור לשלוף את כל החוזים עבור הלקוח עם ה-customerId הנתון
     return []; // להחזיר מערך של חוזים
   };
+
   getContractsEndingSoon = async (days: number = 30): Promise<Contract[]> => {
 
     const today = new Date();
@@ -71,8 +72,13 @@ export class contractService extends baseService<ContractModel> {
 
   //מוחק את הקובץ מהמערך שהid documentIdשלו שווה ל
   deleteContractDocument = async (customerId: ID, documentId: ID): Promise<void> => {
-    //איזה מסמך?
-    //מחיקת מסמך מהחוזה
+
+    const contract = await this.getById(customerId);
+
+    const document = contract.documents.filter(doc => doc.id !== documentId);
+
+    await this.patch( { documents: document }, customerId);
+
   };
 
 }

@@ -73,7 +73,7 @@ export class baseService <T> {
         return data;           
     }
 
-    patch = async (dataToUpdate: T, id: ID): Promise <T> => {
+    patch = async (dataToUpdate: Partial<T>, id: ID): Promise <T> => {
 
         const { data, error } = await supabase
             .from(this.tableName)
