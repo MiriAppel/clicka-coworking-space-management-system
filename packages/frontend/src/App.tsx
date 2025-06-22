@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate } from 'react-router-dom';
 import {Button} from './MainMenu/Common/Components/BaseComponents/Button'
-import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
-import { LoginWithGoogle } from './Login/Components/LoginButton';
 import { AuthenticationScreen } from './Login/Components/AuthenticationScreen';
 import { useAuthStore } from './store/useAuthStore';
 
@@ -18,7 +16,7 @@ const { setUser, clearUser, setLoading } = useAuthStore();
       const checkAuth = async () => {
         try {
           setLoading(true);
-          const res = await fetch("/api/verify", {
+          const res = await fetch("/api/auth/verify", {
             credentials: "include", // חשוב לשם שליחת ה-cookie
           });
           if (res.status==200) {

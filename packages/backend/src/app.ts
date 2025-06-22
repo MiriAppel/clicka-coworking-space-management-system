@@ -7,7 +7,7 @@ import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 
-import  router  from './routes/auth';
+import  routerAuth  from './routes/auth';
 import cookieParser from 'cookie-parser';
 import { Request, Response } from 'express';
 
@@ -36,7 +36,7 @@ app.use('/api/contract', routerContract);
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-app.use('/api',router)
+app.use('/api/auth',routerAuth)
 // Placeholder for routes
 // TODO: Add routers for different resources
 

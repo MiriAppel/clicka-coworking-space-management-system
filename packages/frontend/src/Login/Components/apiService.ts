@@ -6,7 +6,7 @@ interface RequestOptions extends RequestInit {
 }
 
 const MAX_RETRIES = 1; // מספר ניסיונות ריענון
-const REFRESH_TOKEN_ENDPOINT = '/api/refresh-token'; // ה-endpoint לריענון טוקן בשרת
+const REFRESH_TOKEN_ENDPOINT = '/api/auth/refresh-token'; // ה-endpoint לריענון טוקן בשרת
 
 async function refreshAuthToken(): Promise<boolean> {
   const { clearUser } = useAuthStore.getState(); // גישה ל-clearUser מחוץ לקומפוננטה

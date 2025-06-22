@@ -11,8 +11,10 @@ export const verifySession = (req: Request, res: Response, next: NextFunction) =
   }
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string };
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string ; googleId: string };
+    
     (req as any).user = payload; // Store the payload in the request object for further use
+    //get the user from the database 
     next();
   } catch (err: any) {
     if (err.name === 'TokenExpiredError') {

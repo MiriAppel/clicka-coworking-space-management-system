@@ -12,7 +12,7 @@ export const LogoutButton = () => {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/api/logout', {}, { withCredentials: true });
+      await axiosInstance.post('/api/auth/logout', {}, { withCredentials: true });
       clearAuth();
       navigate('/'); // או כל דף אחר
     } catch (error) {

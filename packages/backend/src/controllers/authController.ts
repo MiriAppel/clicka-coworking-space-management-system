@@ -13,7 +13,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     const userData = await authService.exchangeCodeAndFetchUser(code);
 
     const jwtToken = jwt.sign(
-      { userId: userData.user.id, email: userData.user.email },
+      { userId: userData.user.id, email: userData.user.email, googleId: userData.user.googleId },
       process.env.JWT_SECRET!,
       { expiresIn: '8h' }
     );
