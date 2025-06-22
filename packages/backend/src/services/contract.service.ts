@@ -16,7 +16,7 @@ export class contractService extends baseService<ContractModel> {
     // אמור לעדכן את התנאים של החוזה עבור ה-contactId הנתון
     // הנח שהחוזה הוא אובייקט עם מזהה, תנאים, תאריכים, סטטוס וכו'
 
-    const contract: Contract = {
+    const contract: ContractModel = {
       id: contactId,
       terms: terms,
       startDate: new Date().toISOString() as DateISO,
@@ -33,6 +33,7 @@ export class contractService extends baseService<ContractModel> {
       signedBy: undefined, // הנח שהחוזה לא נחתם על ידי אף אחד
       witnessedBy: undefined, // הנח שהחוזה לא נחתם על ידי עדים
     };
+    await this.patch(contract ,contactId);
     return contract; // להחזיר את החוזה המעודכן
   };
   
@@ -51,41 +52,24 @@ export class contractService extends baseService<ContractModel> {
 };
 
   getContractsEndingSoon = async (days: number = 30): Promise<Contract[]> => {
-    // אמור לשלוף את החוזים שהתוקף שלהם מסתיים בעוד 30 יום
-  const now = new Date();
-  const thresholdDate = new Date();
-  thresholdDate.setDate(now.getDate() + days);
 
-  // נניח שיש לך פונקציה שמחזירה את כל החוזים
-  const allContracts: Contract[] = await this.getAll();
+    const today = new Date();
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() + days);
 
-  return allContracts.filter(contract => {
-    if (!contract.endDate) return false;
+    //קודם שולף את כל החוזים
+    const allContracts = await this.getByFilters({}); 
     
-    const end = new Date(contract.endDate);
-    return end >= now && end <= thresholdDate;
-  });
-    return []; // להחזיר מערך של חוזים
+    // ואז מסנן אותם לפי התאריך
+    return allContracts.filter(contract => {
+
+      if (!contract.endDate) return false;   
+        return new Date(contract.endDate) <= targetDate;
+
+    }); 
+
   };
-
-  // export const postContractDocument = async (document: AddContractDocumentRequest, id: ID): Promise<void> => {
-
-  //     const contract: ContractModel = {
-
-  //         customerId: id,
-  //         version: 1,
-  //         status: ContractStatus.DRAFT,
-  //         signDate: undefined,
-  //         startDate: undefined,
-  //         endDate: undefined,
-  //         terms: undefined,
-  //         documents: [],
-  //         signedBy: undefined,
-  //         witnessedBy: undefined,
-  //         createdAt: new Date().toISOString(),
-  //         updatedAt: new Date().toISOString()
-  //     }
-  // }
+  
 
   postContractDocument = async (
     documentToAdd: FileReference,
@@ -95,7 +79,10 @@ export class contractService extends baseService<ContractModel> {
     contract.documents.push(documentToAdd);
   };
 
-  deleteContractDocument = async (id: ID): Promise<void> => {
+
+  //מוחק את הקובץ מהמערך שהid documentIdשלו שווה ל
+  deleteContractDocument = async (customerId: ID, documentId: ID): Promise<void> => {
+    //איזה מסמך?
     //מחיקת מסמך מהחוזה
 
   };

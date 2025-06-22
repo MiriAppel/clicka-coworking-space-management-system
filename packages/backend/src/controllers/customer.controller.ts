@@ -1,7 +1,6 @@
 
 import { Request, Response } from 'express';
 import { customerService } from '../services/customer.service';
-import { ConvertLeadToCustomerRequest, UpdateCustomerRequest } from '../../../../types/customer';
 
 
 const serviceCustomer = new customerService();
@@ -17,12 +16,23 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 
 }
 
+export const postCustomer = async (req: Request, res: Response) => {
+
+    try {
+        const customers = await serviceCustomer.convertLeadToCustomer(req.body)
+        res.status(200).json(customers);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching customers', error });
+    }
+
+}
+
 export const getCustomerById = async (req: Request, res: Response) => {
 
     const { id } = req.params;
 
     try {
-        const customer = await customerService.getCustomerById(id);
+        const customer = await serviceCustomer.getById(id);
         if (customer) {
             res.status(200).json(customer);
         } else {
@@ -39,7 +49,7 @@ export const getCustomersByFilter = async (req: Request, res: Response) => {
     const filters = req.query;
 
     try {
-        const customers = await customerService.filterCustomers(filters);
+        const customers = await serviceCustomer.getByFilters(filters);
 
         if (customers.length > 0) {
             res.status(200).json(customers);
@@ -52,13 +62,23 @@ export const getCustomersByFilter = async (req: Request, res: Response) => {
 
 }
 
-
-
 //Returns the possible client status modes
-export const getAllStatus = async (req: Request, res: Response) => {
+export const getAllCustomerStatus = async (req: Request, res: Response) => {
 
     try {
-        const statuses = await customerService.getAllStatus();
+        const statuses = await serviceCustomer.getAllCustomerStatus();
+        res.status(200).json(statuses);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching all statuses', error });
+    }
+
+}
+
+export const deleteCustomer = async (req: Request, res: Response) => {
+
+    const { id } = req.params;
+    try {
+        const statuses = await serviceCustomer.delete(id);
         res.status(200).json(statuses);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching all statuses', error });
@@ -71,7 +91,7 @@ export const getCustomersToNotify = async (req: Request, res: Response) => {
 
     const { id } = req.params;
     try {
-        const customers = await customerService.getCustomersToNotify(id);
+        const customers = await serviceCustomer.getCustomersToNotify(id);
         res.status(200).json(customers);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching customers to notify', error });
@@ -82,8 +102,10 @@ export const getCustomersToNotify = async (req: Request, res: Response) => {
 // יצירת הודעת עזיבה
 export const postExitNotice = async (req: Request, res: Response) => {
     const exitNotice = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
+    const { id } = req.params;
+    
     try {
-        await customerService.postExitNotice(exitNotice);
+        await serviceCustomer.postExitNotice(exitNotice, id);
         res.status(200).json({ message: 'Exit notice posted' });
     } catch (error) {
         res.status(500).json({ message: 'Error posting exit notice', error });
@@ -92,12 +114,13 @@ export const postExitNotice = async (req: Request, res: Response) => {
 
 // לקבל מספר לקוחות לפי גודל העמוד
 export const getCustomersByPage = async (req: Request, res: Response) => {
+
     // קבלת page ו-pageSize מתוך שאילתת ה-URL (query parameters)
     const page = parseInt(req.query.page as string) || 1;
     const pageSize = parseInt(req.query.pageSize as string) || 50;
 
     try {
-        const paginatedCustomers = await customerService.getCustomersByPage(page, pageSize);
+        const paginatedCustomers = await serviceCustomer.getCustomersByPage(page, pageSize);
         res.status(200).json(paginatedCustomers);
     } catch (error) {
         console.error('Error in getCustomersByPage controller:', error);
@@ -107,30 +130,16 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
 
 // עדכון מלא/חלקי של לקוח
 export const patchCustomer = async (req: Request, res: Response) => {
+
     const { id } = req.params;
-    const updateData: UpdateCustomerRequest = req.body; // נתוני העדכון החלקיים
+    const updateData = req.body; // נתוני העדכון החלקיים
+
     try {
-        await customerService.getAll()
+        await serviceCustomer.patch(updateData, id)
         res.status(200).json({ message: 'Customer updated successfully (PATCH)' });
     } catch (error) {
         console.error('Error in patchCustomer controller:', error);
         res.status(500).json({ message: 'Error patching customer', error});
-    }
-}
-
-// ממיר ליד ללקוח
-export const convertLeadToCustomer = async (req: Request, res: Response) => {
-    const newCustomerData: ConvertLeadToCustomerRequest = req.body;
-    try {
-        const convertedCustomer = await customerService.convertLeadToCustomer(newCustomerData);
-        if (convertedCustomer) {
-            res.status(201).json(convertedCustomer); // 201 Created for new resource
-        } else {
-            res.status(500).json({ message: 'Failed to convert lead to customer' });
-        }
-    } catch (error) {
-        console.error('Error in convertLeadToCustomer controller:', error);
-        res.status(500).json({ message: 'Error converting lead to customer', error });
     }
 }
 

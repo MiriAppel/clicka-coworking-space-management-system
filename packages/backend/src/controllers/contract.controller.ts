@@ -75,9 +75,10 @@ export const postContractDocument = async (req: Request, res: Response) => {
 }
 
 export const deleteContractDocument = async (req: Request, res: Response) => {
-    const { id } = req.params; // נניח שזה ID של המסמך
+    const { customerId } = req.params; // נניח שזה ID של המסמך
+    const { documentId } = req.params; // נניח שזה ID של המסמך
     try {
-        await serviceContract.deleteContractDocument(id);
+        await serviceContract.deleteContractDocument(customerId, documentId);
         res.status(200).json({ message: 'Contract document deleted successfully' });
     } catch (error) {
         console.error('Error in deleteContractDocument controller:', error);

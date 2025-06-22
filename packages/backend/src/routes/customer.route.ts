@@ -1,56 +1,30 @@
 import express from 'express';
 import * as customerController from '../controllers/customer.controller'; 
+import * as contractController from '../controllers/contract.controller'
 
-const router = express.Router();
+const routerCstomer = express.Router();
 
-// --- Customer Routes ---
 // (GET)
-router.get('/', customerController.getAllCustomers); 
-router.get('/page', customerController.getCustomersByPage); 
-router.get('/status/all', customerController.getAllStatus); 
-router.get('/notify/:id', customerController.getCustomersToNotify); 
-router.get('/history/:id', customerController.getHistoryChanges);
-router.get('/status/history/:id', customerController.getStatusChanges); 
-router.get('/id/:id', customerController.getCustomerById); 
-router.get('/name/:name', customerController.getCustomerByName); 
-router.get('/email/:email', customerController.getCustomerByEmail); 
-router.get('/phone/:phone', customerController.getCustomerByPhone); 
-router.get('/status/:status', customerController.getCustomerByStatus); 
+routerCstomer.get('/', customerController.getAllCustomers); 
+
+routerCstomer.get('/page', customerController.getCustomersByPage); 
+
+routerCstomer.get('/status/all', customerController.getAllCustomerStatus);
+
+routerCstomer.get('/notify/:id', customerController.getCustomersToNotify); 
+
+routerCstomer.get('/id/:id', customerController.getCustomerById); 
+
+routerCstomer.get('/filter', customerController.getCustomersByFilter);
 
 //(POST)
-router.post('/join-date', customerController.getByDateJoin); 
-router.post('/export', customerController.exportToFile); 
-router.post('/exit-notice', customerController.postExitNotice); 
-router.post('/convert-lead', customerController.convertLeadToCustomer); 
+routerCstomer.post('/exit-notice', customerController.postExitNotice); 
+
+routerCstomer.post('/post-customer', customerController.postCustomer); 
 
 //PATCH/PUT)
-router.patch('/:id', customerController.patchCustomer); 
-router.patch('/status/:id', customerController.patchStatus); 
-router.put('/:id', customerController.putCustomer); 
+routerCstomer.patch('/:id', customerController.patchCustomer); 
 
-// --- Contract Routes ---
-//  (GET)
-router.get('/contracts', customerController.getAllContracts); 
-router.get('/contracts/ending-soon', customerController.getContractsEndingSoon); 
-router.get('/contracts/customer/:customerId', customerController.getAllContractsByCustomerId); 
-router.get('/contracts/:contractId', customerController.getContractById); 
+routerCstomer.delete('/:id', customerController.deleteCustomer);
 
-// (POST)
-router.post('/contracts', customerController.postNewContract); 
-router.post('/contracts/documents', customerController.postContractDocument); 
-
-//  (PUT)
-router.put('/contracts/:contractId/terms', customerController.updateContractTerms); 
-
-//  (DELETE)
-router.delete('/contracts/documents/:id', customerController.deleteContractDocument); 
-
-// --- Timeline Routes ---
-// (GET)
-router.get('/:customerId/timeline', customerController.getCustomerTimeline); 
-router.get('/:customerId/timeline/export', customerController.exportTimeline); 
-
-//  (POST)
-router.post('/:customerId/timeline/event', customerController.addTimelineEvent); 
-
-export default router;
+export default routerCstomer;
