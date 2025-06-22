@@ -3359,7 +3359,7 @@ clean-css@^5.2.2:
   dependencies:
     source-map "~0.6.0"
 
-"clicka-backend@file:C:\\Users\\User\\Downloads\\clicka\\packages\\backend":
+"clicka-backend@file:C:\\Users\\User\\Desktop\\פרקטיקום\\clicka\\packages\\backend":
   version "1.0.0"
   resolved "file:packages/backend"
   dependencies:
@@ -3372,7 +3372,7 @@ clean-css@^5.2.2:
     morgan "^1.10.0"
     pg "^8.16.0"
 
-"clicka-frontend@file:C:\\Users\\User\\Downloads\\clicka\\packages\\frontend":
+"clicka-frontend@file:C:\\Users\\User\\Desktop\\פרקטיקום\\clicka\\packages\\frontend":
   version "0.1.0"
   resolved "file:packages/frontend"
   dependencies:
@@ -4732,6 +4732,13 @@ etag@^1.8.1, etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
+
+"etl@file:C:\\Users\\User\\Desktop\\פרקטיקום\\clicka\\packages\\ETL":
+  version "1.0.0"
+  resolved "file:packages/ETL"
+  dependencies:
+    "@supabase/supabase-js" "^2.49.4"
+    dotenv "^16.5.0"
 
 eventemitter3@^4.0.0:
   version "4.0.7"
