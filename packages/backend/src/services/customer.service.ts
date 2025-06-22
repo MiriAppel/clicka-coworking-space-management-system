@@ -1,153 +1,198 @@
+<<<<<<< HEAD
 import { CustomerModel } from "../models/customer.model";
 import { supabase } from "../db/supabaseClient";
 import { LeadModel } from "../models/lead.model";
 import { getLeadById } from "./lead.service";
 import { ConvertLeadToCustomerRequest, CustomerStatus, DateISO, ExitReason, FileReference, GetCustomersRequest, ID, PaginatedResponse, RecordExitNoticeRequest, TimelineEventType, UpdateCustomerRequest } from "shared-types";
+=======
+import { ID, PaginatedResponse } from "../../../../types/core";
+import { CustomerModel } from "../models/customer.model";
+import { ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, RecordExitNoticeRequest, UpdateCustomerRequest, CustomerPeriod} from '../../../../types/customer'
+import { supabase } from "../db/supabaseClient";
+import { baseService } from "./baseService";
+import { createObjectCsvStringifier } from "csv-writer";
+import { leadService } from "./lead.service";
+>>>>>>> origin/main
 
+export class customerService extends baseService <CustomerModel> {
 
-export const getAllCustomers = async (): Promise<CustomerModel[]> => {
-
-    const { data , error } = await supabase
-        .from('customers')
-        .select('*');
-
-    if (error) {
-        console.error('Error fetching customers:', error);
-        throw new Error('Failed to fetch customers');   
+    constructor() {
+        super("CustomerModel")
     }
 
-    if(!data) {
-        console.error('No customers found');
-        throw new Error('No customers found');
+    //מחזיר את כל הסטטוסים של הלקוח
+    getAllCustomerStatus = async (): Promise <CustomerStatus[]|null> => {
+
+        return Object.values(CustomerStatus) as CustomerStatus[];
+
     }
 
-    return data;
-}
+    //לא הבנתי מה היא צריכה לעשות
+    getCustomersToNotify = async(id: ID): Promise<GetCustomersRequest[] | null> => {
 
-export const getCustomerById = async (id: string): Promise<GetCustomersRequest | null> =>{
-
-    const { data, error } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-    if (error) {
-        console.error('Error fetching customer by ID:', error);
-        throw new Error('Failed to fetch customer by ID');
+        return [];
     }
-
-    if (!data) {
-        console.warn(`No customer found with ID: ${id}`);
-        return null; 
-    }
-
-    return data as GetCustomersRequest; 
-}
-
-export const getCustomerByName = async (name:string):Promise<GetCustomersRequest[] | null>=>{
-
-    const { data, error } = await supabase
-        .from('customers')
-        .select('*')
-        .ilike('name', `%${name}%`) // מחפש לפי שם בלי להתייחס ךאותויות גדולות/קטנות וכל מה שכלול בשם
-        .order('name', { ascending: true }) // מחזיר את זה ממוין לפי שם
-
-    if (error) {
-        console.error('Error fetching customer by name:', error);
-        throw new Error('Failed to fetch customer by name');
-    }
-
-    if (!data) {
-        console.warn(`No customer found with name: ${name}`);
-        return null;
-    }
-
-    return data as GetCustomersRequest[];
-}
-
-export const getCustomerByEmail = async (email:string):Promise<GetCustomersRequest|null>=>{
     
-    const { data, error } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('email', email)
-        .single();
+    // המרת ליד ללקוח
+    convertLeadToCustomer = async (newCustomer: ConvertLeadToCustomerRequest): Promise <CustomerModel> => {
 
-    if (error) {
-        console.error('Error fetching customer by email:', error);
-        throw new Error('Failed to fetch customer by email');
+        const serviceLead = new leadService();
+        
+        const leadData = await serviceLead.getById(newCustomer.leadId);
+
+        if (!leadData) {
+            throw new Error('Lead data not found for the provided leadId');
+        }
+        // המרה של ליד ללקוח
+        const customerData: CustomerModel = {
+            id:leadData.id,
+            name: leadData.name,
+            email: leadData.email,
+            phone: leadData.phone,
+            idNumber: leadData.idNumber,
+            businessName: newCustomer.businessName,
+            businessType: leadData.businessType,
+            status: CustomerStatus.ACTIVE,
+            currentWorkspaceType: newCustomer.workspaceType,
+            workspaceCount: newCustomer.workspaceCount,
+            contractSignDate: newCustomer.contractSignDate,
+            contractStartDate: newCustomer.contractStartDate,
+            billingStartDate: newCustomer.billingStartDate,
+            notes: newCustomer.notes,
+            invoiceName: newCustomer.invoiceName,
+            contractDocuments: newCustomer.contractDocuments,
+            paymentMethodsType: newCustomer.paymentMethodType,
+            periods: [],
+            contracts: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        //לפני היצירה יש לבדוק שהחלל באמת פנוי צריך לפנות לקבוצה 3
+
+        await this.post(customerData);
+
+        //יש להעביר את פרטי הלקוח והחוזה למערכת החיוב (של Team 4 - Billing) לצורך חישוב תמחור והכנת חיובים ראשוניים.
+
+        // קריאה לשירותי התראות/מייל מתאימים לאחר המרה מוצלחת קשור לקבוצה 1
+
+        return customerData;
+    };
+
+    // יצרית הודעת עזיבה של לקוח
+    postExitNotice = async (exitNotice: RecordExitNoticeRequest, id: ID): Promise<void> => {
+
+        const updateStatus: UpdateCustomerRequest = {
+            status: CustomerStatus.PENDING
+        };
+
+        await this.patch(updateStatus as CustomerModel, id);
+
+        const customerLeave: CustomerModel | null = await this.getById(id);
+
+        if (customerLeave){
+            // יצירת תקופת עזיבה ללקוח
+            const period: CustomerPeriod = {
+                id: id,
+                customerId: id,
+                entryDate: new Date().toISOString(),
+                exitDate: new Date().toISOString(),
+                exitNoticeDate: exitNotice.exitNoticeDate,
+                exitReason: exitNotice.exitReason,
+                exitReasonDetails: exitNotice.exitReasonDetails,
+                createdAt: customerLeave.createdAt,
+                updatedAt: customerLeave.updatedAt
+            };
+            customerLeave.periods = [period];
+        }
+
+        await this.patch(customerLeave ,customerLeave.id);
+
+            //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
+
+            // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
+            // קשור לקבוצת billing
     }
 
-    if (!data) {
-        console.warn(`No customer found with email: ${email}`);
-        return null; 
-    }
-
-    return data as GetCustomersRequest;
-}
-
-export const getCustomerByPhone = async (phone:string):Promise<GetCustomersRequest|null>=>{
+    //מחזיר את כל הלקוחות רק של העמוד הראשון
+    getCustomersByPage = async (page: number = 1, pageSize: number = 50): Promise<PaginatedResponse<CustomerModel>> => {
     
-    const { data, error } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('phone', phone)
-        .single();
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize - 1;
 
-    if (error) {
-        console.error('Error fetching customer by phone:', error);
-        throw new Error('Failed to fetch customer by phone');
-    }   
+        const { data, error, count } = await supabase
+            .from('CustomerModel')
+            .select('*', { count: 'exact' }) // count: 'exact' סופר את כל התוצאות
+            .range(from, to)
+            .order('createdAt', { ascending: false }); // ממיין 
 
-    if (!data) {
-        console.warn(`No customer found with phone: ${phone}`);
-        return null;
+        if (error) {
+            console.error('Error fetching customers by page:', error);
+            throw new Error('Failed to fetch paginated customers');
+        }
+
+        const totalPages = count ? Math.ceil(count / pageSize) : 1;
+
+        return {
+            data: data as CustomerModel[],
+            meta: {
+                currentPage: page,
+                totalPages,
+                pageSize,
+                totalCount: count ?? 0,
+                hasNext: page < totalPages,
+                hasPrevious: page > 1,
+            },
+        };
+
     }
-
-    return data as GetCustomersRequest;
 }
 
-export const getCustomerByStatus = async (status:CustomerStatus):Promise<GetCustomersRequest[]|null> => {
+const serviceCustomer = new customerService();
 
-    const { data, error } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('status', status);
+    // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
+export const exportCustomersToFileByFilter = async(filter: Partial <CustomerModel>) :Promise <Buffer|null> => {
+        
+        const customerToExport = await serviceCustomer.getByFilters(filter);
 
-    if (error) {
-        console.error('Error fetching customers by status:', error);
-        throw new Error('Failed to fetch customers by status');
-    }
+        if (!customerToExport || customerToExport.length === 0) {
+            return null;
+        }
 
-    if (!data || data.length === 0) {
-        console.warn(`No customers found with status: ${status}`);
-        return null; 
-    }
+        // פונקציה מהספריה csv-writer
+        const csvStringifier = createObjectCsvStringifier({
+            header: [
+                { id: 'id', title: 'ID' },
+                { id: 'name', title: 'Name' },
+                { id: 'idNumber', title: 'ID Number' },
+                { id: 'businessName', title: 'Business Name' },
+                { id: 'businessType', title: 'Business Type' },
+                { id: 'currentWorkspaceType', title: 'Current Workspace Type' },
+                { id: 'workspaceCount', title: 'Workspace Count' },
+                { id: 'contractSignDate', title: 'Contract Sign Date' },
+                { id: 'billingStartDate', title: 'Billing Start Date' },
+                { id: 'notes', title: 'Notes' },
+                { id: 'invoiceName', title: 'InvoiceName' },
+                { id: 'contractDocuments', title: 'Contract Documents' },
+                { id: 'paymentMethodsType', title: 'Payment Methods Type' },
+                { id: 'notes', title: 'Notes' },
+                { id: 'updatedAt', title: 'Updated At'},
+                { id: 'contracts', title: 'Contracts' },
+                { id: 'phone', title: 'Phone' },
+                { id: 'status', title: 'Status' },
+                { id: 'createdAt', title: 'Created At' },
+            ],
+        });
 
-    return data as GetCustomersRequest[];
+        const csvHeader = csvStringifier.getHeaderString();
+        const csvBody = csvStringifier.stringifyRecords(customerToExport);
+        const csvFull = csvHeader + csvBody;
+
+        return Buffer.from(csvFull, 'utf-8');
+
 }
 
-export const getByDateJoin= async (dateFrom:Date, dateEnd:Date):Promise<GetCustomersRequest[]|null>=>{
-
-    const { data, error } = await supabase
-        .from('customers')
-        .select('*')
-        .gte('date_joined', dateFrom.toISOString())
-        .lte('date_joined', dateEnd.toISOString());
-
-    if (error) {
-        console.error('Error fetching customers by join date:', error);
-        throw new Error('Failed to fetch customers by join date');
-    }
-
-    if (!data || data.length === 0) {
-        console.warn(`No customers found between ${dateFrom} and ${dateEnd}`);
-        return null; 
-    }
-
-    return data as GetCustomersRequest[];
-}
+// לשאול את שולמית
 
 // export const getStatusChanges = async (id:ID): Promise<CustomerStatus[] | null> => {
    
@@ -162,6 +207,7 @@ export const getByDateJoin= async (dateFrom:Date, dateEnd:Date):Promise<GetCusto
 //     }
 // }
 
+<<<<<<< HEAD
 export const getAllStatus = async (): Promise<CustomerStatus[]|null> => {
 
     return Object.values(CustomerStatus) as CustomerStatus[];
@@ -320,12 +366,15 @@ export const patchCustomer=async(id:ID, data: UpdateCustomerRequest):Promise<voi
 }
 
 
+=======
+>>>>>>> origin/main
 
 // export const getCustomerHistory = async (customerId: ID): Promise<CustomerHistory[]> => {
 //     // אמור לשלוף את ההיסטוריה של הלקוח עם ה-customerId הנתון
 //     return []; // להחזיר מערך של היסטוריית לקוח
 // }
 
+<<<<<<< HEAD
 export const getCustomersByPage = async (page: number = 1, pageSize: number = 50): Promise<PaginatedResponse<CustomerModel>> => {
     // אמור לשלוף 50 לקוחות בעמוד הנתון
     return {
@@ -371,17 +420,14 @@ export const exportTimeline = async (customerId: ID, filters?:CustomerFilter ): 
     };
 
 }
+=======
+>>>>>>> origin/main
 
 
 
-function updateLeadStatus(id: string | undefined, arg1: string) {
-    throw new Error("Function not implemented.");
-}
-
-
-export const filterCustomers = async (filter: any): Promise<any> => {
 
 
 
-}
+
+
 

@@ -1,5 +1,10 @@
+<<<<<<< HEAD:packages/backend/src/models/LeadInteraction.ts
 import { DateISO, ID, LeadInteraction } from "shared-types";
 
+=======
+import { ID, DateISO } from '../../../../types/core';
+import { LeadInteraction, InteractionType } from '../../../../types/lead';
+>>>>>>> origin/main:packages/backend/src/models/leadInteraction.model.ts
 
 export class LeadInteractionModel implements LeadInteraction {
 
@@ -51,14 +56,4 @@ export class LeadInteractionModel implements LeadInteraction {
   }
 
 }
-
-export enum InteractionType {
-  EMAIL = 'EMAIL',
-  PHONE = 'PHONE',
-  MEETING = 'MEETING',
-  TOUR = 'TOUR',
-  NOTE = 'NOTE',
-  DOCUMENT = 'DOCUMENT'
-}
-
 

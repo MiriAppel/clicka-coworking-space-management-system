@@ -1,8 +1,9 @@
 import express from 'express';
-import * as leadController from '../controllers/lead.controller'; 
+import * as controllerLead from '../controllers/lead.controller'; 
 
-const router = express.Router();
+const routerLead = express.Router();
 
+<<<<<<< HEAD
 router.get('/', leadController.getAllLeads);
 // router.get('/reminders/open', leadController.getOpenReminders); // חדש: תזכורות פתוחות
 // router.get('/remind', leadController.getLeadToRemind); // לידים שדורשים מעקב
@@ -30,6 +31,22 @@ router.post('/', leadController.createLead);
 
 // ---  (DELETE) ---
 // router.delete('/interactions/:id', leadController.deleteInteraction); // חדש: מחיקת אינטראקציה
+=======
+routerLead.get('/', controllerLead.getAllLeads);
 
+routerLead.get('/:id', controllerLead.getLeadById);
 
-export default router;
+routerLead.post('/', controllerLead.createLead);
+
+routerLead.get('/sources/:id', controllerLead.getSourcesLeadById);
+>>>>>>> origin/main
+
+routerLead.patch('/:id', controllerLead.patchLead);
+
+routerLead.post('/upload/csv', controllerLead.postLeadFromCSV);
+
+routerLead.get('/reminders/open', controllerLead.getLeadsToRemind);
+
+routerLead.get('/filter/customers', controllerLead.getLeadsByFilter);
+
+export default routerLead;

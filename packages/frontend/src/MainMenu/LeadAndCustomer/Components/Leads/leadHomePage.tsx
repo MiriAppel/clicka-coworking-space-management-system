@@ -4,7 +4,11 @@ import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Ta
 
 import { useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
+<<<<<<< HEAD
 import { Lead, LeadSource, LeadStatus } from "shared-types";
+=======
+import { LeadStatus, LeadSource, Lead } from "../../../../types/lead";
+>>>>>>> origin/main
 
 
 //הדף העיקרי של המתעניין וממנו בעצם יש לי קישורים לכל הקומפוננטות של המתעניין -בתחילה שיש לי מתענינים ולקוחות
@@ -19,9 +23,10 @@ interface ValuesToTable {
 //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
 
 
-export const LeadHomePage = () => {
+ export const LeadHomePage = () => {
   const navigate = useNavigate();
   const [lead, setLead] = useState<Lead[]>([
+<<<<<<< HEAD
   {idNumber:'1',
     name:"אברהם ישראלי",
     phone: "050-1234567",
@@ -33,6 +38,21 @@ export const LeadHomePage = () => {
     interestedIn:[],
     source:LeadSource.EVENT,
     updatedAt: "2023-01-10T00:00:00Z"
+=======
+    {
+      id: "1",
+      name: "אברהם ישראלי",
+      phone: "050-1234567",
+      email: "a567@gmail.com",
+      idNumber: "123456789",
+      status: LeadStatus.LOST,
+      updatedAt: "2023-01-10T00:00:00Z",
+      businessType: "עסק קטן",         // לדוגמה
+      interestedIn: [],
+      source: LeadSource.EVENT,
+      interactions: [],
+      createdAt: "2022-12-01T00:00:00Z"
+>>>>>>> origin/main
     }]);
   //יצירת מערך עם ערכים המתאימים לטבלה
   const valuesToTable: ValuesToTable[] = lead.map(lead => ({

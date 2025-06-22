@@ -1,13 +1,21 @@
+<<<<<<< HEAD
 import {LeadModel} from "../models/lead.model";
 import { LeadInteractionModel } from "../models/LeadInteraction";
 import { supabase } from "../db/supabaseClient";
 import { CreateLeadRequest, ID, LeadStatus, UpdateLeadRequest } from "shared-types";
+=======
+import { ID } from "../../../../types/core";
+import { UpdateLeadRequest } from "../../../../types/lead";
+import { supabase } from "../db/supabaseClient";
+import { baseService } from "./baseService";
+import { LeadSource } from "../../../../types/lead";
+import { LeadModel } from "../models/lead.model";
+import { parse } from 'papaparse';
+>>>>>>> origin/main
 
-export const getAllLeads = async (): Promise<LeadModel[]> => {
-  //אמור לשלוף את כל הלידים
-  return []; // להחזיר מערך של לידים
-};
+export class leadService extends baseService <LeadModel> {
 
+<<<<<<< HEAD
 export const getLeadById = async (id: string): Promise<LeadModel | null> => {
   // אמור לשלוף ליד לפי מזהה
   // להחזיר את הליד שנמצא או null אם לא נמצא
@@ -124,115 +132,74 @@ export const getLeadByEmail = async (
   if (error) {
     console.error("Error fetching lead");
     throw new Error("Faild to fetch lead by email");
+=======
+  constructor() {
+    super("LeadModel")
+>>>>>>> origin/main
   }
 
-  if (!data) {
-    console.warn(`No lead has email: ${email}`);
-    return null;
-  }
-  // להחזיר את הליד שנמצא או null אם לא נמצא
-  return data as LeadModel;
-};
+  getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
 
-export const getLeadByPhone = async (
-  phone: string
-): Promise<LeadModel | null> => {
-  // אמור לשלוף ליד לפי מספר טלפון
-  const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .eq("phone", phone)
-    .single();
+    const { data, error } = await supabase
+      .from('leads')
+      .select('source')
+      .eq('id', id)
+      .single();
 
-  if (error) {
-    console.error("Error fetching lead");
-    throw new Error("Faild to fetch lead by phone");
-  }
-  if (!data) {
-    console.warn(`No lead has phone number: ${phone}`);
-    return null;
-  }
-  // להחזיר את הליד שנמצא או null אם לא נמצא
-  return data as LeadModel;
-};
+    if (error) {
+      console.error('Error fetching sources for lead by ID:', error);
+      throw new Error('Failed to fetch sources for lead by ID');
+    }
+    if (!data) {
+      console.warn(`No lead found with ID: ${id}`);
+      return [];
+    }
+    return [data.source] as LeadSource[]; // הנחה שהשדה נקרא 'source'
 
-export const getLeadByName = async (
-  name: string
-): Promise<LeadModel | null> => {
-  // אמור לשלוף ליד לפי שם
-  const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .eq("name", name)
-    .single();
-  if (error) {
-    console.error("Error fetching lead");
-    throw new Error("Faild to fetch leas by name");
-  }
-  if (!data) {
-    console.warn(`No lead has name: ${name}`);
-    return null;
-  }
-  // להחזיר את הליד שנמצא או null אם לא נמצא
-  return data as LeadModel;
-};
+  };
 
-export const getLeadByStatus = async (
-  status: LeadStatus
-): Promise<LeadModel[] | null> => {
-  // אמור לשלוף לידים לפי סטטוס
-  const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .eq("status", status);
+  addLeadFromCSV = async (csvData: string): Promise <void> => {
 
-  if (error) {
-    console.error("Error fetching leads by status");
-    throw new Error("Failed to fetch leads by status");
-  }
-  if (!data || data.length == 0) {
-    console.warn(`No leads found in status: ${status}`);
-    return null; //אם אין לידים בסטטוס המבוקש
-  }
-  // להחזיר מערך של לידים עם הסטטוס המבוקש
-  return data as LeadModel[];
-};
+    // const parsedData = parse(csvData, { header: true }).data as UpdateLeadRequestModel[];
+    const parsedData = parse(csvData, { header: true }).data as UpdateLeadRequest[];
+    for (const lead of parsedData) {
+      const isFullLead = this.checkIfFullLead(lead);
 
-export const getLeadBySource = async (
-  source: string
-): Promise<LeadModel[] | null> => {
-  // אמור לשלוף לידים לפי מקור
-  const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .eq("source", source);
-  if (error) {
-    console.error("Error fetching leads by source:", error.message);
-    throw new Error("Failed to fetch leads by source");
+      if (!isFullLead) {
+        console.warn('Incomplete lead data:', lead);
+        continue; // דלג על ליד לא מלא
+      }
+      const { error } = await supabase.from('leads').insert(lead);
+      if (error) {
+        console.error('Error adding lead:', error);
+        throw new Error('Failed to add lead');
+      }
+    }
   }
-  if (!data || data.length === 0) {
-    console.warn(`No leads found with source: ${source}`);
-    return null;
+  
+  checkIfFullLead(lead: UpdateLeadRequest): boolean {
+    return !!(lead && lead.name && lead.email && lead.businessType && lead.phone && lead.interestedIn); 
   }
-  // להחזיר מערך של לידים עם המקור המבוקש
-  return data as LeadModel[];
-};
 
-export const checkIfLeadBecomesCustomer = async (
-  leadId: ID
-): Promise<boolean> => {
-  // אמור לבדוק אם ליד הפך ללקוח
-  // בדיקה עם הפונקציה getLeadByStatus או getLeadById
-  const { data, error } = await supabase
-    .from("leads")
-    .select("status")
-    .eq("id", leadId)
-    .single();
+  convertCsvToLeads = (csvData: string): Promise <LeadModel[]> => {
+      // אמור להמיר קובץ CSV למערך של לידים
+      // עיבוד קובץ CSV והמרתו למערך של לידים
+      return Promise.resolve([]);
+  }
 
-  if (error || !data) {
-    console.error("Error checking lead status:", error);
+  getOpenReminders = async (): Promise<LeadModel[]> => {
+      // אמור לשלוף לידים עם תזכורות פתוחות
+      // להחזיר מערך של לידים עם תזכורות פתוחות
+    return [];
+  }
+
+  checkIfLeadBecomesCustomer = async (leadId: ID): Promise<boolean> => {
+    
+    const lead = await this.getById(leadId);
+
+    if (lead.status === 'CONVERTED')
+      return true;
     return false;
+    
   }
-
-  return data.status === LeadStatus.CONVERTED; // להחזיר true אם הליד הפך ללקוח, אחרת false
 };

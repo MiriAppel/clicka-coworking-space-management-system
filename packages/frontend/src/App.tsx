@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
+=======
+import {Button} from './MainMenu/Common/Components/BaseComponents/Button'
+>>>>>>> origin/main
 
 // Simple component to demonstrate the project
 function App() {
@@ -11,6 +14,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   //////
   const navigate = useNavigate();
+
 
 
 
@@ -36,17 +40,52 @@ function App() {
 
   return (
     <div className="App">
+<<<<<<< HEAD
       <SearchCustomer></SearchCustomer>
       {/* <header className="App-header">
+=======
+      <header className="App-header"> 
+>>>>>>> origin/main
         <h3>welcome to our world</h3>
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
+<<<<<<< HEAD
       <div className='menu' style={{ backgroundColor: 'black' }}>
         <Button variant="outlined" onClick={() => { navigate('/leadAndCustomer') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Lead & Customer</Button>
         <Button variant="outlined" onClick={() => { navigate('/workspaceMap') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Workspace</Button>
         <Button variant="outlined" onClick={() => { navigate('/billing') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Billing</Button>
       </div> */}
+=======
+      <div className="space-x-4">
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate('/leadAndCustomer')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Lead & Customer
+      </Button>
+
+      <Button
+        variant="primary"
+        size="lg"
+        onClick={() => navigate('/workspaceMap')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Workspace
+      </Button>
+
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate('/billing')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Billing
+      </Button>
+    </div>
+>>>>>>> origin/main
     </div>
   );
 }

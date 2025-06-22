@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 import { ID, Lead, LeadInteraction, WorkspaceType } from "shared-types";
+=======
+import { ID, DateISO } from '../../../../types/core';
+import { WorkspaceType } from '../../../../types/customer';
+import { Lead, LeadInteraction, LeadStatus, LeadSource } from '../../../../types/lead';
+>>>>>>> origin/main
 
 export class LeadModel implements Lead {
   
@@ -11,12 +17,12 @@ export class LeadModel implements Lead {
   interestedIn: WorkspaceType[];
   source: LeadSource;
   status: LeadStatus;
-  contactDate?: string | undefined;
-  followUpDate?: string | undefined;
-  notes?: string | undefined;
   interactions: LeadInteraction[]; // כל אינטראקציה שייכת לליד אחד, אבל ליד יכול להכיל הרבה אינטראקציות (שיחות, תזכורות, ביקורים וכו׳).
   createdAt: string;
   updatedAt: string;
+  contactDate?: string | undefined;
+  followUpDate?: string | undefined;
+  notes?: string | undefined;
 
     constructor( 
     id: ID,
@@ -82,26 +88,3 @@ export class LeadModel implements Lead {
     }
   }
 }
-
-export enum LeadStatus {
-  NEW = 'NEW',
-  CONTACTED = 'CONTACTED',
-  INTERESTED = 'INTERESTED',
-  SCHEDULED_TOUR = 'SCHEDULED_TOUR',
-  PROPOSAL_SENT = 'PROPOSAL_SENT',
-  CONVERTED = 'CONVERTED',
-  NOT_INTERESTED = 'NOT_INTERESTED',
-  LOST = 'LOST'
-}
-
-export enum LeadSource {
-  WEBSITE = 'WEBSITE',
-  REFERRAL = 'REFERRAL',
-  SOCIAL_MEDIA = 'SOCIAL_MEDIA',
-  EVENT = 'EVENT',
-  PHONE = 'PHONE',
-  WALK_IN = 'WALK_IN',
-  EMAIL = 'EMAIL',
-  OTHER = 'OTHER'
-}
-

@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 import { Contract, Customer, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethodType, WorkspaceType } from "shared-types";
+=======
+import { PaymentMethodType } from "../../../../types/billing";
+import { DateISO, FileReference, ID } from "../../../../types/core";
+import { Contract, Customer, CustomerPeriod, CustomerStatus, ExitReason, PaymentMethod, RecordExitNoticeRequest, WorkspaceType } from "../../../../types/customer";
+>>>>>>> origin/main
 
 
 export class CustomerModel implements Customer   {

@@ -1,5 +1,9 @@
 import { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
+<<<<<<< HEAD
+=======
+import { ID } from "../../../../types/core";
+>>>>>>> origin/main
 
 export class baseService <T> {
 
@@ -16,8 +20,8 @@ export class baseService <T> {
             .single()
 
         if (error) {
-        console.error("שגיאה בשליפת נתונים:", error);
-        throw error;
+            console.error("שגיאה בשליפת נתונים:", error);
+            throw error;
         }   
 
         if (!data) {

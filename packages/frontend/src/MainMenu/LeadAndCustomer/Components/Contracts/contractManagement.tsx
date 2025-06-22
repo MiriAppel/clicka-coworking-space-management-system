@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
+=======
+import { ID } from "../../../../types/core";
+import { Contract, ContractStatus, WorkspaceType } from "../../../../types/customer"; // יש להחליף עם הנתיב הנכון
+>>>>>>> origin/main
 import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
 import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
 import { Contract, ContractStatus, ID, WorkspaceType } from "shared-types";

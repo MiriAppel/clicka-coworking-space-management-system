@@ -1,5 +1,9 @@
 import { useParams } from "react-router";
 import { useState } from "react";
+<<<<<<< HEAD
+=======
+import { ContractStatus, WorkspaceType, Contract } from "../../../../types/customer"
+>>>>>>> origin/main
 import { Button } from '../../../Common/Components/BaseComponents/Button';
 import { Contract, ContractStatus, WorkspaceType } from "shared-types";
 
@@ -59,7 +63,11 @@ export const ContractDetails = () => {
             <p><strong>גרסה:</strong> {currentContract.version}</p>
             <p><strong>סטטוס:</strong> {currentContract.status}</p>
             {currentContract.signDate && <p><strong>תאריך חתימה:</strong> {new Date(currentContract.signDate).toLocaleDateString()}</p>}
+<<<<<<< HEAD
             <p><strong>תאריך התחלה:</strong> {new Date(currentContract.startDate!).toLocaleDateString()}</p>
+=======
+            {currentContract.startDate && <p><strong>תאריך התחלה:</strong> {new Date(currentContract.startDate).toLocaleDateString()}</p>}
+>>>>>>> origin/main
             {currentContract.endDate && <p><strong>תאריך סיום:</strong> {new Date(currentContract.endDate).toLocaleDateString()}</p>}
             <h3>תנאים</h3>
             <p><strong>סוג מקום עבודה:</strong> {currentContract.terms?.workspaceType}</p>
