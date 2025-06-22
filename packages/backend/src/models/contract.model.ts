@@ -1,6 +1,5 @@
 import path from "path";
-import { DateISO, FileReference, ID } from "../types/core";
-import { Contract, ContractStatus, WorkspaceType } from "../types/customer";
+import { Contract, ContractStatus, DateISO, FileReference, ID } from "shared-types";
 
 
 export class ContractModel implements Contract {

@@ -1,8 +1,7 @@
-
 import { Request, Response } from 'express';
 import * as customerService from '../services/customer.service';
-import { AddContractDocumentRequest, Contract, ConvertLeadToCustomerRequest, CustomerStatus, UpdateCustomerRequest } from '../types/customer';
 import { ParsedQs } from 'qs';
+import { ConvertLeadToCustomerRequest, UpdateCustomerRequest } from 'shared-types';
 
 
 export const getAllCustomers = async (req: Request, res: Response) => {

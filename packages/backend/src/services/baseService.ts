@@ -1,5 +1,5 @@
+import { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
-import { ID } from "../types/core";
 
 export class baseService <T> {
 

@@ -1,9 +1,7 @@
 import {LeadModel} from "../models/lead.model";
 import { LeadInteractionModel } from "../models/LeadInteraction";
-import { UpdateLeadRequestModel, CreateLeadRequestModel } from "../models/LeadRequests";
-import { ID } from "../types/core";
-import { LeadStatus } from "../types/lead";
 import { supabase } from "../db/supabaseClient";
+import { CreateLeadRequest, ID, LeadStatus, UpdateLeadRequest } from "shared-types";
 
 export const getAllLeads = async (): Promise<LeadModel[]> => {
   //אמור לשלוף את כל הלידים
@@ -17,7 +15,7 @@ export const getLeadById = async (id: string): Promise<LeadModel | null> => {
 };
 
 export const createLead = async (
-  leadData: CreateLeadRequestModel
+  leadData: CreateLeadRequest
 ): Promise<void> => {
   // אמור ליצור ליד חדש
   //בדיקת טלפון ומייל תקינים
@@ -36,7 +34,7 @@ export const GetSourcesLeadById = async (id: ID): Promise<String[]> => {
 
 export const updatedLead = async (
   id: ID,
-  leadData: UpdateLeadRequestModel
+  leadData: UpdateLeadRequest
 ): Promise<LeadModel> => {
   //הפונקציה מזמנת את הפונקציה checkIfFullLead
   //אם זה עדכון חלקי זה שולח ל patch
@@ -76,7 +74,7 @@ export const getAllInteractions = async (): Promise<LeadInteractionModel[]> => {
   return [];
 };
 
-export const checkIfFullLead = async (leadData: UpdateLeadRequestModel): Promise<boolean> => {
+export const checkIfFullLead = async (leadData: UpdateLeadRequest): Promise<boolean> => {
     // אמור לבדוק אם הליד מלא
     return true; // להחזיר true או false בהתאם למצב הליד
 }

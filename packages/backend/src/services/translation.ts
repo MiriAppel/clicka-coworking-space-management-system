@@ -1,8 +1,7 @@
 import { baseService } from './baseService';
-import { Translation } from '../types/translation'; // נניח שיש לך טיפוס כזה
-import { Language, supportedLanguages } from '../types/language';
 import { translateText } from '../utils/translate';
 import { v4 as uuid } from 'uuid';
+import { Language, supportedLanguages, Translation } from 'shared-types';
 
 function isLanguage(value: string): value is Language {
   return supportedLanguages.includes(value as Language);

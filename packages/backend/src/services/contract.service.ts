@@ -1,7 +1,4 @@
-import { ContractModel } from "../models/contract.model";
-import { DateISO, FileReference, ID } from "../types/core";
-import { AddContractDocumentRequest, Contract, ContractStatus } from "../types/customer";
-
+import { Contract, ContractStatus, DateISO, FileReference, ID } from "shared-types";
 
 
  export const getAllContracts = async (): Promise<Contract[]> => {

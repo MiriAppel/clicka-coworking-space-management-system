@@ -1,3 +1,6 @@
+import { Request, Response } from "express";
+import { LeadInteractionModel } from "../models/LeadInteraction";
+
 export const deleteInteraction = async (req: Request, res: Response) => {
     const {leadId, id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
     try {

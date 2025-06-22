@@ -1,10 +1,8 @@
-import { DateISO, DateRangeFilter, FileReference, ID, PaginatedResponse } from "../types/core";
-import { CustomerModel, exit_noticesModel } from "../models/customer.model";
-import{AddContractDocumentRequest, Contract, ContractStatus, ConvertLeadToCustomerRequest, Customer, CustomerFilter, CustomerStatus, CustomerTimeline, ExitReason, GetCustomersRequest, RecordExitNoticeRequest, TimelineEvent, TimelineEventType, UpdateCustomerRequest, CustomerPeriod} from '../types/customer'
+import { CustomerModel } from "../models/customer.model";
 import { supabase } from "../db/supabaseClient";
 import { LeadModel } from "../models/lead.model";
 import { getLeadById } from "./lead.service";
-import { ContractModel } from "../models/contract.model";
+import { ConvertLeadToCustomerRequest, CustomerStatus, DateISO, ExitReason, FileReference, GetCustomersRequest, ID, PaginatedResponse, RecordExitNoticeRequest, TimelineEventType, UpdateCustomerRequest } from "shared-types";
 
 
 export const getAllCustomers = async (): Promise<CustomerModel[]> => {
@@ -217,7 +215,7 @@ export const postExitNotice = async (exitNotice: RecordExitNoticeRequest): Promi
         console.log('Insert successful:', data);
     }
 
-    const timeline: TimelineEvent = {
+    const timeline: TimelineEventType = {
 
         type: TimelineEventType.STATUS_CHANGE,
         date: exitNotice.exitNoticeDate,
@@ -264,7 +262,7 @@ export const convertLeadToCustomer =async(newCustomer: ConvertLeadToCustomerRequ
         notes: newCustomer.notes,
         invoiceName: newCustomer.invoiceName,
         contractDocuments: newCustomer.contractDocuments,
-        paymentMethods: newCustomer.paymentMethod ? [newCustomer.paymentMethod] : [],
+        paymentMethodsType: newCustomer.paymentMethod ? [newCustomer.paymentMethod] : [],
         periods: [],
         contracts: [],
         createdAt: new Date().toISOString(),
@@ -294,7 +292,7 @@ export const convertLeadToCustomer =async(newCustomer: ConvertLeadToCustomerRequ
     // עדכון סטטוס הליד ל-CONVERTED
     await updateLeadStatus(lead.id, 'CONVERTED');
 
-    const timeline: TimelineEvent = {
+    const timeline: TimelineEventType = {
 
         type: TimelineEventType.CONVERSION,
         date: new Date().toISOString(),
@@ -352,7 +350,7 @@ export const getCustomerTimeline = async (customerId: ID): Promise<CustomerTimel
     };
 }
 
-export const addTimelineEvent = async (data: TimelineEvent): Promise<void> => {
+export const addTimelineEvent = async (data: TimelineEventType): Promise<void> => {
     // אמור להוסיף אירוע לאינטראקציות של לקוח
     // האירוע יכול לכלול סוג, תאריך ותיאור
     // להחזיר את האירוע שנוסף

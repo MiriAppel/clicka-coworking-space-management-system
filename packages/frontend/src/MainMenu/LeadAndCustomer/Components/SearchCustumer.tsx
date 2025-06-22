@@ -8,10 +8,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { create } from "zustand";
-import { Person } from "../Classes/Person";
-import { Customer } from "../Classes/Customer";
-import { Lead } from "../Classes/Lead";
-import { CustomerStatus, WorkspaceType } from "../types/customer";
+import { CustomerStatus, WorkspaceType , Person, Customer} from "shared-types";
 
 interface StoreState {
     query: string;
@@ -40,7 +37,7 @@ export const SearchCustomer = () => {
             const dummyItems: Person[] = Array.from({ length: 6 }, (_, i) => {
                 const id = (page * 6 + i).toString();
                 return i % 2 === 0
-                    ? new Customer({
+                    ? ({
                         id,
                         name: `לקוח ${id}`,
                         email: `customer${id}@example.com`,
@@ -51,13 +48,16 @@ export const SearchCustomer = () => {
                         contractStartDate: "2024-02-01",
                         contractSignDate: "01/02/2024",
                         createdAt: "2024-02-01",
+                        contractEndDate: "2025-02-01",
                     })
-                    : new Lead({
+                    : ({
                         id,
                         name: `ליד ${id}`,
                         email: `lead${id}@example.com`,
                         phone: `050-5678${id.padStart(2, '0')}`,
                         createdAt: "2024-02-01",
+                        businessType: "חברה",
+                        contractEndDate:'01/05/2020'
                     });
             });
 
@@ -133,7 +133,7 @@ export const SearchCustomer = () => {
             handleSearch(input, false);
 
             const items: Person[] = data.map((item: any) =>
-                item.type === 'customer' ? new Customer(item) : new Lead(item)
+                item.type === 'customer' ? (item) : (item)
             );
 
             setResults(items);
@@ -174,19 +174,17 @@ export const SearchCustomer = () => {
                 let statusMatch = false;
                 let workspaceMatch = false;
 
-                if (person instanceof Customer) {
+                if (person as Customer) {
                     if (parsedDate) {
-                        const normalizedDate = normalizeDate(person.contractSignDate!);
+                        const normalizedDate = normalizeDate((person as Customer).contractSignDate!);
                         dateMatch = normalizedDate === parsedDate;
                     }
 
-                    statusMatch = person.status.some((s) =>
+                    statusMatch = Object.values((person as Customer).status).some((s) =>
                         s.toLowerCase().includes(lower)
                     );
 
-                    workspaceMatch = person.currentWorkspaceType.some((w) =>
-                        w.toLowerCase().includes(lower)
-                    );
+                    workspaceMatch = Object.values((person as Customer).currentWorkspaceType!).includes(lower)
                 }
 
                 return nameMatch || emailMatch || phoneMatch || dateMatch || statusMatch || workspaceMatch;
@@ -220,8 +218,8 @@ export const SearchCustomer = () => {
                 {results.map((item, index) => (
                     <ListItem key={index}>
                         <ListItemText
-                            primary={`${item.name} | ${item.email} | ${item.phone}${item instanceof Customer
-                                ? ` | ${item.status.join(", ")} | ${item.currentWorkspaceType.join(", ")} | ${item.contractStartDate}`
+                            primary={`${item.name} | ${item.email} | ${item.phone}${item as Customer
+                                ? ` | ${Object.values((item as Customer).status).join(", ")} | ${Object.values((item as Customer).currentWorkspaceType!).join(", ")} | ${(item as Customer).contractStartDate}`
                                 : ""
                                 }`}
                         />

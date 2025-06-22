@@ -22,6 +22,7 @@
     "helmet": "^8.1.0",
     "morgan": "^1.10.0",
     "pg": "^8.16.0",
+    "shared-types": "^1.0.0",
     "uuid": "^11.1.0",
     "yarn": "^1.22.22",
     "zustand": "^5.0.5"
@@ -31,7 +32,6 @@
     "@types/express": "^5.0.2",
     "@types/node": "^22.15.18",
     "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

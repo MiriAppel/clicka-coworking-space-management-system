@@ -1,5 +1,4 @@
-import { ID } from "../types/core";
-import { CustomerPeriod, ExitReason } from "../types/customer";
+import { CustomerPeriod, ExitReason, ID } from "shared-types";
 
 
 export class CustomerPeriodModel implements CustomerPeriod {

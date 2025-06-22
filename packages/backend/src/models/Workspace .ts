@@ -1,18 +1,8 @@
-// SpaceModel.ts
 
-import {
-    Space,
-    CreateSpaceRequest,
-    UpdateSpaceRequest,
-    GetSpacesRequest,
-    SpaceOccupancy,
-    AssignSpaceRequest,
-    UnassignSpaceRequest,
-    GetSpaceOccupancyRequest,
-    GetWorkspaceMapRequest
-} from './types/SpaceTypes';
 
 // דוגמה למימוש של פונקציות שיכולות להשתמש בטיפוסים
+
+import { CreateSpaceRequest, DateISO, GetSpacesRequest, ID, Space, SpaceStatus, UpdateSpaceRequest } from "shared-types";
 
 export class SpaceModel {
     private spaces: Space[] = [];

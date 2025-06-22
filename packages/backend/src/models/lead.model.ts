@@ -1,6 +1,4 @@
-import { ID, DateISO } from '../types/core';
-import { WorkspaceType } from '../types/customer';
-import { Lead, LeadInteraction } from '../types/lead';
+import { ID, Lead, LeadInteraction, WorkspaceType } from "shared-types";
 
 export class LeadModel implements Lead {
   

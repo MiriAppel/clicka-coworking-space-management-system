@@ -1,8 +1,6 @@
 import { Request, Response } from 'express'
 import * as leadService from "../services/lead.service"
 import { LeadModel} from '../models/lead.model';
-import {UpdateLeadRequestModel }from '../models/LeadRequests'
-import { LeadInteraction, LeadStatus } from '../types/lead';
 import { LeadInteractionModel } from '../models/LeadInteraction';
 
 
@@ -56,7 +54,7 @@ export const getSourcesLeadById = async (req: Request, res: Response) => {
 
 // עדכון ליד
 export const patchLead = async (req: Request, res: Response) => {
-    const leadData: UpdateLeadRequestModel = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
+    const leadData: UpdateLeadRequestModel  = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
     const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה 
     try {
         const updatedLead = await leadService.updatedLead(id, leadData);
