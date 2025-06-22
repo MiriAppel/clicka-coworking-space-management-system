@@ -32,7 +32,8 @@ export const Table = <T extends Record<string, any>>({
   const effectiveDir = dir || theme.direction;
 
   return (
-    <div dir={effectiveDir} data-testid={testId} className={clsx("overflow-x-auto", className)}>  
+    <div dir={effectiveDir} data-testid={testId} className={clsx("overflow-x-auto", className)} role="region"               // <-- Agregado para accesibilidad: define una región del documento.
+  aria-label="Table data" >  
     {/* //בודק את הכיוון את הבדיקות ואת הרספונסיביות  */}
       <table
         className={clsx(
@@ -51,7 +52,9 @@ export const Table = <T extends Record<string, any>>({
             {/* //col=כל עמודה idx=האינדקס של כל עמודה  */}
             {columns.map((col, idx) => (
                 // הוא משתמש בMAP כדי שנוכל לגשת לכל אלמנט עם האינדקסים אנחנו יודעים איפה הם נמצאים 
-              <th key={idx} className={clsx(
+              <th key={idx} 
+              scope="col" //מגדיר את זה בראש הטבלה 
+               className={clsx(
             "border px-4 py-2 font-semibold",
             idx > 1 ? "hidden md:table-cell" : ""
           )}>
@@ -68,7 +71,7 @@ export const Table = <T extends Record<string, any>>({
               {columns.map((col, colIdx) => (
                 //בכל שורה מכניס לי את כל העמודות 
                 <td key={colIdx} className={clsx(
-              "border px-4 py-2",
+              "border px-4 py-2 align-top",
               colIdx > 1 ? "hidden md:table-cell" : ""
             )}>
                   {row[col.accessor]}
