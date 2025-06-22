@@ -65,7 +65,7 @@ export async function refreshAccessToken(refreshToken: string) {
       expires_at: expiresAt,
     };
   } catch (error : any) {
-    console.error('שגיאה בקבלת טוקן חדש מגוגל:', error.response?.data || error.message);
-    throw new Error('רענון הטוקן נכשל');
+    console.error('error in getting new token from google: ', error.response?.data || error.message);
+    throw new Error('RefreshTokenError');
   }
 }

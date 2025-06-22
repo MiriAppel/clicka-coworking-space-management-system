@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 import { LoginRequest, LoginResponse, User } from '../../../../types/auth';
 import { getTokens, getGoogleUserInfo } from '../auth/googleApiClient';
 
@@ -25,14 +26,24 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     // const encryptedAccessToken = encrypt(tokens.access_token);
     // const encryptedRefreshToken = encrypt(tokens.refresh_token || '');
     // Save user and tokens to the database here
+    // ----------------------------------------------------------------------------
+    //Connect to DB to save refresh token
+    /*
+    const supabaseUrl = process.env.SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY!; // השתמשי במפתח SERVICE_ROLE שלך, לא במפתח public anon
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    */
+    //-----------------------------------------------------------------------------
+
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);
     return {
       user,
       token: tokens.access_token,
-      refreshToken: tokens.refresh_token!, // Optional, if you want to store it
+      // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
+
   } catch (error) {
     console.error('שגיאה בהחלפת קוד או בשליפת משתמש:', error);
     throw new Error('ההתחברות עם Google נכשלה');

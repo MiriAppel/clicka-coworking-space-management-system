@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { User } from '../../../../types/auth'
+import { log } from 'console'
+import { DateISO } from '../types/core'
 
 
 interface AuthState {
@@ -7,7 +9,7 @@ interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
-  sessionExpiry: string | null
+  sessionExpiry: DateISO | null
 
   setUser: (user: User) => void
   clearUser: () => void
@@ -24,6 +26,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   sessionExpiry: null,
 
   setUser: (user) => {
+    console.log('Setting user:', user)
     const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
     set({
       user,

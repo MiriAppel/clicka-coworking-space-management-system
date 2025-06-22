@@ -34,7 +34,6 @@ export interface LoginRequest {
 export interface LoginResponse {
   user: User;
   token: string;
-  refreshToken?: string;
   expiresAt: DateISO;
   cookie?: string; // Optional cookie for session management
 }

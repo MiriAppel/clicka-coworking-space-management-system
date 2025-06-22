@@ -28,6 +28,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     const loginResponse: LoginResponse = {
       user: userData.user,
       token: jwtToken,
+
       expiresAt: userData.expiresAt
     };
 
@@ -48,40 +49,42 @@ export const logout = (req: Request, res: Response) => {
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
-// export const refreshTokenHandler = async (req: Request, res: Response) => {
-//   try {
-//     const sessionToken = req.cookies.session;
-//     if (!sessionToken) return res.status(401).json({ error: 'לא מחובר' });
+export const refreshTokenHandler = async (req: Request, res: Response) => {
+  try {
+    const sessionToken = req.cookies.session;
+    if (!sessionToken) return res.status(401).json({ error: 'לא מחובר' });
 
-//     const payload = jwt.verify(sessionToken, process.env.JWT_SECRET!) as any;
-//     const userId = payload.userId;
+    const payload = jwt.verify(sessionToken, process.env.JWT_SECRET!) as { userId: string; email: string };
 
-//     // שליפת refresh token
-//     //need to access DB to get the refresh token
-//     const record = await userTokens.findUnique({ where: { userId } });
-//     //------------------------------------------------------------------
-//     if (!record?.refreshToken) return res.status(401).json({ error: 'אין טוקן לרענון' });
+    const userId :string = payload.userId;
 
-//     const refreshToken = decrypt(record.refreshToken);
-//     const tokens = await refreshAccessToken(refreshToken);
+    // שליפת refresh token
+    //need to access DB to get the refresh token
+    // const record = await userTokens.findUnique({ where: { userId } });
+    const record={ userId:1234,refreshToken:"encryptedRefreshToken" }; // Mocked record for demonstration
+    //------------------------------------------------------------------
+    if (!record?.refreshToken) return res.status(401).json({ error: 'אין טוקן לרענון' });
 
-//     const newJwt = jwt.sign(
-//       { userId, email: payload.email },
-//       process.env.JWT_SECRET!,
-//       { expiresIn: '8h' }
-//     );
+    const refreshToken = decrypt(record.refreshToken);
+    const tokens = await refreshAccessToken(refreshToken);
 
-//     res.cookie('session', newJwt, {
-//       httpOnly: true,
-//       secure: true,
-//       sameSite: 'strict',
-//       maxAge: 8 * 60 * 60 * 1000,
-//     });
+    const newJwt = jwt.sign(
+      { userId, email: payload.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: '8h' }
+    );
 
-//     return res.status(200).json({ message: 'הטוקן חודש בהצלחה' });
+    res.cookie('session', newJwt, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 8 * 60 * 60 * 1000,
+    });
 
-//   } catch (err) {
-//     console.error('שגיאה ברענון טוקן', err);
-//     return res.status(500).json({ error: 'שגיאה בעת רענון טוקן' });
-//   }
-// };
+    return res.status(200).json({ message: 'הטוקן חודש בהצלחה' });
+
+  } catch (err) {
+    console.error('שגיאה ברענון טוקן', err);
+    return res.status(500).json({ error: 'שגיאה בעת רענון טוקן' });
+  }
+};
