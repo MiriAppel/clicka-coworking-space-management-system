@@ -49,9 +49,7 @@ export class contractService extends baseService<ContractModel> {
     throw new Error("לא ניתן לשלוף את החוזים עבור לקוח זה.");
   }
   return data as Contract[];
-};
 
-    return []; // להחזיר מערך של חוזים
   };
 
   getContractsEndingSoon = async (days: number = 30): Promise<Contract[]> => {
@@ -85,9 +83,6 @@ export class contractService extends baseService<ContractModel> {
 
   //מוחק את הקובץ מהמערך שהid documentIdשלו שווה ל
   deleteContractDocument = async (customerId: ID, documentId: ID): Promise<void> => {
-    //איזה מסמך?
-    //מחיקת מסמך מהחוזה
-
 
     const contract = await this.getById(customerId);
 
