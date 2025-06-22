@@ -2,6 +2,7 @@ import { ContractModel } from "../models/contract.model";
 import { DateISO, FileReference, ID } from "../../../../types/core";
 import { baseService } from "./baseService";
 import { Contract, ContractStatus } from "../../../../types/customer";
+import { supabase } from "../db/supabaseClient";
 
 export class contractService extends baseService<ContractModel> {
   constructor() {
@@ -38,6 +39,18 @@ export class contractService extends baseService<ContractModel> {
   
   getAllContractsByCustomerId = async (customerId: ID): Promise<Contract[]> => {
     // אמור לשלוף את כל החוזים עבור הלקוח עם ה-customerId הנתון
+      const { data, error } = await supabase
+    .from("contracts")
+    .select("*")
+    .eq("customerId", customerId);
+
+  if (error) {
+    console.error("שגיאה בעת שליפת החוזים:", error.message);
+    throw new Error("לא ניתן לשלוף את החוזים עבור לקוח זה.");
+  }
+  return data as Contract[];
+};
+
     return []; // להחזיר מערך של חוזים
   };
 
@@ -72,6 +85,9 @@ export class contractService extends baseService<ContractModel> {
 
   //מוחק את הקובץ מהמערך שהid documentIdשלו שווה ל
   deleteContractDocument = async (customerId: ID, documentId: ID): Promise<void> => {
+    //איזה מסמך?
+    //מחיקת מסמך מהחוזה
+
 
     const contract = await this.getById(customerId);
 
