@@ -31,6 +31,7 @@ export interface FormComponentProps<T extends FieldValues>
   disabled?: boolean;
   schema?: ZodType<T>; //סכמה לולידציות של FORM 
   onSubmit: SubmitHandler<T>;//פונקציה להפעלה בשליחת הטופס 
+  methods?: UseFormReturn<T>;
 }
 
 
@@ -43,18 +44,21 @@ export function Form<T extends FieldValues>({
   dir,
   "data-testid": testId,
   children,
+  methods: externalMethods,
 }: FormComponentProps<T>) {
   const theme = useTheme();
   const { t } = useTranslation();
   //שימוש לתירגום עם I18NEXT לפי הנדרש 
   const effectiveDir = dir || theme.direction;
-
-  
-  const methods: UseFormReturn<T> = useForm<T>({
+  const internalMethods = useForm<T>({
     ...(schema ? { resolver: zodResolver(schema) } : {}),
     mode: "onSubmit",
-    //מתי שלוחצים על הONSUBMIT אז ישר בודק לי את הולידציה של הטופס בזכות הZOD 
   });
+  const methods: UseFormReturn<T> = externalMethods ?? internalMethods;
+    //מתי שלוחצים על הONSUBMIT אז ישר בודק לי את הולידציה של הטופס בזכות הZOD 
+    
+  
+  
 
   return (
     <FormProvider {...methods}>
