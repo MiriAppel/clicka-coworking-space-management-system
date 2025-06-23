@@ -4,63 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import {Button} from './MainMenu/Common/Components/BaseComponents/Button'
 import { AuthenticationScreen } from './Login/Components/AuthenticationScreen';
 import { useAuthStore } from './store/useAuthStore';
+import { AuthProvider } from './auth/Components/AuthProvider';
 
 // Simple component to demonstrate the project
 function App() {
   //////
   const navigate = useNavigate();
-const { setUser, clearUser, setLoading } = useAuthStore();
-
-
-    useEffect(() => {
-      const checkAuth = async () => {
-        try {
-          setLoading(true);
-          let res = await fetch("/api/auth/verify", {
-            credentials: "include", // חשוב לשם שליחת ה-cookie
-          });
-          if (res.status==200) {
-            console.log("Authenticated successfully in useEffect at App");          
-            const data = await res.json();
-            setUser(data.user);
-            console.log(data.user);            
-          } else if(res.status==401){
-            const data = await res.json();
-            if (data.error === 'TokenExpired') {
-              const refreshRes = await fetch("/api/auth/refresh", {
-                method: "POST",
-                credentials: "include", // חשוב לשם שליחת ה-cookie
-              });
-              if(refreshRes.ok){
-                console.log("Refresh token success in useEffect at App");
-                res= await fetch("/api/auth/verify", {
-                  credentials: "include", 
-                });
-                if(res.ok){
-                  const data = await res.json();
-                  setUser(data.user);
-                  return;
-                }
-              }
-            }
-          } else {
-            console.log("Authenticate failed in useEffect at App");
-            clearUser(); // אם אין התחברות תקפה
-          }
-        } catch (err) {
-          console.log("Error during authentication check:", err);
-          console.log("Not authenticated");
-          clearUser();
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      checkAuth();
-    }, [setUser, clearUser, setLoading]);
-
-
   return (
+    <AuthProvider>
     <div className="App">
       <header className="App-header"> 
         <h3>welcome to our world</h3>
@@ -97,6 +48,7 @@ const { setUser, clearUser, setLoading } = useAuthStore();
     </div>
       <AuthenticationScreen />
     </div>
+    </AuthProvider>
     
   );
 }
