@@ -1,14 +1,5 @@
 import { create } from "zustand";
-import {
-  Vendor,
-  CreateVendorRequest,
-  UpdateVendorRequest,
-  VendorCategory,
-  VendorStatus,
-} from "../../../../frontend/src/types/expense";
-import { SupplierFilter } from "../../../../../types/supplierFilter";
-import { ValidationResult } from "../../../../../types/validationResult";
-import { FileReference, ID } from "../../../../../types/core";
+import { ID, Vendor, VendorStatus, CreateVendorRequest, UpdateVendorRequest, FileReference } from "shared-types";
 
 interface SupplierState {
   suppliers: Vendor[];
@@ -38,7 +29,7 @@ interface SupplierState {
 
   // Supplier Form
   handleFieldChange: (field: keyof CreateVendorRequest | keyof UpdateVendorRequest, value: any) => void;
-  validateVendorForm: (data: CreateVendorRequest | UpdateVendorRequest) => ValidationResult;
+  // validateVendorForm: (data: CreateVendorRequest | UpdateVendorRequest) => ValidationResult;
   handleCreateVendor: (data: CreateVendorRequest) => Promise<Vendor>;
   handleUpdateVendor: (vendorId: ID, data: UpdateVendorRequest) => Promise<Vendor>;
   //resetForm: () => void;

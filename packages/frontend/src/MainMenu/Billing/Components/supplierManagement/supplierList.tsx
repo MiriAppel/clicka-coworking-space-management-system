@@ -1,6 +1,5 @@
-import { SupplierFilter } from "../../../../../../../types/supplierFilter";
-import { ID } from "../../../../../../../types/core";
-import { Vendor } from "../../../../../../../types/expense";
+
+import { ID } from "shared-types";
 import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 export const SupplierList = ()=>{
 const {fetchSuppliers,handleDeleteSupplier}=useSupplierStore();
@@ -12,7 +11,7 @@ const {fetchSuppliers,handleDeleteSupplier}=useSupplierStore();
 const handleSearch = (query: string): void => {};
 
 // סינון ספקים לפי קטגוריה/סטטוס
-const handleFilter = (filter: SupplierFilter): void => {};
+// const handleFilter = (filter: SupplierFilter): void => {};
 
 // מעבר לכרטיס ספק (פרטי ספק)
 const handleSelectSupplier = (vendorId: ID): void => {};

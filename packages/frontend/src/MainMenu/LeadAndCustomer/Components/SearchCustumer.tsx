@@ -1,3 +1,4 @@
+//צריך לסדר את עניין המייל והטלפון בטייפס ואז לעדכן פה את החיפוש!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 import {
     Button,
     List,
@@ -167,8 +168,8 @@ export const SearchCustomer = () => {
 
             const filtered = data.filter((person) => {
                 const nameMatch = person.name.toLowerCase().includes(lower);
-                const emailMatch = person.email.toLowerCase().includes(lower);
-                const phoneMatch = person.phone.includes(searchValue);
+                const emailMatch = person.name.toLowerCase().includes(lower);
+                const phoneMatch = person.name.includes(searchValue);
 
                 let dateMatch = false;
                 let statusMatch = false;
@@ -218,7 +219,7 @@ export const SearchCustomer = () => {
                 {results.map((item, index) => (
                     <ListItem key={index}>
                         <ListItemText
-                            primary={`${item.name} | ${item.email} | ${item.phone}${item as Customer
+                            primary={`${item.name} | ${item.name} | ${item.name}${item as Customer
                                 ? ` | ${Object.values((item as Customer).status).join(", ")} | ${Object.values((item as Customer).currentWorkspaceType!).join(", ")} | ${(item as Customer).contractStartDate}`
                                 : ""
                                 }`}

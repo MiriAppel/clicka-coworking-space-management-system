@@ -1,8 +1,5 @@
 import { create } from "zustand";
-import { Expense, ExpenseCategory } from "../../../../../types/expense";
-import { ExpenseFilter } from "../../../../../types/expenseFilter";
-import { ValidationResult } from "../../../../../types/validationResult";
-import { ID, FileReference } from "../../../../../types/core";
+import { ID, Expense, FileReference } from "shared-types";
 
 interface ExpenseState {
   expenses: Expense[];
@@ -31,7 +28,7 @@ interface ExpenseState {
 
   // Form
   handleFieldChange: (field: keyof Expense, value: any) => void;
-  validateExpenseForm: (data: Expense) => ValidationResult;
+  // validateExpenseForm: (data: Expense) => ValidationResult;
   handleCreateExpense: (data: Expense) => Promise<Expense>;
   handleUpdateExpense: (expenseId: ID, data: Expense) => Promise<Expense>;
   resetForm: () => void;

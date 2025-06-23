@@ -1,5 +1,3 @@
-import { GeneratedDocument } from "../../../../../../../types/document";
-import { ID } from "../../../../../../../types/core";
 import { useReceiptAndDocumentsStore } from "../../../../Stores/Billing/receiptAndDocumentsStore";
 export const DocumentList = () => {
 const {fetchGeneratedDocuments,handleDeleteDocument}=useReceiptAndDocumentsStore();

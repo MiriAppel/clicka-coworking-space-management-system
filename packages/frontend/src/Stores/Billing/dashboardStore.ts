@@ -1,27 +1,24 @@
 
 import { create } from "zustand";
-import { FinancialReport, ReportType, ReportParameters } from "../../../../../types/financialReport";
-import { ID } from "../../../../../types/core";
-import { Expense } from "../../../../../types/expense";
-import { Invoice, Payment } from "../../../../../types/billing";
+import { ID, Expense, Payment, Invoice } from "shared-types";
 
 interface DashboardState  {
   dashboardSummary?: any;
-  mainReports: FinancialReport[];
-  financialSummary?: FinancialReport;
+  // mainReports: FinancialReport[];
+  // financialSummary?: FinancialReport;
   recentExpenses: Expense[];
   recentPayments: Payment[];
   recentInvoices: Invoice[];
   alerts: { id: ID; message: string; type: string }[];
-  chartData?: FinancialReport;
+  // chartData?: FinancialReport;
   fetchDashboardSummary: () => Promise<void>;
-  fetchMainReports: (types: ReportType[], parameters: ReportParameters) => Promise<void>;
-  fetchFinancialSummary: (parameters: ReportParameters) => Promise<void>;
+  // fetchMainReports: (types: ReportType[], parameters: ReportParameters) => Promise<void>;
+  // fetchFinancialSummary: (parameters: ReportParameters) => Promise<void>;
   fetchRecentExpenses: () => Promise<void>;
   fetchRecentPayments: () => Promise<void>;
   fetchRecentInvoices: () => Promise<void>;
   fetchDashboardAlerts: () => Promise<void>;
-  fetchChartData: (type: ReportType, parameters: ReportParameters) => Promise<void>;
+  // fetchChartData: (type: ReportType, parameters: ReportParameters) => Promise<void>;
 };
 
 export const useDashboardStore = create<DashboardState>((set) => ({

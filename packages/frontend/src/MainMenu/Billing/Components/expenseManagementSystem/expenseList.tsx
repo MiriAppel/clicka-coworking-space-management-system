@@ -1,6 +1,4 @@
-import { ExpenseFilter } from "../../../../../../../types/expenseFilter";
-import { Expense } from "../../../../types/expense";
-import { ID } from "../../../../types/core";
+import { Expense, ID } from "shared-types";
 import { useExpenseStore } from "../../../../Stores/Billing/expenseStore";
 
 export const ExpenseList = () => {
@@ -9,7 +7,7 @@ const {fetchExpenses,deleteExpense}=useExpenseStore();
 
 // סינון/חיפוש הוצאות
 const handleSearch = (query: string): void => {};
-const handleFilter = (filter: ExpenseFilter): void => {};
+// const handleFilter = (filter: ExpenseFilter): void => {};
 
 // מעבר לכרטיס הוצאה
 const handleSelectExpense = (expenseId: ID): void => {};

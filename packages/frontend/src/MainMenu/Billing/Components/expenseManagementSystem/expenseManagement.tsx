@@ -1,6 +1,4 @@
-import { Expense, ExpenseCategory } from "../../../../types/expense";
-import { ID } from "../../../../types/core";
-import { ExpenseFilter } from "../../../../../../../types/expenseFilter";
+import { ID } from "shared-types";
 import { useExpenseStore } from "../../../../Stores/Billing/expenseStore";
 export const ExpenseManagement = () => {
 
@@ -15,9 +13,9 @@ export const ExpenseManagement = () => {
     };
 
     // סינון הוצאות לפי קטגוריה/ספק/תאריכים
-    const filterExpenses = (filter: ExpenseFilter): Promise<Expense[]> => {
-        return {} as Promise<Expense[]>;
-    };
+    // const filterExpenses = (filter: ExpenseFilter): Promise<Expense[]> => {
+    //     return {} as Promise<Expense[]>;
+    // };
 
     // מעבר לכרטיס הוצאה
     const handleSelectExpense = (expenseId: ID): void => { };

@@ -2,11 +2,8 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import axios from 'axios';
-import { 
-  Invoice, 
-  BillingItemType, 
-  InvoiceStatus 
-} from '../../types/billing';
+import { Invoice, InvoiceStatus } from 'shared-types';
+
 
 interface InvoiceState {
   // ===== STATE =====
@@ -72,7 +69,7 @@ export const useInvoiceStore = create<InvoiceState>()(
         due_date: '2024-06-30',
         items: [],
         subtotal: 100,
-        tax_total: 17,
+        taxtotal: 17,
         createdAt: '2024-06-01',
         updatedAt: '2024-06-01'
       }
