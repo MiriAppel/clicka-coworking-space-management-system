@@ -64,7 +64,7 @@ export const postNewContract = async (req: Request, res: Response) => {
 
 // הוספת טופס לחוזה
 export const postContractDocument = async (req: Request, res: Response) => {
-    const {documentData, customerId }= req.body;//-----------------------------מזהה לקוח או חוזה??????????????????
+    const {documentData, customerId} = req.body;//-----------------------------מזהה לקוח או חוזה??????????????????
     try {
         await serviceContract.postContractDocument(documentData,customerId);
         res.status(200).json({ message: 'Contract document added successfully' });

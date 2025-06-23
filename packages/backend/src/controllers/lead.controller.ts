@@ -26,7 +26,8 @@ export const getLeadById = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'Lead not found' });
         }
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error fetching lead', error });
     }
 }
@@ -36,7 +37,8 @@ export const createLead = async (req: Request, res: Response) => {
     try {
         const newLead = await serviceLead.post(leadData);
         res.status(201).json(newLead);
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error creating lead', error });
     }
 }
@@ -47,7 +49,8 @@ export const getSourcesLeadById = async (req: Request, res: Response) => {
     try {
         const sources = await serviceLead.getSourcesLeadById(id);
         res.status(200).json(sources);
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error fetching sources', error });
     }
 }
@@ -59,7 +62,8 @@ export const patchLead = async (req: Request, res: Response) => {
     try {
         const updatedLead = await serviceLead.patch(leadData, id);
         res.status(200).json(updatedLead);
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error updating lead', error });
     }
 }
@@ -70,7 +74,8 @@ export const postLeadFromCSV = async (req: Request, res: Response) => {
     try {
         await serviceLead.convertCsvToLeads(csvData);
         res.status(200).json({ message: 'Leads added from CSV' });
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error adding leads from CSV', error });
     }
 }
@@ -81,16 +86,14 @@ export const getLeadsToRemind = async (req: Request, res: Response) => {
     try {
         const leadsToRemind = await serviceLead.getOpenReminders();
         res.status(200).json(leadsToRemind);
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error fetching leads to remind', error });
     }
 }
 
-
 export const getLeadsByFilter = async (req: Request, res: Response) => {
-
     const filters = req.query;
-
     try {
         const customers = await serviceLead.getByFilters(filters);
 
@@ -99,7 +102,8 @@ export const getLeadsByFilter = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'No customers found' });
         }
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error filtering customers', error });
     }
 }

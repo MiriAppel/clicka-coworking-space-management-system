@@ -22,6 +22,23 @@ export enum ExpenseCategory {
   PETTY_CASH = 'PETTY_CASH',
   OTHER = 'OTHER'
 }
+export enum VendorCategory {
+  MAINTENANCE = 'MAINTENANCE',
+  UTILITIES = 'UTILITIES',
+  OFFICE_SUPPLIES = 'OFFICE_SUPPLIES',
+  CLEANING = 'CLEANING',
+  PROFESSIONAL_SERVICES = 'PROFESSIONAL_SERVICES',
+  TECHNOLOGY = 'TECHNOLOGY',
+  OTHER = 'OTHER'
+}
+
+// Vendor status enum
+export enum VendorStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  SUSPENDED = 'SUSPENDED'
+}
+
 
 // Expense status enum
 export enum ExpenseStatus {
@@ -45,38 +62,61 @@ export enum ExpensePaymentMethod {
 export interface Vendor {
   id: ID;
   name: string;
-  contactName?: string;
+  contact_name?: string;
   phone?: string;
   email?: string;
   address?: string;
   website?: string;
-  taxId?: string;
+  tax_id?: string;
+  payment_terms?: string;
+  preferred_payment_method?: PaymentMethod;
+  category?: VendorCategory;
+  status?: VendorStatus;
   notes?: string;
+  documents?: FileReference[];
   createdAt: DateISO;
   updatedAt: DateISO;
 }
-
+ 
 // Expense model
 export interface Expense {
+  success: any;
   id: ID;
-  vendorId: ID;
-  vendorName: string;
+  vendor_id: ID;
+  vendor_name: string;
   category: ExpenseCategory;
   description: string;
   amount: number;
   tax?: number;
   date: DateISO;
-  dueDate?: DateISO;
-  paidDate?: DateISO;
+  due_date?: DateISO;
+  paid_date?: DateISO;
   status: ExpenseStatus;
-  paymentMethod?: ExpensePaymentMethod;
+  payment_method?: ExpensePaymentMethod;
   reference?: string;
-  invoiceNumber?: string;
-  invoiceFile?: FileReference;
-  receiptFile?: FileReference;
+  invoice_number?: string;
+  invoice_file?: FileReference;
+  receipt_file?: FileReference;
   notes?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
+}
+export enum PaymentMethod {
+  BankTransfer = 'BankTransfer',   
+  CreditCard = 'CreditCard',      
+  Cash = 'Cash',                  
+  Other = 'Other'                 
+}
+export enum VendorStatus {
+  Active = 'Active',
+  Inactive = 'Inactive',
+  Suspended = 'Suspended'
+}
+export enum VendorCategory {
+  Equipment = 'Equipment',
+  Services = 'Services',
+  Maintenance = 'Maintenance',
+  Other = 'Other'
 }
 
 // Create vendor request
@@ -164,4 +204,10 @@ export interface MarkExpenseAsPaidRequest {
   paymentMethod: ExpensePaymentMethod;
   reference?: string;
   notes?: string;
+}
+export enum PaymentTerms {
+  NET_15 = 'Net 15',
+  NET_30 = 'Net 30',
+  EOM = 'End of Month',
+  COD = 'Cash on Delivery'
 }

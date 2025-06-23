@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import {Button} from './MainMenu/Common/Components/BaseComponents/Button'
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
+
+
 
 // Simple component to demonstrate the project
 function App() {
@@ -11,6 +13,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   //////
   const navigate = useNavigate();
+
 
 
 
@@ -36,8 +39,7 @@ function App() {
 
   return (
     <div className="App">
-      <SearchCustomer></SearchCustomer>
-      {/* <header className="App-header">
+      <header className="App-header">
         <h3>welcome to our world</h3>
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
@@ -46,7 +48,7 @@ function App() {
         <Button variant="outlined" onClick={() => { navigate('/leadAndCustomer') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Lead & Customer</Button>
         <Button variant="outlined" onClick={() => { navigate('/workspaceMap') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Workspace</Button>
         <Button variant="outlined" onClick={() => { navigate('/billing') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Billing</Button>
-      </div> */}
+      </div>
     </div>
   );
 }
