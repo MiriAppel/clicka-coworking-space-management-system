@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate } from 'react-router-dom';
-import {Button} from './MainMenu/Common/Components/BaseComponents/Button'
+import {Button} from './Common/Components/BaseComponents/Button'
 
 // Simple component to demonstrate the project
 function App() {

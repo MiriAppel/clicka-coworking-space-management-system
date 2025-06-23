@@ -2,7 +2,7 @@ import { useParams } from "react-router";
 import { NavLink, Outlet, Link } from "react-router";
 import { useState } from "react";
 import { Customer, CustomerStatus, WorkspaceType, ExitReason } from "../../../../types/customer";
-import { Button } from '../../../Common/Components/BaseComponents/Button';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import '../../Css/customerDetails.css';
 
 
