@@ -8,9 +8,10 @@ import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 
 import  routerAuth  from './routes/auth';
-import cookieParser from 'cookie-parser';
 import { Request, Response } from 'express';
 
+import cookieParser from "cookie-parser";
+import userRouter from './routes/user-routes';
 
 // Create Express app
 const app = express();
@@ -26,17 +27,21 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(json());
 
+app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
+app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);
+app.use(userRouter);
+
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-app.use('/api/auth',routerAuth)
+
 // Placeholder for routes
 // TODO: Add routers for different resources
 

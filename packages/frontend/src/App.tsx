@@ -16,7 +16,7 @@ const { setUser, clearUser, setLoading } = useAuthStore();
       const checkAuth = async () => {
         try {
           setLoading(true);
-          const res = await fetch("/api/auth/verify", {
+          let res = await fetch("/api/auth/verify", {
             credentials: "include", // חשוב לשם שליחת ה-cookie
           });
           if (res.status==200) {
@@ -24,8 +24,27 @@ const { setUser, clearUser, setLoading } = useAuthStore();
             const data = await res.json();
             setUser(data.user);
             console.log(data.user);            
+          } else if(res.status==401){
+            const data = await res.json();
+            if (data.error === 'TokenExpired') {
+              const refreshRes = await fetch("/api/auth/refresh", {
+                method: "POST",
+                credentials: "include", // חשוב לשם שליחת ה-cookie
+              });
+              if(refreshRes.ok){
+                console.log("Refresh token success in useEffect at App");
+                res= await fetch("/api/auth/verify", {
+                  credentials: "include", 
+                });
+                if(res.ok){
+                  const data = await res.json();
+                  setUser(data.user);
+                  return;
+                }
+              }
+            }
           } else {
-            console.log("Authenticate faild un useEffect at App");
+            console.log("Authenticate failed in useEffect at App");
             clearUser(); // אם אין התחברות תקפה
           }
         } catch (err) {

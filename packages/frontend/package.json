@@ -56,5 +56,8 @@
       "last 1 safari version"
     ]
   },
+  "devDependencies": {
+    "@types/xlsx": "^0.0.35"
+  },
   "proxy": "http://localhost:3001"
 }

@@ -1,38 +1,23 @@
 import e, { Request, Response } from 'express';
 import * as authService from '../services/authService';
+import * as tokenService from '../services/tokenService';
 import { LoginRequest, LoginResponse, User } from './../../../../types/auth';
-import jwt from 'jsonwebtoken';
 import { decrypt } from '../services/cryptoService';
 import { refreshAccessToken } from '../auth/googleApiClient';
+import { HttpStatusCode } from 'axios';
 
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
-    console.log('Received Google auth code:', req.body.code);
-    
+  console.log('Received Google auth code:', req.body.code);
+
   try {
     const { code } = req.body;
-    const userData = await authService.exchangeCodeAndFetchUser(code);
-
-    const jwtToken = jwt.sign(
-      { userId: userData.user.id, email: userData.user.email, googleId: userData.user.googleId },
-      process.env.JWT_SECRET!,
-      { expiresIn: '8h' }
-    );
-    res.cookie('session', jwtToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 8 * 60 * 60 * 1000, // 8 שעות
-    });
-
-
-    const loginResponse: LoginResponse = {
-      user: userData.user,
-      token: jwtToken,
-
-      expiresAt: userData.expiresAt
-    };
-
-    res.status(200).json(loginResponse);
+    if (!code) {
+      res.status(HttpStatusCode.BadRequest).json({ error: 'Missing authentication code' });
+      return;
+    }
+    const loginResult = await authService.exchangeCodeAndFetchUser(code);
+    tokenService.setAuthCookie(res, loginResult.token);
+    res.status(200).json(loginResult);
   } catch (error) {
     console.error('Google login failed:', error);
     res.status(500).json({ error: 'Authentication failed' });
@@ -40,11 +25,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
 };
 
 export const logout = (req: Request, res: Response) => {
-  res.clearCookie('session', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-  });
+  tokenService.clearAuthCookie(res);
 
   res.status(200).json({ message: 'Logged out successfully' });
 };
@@ -52,39 +33,16 @@ export const logout = (req: Request, res: Response) => {
 export const refreshTokenHandler = async (req: Request, res: Response) => {
   try {
     const sessionToken = req.cookies.session;
-    if (!sessionToken) return res.status(401).json({ error: 'לא מחובר' });
-
-    const payload = jwt.verify(sessionToken, process.env.JWT_SECRET!) as { userId: string; email: string };
-
-    const userId :string = payload.userId;
-
-    // שליפת refresh token
-    //need to access DB to get the refresh token
-    // const record = await userTokens.findUnique({ where: { userId } });
-    const record={ userId:1234,refreshToken:"encryptedRefreshToken" }; // Mocked record for demonstration
-    //------------------------------------------------------------------
-    if (!record?.refreshToken) return res.status(401).json({ error: 'אין טוקן לרענון' });
-
-    const refreshToken = decrypt(record.refreshToken);
-    const tokens = await refreshAccessToken(refreshToken);
-
-    const newJwt = jwt.sign(
-      { userId, email: payload.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: '8h' }
-    );
-
-    res.cookie('session', newJwt, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 8 * 60 * 60 * 1000,
-    });
-
-    return res.status(200).json({ message: 'הטוקן חודש בהצלחה' });
+    if (!sessionToken) {
+      res.status(401).json({ error: 'not authenticated' });
+      return;
+    }
+    const newJwt = await tokenService.refreshUserToken(sessionToken);
+    tokenService.setAuthCookie(res, newJwt);
+    res.status(200).json({ message: 'Token refreshed successfully' });
 
   } catch (err) {
-    console.error('שגיאה ברענון טוקן', err);
-    return res.status(500).json({ error: 'שגיאה בעת רענון טוקן' });
+    console.error('Error refreshing token', err);
+    res.status(500).json({ error: 'Error refreshing token' });
   }
 };

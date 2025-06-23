@@ -1,6 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 import { LoginRequest, LoginResponse, User } from '../../../../types/auth';
 import { getTokens, getGoogleUserInfo } from '../auth/googleApiClient';
+import jwt from 'jsonwebtoken';
+import { saveUserTokens } from './tokenService';
+
+
+export const generateJwtToken = (payload: { userId: string; email: string; googleId: string }): string => {
+  return jwt.sign(
+  {    userId: payload.userId,
+    email: payload.email,
+    googleId: payload.googleId
+  },
+    process.env.JWT_SECRET!,
+    { expiresIn:  '8h' } // 8 hours
+  );
+};
+
+export const verifyJwtToken = (token: string) => {
+  return jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string };
+};
 
 export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse> => {
   try {
@@ -29,17 +47,20 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     // ----------------------------------------------------------------------------
     //Connect to DB to save refresh token
     /*
-    const supabaseUrl = process.env.SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_KEY!; // השתמשי במפתח SERVICE_ROLE שלך, לא במפתח public anon
-    const supabase = createClient(supabaseUrl, supabaseKey);
     */
     //-----------------------------------------------------------------------------
+    await saveUserTokens(user.id, tokens.access_token, tokens.refresh_token || '');
 
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);
+    const jwtToken = generateJwtToken({
+      userId: user.id,
+      email: user.email,
+      googleId: user.googleId!
+    });
     return {
       user,
-      token: tokens.access_token,
+      token: jwtToken,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
