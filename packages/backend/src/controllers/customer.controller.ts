@@ -4,6 +4,8 @@ import { customerService } from '../services/customer.service';
 import { CreateCustomerRequest } from '../../../../types/customer';
 import { ID } from '../../../../types/core';
 import { PaymentMethodType } from '../../../../types/billing';
+import { AddContractDocumentRequest, Contract, ConvertLeadToCustomerRequest, CustomerStatus, UpdateCustomerRequest } from '../types/customer';
+
 
 
 const serviceCustomer = new customerService();
