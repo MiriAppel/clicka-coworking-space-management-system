@@ -1,5 +1,6 @@
 // SpaceModel.ts
 
+import { DateISO, ID } from '../../../../types/core';
 import {
     Space,
     CreateSpaceRequest,
@@ -9,8 +10,9 @@ import {
     AssignSpaceRequest,
     UnassignSpaceRequest,
     GetSpaceOccupancyRequest,
-    GetWorkspaceMapRequest
-} from './types/SpaceTypes';
+    GetWorkspaceMapRequest,
+    SpaceStatus
+} from '../../../../types/workspace';
 
 // דוגמה למימוש של פונקציות שיכולות להשתמש בטיפוסים
 

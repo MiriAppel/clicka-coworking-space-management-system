@@ -4,7 +4,7 @@ import { customerService } from '../services/customer.service';
 import { CreateCustomerRequest } from '../../../../types/customer';
 import { ID } from '../../../../types/core';
 import { PaymentMethodType } from '../../../../types/billing';
-import { AddContractDocumentRequest, Contract, ConvertLeadToCustomerRequest, CustomerStatus, UpdateCustomerRequest } from '../types/customer';
+// import { AddContractDocumentRequest, Contract, ConvertLeadToCustomerRequest, CustomerStatus, UpdateCustomerRequest } from '../types/customer';
 
 
 
@@ -149,6 +149,7 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching paginated customers', error});
     }
 }
+
 
 // עדכון מלא/חלקי של לקוח
 export const patchCustomer = async (req: Request, res: Response) => {

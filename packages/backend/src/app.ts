@@ -23,6 +23,7 @@ app.use(urlencoded({ extended: true }));
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
+app.use('/api/translate', translationRouter);
 // app.use('/api/leadInteraction', routerCstomer);
 
 
@@ -33,7 +34,6 @@ app.get('/api/health', (req, res) => {
 
 // Placeholder for routes
 // TODO: Add routers for different resources
-app.use('/translations', translationRouter);
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.log(err);

@@ -1,7 +1,7 @@
 // controllers/translation.controller.ts
 import { Request, Response } from 'express';
 import { translationService } from '../services/translation';
-import { ID } from '../types/core';
+import { ID } from '../../../../types/core';
 
 export const translationController = {
   getAll: async (req: Request, res: Response) => {
@@ -53,6 +53,7 @@ export const translationController = {
   },
 
   createTranslation: async (req: Request, res: Response) => {
+      console.log("📥 got POST /api/translate");
     try {
       const { key, text, lang } = req.body;
       if (!key || !text || !lang) {
