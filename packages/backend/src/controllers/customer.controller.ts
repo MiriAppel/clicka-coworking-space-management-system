@@ -1,11 +1,6 @@
 import { Request, Response } from 'express';
-<<<<<<< HEAD
-import * as customerService from '../services/customer.service';
-import { ParsedQs } from 'qs';
-import { ConvertLeadToCustomerRequest, UpdateCustomerRequest } from 'shared-types';
-=======
+
 import { customerService } from '../services/customer.service';
->>>>>>> origin/main
 
 
 const serviceCustomer = new customerService();

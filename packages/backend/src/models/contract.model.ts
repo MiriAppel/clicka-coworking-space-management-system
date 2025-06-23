@@ -1,11 +1,6 @@
 import path from "path";
-<<<<<<< HEAD
-import { Contract, ContractStatus, DateISO, FileReference, ID } from "shared-types";
-=======
-import { DateISO, FileReference, ID } from "../../../../types/core";
-import { Contract, ContractStatus, WorkspaceType } from "../../../../types/customer";
->>>>>>> origin/main
 
+import type{ Contract, ContractStatus, ContractTerms, DateISO, FileReference, ID } from "shared-types";
 
 export class ContractModel implements Contract {
   
@@ -16,7 +11,7 @@ export class ContractModel implements Contract {
   signDate?: string;
   startDate?: string;
   endDate?: string;
-  terms?: string;
+  terms?: ContractTerms;
   documents: FileReference[];
   signedBy?: string;
   witnessedBy?: string;
@@ -34,7 +29,7 @@ export class ContractModel implements Contract {
     updatedAt: string,
     signDate?: string,
     endDate?: string,
-    terms?: string,
+    terms?: ContractTerms,
     signedBy?: DateISO,
     witnessedBy?: DateISO
   ) {

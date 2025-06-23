@@ -1,16 +1,14 @@
-<<<<<<< HEAD
-import { Contract, ContractStatus, DateISO, FileReference, ID } from "shared-types";
-=======
+
+import { ContractStatus } from "shared-types";
+import type { Contract, DateISO, FileReference, ID } from "shared-types";
 import { ContractModel } from "../models/contract.model";
-import { DateISO, FileReference, ID } from "../../../../types/core";
 import { baseService } from "./baseService";
-import { Contract, ContractStatus } from "../../../../types/customer";
 
 export class contractService extends baseService<ContractModel> {
   constructor() {
     super("ContractModel");
   }
->>>>>>> origin/main
+
 
   updateContractTerms = async (
     contactId: ID,

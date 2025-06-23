@@ -1,9 +1,6 @@
-import { ID } from "shared-types";
+import type{ ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
-<<<<<<< HEAD
-=======
-import { ID } from "../../../../types/core";
->>>>>>> origin/main
+
 
 export class baseService <T> {
 

@@ -1,5 +1,4 @@
-import { Payment } from "../../../../types/billing";
-import { ID } from "../../../../types/core";
+import type{ ID, Invoice, Payment } from "shared-types";
 
 export class PaymentService {
   static getCustomerBalance(customerId: string) {
@@ -8,14 +7,14 @@ export class PaymentService {
   static recordPayment(body: any, id: any) {
     throw new Error('Method not implemented.');
   }
- updatePayment(request: PaymentRequest, recordedBy: ID): Payment {
+ updatePayment(request: PaymentRequest, recordedBy: ID)/*: Payment*/ {
     // אימות מזהה לקוח (נניח שמבוצע ברמת שירות או קריאה חיצונית)
     // אימות חשבונית אם צורפה
     // יצירת אובייקט תשלום חדש
     // עדכון סטטוס חשבונית בהתאם אם צורפה - יבוצע בהמשך במערכת
   }
 
-  getCustomerBalance(customerId: ID): CustomerBalance {
+  getCustomerBalance(customerId: ID)/*: CustomerBalance*/ {
     // שליפת כל החשבוניות של הלקוח שלא שולמו במלואן
     // חישוב סך כל החשבוניות שעדיין פתוחות
     // חישוב סך הסכומים שעדיין לא שולמו
@@ -24,7 +23,7 @@ export class PaymentService {
     // שליפת תאריך התשלום האחרון במידה ויש
   }
 
-  getOverdueInvoices(): OverdueInvoiceSummary[] {
+  getOverdueInvoices()/*: OverdueInvoiceSummary[] */{
     // שליפת כל החשבוניות מהמערכת (DB / API)
     // שליפת כל הלקוחות מהמערכת
     // שליפת כל התשלומים מהמערכת
@@ -51,7 +50,7 @@ export class PaymentService {
     // אם התשלום הושלם, להכניס את היתרה ליתרה בחשבון של המשתמש
   }
 
-  getPaymentHistory(customerId: ID): Payment[] {
+  getPaymentHistory(customerId: ID)/*: Payment[]*/ {
     // שליפת כל התשלומים מהמסד (פונקציה כללית שמחזירה את כולם)
     // סינון לפי מזהה הלקוח
     // מיון תשלומים מהחדש לישן לפי תאריך תשלום
@@ -67,9 +66,9 @@ export class PaymentService {
    */
   recordAndApplyPayment(
     customerId: ID,
-    paymentData: PaymentRecordRequest,
+    // paymentData: PaymentRecordRequest,
     recordedBy: ID
-  ): Payment {
+  )/*: Payment*/ {
     // כאן יבוא המימוש בפועל
   }
 
@@ -77,7 +76,7 @@ export class PaymentService {
    * מחזירה דוח גבייה כללי לכל הלקוחות (סיכום מצב גבייה).
    * @returns Promise<CollectionSummary>
    */
-  async getCollectionSummaryReport(): Promise<CollectionSummary> {
+  async getCollectionSummaryReport()/*: Promise<CollectionSummary>*/ {
 
   }
 
@@ -86,7 +85,7 @@ export class PaymentService {
    * @param customerId מזהה הלקוח
    * @returns Promise<CustomerCollectionReport>
    */
-  async getCustomerCollectionReport(customerId: ID): Promise<CustomerCollectionReport> {
+  async getCustomerCollectionReport(customerId: ID)/*: Promise<CustomerCollectionReport>*/ {
   
   }
   

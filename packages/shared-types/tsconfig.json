@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "emitDeclarationOnly": true,
     "outDir": "dist",
-    "module": "ESNext",
+    "module": "CommonJS",
     "target": "ESNext",
     "moduleResolution": "Node",
     "strict": true,

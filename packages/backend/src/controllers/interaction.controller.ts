@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-import { Request, Response } from "express";
-import { LeadInteractionModel } from "../models/LeadInteraction";
-=======
 import { Request, Response } from 'express';
 import { interactionService } from "../services/interaction.service";
 import { LeadInteractionModel } from '../models/leadInteraction.model';
 
 
 const serviceInteraction = new interactionService();
->>>>>>> origin/main
 
 export const deleteInteraction = async (req: Request, res: Response) => {
     const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה

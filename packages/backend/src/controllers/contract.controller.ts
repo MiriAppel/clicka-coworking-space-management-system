@@ -1,13 +1,7 @@
 import { Request, Response } from 'express';
-<<<<<<< HEAD
-import * as contractService from '../services/contract.service'
-import { Contract } from 'shared-types';
 
-=======
 import {contractService} from '../services/contract.service'
-import { ID } from '../../../../types/core';
 import { ContractModel } from '../models/contract.model';
->>>>>>> origin/main
 
 const serviceContract = new contractService();
 // קבלת כל החוזים

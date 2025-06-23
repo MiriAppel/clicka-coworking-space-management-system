@@ -122,12 +122,8 @@ export interface Customer {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-<<<<<<<< HEAD:packages/shared-types/customer.ts
   paymentMethods: CustomerPaymentMethod[];
   paymentMethodsType: PaymentMethodType;
-========
-  paymentMethods: PaymentMethod[];
->>>>>>>> origin/main:types/customer.ts
   periods: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;

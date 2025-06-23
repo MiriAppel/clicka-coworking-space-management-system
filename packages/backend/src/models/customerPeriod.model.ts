@@ -1,9 +1,4 @@
-<<<<<<< HEAD:packages/backend/src/models/customer-period.model.ts
-import { CustomerPeriod, ExitReason, ID } from "shared-types";
-=======
-import { ID } from "../../../../types/core";
-import { CustomerPeriod, ExitReason } from "../../../../types/customer";
->>>>>>> origin/main:packages/backend/src/models/customerPeriod.model.ts
+import type{ CustomerPeriod, ExitReason, ID } from "shared-types";
 
 
 export class CustomerPeriodModel implements CustomerPeriod {

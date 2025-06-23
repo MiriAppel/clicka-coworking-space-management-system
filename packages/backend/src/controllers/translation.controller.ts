@@ -1,7 +1,7 @@
 // controllers/translation.controller.ts
 import { Request, Response } from 'express';
 import { translationService } from '../services/translation';
-import { ID } from 'shared-types';
+import type{ ID } from 'shared-types';
 
 export const translationController = {
   getAll: async (req: Request, res: Response) => {

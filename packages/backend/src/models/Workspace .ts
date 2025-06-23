@@ -2,7 +2,8 @@
 
 // דוגמה למימוש של פונקציות שיכולות להשתמש בטיפוסים
 
-import { CreateSpaceRequest, DateISO, GetSpacesRequest, ID, Space, SpaceStatus, UpdateSpaceRequest } from "shared-types";
+import type{ CreateSpaceRequest, DateISO, GetSpacesRequest, ID, Space, UpdateSpaceRequest } from "shared-types";
+import { SpaceStatus } from "shared-types";
 
 export class SpaceModel {
     private spaces: Space[] = [];

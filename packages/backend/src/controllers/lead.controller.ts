@@ -1,21 +1,18 @@
 import { Request, Response } from 'express'
-import { LeadModel} from '../models/lead.model';
-<<<<<<< HEAD
-import { LeadInteractionModel } from '../models/LeadInteraction';
-=======
+import { LeadModel } from '../models/lead.model';
 import { leadService } from '../services/lead.service';
->>>>>>> origin/main
+
 
 const serviceLead = new leadService();
 
 export const getAllLeads = async (res: Response) => {
-    try{
+    try {
         // מזמן את ה service כדי לקבל את כל הלידים
         const leads = await serviceLead.getAll();
         res.status(200).json(leads);
     }
     catch (error) {
-       res.status(500).json({ message: 'Error fetching leads', error });
+        res.status(500).json({ message: 'Error fetching leads', error });
     }
 }
 
@@ -30,7 +27,7 @@ export const getLeadById = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'Lead not found' });
         }
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching lead', error });
     }
@@ -41,7 +38,7 @@ export const createLead = async (req: Request, res: Response) => {
     try {
         const newLead = await serviceLead.post(leadData);
         res.status(201).json(newLead);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error creating lead', error });
     }
@@ -53,7 +50,7 @@ export const getSourcesLeadById = async (req: Request, res: Response) => {
     try {
         const sources = await serviceLead.getSourcesLeadById(id);
         res.status(200).json(sources);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching sources', error });
     }
@@ -61,16 +58,14 @@ export const getSourcesLeadById = async (req: Request, res: Response) => {
 
 // עדכון ליד
 export const patchLead = async (req: Request, res: Response) => {
-<<<<<<< HEAD
-    const leadData: UpdateLeadRequestModel  = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
-=======
+
     const leadData = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
->>>>>>> origin/main
+
     const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה 
     try {
         const updatedLead = await serviceLead.patch(leadData, id);
         res.status(200).json(updatedLead);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error updating lead', error });
     }
@@ -82,7 +77,7 @@ export const postLeadFromCSV = async (req: Request, res: Response) => {
     try {
         await serviceLead.convertCsvToLeads(csvData);
         res.status(200).json({ message: 'Leads added from CSV' });
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error adding leads from CSV', error });
     }
@@ -94,7 +89,7 @@ export const getLeadsToRemind = async (req: Request, res: Response) => {
     try {
         const leadsToRemind = await serviceLead.getOpenReminders();
         res.status(200).json(leadsToRemind);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching leads to remind', error });
     }
@@ -110,7 +105,7 @@ export const getLeadsByFilter = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'No customers found' });
         }
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error filtering customers', error });
     }

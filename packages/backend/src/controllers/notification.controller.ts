@@ -3,9 +3,9 @@ import {
   sendOverdueInvoiceAlerts,
   sendUpcomingPaymentReminders,
   getNotificationHistoryForCustomer,
-  updateNotificationTemplate,
-  syncNotificationsWithEmailSystem,
-  updateNotificationStatus
+  // updateNotificationTemplate,
+  // syncNotificationsWithEmailSystem,
+  // updateNotificationStatus
 } from "../services/notification.services";
 
 // שליחת התראות על חשבוניות באיחור
@@ -45,8 +45,8 @@ export const updateTemplate = async (req: Request, res: Response) => {
   try {
     const { templateId } = req.params;
     const update = req.body;
-    const template = await updateNotificationTemplate(templateId, update);
-    res.status(200).json(template);
+    // const template = await updateNotificationTemplate(templateId, update);
+    // res.status(200).json(template);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -56,8 +56,8 @@ export const updateTemplate = async (req: Request, res: Response) => {
 export const syncWithEmail = async (req: Request, res: Response) => {
   try {
     const notifications = req.body.notifications;
-    const result = await syncNotificationsWithEmailSystem(notifications);
-    res.status(200).json(result);
+    // const result = await syncNotificationsWithEmailSystem(notifications);
+    // res.status(200).json(result);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -68,8 +68,8 @@ export const updateNotification = async (req: Request, res: Response) => {
   try {
     const { notificationId } = req.params;
     const { status } = req.body;
-    const log = await updateNotificationStatus(notificationId, status);
-    res.status(200).json(log);
+    // const log = await updateNotificationStatus(notificationId, status);
+    // res.status(200).json(log);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

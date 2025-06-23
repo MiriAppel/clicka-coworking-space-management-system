@@ -3,14 +3,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
-<<<<<<< HEAD
 import translationRouter from './routes/translation.route';
-=======
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 
->>>>>>> origin/main
+
+
 
 // Create Express app
 const app = express();

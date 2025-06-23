@@ -62,33 +62,21 @@ export interface Invoice {
   due_date: DateISO;
   items: BillingItem[];
   subtotal: number;
-<<<<<<<< HEAD:packages/shared-types/billing.ts
+
   taxtotal: number;
   // total: number;
   // amount_paid: number;
-========
-  tax_total: number;
-  // //הוספת שדות במקום
-  // tax_amount:number
-  // tax_rate:number
-  // total: number;
-  // amountPaid: number;
-  //הוספת שדה
-  // paid_date: DateISO 
->>>>>>>> origin/main:packages/frontend/src/types/billing.ts
+
   // balance: number;
   // notes?: string;
   // pdfFile?: FileReference;
   payment_due_reminder?: boolean;
   payment_dueReminder_sentAt?: DateISO;
-<<<<<<<< HEAD:packages/shared-types/billing.ts
-========
   //הוספה שדות במקום 
   // billingPeriodStart :DateISO
   // billingPeriodEnd :DateISO
   // templateId:ID 
   //
->>>>>>>> origin/main:packages/frontend/src/types/billing.ts
   createdAt: DateISO;
   updatedAt: DateISO;
 }
@@ -245,8 +233,6 @@ export enum PaymentStatus {
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED'
-<<<<<<<< HEAD:packages/shared-types/billing.ts
+
 }
-========
-}
->>>>>>>> origin/main:packages/frontend/src/types/billing.ts
+

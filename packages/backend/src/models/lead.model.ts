@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import { ID, Lead, LeadInteraction, WorkspaceType } from "shared-types";
-=======
-import { ID, DateISO } from '../../../../types/core';
-import { WorkspaceType } from '../../../../types/customer';
-import { Lead, LeadInteraction, LeadStatus, LeadSource } from '../../../../types/lead';
->>>>>>> origin/main
+
+import type{ ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } from "shared-types";
 
 export class LeadModel implements Lead {
   

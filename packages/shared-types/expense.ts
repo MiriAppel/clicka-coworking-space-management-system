@@ -81,23 +81,23 @@ export interface Expense {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
-export enum PaymentMethod {
-  BankTransfer = 'BankTransfer',   
-  CreditCard = 'CreditCard',      
-  Cash = 'Cash',                  
-  Other = 'Other'                 
-}
-export enum VendorStatus {
-  Active = 'Active',
-  Inactive = 'Inactive',
-  Suspended = 'Suspended'
-}
-export enum VendorCategory {
-  Equipment = 'Equipment',
-  Services = 'Services',
-  Maintenance = 'Maintenance',
-  Other = 'Other'
-}
+// export enum PaymentMethod {
+//   BankTransfer = 'BankTransfer',   
+//   CreditCard = 'CreditCard',      
+//   Cash = 'Cash',                  
+//   Other = 'Other'                 
+// }
+// export enum VendorStatus {
+//   Active = 'Active',
+//   Inactive = 'Inactive',
+//   Suspended = 'Suspended'
+// }
+// export enum VendorCategory {
+//   Equipment = 'Equipment',
+//   Services = 'Services',
+//   Maintenance = 'Maintenance',
+//   Other = 'Other'
+// }
 
 export enum PaymentMethod {
   BankTransfer = 'BankTransfer',   

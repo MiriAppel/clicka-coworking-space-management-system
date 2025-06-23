@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { createManualInvoice, customizeInvoiceTemplate } from "../services/invoice.service";
-import { CreateInvoiceRequest } from "../../../../types/billing";
+import type{ CreateInvoiceRequest } from "shared-types";
+import { CustomerModel } from "../models/customer.model";
+import { customerService } from "../services/customer.service";
 //crud functions
 
 /**
@@ -19,38 +21,38 @@ export const createInvoice = async (req: Request, res: Response) => {
  * בקר ליצירת חשבוניות אוטומטיות (למשל ללקוחות חוזיים)
  */
 export const generateInvoices = async (_req: Request, res: Response) => {
-  try {
-    const customers = await getAllActiveCustomers(); // דוגמה: שליפה מבסיס נתונים
-    const generatedInvoices = [];
+  // try {
+  //   const customers = await getAllActiveCustomers(); // דוגמה: שליפה מבסיס נתונים
+  //   const generatedInvoices = [];
 
-    for (const customer of customers) {
-      const items = await getItemsForCustomer(customer.id);
+    // for (const customer of customers) {
+    //   const items = await getItemsForCustomer(customer.id);
 
-      if (!items.length) continue;
+    //   if (!items.length) continue;
 
-      const invoiceRequest: CreateInvoiceRequest = {
-        customerId: customer.id,
-        billingPeriod: {
-          startDate: getStartOfMonth(),
-          endDate: getEndOfMonth(),
-        },
-        due_Date: getEndOfMonth(),
-        items,
-        notes: "", // אופציונלי
-      };
+    //   const invoiceRequest: CreateInvoiceRequest = {
+    //     customerId: customer.id,
+    //     billingPeriod: {
+    //       startDate: getStartOfMonth(),
+    //       endDate: getEndOfMonth(),
+    //     },
+    //     due_Date: getEndOfMonth(),
+    //     items,
+    //     notes: "", // אופציונלי
+    //   };
 
-      const invoice = await createInvoice(invoiceRequest, { auto: true });
-      generatedInvoices.push(invoice);
+      // const invoice = await createInvoice(invoiceRequest, { auto: true });
+      // generatedInvoices.push(invoice);
     }
 
-    res.status(201).json({
-      message:` נוצרו ${generatedInvoices.length} חשבוניות`,
-      invoices: generatedInvoices,
-    });
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
+//     res.status(201).json({
+//       // message:` נוצרו ${generatedInvoices.length} חשבוניות`,
+//       // invoices: generatedInvoices,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: (error as Error).message });
+//   }
+// };
 //לרחל
 // יצירת חשבונית ידנית
 export const createManualInvoiceController = (req: Request, res: Response) => {
@@ -76,10 +78,12 @@ export const customizeInvoiceTemplateController = (req: Request, res: Response) 
 };
 
 function getAllActiveCustomers() {
+
   throw new Error("Function not implemented.");
 }
 
 function getItemsForCustomer(id: any) {
+
   throw new Error("Function not implemented.");
 }
 
