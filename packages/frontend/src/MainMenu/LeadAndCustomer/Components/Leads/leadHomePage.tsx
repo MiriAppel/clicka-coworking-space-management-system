@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
 import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
 
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
-import { Lead, LeadSource, LeadStatus } from "shared-types";
+import type{ Lead } from "shared-types";
+import { LeadStatus, LeadSource } from "shared-types";
 
 
 
@@ -20,7 +21,7 @@ interface ValuesToTable {
 //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
 
 
- export const LeadHomePage = () => {
+export const LeadHomePage = () => {
   const navigate = useNavigate();
   const [lead, setLead] = useState<Lead[]>([
 
@@ -104,5 +105,7 @@ interface ValuesToTable {
  מלא במה שיש לו כבר מהנתונים שיש לנו ומה שחסר ועדיין צריך למלא וכמובן מילוי חוזה.
 */ }
     <Table<ValuesToTable> data={valuesToTable} columns={columns} dir="rtl" />
+    <Outlet />
   </div>
+
 }

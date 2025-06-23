@@ -1,4 +1,5 @@
-import { Payment, PaymentMethodType } from "shared-types";
+import type{ Payment } from "shared-types";
+import { PaymentMethodType } from "shared-types";
 import { create } from "zustand";
 
 interface PaymentState {

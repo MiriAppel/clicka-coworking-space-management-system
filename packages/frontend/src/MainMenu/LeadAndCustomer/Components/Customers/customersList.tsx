@@ -5,7 +5,8 @@ import { NavLink, Outlet } from "react-router";
 import { ExportToExcel } from '../exportToExcel';
 import { useState } from "react";
 import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus, PaymentMethodType } from "shared-types";
+import type{ Customer } from "shared-types";
+import { CustomerStatus, PaymentMethodType } from "shared-types";
 
 interface ValuesToTable {
     name: string; // שם הלקוח

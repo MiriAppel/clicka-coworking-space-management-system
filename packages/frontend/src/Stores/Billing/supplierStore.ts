@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ID, Vendor, VendorStatus, CreateVendorRequest, UpdateVendorRequest, FileReference } from "shared-types";
+import type{ ID, Vendor, VendorStatus, CreateVendorRequest, UpdateVendorRequest, FileReference } from "shared-types";
 
 interface SupplierState {
   suppliers: Vendor[];

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ID, Expense, FileReference } from "shared-types";
+import type{ ID, Expense, FileReference } from "shared-types";
 
 interface ExpenseState {
   expenses: Expense[];

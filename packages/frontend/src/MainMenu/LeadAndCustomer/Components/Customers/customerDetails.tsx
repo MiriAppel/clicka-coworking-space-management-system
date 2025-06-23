@@ -3,7 +3,8 @@ import { NavLink, Outlet, Link } from "react-router";
 import { useState } from "react";
 import { Button } from '../../../Common/Components/BaseComponents/Button';
 import '../../Css/customerDetails.css';
-import { Customer, CustomerStatus, ExitReason, PaymentMethodType, WorkspaceType } from "shared-types";
+import type{ Customer } from "shared-types";
+import { CustomerStatus, WorkspaceType, PaymentMethodType, ExitReason } from "shared-types";
 
 
 export const CustomerDetails = () => {

@@ -2,7 +2,8 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import axios from 'axios';
-import { Invoice, InvoiceStatus } from 'shared-types';
+import type{ Invoice } from 'shared-types';
+import { InvoiceStatus } from 'shared-types';
 
 
 interface InvoiceState {

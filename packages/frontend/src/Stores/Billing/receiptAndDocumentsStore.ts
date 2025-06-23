@@ -1,5 +1,5 @@
 
-import { ID } from "shared-types";
+import type{ ID } from "shared-types";
 import { create } from "zustand";
 
 

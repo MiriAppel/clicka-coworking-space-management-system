@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { FileReference, ID, DateRangeFilter, ExpenseCategory, WorkspaceType } from "shared-types";
+import type{ FileReference, ID, DateRangeFilter, ExpenseCategory, WorkspaceType } from "shared-types";
 interface FinancialReportsState {
   // reports: FinancialReport[];
   // reportData?: ReportData;

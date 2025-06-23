@@ -1,4 +1,4 @@
-import { ID } from "shared-types";
+import type{ ID } from "shared-types";
 import { useExpenseStore } from "../../../../Stores/Billing/expenseStore";
 export const ExpenseManagement = () => {
 

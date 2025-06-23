@@ -1,6 +1,6 @@
 
 import { create } from "zustand";
-import { ID, Expense, Payment, Invoice } from "shared-types";
+import type{ ID, Expense, Payment, Invoice } from "shared-types";
 
 interface DashboardState  {
   dashboardSummary?: any;

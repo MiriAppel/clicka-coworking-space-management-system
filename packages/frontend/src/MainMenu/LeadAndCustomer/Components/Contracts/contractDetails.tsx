@@ -1,7 +1,8 @@
 import { useParams } from "react-router";
 import { useState } from "react";
 import { Button } from '../../../Common/Components/BaseComponents/Button';
-import { Contract, ContractStatus, WorkspaceType } from "shared-types";
+import type { Contract } from "shared-types";
+import { ContractStatus, WorkspaceType } from "shared-types";
 
 export const ContractDetails = () => {
     //מקבלים את החוזה לפי מזהה הלקוח, אפשר לשנות לפי מזהה החוזה
@@ -16,7 +17,7 @@ export const ContractDetails = () => {
         signDate: new Date().toISOString() as any,
         startDate: new Date().toISOString() as any,
         endDate: new Date().toISOString() as any,
-        terms: { 
+        terms: {
             workspaceType: WorkspaceType.DESK_IN_ROOM,
             workspaceCount: 1,
             monthlyRate: 1,
