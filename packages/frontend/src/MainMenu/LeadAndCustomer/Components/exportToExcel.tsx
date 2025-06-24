@@ -1,7 +1,6 @@
 import React from 'react';
 import * as XLSX from 'xlsx';
 import { Button } from '../../../Common/Components/BaseComponents/Button';
-
 interface ExportToExcelProps {
     data: Array<Record<string, any>>;
     fileName: string;

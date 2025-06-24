@@ -8,6 +8,7 @@ import { Table, TableColumn } from "../../../../Common/Components/BaseComponents
 import type{ Customer } from "shared-types";
 import { CustomerStatus, PaymentMethodType } from "shared-types";
 
+
 interface ValuesToTable {
     name: string; // שם הלקוח
     status: CustomerStatus; // סטטוס הלקוח
