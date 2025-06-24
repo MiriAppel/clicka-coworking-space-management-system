@@ -1,8 +1,7 @@
 
+import type{ CreateGoogleCalendarEventRequest, DeleteGoogleCalendarEventRequest, GoogleCalendarEvent, ID, UpdateGoogleCalendarEventRequest } from "shared-types";
 import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "../models/calendarSync.model";
 import {SyncBookingsWithGoogleRequest} from "../models/calendarSync.model"
-import { ID } from "../../../../types/core";
-import {CreateGoogleCalendarEventRequest, DeleteGoogleCalendarEventRequest, GoogleCalendarEvent, UpdateGoogleCalendarEventRequest} from "../../../../types/google"
 
 export const getGoogleCalendarEvents=async(calendarId: string):Promise<GoogleCalendarEvent[]|null>=>{
 //שליפת כל האירועים לפי לוח

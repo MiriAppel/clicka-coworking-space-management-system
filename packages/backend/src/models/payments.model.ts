@@ -1,6 +1,4 @@
-
-import {Payment, PaymentMethodType} from '../../../../types/billing'
-import { ID , DateISO, FileReference } from '../../../../types/core';
+import type{ DateISO, FileReference, ID, Payment, PaymentMethodType } from "shared-types";
 
 export class PaymentModel implements Payment{
      id: ID;

@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useInvoiceStore } from '../invoice-generation-engine/invoiceStore';
 import { usePaymentStore } from '../invoice-generation-engine/paymentStore';
-import { InvoiceStatus, PaymentMethodType } from '../../types/billing';
 import axios from 'axios';
+import { InvoiceStatus, PaymentMethodType } from 'shared-types';
 //פונקצייה לשלליחת תשלום לשרת
 async function sendPaymentToApi(payment: any) {
   try {

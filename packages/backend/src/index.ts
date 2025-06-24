@@ -2,6 +2,8 @@ import app from './app';
 import dotenv from 'dotenv';
 
 dotenv.config(); 
+
+console.log('SUPABASE_URL at supabaseClient:', process.env.SUPABASE_URL);
 console.log('process.env.GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
 
 

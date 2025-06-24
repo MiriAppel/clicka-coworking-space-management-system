@@ -1,6 +1,6 @@
+import type{ RoomStatus } from "shared-types";
 import {ID,DateISO} from "../controllers/occupancyTrend.controllers";
 //import{MeetingRoomManagement} from "../controllers/roomController"
-import {RoomStatus} from '../../../../types/booking'
 import { OccupancyAlert } from "./occupancyTrend.model";
 import { OccupancySnapshot } from "./occupancyTrend.model";
 export interface MeetingRoomManagement{

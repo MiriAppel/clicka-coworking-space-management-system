@@ -1,5 +1,5 @@
-import { ID } from "../../../../types/core";
-import { Room } from "../../../../types/booking";
+import type{ ID, Room } from "shared-types";
+
 export class RoomFaeature {
     id!: ID;
     name: string;

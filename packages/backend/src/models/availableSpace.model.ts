@@ -1,6 +1,5 @@
-import { DateISO, ID } from "../../../../types/core";
-import {WorkspaceType} from '../../../../types/customer'
-import {DateRangeFilter} from '../../../../types/core'
+import type{ DateISO, DateRangeFilter, ID, WorkspaceType } from "shared-types";
+
 export interface AvailabilityQuery {
   workspaceTypes?: WorkspaceType[];
   startDate: DateISO;

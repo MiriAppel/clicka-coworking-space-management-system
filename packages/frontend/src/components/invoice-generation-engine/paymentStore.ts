@@ -1,5 +1,6 @@
+import type{ Payment } from "shared-types";
+import { PaymentMethodType } from "shared-types";
 import { create } from "zustand";
-import { Payment, PaymentMethodType } from '../../types/billing';
 
 interface PaymentState {
     payments: Payment[];

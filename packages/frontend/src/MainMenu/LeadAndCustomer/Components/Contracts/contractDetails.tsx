@@ -1,7 +1,8 @@
 import { useParams } from "react-router";
 import { useState } from "react";
-import { ContractStatus, WorkspaceType, Contract } from "../../../../types/customer"
 import { Button } from '../../../Common/Components/BaseComponents/Button';
+import type { Contract } from "shared-types";
+import { ContractStatus, WorkspaceType } from "shared-types";
 
 export const ContractDetails = () => {
     //מקבלים את החוזה לפי מזהה הלקוח, אפשר לשנות לפי מזהה החוזה
@@ -59,6 +60,7 @@ export const ContractDetails = () => {
             <p><strong>גרסה:</strong> {currentContract.version}</p>
             <p><strong>סטטוס:</strong> {currentContract.status}</p>
             {currentContract.signDate && <p><strong>תאריך חתימה:</strong> {new Date(currentContract.signDate).toLocaleDateString()}</p>}
+
             {currentContract.startDate && <p><strong>תאריך התחלה:</strong> {new Date(currentContract.startDate).toLocaleDateString()}</p>}
             {currentContract.endDate && <p><strong>תאריך סיום:</strong> {new Date(currentContract.endDate).toLocaleDateString()}</p>}
             <h3>תנאים</h3>

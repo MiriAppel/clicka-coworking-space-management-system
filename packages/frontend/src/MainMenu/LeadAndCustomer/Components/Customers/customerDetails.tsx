@@ -1,9 +1,10 @@
 import { useParams } from "react-router";
 import { NavLink, Outlet, Link } from "react-router";
 import { useState } from "react";
-import { Customer, CustomerStatus, WorkspaceType, ExitReason } from "../../../../types/customer";
 import { Button } from '../../../Common/Components/BaseComponents/Button';
 import '../../Css/customerDetails.css';
+import type{ Customer } from "shared-types";
+import { CustomerStatus, WorkspaceType, PaymentMethodType, ExitReason } from "shared-types";
 
 
 export const CustomerDetails = () => {
@@ -39,6 +40,7 @@ export const CustomerDetails = () => {
             createdAt: new Date().toISOString() as any,
             updatedAt: new Date().toISOString() as any,
         }],
+        paymentMethodsType:PaymentMethodType.CREDIT_CARD,
         paymentMethods: [{
             id: "",
             customerId: customerId || "",

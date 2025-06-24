@@ -3,18 +3,18 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
+import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
-
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
-
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user-routes';
 
 // Create Express app
 const app = express();
+
 
 // Apply middlewares
 app.use(cookieParser());
@@ -44,10 +44,10 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Placeholder for routes
 // TODO: Add routers for different resources
-
+app.use('/translations', translationRouter);
 // Error handling middleware
-app.use((err: any, req: Request, res:Response, next: NextFunction) => {
-  console.error(err.stack);
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
   res.status(err.status || 500).json({
     success: false,
     error: {

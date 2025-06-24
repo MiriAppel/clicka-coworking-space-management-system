@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { useNavigate } from 'react-router-dom';
-import { ID } from "../../../../types/core";
-import { Contract, ContractStatus, WorkspaceType } from "../../../../types/customer"; // יש להחליף עם הנתיב הנכון
 import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
 import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
+import type{ Contract, ID } from "shared-types";
+import { ContractStatus, WorkspaceType } from "shared-types";
 
 interface ValuesToTable {
     customerId: ID; //  מזהה הלקוח בעל החוזה -כדאי להחליף לשם שלו
@@ -62,7 +62,7 @@ export const ContractManagement = () => {
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
         linkToDetails: <NavLink to={`:${contract.customerId}`}>פרטי חוזה</NavLink>, // קישור
         deleteButton: (
-            <Button variant="primary" size="sm" onClick={() => deleteContract(contract.id)}>X</Button>
+            <Button variant="primary" size="sm" onClick={() => deleteContract(contract.id!)}>X</Button>
         ),
     }));
 

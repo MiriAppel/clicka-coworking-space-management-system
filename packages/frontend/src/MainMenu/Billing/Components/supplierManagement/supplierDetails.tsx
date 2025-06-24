@@ -1,5 +1,4 @@
-import { Vendor, VendorCategory, VendorStatus } from "../../../../../../../types/expense";
-import { FileReference, ID } from "../../../../../../../types/core";
+import type{ ID } from "shared-types";
 import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 export const SupplierDetails = () => {
     const { fetchVendorDetails, updateVendorStatus, deleteVendor,

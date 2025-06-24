@@ -1,4 +1,4 @@
-import { ID, DateISO } from "../../../../types/core";
+import type{ DateISO, ID } from "shared-types";
 
 // מחלקה לסינכרון קלנדר
 export class CalendarSync {

@@ -4,19 +4,14 @@
 // סינון לפי קטגוריות
 // בחירת פרמטרים ספציפיים לכל דוח
 
-import { ValidationResult } from '../../../../../../../types/validationResult';
-import { ReportParameters, ReportType } from '../../../../../../../types/financialReport';
-import { DateRangeFilter, ID } from '../../../../../../../types/core';
-import { ExpenseCategory } from '../../../../../../../types/expense';
-import { WorkspaceType } from '../../../../../../../types/customer';
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReportsStore';
 
 // כפתורי "צור דוח" ו"איפוס"
 const ReportControls = () => {
-  const { validateReportParameters, resetReportParameters,
-    handleReportTypeChange, handleDateRangeChange, handleCategoryChange,
-    handleVendorChange, handleWorkspaceTypeChange, handleGroupByChange
-  } = useFinancialReportsStore();
+  // const { validateReportParameters, resetReportParameters,
+  //   handleReportTypeChange, handleDateRangeChange, handleCategoryChange,
+  //   handleVendorChange, handleWorkspaceTypeChange, handleGroupByChange
+  // } = useFinancialReportsStore();
 
   //functions
   //in the store

@@ -1,5 +1,4 @@
-import { ID, DateISO,  } from'../../../../types/core';
-import{BookingStatus} from '../../../../types/booking'
+import type{ BookingStatus, DateISO, ID } from "shared-types";
 
 export class MapCoordinates {
   id: ID;

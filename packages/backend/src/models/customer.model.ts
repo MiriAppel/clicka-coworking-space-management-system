@@ -1,7 +1,5 @@
-import { PaymentMethodType } from "../../../../types/billing";
-import { DateISO, FileReference, ID } from "../../../../types/core";
-import { Contract, Customer, CustomerPeriod, CustomerStatus, ExitReason, PaymentMethod, RecordExitNoticeRequest, WorkspaceType } from "../../../../types/customer";
 
+import type{ Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethodType, WorkspaceType } from "shared-types";
 
 export class CustomerModel implements Customer   {
   id: ID; //PK
@@ -32,6 +30,7 @@ export class CustomerModel implements Customer   {
     name: string,
     phone: string,
     email: string,
+    paymentMethods: CustomerPaymentMethod[],
     idNumber: string,
     businessName: string,
     businessType: string,
@@ -67,13 +66,15 @@ export class CustomerModel implements Customer   {
     this.notes = notes;
     this.invoiceName = invoiceName;
     this.contractDocuments = contractDocuments;
-   //this.paymentMethods = paymentMethods;
+    this.paymentMethods = paymentMethods;
     this.paymentMethodsType = paymentMethodsType;
     this.periods = periods;
     this.contracts = contracts;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
+  paymentMethods: CustomerPaymentMethod[];
+  
 
   toDatabaseFormat?() {
     return {

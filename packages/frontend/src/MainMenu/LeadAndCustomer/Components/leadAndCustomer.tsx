@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Button } from '../../Common/Components/BaseComponents/Button';
 import '../Css/leadAndCustomer.css'
 
@@ -13,6 +13,8 @@ export const LeadAndCustomer = () => {
         <Button variant="primary" size="sm" onClick={() => navigate('customers')}>לקוחות</Button>
         <Button variant="primary" size="sm" onClick={() => navigate('leads')}>מתעניינים</Button>
         <Button variant="primary" size="sm" onClick={() => navigate('contractManagement')}>חוזים</Button>
+        <Button variant="primary" size="sm" onClick={() => navigate('leads/intersections')}>אינטראקציות</Button>
         <Button variant="primary" size="sm" onClick={() => navigate('/')}>Back</Button>
+        <Outlet />
     </div>
 }

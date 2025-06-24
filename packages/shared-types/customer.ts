@@ -1,4 +1,4 @@
-// customer-types.d.ts
+// customer.d.ts
 
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
@@ -92,7 +92,7 @@ export interface Contract {
 
 
 // Payment method
-export interface PaymentMethod {
+export interface CustomerPaymentMethod {
   id: ID;
   customerId: ID;
   creditCardLast4?: string;
@@ -122,7 +122,8 @@ export interface Customer {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-  paymentMethods: PaymentMethod[];
+  paymentMethods: CustomerPaymentMethod[];
+  paymentMethodsType: PaymentMethodType;
   periods: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;

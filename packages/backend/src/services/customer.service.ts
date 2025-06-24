@@ -1,10 +1,10 @@
-import { ID, PaginatedResponse } from "../../../../types/core";
 import { CustomerModel } from "../models/customer.model";
-import { ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, RecordExitNoticeRequest, UpdateCustomerRequest, CustomerPeriod} from '../../../../types/customer'
 import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
 import { createObjectCsvStringifier } from "csv-writer";
 import { leadService } from "./lead.service";
+import type{ ConvertLeadToCustomerRequest, CustomerPeriod, GetCustomersRequest, ID, PaginatedResponse, PaymentMethod, RecordExitNoticeRequest, UpdateCustomerRequest } from "shared-types";
+import { CustomerStatus } from "shared-types";
 
 export class customerService extends baseService <CustomerModel> {
 
@@ -57,7 +57,8 @@ export class customerService extends baseService <CustomerModel> {
             periods: [],
             contracts: [],
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
+            paymentMethods: []
         };
 
         //לפני היצירה יש לבדוק שהחלל באמת פנוי צריך לפנות לקבוצה 3
@@ -200,11 +201,11 @@ export const exportCustomersToFileByFilter = async(filter: Partial <CustomerMode
 // }
 
 
+
 // export const getCustomerHistory = async (customerId: ID): Promise<CustomerHistory[]> => {
 //     // אמור לשלוף את ההיסטוריה של הלקוח עם ה-customerId הנתון
 //     return []; // להחזיר מערך של היסטוריית לקוח
 // }
-
 
 
 
