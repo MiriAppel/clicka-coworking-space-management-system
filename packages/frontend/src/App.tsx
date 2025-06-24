@@ -66,7 +66,6 @@ function App() {
           Billing
         </Button>
       </div>
-      <LeadInteraction></LeadInteraction>
       {/* 👇 נתיבים */}
       <Routes>
         <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
