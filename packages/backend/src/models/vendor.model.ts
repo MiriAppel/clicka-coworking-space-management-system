@@ -1,6 +1,5 @@
+import type{ DateISO, FileReference, ID, PaymentMethod, PaymentTerms, Vendor, VendorCategory, VendorStatus } from "shared-types";
 
-import { ID, DateISO, FileReference } from '../../../../types/core';
-import { Vendor, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms } from '../../../../types/expense';
 
 export class VendorModel implements Vendor {
   id: ID;

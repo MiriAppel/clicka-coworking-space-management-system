@@ -5,6 +5,7 @@ import * as contractController from '../controllers/contract.controller'
 const routerCstomer = express.Router();
 
 // (GET)
+
 routerCstomer.get('/', customerController.getAllCustomers); 
 
 routerCstomer.get('/page', customerController.getCustomersByPage); 
@@ -28,3 +29,4 @@ routerCstomer.patch('/:id', customerController.patchCustomer);
 routerCstomer.delete('/:id', customerController.deleteCustomer);
 
 export default routerCstomer;
+

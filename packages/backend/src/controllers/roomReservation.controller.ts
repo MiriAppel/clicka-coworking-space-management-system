@@ -51,8 +51,8 @@ export async function messageOnCinfirmation(req: Request, res: Response) {
 }
 export async function createOrderByUsers(req: Request, res: Response) {
   try {
-    const result = await RoomreservationService.createOrderByUsers(req.params.id)
-    res.json(result)
+    // const result = await RoomreservationService.createOrderByUsers(req.params.id)
+    // res.json(result)
   } catch (error) {
     res.status(500).json({ error: (error as Error).message })
   }

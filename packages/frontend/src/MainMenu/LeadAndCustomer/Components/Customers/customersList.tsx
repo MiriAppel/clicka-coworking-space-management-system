@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import React from 'react';
-import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
 import { NavLink, Outlet } from "react-router";
 import { ExportToExcel } from '../exportToExcel';
 import { useState } from "react";
-import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus, WorkspaceType, ExitReason } from "../../../../types/customer";
+import type{ Customer } from "shared-types";
+import { CustomerStatus, PaymentMethodType } from "shared-types";
+import { Button, ButtonProps } from "../../../../Common/Components/BaseComponents/Button";
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 
 interface ValuesToTable {
     name: string; // שם הלקוח
@@ -32,13 +33,15 @@ export const CustomersList = () => {
             workspaceCount: 5,
             createdAt: '2023-01-01T00:00:00Z',
             updatedAt: '2023-01-10T00:00:00Z',
+            paymentMethodsType: PaymentMethodType.CREDIT_CARD,
             paymentMethods: [
                 {
                     id: 'pm1',
                     customerId: '1',
                     isActive: true,
                     createdAt: '2023-01-01T00:00:00Z',
-                    updatedAt: '2023-01-10T00:00:00Z'
+                    updatedAt: '2023-01-10T00:00:00Z',
+                    creditCardLast4: '1234',
                 }
             ],
             periods: [
@@ -47,7 +50,7 @@ export const CustomersList = () => {
                     customerId: '1',
                     entryDate: '2023-01-01',
                     createdAt: '2023-01-01T00:00:00Z',
-                    updatedAt: '2023-01-10T00:00:00Z'
+                    updatedAt: '2023-01-10T00:00:00Z',
                 }
             ],
         },
@@ -63,6 +66,7 @@ export const CustomersList = () => {
             workspaceCount: 3,
             createdAt: '2023-02-01T00:00:00Z',
             updatedAt: '2023-02-10T00:00:00Z',
+            paymentMethodsType:PaymentMethodType.BANK_TRANSFER,
             paymentMethods: [
                 {
                     id: 'pm2',
@@ -91,7 +95,7 @@ export const CustomersList = () => {
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
         linkToDetails: <NavLink to={`:${customer.id}`}>פרטי לקוח</NavLink>, // קישור
         deleteButton: (
-            <Button variant="primary" size="sm" onClick={() => deleteCustomer(customer.id)}>X</Button>
+            <Button variant="primary" size="sm" onClick={() => deleteCustomer(customer.id!)}>X</Button>
         ),
     }));
 

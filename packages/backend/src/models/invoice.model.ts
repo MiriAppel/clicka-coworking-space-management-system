@@ -1,6 +1,6 @@
 
-import {BillingItem, BillingItemType, Invoice, InvoiceStatus} from '../../../../types/billing'
-import { ID , DateISO } from '../../../../types/core';
+import type{ BillingItem, BillingItemType, DateISO, ID, Invoice } from 'shared-types';
+import { InvoiceStatus } from 'shared-types';
 import { generateId, invoicesMockDb } from './invoice.mock-db';
 export class InvoiceModel implements Invoice{
     id: ID;
@@ -48,7 +48,9 @@ this.payment_due_reminder = payment_due_reminder;
 this.payment_dueReminder_sentAt = payment_dueReminder_sentAt;
 this.createdAt = createdAt ?? new Date().toISOString();
 this.updatedAt = updatedAt ?? new Date().toISOString();
+this.taxtotal = 0;
 }
+    taxtotal: number;
 
 toDatabaseFormat() {
 return {

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
-import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
-
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
-import { LeadStatus, LeadSource, Lead } from "../../../../types/lead";
+import type{ Lead } from "shared-types";
+import { LeadStatus, LeadSource } from "shared-types";
+import { Button, ButtonProps } from "../../../../Common/Components/BaseComponents/Button";
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+
 
 
 //הדף העיקרי של המתעניין וממנו בעצם יש לי קישורים לכל הקומפוננטות של המתעניין -בתחילה שיש לי מתענינים ולקוחות
@@ -19,9 +20,10 @@ interface ValuesToTable {
 //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
 
 
- export const LeadHomePage = () => {
+export const LeadHomePage = () => {
   const navigate = useNavigate();
   const [lead, setLead] = useState<Lead[]>([
+
     {
       id: "1",
       name: "אברהם ישראלי",
@@ -35,6 +37,7 @@ interface ValuesToTable {
       source: LeadSource.EVENT,
       interactions: [],
       createdAt: "2022-12-01T00:00:00Z"
+
     }]);
   //יצירת מערך עם ערכים המתאימים לטבלה
   const valuesToTable: ValuesToTable[] = lead.map(lead => ({
@@ -42,7 +45,7 @@ interface ValuesToTable {
     status: lead.status,
     linkToDetails: <NavLink to={`:${lead.id}`}>פרטי מתעניין</NavLink>, // קישור
     deleteButton: (
-      <Button variant="primary" size="sm" onClick={() => deleteLead(lead.id)}>X</Button>
+      <Button variant="primary" size="sm" onClick={() => deleteLead(lead.idNumber)}>X</Button>
     ),
   }));
 
@@ -101,5 +104,7 @@ interface ValuesToTable {
  מלא במה שיש לו כבר מהנתונים שיש לנו ומה שחסר ועדיין צריך למלא וכמובן מילוי חוזה.
 */ }
     <Table<ValuesToTable> data={valuesToTable} columns={columns} dir="rtl" />
+    <Outlet />
   </div>
+
 }

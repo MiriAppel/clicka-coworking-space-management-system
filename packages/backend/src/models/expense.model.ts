@@ -1,6 +1,4 @@
-
-import { Expense, ExpenseCategory, ExpenseStatus, ExpensePaymentMethod } from '../../../../types/expense';
-import { ID, DateISO, FileReference } from '../../../../types/core';
+import type{ DateISO, Expense, ExpenseCategory, ExpensePaymentMethod, ExpenseStatus, FileReference, ID } from "shared-types";
 
 export class ExpenseModel implements Expense {
   id: ID;
@@ -69,7 +67,17 @@ export class ExpenseModel implements Expense {
     this.approvedAt = approvedAt;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
+    this.vendorId = vendor_id;
+    this.vendorName = vendor_name;
   }
+  vendorId: string;
+  vendorName: string;
+  dueDate?: string | undefined;
+  paidDate?: string | undefined;
+  paymentMethod?: ExpensePaymentMethod | undefined;
+  invoiceNumber?: string | undefined;
+  invoiceFile?: FileReference | undefined;
+  receiptFile?: FileReference | undefined;
   success: any;
   toDatabaseFormat() {
 return {

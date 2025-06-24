@@ -1,11 +1,9 @@
-import { Vendor, CreateVendorRequest, UpdateVendorRequest, VendorCategory, VendorStatus } from "../../../../../../../types/expense";
-import { ValidationResult } from "../../../../../../../types/validationResult";
-import { ID } from "../../../../../../../types/core";
+
 import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 export const SupplierForm = () => {
-    const { fetchVendorDetails, handleFieldChange, validateVendorForm,
-        handleCreateVendor, handleUpdateVendor
-    } = useSupplierStore();
+    // const { fetchVendorDetails, handleFieldChange, validateVendorForm,
+    //     handleCreateVendor, handleUpdateVendor
+    // } = useSupplierStore();
     //functions
     //in the store
 

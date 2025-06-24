@@ -1,24 +1,18 @@
 
+import type{ ID } from "shared-types";
 import { create } from "zustand";
-import {
-  GenerateDocumentRequest,
-  GeneratedDocument,
-  DocumentTemplate,
-  DocumentType,
-} from "../../../../../types/document";
-import { ValidationResult } from "../../../../../types/validationResult";
-import { ID } from "../../../../../types/core";
+
 
 interface ReceiptAndDocumentsState  {
-  documents: GeneratedDocument[];
-  templates: DocumentTemplate[];
-  selectedDocument?: GeneratedDocument;
-  selectedTemplate?: DocumentTemplate;
+  // documents: GeneratedDocument[];
+  // templates: DocumentTemplate[];
+  // selectedDocument?: GeneratedDocument;
+  // selectedTemplate?: DocumentTemplate;
   loading: boolean;
 
   // מסמכים
   fetchGeneratedDocuments: () => Promise<void>;
-  generateDocument: (request: GenerateDocumentRequest) => Promise<GeneratedDocument>;
+  // generateDocument: (request: GenerateDocumentRequest) => Promise<GeneratedDocument>;
   downloadDocument: (documentId: ID) => Promise<void>;
   sendDocumentByEmail: (documentId: ID, email: string) => Promise<void>;
   fetchDocumentForPreview: (documentId: ID) => Promise<void>;
@@ -29,10 +23,10 @@ interface ReceiptAndDocumentsState  {
   // תבניות
   fetchDocumentTemplates: () => Promise<void>;
   fetchTemplateDetails: (templateId: ID) => Promise<void>;
-  handleFieldChange: (field: keyof DocumentTemplate, value: any) => void;
-  validateTemplateForm: (data: DocumentTemplate) => ValidationResult;
-  handleCreateTemplate: (data: DocumentTemplate) => Promise<DocumentTemplate>;
-  handleUpdateTemplate: (templateId: ID, data: DocumentTemplate) => Promise<DocumentTemplate>;
+  // handleFieldChange: (field: keyof DocumentTemplate, value: any) => void;
+  // validateTemplateForm: (data: DocumentTemplate) => ValidationResult;
+  // handleCreateTemplate: (data: DocumentTemplate) => Promise<DocumentTemplate>;
+  // handleUpdateTemplate: (templateId: ID, data: DocumentTemplate) => Promise<DocumentTemplate>;
   handleDeleteTemplate: (templateId: ID) => Promise<void>;
 };
 
@@ -44,7 +38,7 @@ export const useReceiptAndDocumentsStore = create<ReceiptAndDocumentsState>((set
   loading: false,
 
   fetchGeneratedDocuments: async () => {},
-  generateDocument: async () => { return {} as GeneratedDocument; },
+  // generateDocument: async () => { return {} as GeneratedDocument; },
   downloadDocument: async () => {},
   sendDocumentByEmail: async () => {},
   fetchDocumentForPreview: async () => {},
@@ -56,7 +50,7 @@ export const useReceiptAndDocumentsStore = create<ReceiptAndDocumentsState>((set
   fetchTemplateDetails: async () => {},
   handleFieldChange: () => {},
   validateTemplateForm: () => ({ isValid: true, errors: [] }),
-  handleCreateTemplate: async () => { return {} as DocumentTemplate; },
-  handleUpdateTemplate: async () => { return {} as DocumentTemplate; },
+  // handleCreateTemplate: async () => { return {} as DocumentTemplate; },
+  // handleUpdateTemplate: async () => { return {} as DocumentTemplate; },
   handleDeleteTemplate: async () => {},
 }));
