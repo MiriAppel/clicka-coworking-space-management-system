@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import React from "react";
-import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 
 //אנטרקציות של המתעניין 
 //קודם input 

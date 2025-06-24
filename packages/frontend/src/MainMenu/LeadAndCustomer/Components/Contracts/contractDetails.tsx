@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { useState } from "react";
 import { ContractStatus, WorkspaceType, Contract } from "../../../../types/customer"
-import { Button } from '../../../Common/Components/BaseComponents/Button';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
 
 export const ContractDetails = () => {
     //מקבלים את החוזה לפי מזהה הלקוח, אפשר לשנות לפי מזהה החוזה
