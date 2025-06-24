@@ -65,12 +65,12 @@ export const SearchCustomer = () => {
                     });
             });
 
-    //         setData((prev) => [...prev, ...dummyItems]);
-    //         if (page >= 3) setHasMore(false);
-    //     };
+            setData((prev) => [...prev, ...dummyItems]);
+            if (page >= 3) setHasMore(false);
+        };
 
-    //     fetchItems();
-    // }, [page]);
+        fetchItems();
+    }, [page]);
 
     useEffect(() => {
         if (!loaderRef.current || !hasMore) return;
@@ -210,7 +210,7 @@ const handleSearch = async (input = searchTerm.trim(), fromServer = false) => {
         console.log("תוצאות החיפוש המקומי:", filtered);
         setResults(filtered);
     }
-};
+    }
 
 return (
     <div>
@@ -247,5 +247,5 @@ return (
 
         <div ref={loaderRef} style={{ height: "1px" }} />
     </div>
-);
-}
+)}
+    
