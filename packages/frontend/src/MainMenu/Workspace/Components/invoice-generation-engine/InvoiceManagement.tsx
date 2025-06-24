@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useInvoiceStore } from '../invoice-generation-engine/invoiceStore';
-import { InvoiceStatus, BillingItemType ,Invoice} from '../../types/billing';
+import { useInvoiceStore } from './invoiceStore';
+import { InvoiceStatus, BillingItemType ,Invoice} from '../../../../types/billing';
 
 
 const InvoiceManagement: React.FC = () => {

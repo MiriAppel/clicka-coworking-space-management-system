@@ -6,7 +6,7 @@ import {
   Invoice, 
   BillingItemType, 
   InvoiceStatus 
-} from '../../types/billing';
+} from '../../../../types/billing';
 
 interface InvoiceState {
   // ===== STATE =====

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Payment, PaymentMethodType } from '../../types/billing';
+import { Payment, PaymentMethodType } from '../../../../types/billing';
 
 interface PaymentState {
     payments: Payment[];
