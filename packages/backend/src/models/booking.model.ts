@@ -1,7 +1,8 @@
 import { ID, DateISO,  } from'../../../../types/core';
 import{BookingStatus} from '../../../../types/booking'
+import {Booking} from '../../../../types/book'
 
-export class MapCoordinates {
+export class BookingModel implements Booking {
   id: ID;
   roomId: ID;
   roomName: string;

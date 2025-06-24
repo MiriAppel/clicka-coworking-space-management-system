@@ -1,40 +1,21 @@
 import { ID, DateISO } from '../../../../types/core';
-import { WorkspaceType } from '../../../../types/customer' ;
-import{ WorkspaceMapItem } from './workspaceMapItem.model';
-import { SpaceStatus } from '../../../../types/workspace'
-export interface MapLayout {
-  width: number;
-  height: number;
-  backgroundImage?: string;
-  scale: number;
-  viewBox: string;
-}
-export interface MapCoordinates {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotation?: number;
-}
-export interface MapFilters {
+import {MapLayout} from '../../../../types/mapLayout'
+import { Room } from './room.model';
 
-workspaceTypes: WorkspaceType[];
-  statuses: SpaceStatus[];
-  showOccupantNames: boolean;
-  showAvailableOnly: boolean;
-}
 export class WorkspaceMapModel {
   id: ID;
   name: string;
   layout: MapLayout;
-  workspaces: WorkspaceMapItem[];
+  workspaces: WorkspaceModel[];
+  rooms:Room[];
   lastUpdated: DateISO;
 
-  constructor(id: ID,name: string, layout: MapLayout, workspaces: WorkspaceMapItem[], lastUpdated: DateISO) {
+  constructor(id: ID,name: string, layout: MapLayout, workspaces: WorkspaceModel[], lastUpdated: DateISO) {
     this.id = id;
     this.name = name;
     this.layout = layout;
     this.workspaces = workspaces;
+    this.rooms = [];
     this.lastUpdated = lastUpdated;
   }
 
@@ -44,6 +25,7 @@ export class WorkspaceMapModel {
       name: this.name,
        layout: this.layout,
       workspaces: this.workspaces.map(w => w.toDatabaseFormat()),
+      rooms: this.rooms.map(r => r.toDatabaseFormat()),
       lastUpdated: this.lastUpdated,
     };
   }
