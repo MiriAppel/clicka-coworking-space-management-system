@@ -1,6 +1,6 @@
 // booking-types.d.ts
 
-import { ID, DateISO, ApiResponse, PaginatedResponse } from './core';
+import { ID,DateISO,ApiResponse, PaginatedResponse } from './core';
 
 // Room type enum
 export enum RoomType {
@@ -24,6 +24,22 @@ export enum BookingStatus {
   CANCELED = 'CANCELED',
   COMPLETED = 'COMPLETED'
 }
+// interface in room
+export interface BookingRules{
+  roomId: string;
+  MinimumBookingMiniuts:number;
+  MaximumBookingMiniuts:number;
+  AdvanceBookingDays:number;
+  RequiredApproval:boolean;
+  FreeHoursForKlikcaCard:number;
+}
+//interface in room
+export interface RoomFeature {
+  id: ID;
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
 
 // Room model
 export interface Room {
@@ -34,11 +50,24 @@ export interface Room {
   status: RoomStatus;
   capacity: number;
   hourlyRate: number;
-  discountedHourlyRate: number; // For 4+ hours
+  discountedHourlyRate: number;
   googleCalendarId?: string;
+  location: string;
+  equipment: string[];
+
+  // BookingRules fields INLINED:
+  MinimumBookingMinutes: number;
+  MaximumBookingMinutes: number;
+  AdvanceBookingDays: number;
+  RequiredApproval: boolean;
+  FreeHoursForKlikcaCard: number;
+
+  nextMaintenanceDate?: DateISO;
   createdAt: DateISO;
   updatedAt: DateISO;
 }
+
+
 
 // Booking model
 export interface Booking {

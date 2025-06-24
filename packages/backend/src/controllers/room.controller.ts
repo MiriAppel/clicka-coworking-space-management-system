@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import RoomService from '../services/room.service';
 
 // ליצירת חדר
-export async function CreateRoomRequest(req: Request, res: Response) {
+export async function CreateRoom(req: Request, res: Response) {
   try {
     const room = await RoomService.CreateRoomRequest(req.body);
     res.json(room);
@@ -11,7 +11,7 @@ export async function CreateRoomRequest(req: Request, res: Response) {
   }
 }
 
-export async function UpdateRoomRequest(req: Request, res: Response){
+export async function UpdateRoom(req: Request, res: Response){
     try{
       const updateRoom=await RoomService.UpdateRoomRequest(req.params.id);
       res.json(updateRoom);
@@ -20,7 +20,7 @@ export async function UpdateRoomRequest(req: Request, res: Response){
        res.status(500).json({massage:'err.message'});
     }
 }
-export async function GetRoomRequest(req: Request, res: Response){
+export async function GetRoom(req: Request, res: Response){
     try{
         const getRoom=await RoomService.GetRoomRequest(req.params.id);
         res.json(getRoom);
@@ -29,7 +29,7 @@ export async function GetRoomRequest(req: Request, res: Response){
 res.status(500).json({massage:'err.massage'});
     }
 }
-export async function GetRoomsRequest(req: Request, res: Response){
+export async function GetRooms(req: Request, res: Response){
     try{
         const getAll=await RoomService.GetRoomsRequest(req.body);
         res.json(getAll)
@@ -38,7 +38,7 @@ export async function GetRoomsRequest(req: Request, res: Response){
         res.status(500).json({massage:'err.massage'});
          }
 }
-export async function deleteRoomRequest(req: Request, res: Response) {
+export async function deleteRoom(req: Request, res: Response) {
     try{
       const deletRoom=await RoomService.deleteRoomRequest(req.params.id);
       res.json(deletRoom);
@@ -47,14 +47,3 @@ export async function deleteRoomRequest(req: Request, res: Response) {
       res.status(500).json({massage:'err.massage'});
     }
 }
-export async function integrationWithGoogle(req: Request, res: Response) {
-    try{
-        const integration=await RoomService.integrationWithGoogle(req.params.id);
-        res.json(integration);
-    }
-    catch(err){
-        res.status(500).json({massage:'err.massage'});
-    }
-}
-
-

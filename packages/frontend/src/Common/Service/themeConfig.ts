@@ -5,7 +5,6 @@ export interface ThemeConfig {
     secondary: string;
     accent: string;
     neutral: string[];
-    background: string; 
     semantic: {
       success: string;
       warning: string;

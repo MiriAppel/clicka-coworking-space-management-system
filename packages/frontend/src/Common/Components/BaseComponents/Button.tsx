@@ -4,12 +4,11 @@ import clsx from "clsx";// מחבר רת הקלסס של CSS שיהיה יותר
 import { useTheme } from "../themeConfig";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    //שולחים כך את הכפתור כדי שיקבל את כל הדברים מהHTML כמו סובמיט, אונקליק וכו 
+  //שולחים כך את הכפתור כדי שיקבל את כל הדברים מהHTML כמו סובמיט, אונקליק וכו 
   variant?: "primary" | "secondary" | "accent"; //משתמש בTHEME כדי להגדיר את הצבעים
   size?: "sm" | "md" | "lg"; // גודל של הכפתור 
   dir?: "rtl" | "ltr"; // מגדיר את הכיוון 
-  "data-testid"?: string; //  בלי טעויות הוספה אופציונלית: כדי לאתר אותו יותר בקלות וביעילות 
-
+  "data-testid"?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -34,7 +33,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      dir={effectiveDir} 
+      dir={effectiveDir}
       aria-label={typeof children === "string" ? children : undefined}
       data-testid={testId}
       className={clsx(//מגדיר את העיצוב של הכפתור בצורה מסודרת 
@@ -45,15 +44,15 @@ export const Button: React.FC<ButtonProps> = ({
         className
       )}
       style={{
-      backgroundColor: color, 
-      fontFamily:
-        effectiveDir === "rtl"
-          ? theme.typography.fontFamily.hebrew
-          : theme.typography.fontFamily.latin,
-    }} // מגדיר את הטיפוס של הכתב לפי הTHEME 
+        backgroundColor: color, //  usa el color del theme
+        fontFamily:
+          effectiveDir === "rtl"
+            ? theme.typography.fontFamily.hebrew
+            : theme.typography.fontFamily.latin,
+      }} // מגדיר את הטיפוס של הכתב לפי הTHEME 
       {...props} // לוקח את כל ההגדרות של הבוטון 
     >
-      {children} 
+      {children}
       {/* לוקח רת התוכן שיש בתוך הBUTTON  */}
     </button>
   );
