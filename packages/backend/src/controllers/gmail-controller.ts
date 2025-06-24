@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { sendEmail, listEmails } from '../services/gmail-service';
 import { SendEmailRequest } from '../../../../types/google';
 
-export async function send(req: Request, res: Response, next: NextFunction) {
+export async function postEmail(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return next({ status: 401, message: 'Missing token' });
 
@@ -18,7 +18,7 @@ export async function send(req: Request, res: Response, next: NextFunction) {
     next(err);
   }
 }
-export async function list(req: Request, res: Response, next: NextFunction) {
+export async function getListEmails(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return next({ status: 401, message: 'Missing token' });
 

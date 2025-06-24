@@ -1,7 +1,7 @@
 import { LoginRequest, LoginResponse, User } from '../../../../types/auth';
 import { getTokens, getGoogleUserInfo } from '../auth/googleApiClient';
 
-export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse> => {
+export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse & { googleAccessToken: string }> => {
   try {
     const tokens = await getTokens(code);
     if (!tokens.access_token) {
@@ -29,9 +29,10 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     console.log('Refresh Token:', tokens.refresh_token);
     return {
       user,
-      token: tokens.access_token,
+      token: tokens.access_token, // נשמור כאן את access_token של גוגל
       refreshToken: tokens.refresh_token!, // Optional, if you want to store it
-      expiresAt: tokens.expires_at
+      expiresAt: tokens.expires_at,
+      googleAccessToken: tokens.access_token // ← הוספה מפורשת
     };
   } catch (error) {
     console.error('שגיאה בהחלפת קוד או בשליפת משתמש:', error);

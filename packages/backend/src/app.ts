@@ -1,52 +1,32 @@
+
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
-import router from './routes/auth';
-import { Request, Response } from 'express';
-
-// Create Express app
+import cookieParser from 'cookie-parser'; // 👈 הוספת זה
+import router from './routes'; 
 const app = express();
 
-// Apply middlewares
+
 app.use(helmet());
-app.use(cors());
 app.use(morgan('dev'));
+app.use(express.json());
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use(helmet());
+app.use(cookieParser()); // 👈 זה חייב לבוא לפני השורה הבאה
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
-  credentials: true, // Allow cookies to be sent with requests
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  credentials: true,
 }));
-app.use(morgan('dev'));
-app.use(json());
-app.use(urlencoded({ extended: true }));
 
-// הגדרת endpoint בריאות לפני כל ה-use של /api
-app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+// רק שורה אחת – מרכזת את כל ה־routes
+app.use('/api', router);
 
-// Placeholder for routes
-// TODO: Add routers for different resources
-//google api functions:
-import calendarRouter from './routes/calendar-route';
-app.use('/api/calendar', calendarRouter);
-
-import driveRouter from './routes/drive-route';
-app.use('/api/drive', driveRouter);
-
-import gmailRouter from './routes/gmail-route';
-app.use('/api/gmail', gmailRouter);
-
-app.use('/api', router)
-
-// Placeholder for routes
-// TODO: Add routers for different resources
-
-// Error handling middleware
+// טיפול בשגיאות
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
@@ -55,10 +35,8 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
       code: err.code || 'INTERNAL_SERVER_ERROR',
       message: err.message || 'An unexpected error occurred',
       details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
-    }
+    },
   });
 });
 
-
 export default app;
-

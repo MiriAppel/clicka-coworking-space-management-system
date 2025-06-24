@@ -6,8 +6,9 @@ import { decrypt } from '../services/cryptoService';
 import { refreshAccessToken } from '../auth/googleApiClient';
 
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
-    console.log('Received Google auth code:', req.body.code);
-    
+  console.log('Received Google auth code:', req.body.code);
+  console.log('BODY:', req.body);
+  console.log('HEADERS:', req.headers);
   try {
     const { code } = req.body;
     const userData = await authService.exchangeCodeAndFetchUser(code);
@@ -28,15 +29,23 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     const loginResponse: LoginResponse = {
       user: userData.user,
       token: jwtToken,
-      expiresAt: userData.expiresAt
+      expiresAt: userData.expiresAt,
+      googleAccessToken: userData.googleAccessToken // ← הוספה
     };
 
     res.status(200).json(loginResponse);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Google login failed:', error);
-    res.status(500).json({ error: 'Authentication failed' });
+    // הדפסת שגיאה מלאה כולל stack
+    if (error && error.stack) {
+      console.error('STACK:', error.stack);
+    }
+    res.status(500).json({
+      error: error?.message || error?.toString() || 'Unknown error'
+    });
   }
 };
+
 
 export const logout = (req: Request, res: Response) => {
   res.clearCookie('session', {

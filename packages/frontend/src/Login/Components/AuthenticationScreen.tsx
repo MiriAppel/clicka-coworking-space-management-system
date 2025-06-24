@@ -9,7 +9,7 @@ export const AuthenticationScreen = () => {
     const checkAuth = async () => {
       try {
         setLoading(true);
-        const res = await fetch("/api/verify", {
+        const res = await fetch("http://localhost:3001/api/verify", {
           credentials: "include", // חשוב לשם שליחת ה-cookie
         });
         if (res.ok) {

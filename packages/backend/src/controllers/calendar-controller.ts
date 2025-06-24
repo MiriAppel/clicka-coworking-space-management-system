@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as calendarService from '../services/calendar-service';
 import { CalendarEventInput, DateISO } from '../../../../types/google'; // ודא שזה הנתיב הנכון
 
-export async function createEventHandler(req: Request, res: Response, next: NextFunction) {
+export async function postEvent(req: Request, res: Response, next: NextFunction) {
   const token = extractToken(req);
   if (!token) return next({ status: 401, message: 'Missing token' });
 
@@ -20,7 +20,7 @@ export async function createEventHandler(req: Request, res: Response, next: Next
   }
 }
 
-export async function listEventsHandler(req: Request, res: Response, next: NextFunction) {
+export async function getListEvents(req: Request, res: Response, next: NextFunction) {
   const token = extractToken(req);
   if (!token) return next({ status: 401, message: 'Missing token' });
 
@@ -34,7 +34,7 @@ export async function listEventsHandler(req: Request, res: Response, next: NextF
   }
 }
 
-export async function deleteEventHandler(req: Request, res: Response, next: NextFunction) {
+export async function deleteEvent(req: Request, res: Response, next: NextFunction) {
   const token = extractToken(req);
   if (!token) return next({ status: 401, message: 'Missing token' });
 
@@ -48,7 +48,7 @@ export async function deleteEventHandler(req: Request, res: Response, next: Next
   }
 }
 
-export async function updateEventHandler(req: Request, res: Response, next: NextFunction) {
+export async function putEvent(req: Request, res: Response, next: NextFunction) {
   const token = extractToken(req);
   if (!token) return next({ status: 401, message: 'Missing token' });
 
@@ -71,11 +71,15 @@ export async function updateEventHandler(req: Request, res: Response, next: Next
   }
 }
 
-export async function checkFreeBusyHandler(req: Request, res: Response, next: NextFunction) {
+export async function getFreeBusy(req: Request, res: Response, next: NextFunction) {
   const token = extractToken(req);
   if (!token) return next({ status: 401, message: 'Missing token' });
 
-  const { calendarId, start, end }: { calendarId: string, start: DateISO, end: DateISO } = req.body;
+  const { calendarId } = req.params; // ← שלוף מה־params
+  const { start, end }: { start: DateISO, end: DateISO } = req.body;   // ← שלוף מה־body
+  if (!start || !end) {
+    return res.status(400).json({ success: false, error: { code: 400, message: 'Missing start/end parameter.' } });
+  }
 
   try {
     const isFree = await calendarService.checkAvailability(calendarId, start, end, token);
