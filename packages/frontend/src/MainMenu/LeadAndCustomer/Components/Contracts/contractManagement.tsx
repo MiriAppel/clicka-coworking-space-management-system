@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { useNavigate } from 'react-router-dom';
-import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
-import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
+import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import type{ Contract, ID } from "shared-types";
 import { ContractStatus, WorkspaceType } from "shared-types";
 

@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
-import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
-
 import { Outlet, useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
 import type{ Lead } from "shared-types";
 import { LeadStatus, LeadSource } from "shared-types";
+import { Button, ButtonProps } from "../../../../Common/Components/BaseComponents/Button";
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 
 
 
