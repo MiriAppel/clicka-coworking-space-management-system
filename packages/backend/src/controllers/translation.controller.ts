@@ -53,6 +53,7 @@ export const translationController = {
   },
 
   createTranslation: async (req: Request, res: Response) => {
+      console.log("📥 got POST /api/translate");
     try {
       const { key, text, lang } = req.body;
       if (!key || !text || !lang) {

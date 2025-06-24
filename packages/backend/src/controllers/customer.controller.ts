@@ -136,6 +136,7 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
     }
 }
 
+
 // עדכון מלא/חלקי של לקוח
 export const patchCustomer = async (req: Request, res: Response) => {
     const { id } = req.params;

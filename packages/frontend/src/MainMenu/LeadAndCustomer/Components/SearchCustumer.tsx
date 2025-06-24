@@ -19,6 +19,8 @@ interface StoreState {
     setResults: (results: Person[]) => void;
 }
 
+
+
 const useStore = create<StoreState>((set) => ({
     query: '',
     results: [],
@@ -63,12 +65,12 @@ export const SearchCustomer = () => {
                     });
             });
 
-            setData((prev) => [...prev, ...dummyItems]);
-            if (page >= 3) setHasMore(false);
-        };
+    //         setData((prev) => [...prev, ...dummyItems]);
+    //         if (page >= 3) setHasMore(false);
+    //     };
 
-        fetchItems();
-    }, [page]);
+    //     fetchItems();
+    // }, [page]);
 
     useEffect(() => {
         if (!loaderRef.current || !hasMore) return;
@@ -82,6 +84,8 @@ export const SearchCustomer = () => {
         observer.observe(loaderRef.current);
         return () => observer.disconnect();
     }, [hasMore]);
+
+
 
     const checkInputType = (input: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -108,22 +112,22 @@ export const SearchCustomer = () => {
 
     const isHebrew = (text: string): boolean => /^[\u0590-\u05FF\s]+$/.test(text);
 
-    const translateToHebrew = async (text: string): Promise<string> => {
-        try {
-            const response = await fetch("/api/translate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text }),
-            });
+    // const translateToHebrew = async (text: string): Promise<string> => {
+    //     try {
+    //         const response = await fetch("/http://localhost:3001/translate", {
+    //             method: "POST",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify({ text }),
+    //         });
 
-            if (!response.ok) throw new Error("Translation failed");
-            const data = await response.json();
-            return data.translatedText;
-        } catch (error) {
-            console.error("Translation error:", error);
-            return text;
-        }
-    };
+    //         if (!response.ok) throw new Error("Translation failed");
+    //         const data = await response.json();
+    //         return data.translatedText;
+    //     } catch (error) {
+    //         console.error("Translation error:", error);
+    //         return text;
+    //     }
+    // };
 
     const searchFromServer = async (input: string) => {
         try {
@@ -138,43 +142,54 @@ export const SearchCustomer = () => {
                 item.type === 'customer' ? (item) : (item)
             );
 
-            setResults(items);
-        } catch (err) {
-            console.error("שגיאה בחיפוש:", err);
-        }
-    };
+        console.log("מיפינו ל-Personים:", items);
+        setResults(items);
+    } catch (err) {
+        console.error("שגיאה מהשרת:", err);
+        setResults([]);
+    }
+};
 
-    const handleSearch = async (input = searchTerm.trim(), fromServer = false) => {
-        if (!input) {
-            setQuery('');
-            setSearchTerm('');
-            setResults([]);
-            return;
-        }
+const handleSearch = async (input = searchTerm.trim(), fromServer = false) => {
+    console.log("handleSearch נקרא עם:", { input, fromServer });
 
-        let searchValue = input;
+    if (!input) {
+        console.log("אין קלט, מאפסים תוצאות");
+        setQuery('');
+        setSearchTerm('');
+        setResults([]);
+        return;
+    }
 
-        if (!isHebrew(searchValue)) {
-            searchValue = await translateToHebrew(searchValue);
-        }
+    let searchValue = input;
 
-        setQuery(searchValue);
-        setSearchTerm(input);
+    if (!isHebrew(searchValue)) {
+        console.log("הקלט לא בעברית, מתחילים תרגום");
+        // searchValue = await translateToHebrew(searchValue);
+        console.log("התרגום הושלם:", searchValue);
+    } else {
+        console.log("הקלט הוא בעברית, לא צריך תרגום");
+    }
 
-        if (fromServer) {
-            await searchFromServer(searchValue);
-        } else {
-            const lower = searchValue.toLowerCase();
-            const parsedDate = normalizeDate(searchValue);
+    setQuery(searchValue);
+    setSearchTerm(input);
+
+    if (fromServer) {
+        console.log("מבצעים חיפוש בשרת");
+        await searchFromServer(searchValue);
+    } else {
+        console.log("מבצעים חיפוש מקומי");
+        const lower = searchValue.toLowerCase();
+        const parsedDate = normalizeDate(searchValue);
 
             const filtered = data.filter((person) => {
                 const nameMatch = person.name.toLowerCase().includes(lower);
                 const emailMatch = person.name.toLowerCase().includes(lower);
                 const phoneMatch = person.name.includes(searchValue);
 
-                let dateMatch = false;
-                let statusMatch = false;
-                let workspaceMatch = false;
+            let dateMatch = false;
+            let statusMatch = false;
+            let workspaceMatch = false;
 
                 if (person as Customer) {
                     if (parsedDate) {
@@ -189,32 +204,33 @@ export const SearchCustomer = () => {
                     workspaceMatch = Object.values((person as Customer).currentWorkspaceType!).includes(lower)
                 }
 
-                return nameMatch || emailMatch || phoneMatch || dateMatch || statusMatch || workspaceMatch;
-            });
+            return nameMatch || emailMatch || phoneMatch || dateMatch || statusMatch || workspaceMatch;
+        });
 
-            setResults(filtered);
-        }
-    };
+        console.log("תוצאות החיפוש המקומי:", filtered);
+        setResults(filtered);
+    }
+};
 
-    return (
-        <div>
-            <Stack spacing={2} direction="row">
-                <TextField
-                    label="חיפוש"
-                    fullWidth
-                    value={searchTerm}
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        handleSearch(value, false);
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            handleSearch(searchTerm, true);
-                        }
-                    }}
-                />
-                <Button onClick={() => handleSearch(searchTerm, true)}>חפש</Button>
-            </Stack>
+return (
+    <div>
+        <Stack spacing={2} direction="row">
+            <TextField
+                label="חיפוש"
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    handleSearch(value, false);
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        handleSearch(searchTerm, true);
+                    }
+                }}
+            />
+            <Button onClick={() => handleSearch(searchTerm, true)}>חפש</Button>
+        </Stack>
 
             <List>
                 {results.map((item, index) => (
@@ -229,7 +245,7 @@ export const SearchCustomer = () => {
                 ))}
             </List>
 
-            <div ref={loaderRef} style={{ height: "1px" }} />
-        </div>
-    );
-};
+        <div ref={loaderRef} style={{ height: "1px" }} />
+    </div>
+);
+}

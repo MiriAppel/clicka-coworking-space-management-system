@@ -31,18 +31,18 @@ export class baseService <T> {
 
     getByFilters = async (filters: Partial<T>): Promise<T[]> => {
 
-        let query = supabase
-            .from(this.tableName)
-            .select('*');
-
-        Object.entries(filters).forEach(([key, value]) => {
-
+        const orConditions = Object.entries(filters).map(([key, value]) => {
             if (typeof value === 'string') {
-                query = query.ilike(key, `%${value}%`); // חיפוש חלקי 
+                return `${key}.ilike.%${value}%`;
             } else {
-                query = query.eq(key, value); // חיפוש מדויק
+                return `${key}.eq.${value}`;
             }
         });
+        
+        let query = supabase
+            .from(this.tableName)
+            .select('*')
+            .or(orConditions.join(','));
 
         const { data, error } = await query;
 
