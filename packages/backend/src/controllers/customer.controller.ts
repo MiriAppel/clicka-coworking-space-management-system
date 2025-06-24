@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
-
 import { customerService } from '../services/customer.service';
 import { CreateCustomerRequest, ID, PaymentMethodType } from 'shared-types';
-
-
 
 const serviceCustomer = new customerService();
 
