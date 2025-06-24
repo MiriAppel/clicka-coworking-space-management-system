@@ -1,5 +1,4 @@
-import { ID, DateISO } from '../../../../types/core';
-import { LeadInteraction } from '../../../../types/lead';
+import type{ DateISO, ID, InteractionType, LeadInteraction } from "shared-types";
 
 export class LeadInteractionModel implements LeadInteraction {
 
@@ -51,14 +50,4 @@ export class LeadInteractionModel implements LeadInteraction {
   }
 
 }
-
-export enum InteractionType {
-  EMAIL = 'EMAIL',
-  PHONE = 'PHONE',
-  MEETING = 'MEETING',
-  TOUR = 'TOUR',
-  NOTE = 'NOTE',
-  DOCUMENT = 'DOCUMENT'
-}
-
 

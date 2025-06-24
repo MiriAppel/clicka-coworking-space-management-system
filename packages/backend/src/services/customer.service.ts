@@ -1,4 +1,3 @@
-import { ID, PaginatedResponse } from "../../../../types/core";
 import { CustomerModel } from "../models/customer.model";
 import{ ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, RecordExitNoticeRequest, UpdateCustomerRequest, CustomerPeriod, CreateCustomerRequest} from '../../../../types/customer'
 import { supabase } from "../db/supabaseClient";
@@ -58,7 +57,8 @@ export class customerService extends baseService <CustomerModel> {
             periods: [],
             contracts: [],
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
+            paymentMethods: []
         };
 
         //לפני היצירה יש לבדוק שהחלל באמת פנוי צריך לפנות לקבוצה 3
@@ -81,24 +81,25 @@ export class customerService extends baseService <CustomerModel> {
 
         await this.patch(updateStatus as CustomerModel, id);
 
-        const customerLeav: CustomerModel | null = await this.getById(id);
+        const customerLeave: CustomerModel | null = await this.getById(id);
 
-        if (customerLeav){
+        if (customerLeave){
             // יצירת תקופת עזיבה ללקוח
             const period: CustomerPeriod = {
                 id: id,
                 customerId: id,
+                entryDate: new Date().toISOString(),
                 exitDate: new Date().toISOString(),
                 exitNoticeDate: exitNotice.exitNoticeDate,
                 exitReason: exitNotice.exitReason,
                 exitReasonDetails: exitNotice.exitReasonDetails,
-                createdAt: customerLeav.createdAt,
-                updatedAt: customerLeav.updatedAt
+                createdAt: customerLeave.createdAt,
+                updatedAt: customerLeave.updatedAt
             };
-            customerLeav.periods = [period];
+            customerLeave.periods = [period];
         }
 
-        await this.patch(customerLeav ,customerLeav.id);
+        await this.patch(customerLeave ,customerLeave.id);
 
             //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
 
@@ -183,8 +184,6 @@ export const exportCustomersToFileByFilter = async(filter: Partial <CustomerMode
         return Buffer.from(csvFull, 'utf-8');
 
 }
- 
-
 
 // לשאול את שולמית
 
@@ -202,11 +201,11 @@ export const exportCustomersToFileByFilter = async(filter: Partial <CustomerMode
 // }
 
 
+
 // export const getCustomerHistory = async (customerId: ID): Promise<CustomerHistory[]> => {
 //     // אמור לשלוף את ההיסטוריה של הלקוח עם ה-customerId הנתון
 //     return []; // להחזיר מערך של היסטוריית לקוח
 // }
-
 
 
 

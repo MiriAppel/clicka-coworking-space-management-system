@@ -1,5 +1,7 @@
+
+import { ContractStatus } from "shared-types";
+import type { Contract, DateISO, FileReference, ID } from "shared-types";
 import { ContractModel } from "../models/contract.model";
-import { DateISO, FileReference, ID } from "../../../../types/core";
 import { baseService } from "./baseService";
 import { Contract, ContractStatus } from "../../../../types/customer";
 import { supabase } from "../db/supabaseClient";
@@ -9,10 +11,11 @@ export class contractService extends baseService<ContractModel> {
     super("ContractModel");
   }
 
+
   updateContractTerms = async (
     contactId: ID,
     terms: any
-  ): Promise<Contract> => {
+  ): Promise<ContractModel> => {
     // אמור לעדכן את התנאים של החוזה עבור ה-contactId הנתון
     // הנח שהחוזה הוא אובייקט עם מזהה, תנאים, תאריכים, סטטוס וכו'
 

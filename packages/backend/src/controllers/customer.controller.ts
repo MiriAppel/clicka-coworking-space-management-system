@@ -1,5 +1,5 @@
-
 import { Request, Response } from 'express';
+
 import { customerService } from '../services/customer.service';
 import { CreateCustomerRequest } from '../../../../types/customer';
 import { ID } from '../../../../types/core';
@@ -13,10 +13,10 @@ export const getAllCustomers = async (req: Request, res: Response) => {
     try {
         const customers = await serviceCustomer.getAll()
         res.status(200).json(customers);
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error fetching customers', error });
     }
-
 }
 
 export const postCustomer = async (req: Request, res: Response) => {
@@ -44,13 +44,10 @@ export const postCustomer = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Error fetching customers', error });
     }
-
 }
 
 export const getCustomerById = async (req: Request, res: Response) => {
-
     const { id } = req.params;
-
     try {
         const customer = await serviceCustomer.getById(id);
         if (customer) {
@@ -58,16 +55,14 @@ export const getCustomerById = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'Customer not found' });
         }
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error fetching customer', error });
     }
-
 }
 
 export const getCustomersByFilter = async (req: Request, res: Response) => {
-
     const filters = req.query;
-
     try {
         const customers = await serviceCustomer.getByFilters(filters);
 
@@ -76,7 +71,8 @@ export const getCustomersByFilter = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'No customers found' });
         }
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error filtering customers', error });
     }
 
@@ -84,18 +80,16 @@ export const getCustomersByFilter = async (req: Request, res: Response) => {
 
 //Returns the possible client status modes
 export const getAllCustomerStatus = async (req: Request, res: Response) => {
-
     try {
         const statuses = await serviceCustomer.getAllCustomerStatus();
         res.status(200).json(statuses);
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error fetching all statuses', error });
     }
-
 }
 
 export const deleteCustomer = async (req: Request, res: Response) => {
-
     const { id } = req.params;
     try {
         const statuses = await serviceCustomer.delete(id);
@@ -103,38 +97,36 @@ export const deleteCustomer = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ message: 'Error fetching all statuses', error });
     }
-
 }
 
 // מקבל את כל הלקוחות שצריך לשלוח להם התראות 
 export const getCustomersToNotify = async (req: Request, res: Response) => {
-
     const { id } = req.params;
     try {
         const customers = await serviceCustomer.getCustomersToNotify(id);
         res.status(200).json(customers);
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error fetching customers to notify', error });
     }
-
 }
 
 // יצירת הודעת עזיבה
 export const postExitNotice = async (req: Request, res: Response) => {
     const exitNotice = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
     const { id } = req.params;
-    
+
     try {
         await serviceCustomer.postExitNotice(exitNotice, id);
         res.status(200).json({ message: 'Exit notice posted' });
-    } catch (error) {
+    } 
+    catch (error) {
         res.status(500).json({ message: 'Error posting exit notice', error });
     }
 }
 
 // לקבל מספר לקוחות לפי גודל העמוד
 export const getCustomersByPage = async (req: Request, res: Response) => {
-
     // קבלת page ו-pageSize מתוך שאילתת ה-URL (query parameters)
     const page = parseInt(req.query.page as string) || 1;
     const pageSize = parseInt(req.query.pageSize as string) || 50;
@@ -150,14 +142,14 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
 
 // עדכון מלא/חלקי של לקוח
 export const patchCustomer = async (req: Request, res: Response) => {
-
     const { id } = req.params;
     const updateData = req.body; // נתוני העדכון החלקיים
 
     try {
         await serviceCustomer.patch(updateData, id)
         res.status(200).json({ message: 'Customer updated successfully (PATCH)' });
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error in patchCustomer controller:', error);
         res.status(500).json({ message: 'Error patching customer', error});
     }
@@ -179,8 +171,6 @@ export const patchCustomer = async (req: Request, res: Response) => {
 //         res.status(500).json({ message: 'Error fetching history changes', error });
 //     }
 // }
-
-
 
 // export const getStatusChanges = async (req: Request, res: Response) => {
 //     const { id } = req.params;

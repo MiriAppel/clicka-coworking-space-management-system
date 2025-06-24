@@ -1,15 +1,14 @@
-import { ID } from "../../../../types/core";
-import { UpdateLeadRequest } from "../../../../types/lead";
 import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
-import { LeadSource } from "../../../../types/lead";
 import { LeadModel } from "../models/lead.model";
 import Papa, { parse } from 'papaparse';
 
 export class leadService extends baseService <LeadModel> {
 
+
   constructor() {
     super("LeadModel")
+
   }
 
   getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
@@ -52,9 +51,7 @@ export class leadService extends baseService <LeadModel> {
   }
   
   checkIfFullLead(lead: UpdateLeadRequest): boolean {
-
     return !!(lead && lead.name && lead.email && lead.businessType && lead.phone && lead.interestedIn); 
-
   }
 
   convertCsvToLeads = (csvData: string): Promise <LeadModel[]> => {
@@ -87,5 +84,4 @@ export class leadService extends baseService <LeadModel> {
     return false;
     
   }
-
 };
