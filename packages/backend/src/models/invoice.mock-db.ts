@@ -1,6 +1,7 @@
 
+import type{ ID } from "shared-types";
 import { InvoiceModel } from "./invoice.model";
-import { ID } from "../../../../types/core";
+
 
 // מערך שישמש כ"דאטה בייס" זמני
 export const invoicesMockDb: InvoiceModel[] = [];

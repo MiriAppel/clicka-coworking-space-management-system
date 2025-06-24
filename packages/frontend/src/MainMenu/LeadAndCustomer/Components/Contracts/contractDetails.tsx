@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useState } from "react";
-import { ContractStatus, WorkspaceType, Contract } from "../../../../types/customer"
+import { Contract, ContractStatus, WorkspaceType } from "shared-types";
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 
 export const ContractDetails = () => {
@@ -52,13 +52,14 @@ export const ContractDetails = () => {
         //     {/*  כאן מוצגים כל הפרטים של החוזה עבור לקוח מסוים */}
 
         <div className="contract-details">
-            <h2>פרטי החוזה</h2>
+            <h2 className="text-xl font-bold mb-4">פרטי החוזה</h2>
             <Button variant="primary" size="sm" onClick={() => editContract()}>ערוך</Button>
             <p><strong>ID:</strong> {currentContract.id}</p>
             <p><strong>מזהה לקוח:</strong> {currentContract.customerId}</p>
             <p><strong>גרסה:</strong> {currentContract.version}</p>
             <p><strong>סטטוס:</strong> {currentContract.status}</p>
             {currentContract.signDate && <p><strong>תאריך חתימה:</strong> {new Date(currentContract.signDate).toLocaleDateString()}</p>}
+
             {currentContract.startDate && <p><strong>תאריך התחלה:</strong> {new Date(currentContract.startDate).toLocaleDateString()}</p>}
             {currentContract.endDate && <p><strong>תאריך סיום:</strong> {new Date(currentContract.endDate).toLocaleDateString()}</p>}
             <h3>תנאים</h3>

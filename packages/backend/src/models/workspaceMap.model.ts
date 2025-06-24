@@ -1,7 +1,6 @@
-import { ID, DateISO } from '../../../../types/core';
-import { WorkspaceType } from '../../../../types/customer' ;
-import{ WorkspaceMapItem } from './workspaceMapItem.model';
-import { SpaceStatus } from '../../../../types/workspace'
+import type{ DateISO, ID, SpaceStatus, WorkspaceType } from "shared-types";
+import { WorkspaceMapItem } from "./workspaceMapItem.model";
+
 export interface MapLayout {
   width: number;
   height: number;

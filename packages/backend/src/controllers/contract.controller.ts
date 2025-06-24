@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
+
 import {contractService} from '../services/contract.service'
-import { ID } from '../../../../types/core';
 import { ContractModel } from '../models/contract.model';
 
 const serviceContract = new contractService();

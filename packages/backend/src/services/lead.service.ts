@@ -1,15 +1,17 @@
-import { ID } from "../../../../types/core";
-import { UpdateLeadRequest } from "../../../../types/lead";
 import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
-import { LeadSource } from "../../../../types/lead";
 import { LeadModel } from "../models/lead.model";
 import { parse } from 'papaparse';
+import { LeadSource } from "shared-types";
+import type{ ID, UpdateLeadRequest } from "shared-types";
+
 
 export class leadService extends baseService <LeadModel> {
 
+
   constructor() {
     super("LeadModel")
+
   }
 
   getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {

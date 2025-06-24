@@ -1,8 +1,7 @@
-import { ID } from "../../../../types/core";
-import { Vendor, VendorCategory, VendorStatus } from "../../../../types/expense";
+import type{ ID } from "shared-types";
 
 export class VendorService {
-  getVendorSummary(vendorId: ID): VendorSummary {
+  getVendorSummary(vendorId: ID) {
     // שליפת כל ההוצאות המשויכות לספק
     // חישוב סכום כולל של כל ההוצאות  
     // ספירת מספר ההוצאות
@@ -14,17 +13,19 @@ export class VendorService {
     // חישוב מספר ימי תשלום ממוצעים
   }
 
-  saveVendorProfile(input: VendorFormInput, isUpdate: boolean): Vendor {
-    // אם מדובר בעדכון, נשתמש במזהה קיים, אחרת נייצר חדש
-    // יצירת אובייקט ספק לפי הנתונים שהוזנו
-    // החזרת אובייקט מוכן לשמירה במסד הנתונים
-  }
+  // saveVendorProfile(input: VendorFormInput, isUpdate: boolean): Vendor {
+  //   // אם מדובר בעדכון, נשתמש במזהה קיים, אחרת נייצר חדש
+  //   // יצירת אובייקט ספק לפי הנתונים שהוזנו
+  //   // החזרת אובייקט מוכן לשמירה במסד הנתונים
+  // }
 
-  getVendorPaymentHistory(vendorId: ID): {
-    onTimePayments: number;
-    latePayments: number;
-    averagePaymentDays: number;
-  } {
+  getVendorPaymentHistory(vendorId: ID) {
+    return {
+      onTimePayments: 0,
+      latePayments: 0,
+      averagePaymentDays: 0,
+    };
+  }
     // שליפת כל ההוצאות והתשלומים של הספק מהמסד
     // שמירת משתנים לספירת תשלומים בזמן ומאחרים וסיכום ימי תשלום
     // מעבר על כל התשלומים כדי להעריך מתי בוצעו ביחס למועד התשלום
@@ -36,19 +37,19 @@ export class VendorService {
     // החזרת הסיכום
   }
 
-  filterVendors(
-    vendors: Vendor[],
-    filters: {
-      name?: string;
-      category?: VendorCategory;
-      status?: VendorStatus;
-      taxId?: string;
-    }
-  ): Vendor[] {
-    // סינון לפי שם (חלקי, לא רגיש לאותיות גדולות/קטנות)
-    // סינון לפי קטגוריה
-    // סינון לפי סטטוס (פעיל, מושעה, לא פעיל)
-    // סינון לפי תעודת זהות/ח.פ (taxId)
-    // נחזיר true רק אם כל התנאים מתקיימים
-  }
-}
+  // filterVendors(
+  //   vendors: Vendor[],
+  //   filters: {
+  //     name?: string;
+  //     category?: VendorCategory;
+  //     status?: VendorStatus;
+  //     taxId?: string;
+  //   }
+  // ): Vendor[] {
+  //   // סינון לפי שם (חלקי, לא רגיש לאותיות גדולות/קטנות)
+  //   // סינון לפי קטגוריה
+  //   // סינון לפי סטטוס (פעיל, מושעה, לא פעיל)
+  //   // סינון לפי תעודת זהות/ח.פ (taxId)
+  //   // נחזיר true רק אם כל התנאים מתקיימים
+  // }
+// }

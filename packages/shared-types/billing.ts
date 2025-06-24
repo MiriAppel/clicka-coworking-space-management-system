@@ -62,14 +62,11 @@ export interface Invoice {
   due_date: DateISO;
   items: BillingItem[];
   subtotal: number;
-  tax_total: number;
-  // //הוספת שדות במקום
-  // tax_amount:number
-  // tax_rate:number
+
+  taxtotal: number;
   // total: number;
-  // amountPaid: number;
-  //הוספת שדה
-  // paid_date: DateISO 
+  // amount_paid: number;
+
   // balance: number;
   // notes?: string;
   // pdfFile?: FileReference;
@@ -236,4 +233,6 @@ export enum PaymentStatus {
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED'
+
 }
+

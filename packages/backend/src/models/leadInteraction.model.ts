@@ -1,5 +1,4 @@
-import { ID, DateISO } from '../../../../types/core';
-import { LeadInteraction, InteractionType } from '../../../../types/lead';
+import type{ DateISO, ID, InteractionType, LeadInteraction } from "shared-types";
 
 export class LeadInteractionModel implements LeadInteraction {
 

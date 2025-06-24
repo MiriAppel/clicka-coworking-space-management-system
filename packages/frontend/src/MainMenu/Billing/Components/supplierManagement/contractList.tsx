@@ -1,4 +1,4 @@
-import { ID } from "../../../../../../../types/core";
+import type{ ID } from "shared-types";
 import { useSupplierStore } from "../../../../Stores/Billing/supplierStore";
 
 export const ContractList = () => {

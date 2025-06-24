@@ -1,10 +1,9 @@
-import { ExpenseFilter } from "../../../../../../../types/expenseFilter";
 
 export const ExpensesFilter = () => {
 //functions
 
 // סינון לפי קטגוריה, ספק, תאריכים, סטטוס
-const applyExpenseFilter = (filter: ExpenseFilter): void => {};
+// const applyExpenseFilter = (filter: ExpenseFilter): void => {};
 
   return (
     <div>

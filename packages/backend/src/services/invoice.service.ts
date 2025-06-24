@@ -1,32 +1,31 @@
-import { deleteInvoice, getAllInvoices,createInvoice, getInvoiceById, InvoiceModel, updateInvoice } from "../models/invoice.model";
-import { CreateInvoiceRequest, Invoice } from "../../../../types/billing";
-import { ID } from "../../../../types/core";
-import { GeneratedDocument } from "@types/document";
+import type { CreateInvoiceRequest, ID, Invoice } from "shared-types";
+import { deleteInvoice, getAllInvoices, createInvoice, getInvoiceById, InvoiceModel, updateInvoice } from "../models/invoice.model";
+
 
 //crud functions
 // יצירת חשבונית חדשה 
 export async function serviceCreateInvoice(data: Partial<InvoiceModel>): Promise<InvoiceModel> {
-    return createInvoice(data);
+  return createInvoice(data);
 }
 
 // קבלת כל החשבוניות
 export async function serviceGetAllInvoices(): Promise<InvoiceModel[]> {
-    return getAllInvoices();
+  return getAllInvoices();
 }
 
 // קבלת חשבונית לפי מזהה
 export async function serviceGetInvoiceById(id: ID): Promise<InvoiceModel | null> {
-    return getInvoiceById(id);
+  return getInvoiceById(id);
 }
 
 // עדכון חשבונית
 export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceModel>): Promise<InvoiceModel | null> {
-    return updateInvoice(id, updateData);
+  return updateInvoice(id, updateData);
 }
 
 // מחיקת חשבונית
 export async function serviceDeleteInvoice(id: ID): Promise<boolean> {
-    return deleteInvoice(id);
+  return deleteInvoice(id);
 }
 
 
@@ -117,19 +116,19 @@ export async function serviceDeleteInvoice(id: ID): Promise<boolean> {
 //   return invoice;
 // };
 
- //יצירת חשבונית ידנית - רחל יכולה להזין את כל השדות בעצמה
+//יצירת חשבונית ידנית - רחל יכולה להזין את כל השדות בעצמה
 export const createManualInvoice = (manualInvoice: Invoice): Invoice => {
   return manualInvoice;
 };
 
- //התאמה אישית של תבנית החשבונית - נחמה יכולה לעדכן תבנית עיצובית
+//התאמה אישית של תבנית החשבונית - נחמה יכולה לעדכן תבנית עיצובית
 export const customizeInvoiceTemplate = (
   invoice: Invoice,
   customTemplateId: string
 ): Invoice => {
   return {
     ...invoice,
-    templateId: customTemplateId,
+    // templateId: customTemplateId,
   };
 };
 
@@ -142,10 +141,10 @@ export const createTaxInvoice = async (
 };
 
 //מפיקה מסמך פיננסי תקני (חשבונית מס, קבלה, תעודת זיכוי וכו') לפי דרישות החוק.
-export const generateFinancialDocument = async (
-  documentType: DocumentType,
-  entityId: ID,
-  variables: Record<string, any>
-): Promise<GeneratedDocument> => {
-  throw new Error("Not implemented yet");
-};
+// export const generateFinancialDocument = async (
+//   documentType: DocumentType,
+//   entityId: ID,
+//   variables: Record<string, any>
+// ): Promise<GeneratedDocument> => {
+//   throw new Error("Not implemented yet");
+// };

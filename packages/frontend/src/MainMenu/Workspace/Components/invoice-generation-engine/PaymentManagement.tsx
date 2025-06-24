@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { usePaymentStore } from './paymentStore';
-import { Payment, PaymentMethodType, PaymentStatus } from '../../../../types/billing';
-
+import { usePaymentStore } from '../invoice-generation-engine/paymentStore';
+import type{ Payment } from 'shared-types';
+import { PaymentMethodType, PaymentStatus } from 'shared-types';
 interface PaymentFormData {
   invoiceId: string;
   amount: number;

@@ -1,8 +1,7 @@
-import { FinancialReport } from "../../../../../../../types/financialReport";
 import { useFinancialReportsStore } from "../../../../Stores/Billing/financialReportsStore";
 
 const ReportDisplay=()=>{
-const {displayReport,handleExportClick,displayReportError,}=useFinancialReportsStore();
+// const {displayReport,handleExportClick,displayReportError,}=useFinancialReportsStore();
 //functions
 //in the store
     return <div>
