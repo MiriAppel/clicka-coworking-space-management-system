@@ -15,7 +15,7 @@
       "@types/*": ["../../types/*"]
     }
   },
-  "include": ["src/**/*", "../../types/**/*", "../types"],
+  "include": ["src/**/*", "../../types/**/*", "../types", "../shared-types/calendarSync.ts"],
 
   "exclude": ["node_modules", "**/*.test.ts"]
 }
