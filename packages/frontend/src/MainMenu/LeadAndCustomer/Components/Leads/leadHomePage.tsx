@@ -29,7 +29,7 @@ export const LeadHomePage = () => {
     {
       id: "1",
       name: "אברהם ישראלי",
-      phone: "050-1234567",
+      phone: "0501234567",
       email: "a567@gmail.com",
       status: LeadStatus.LOST,
       updatedAt: "2023-01-10T00:00:00Z",
@@ -38,7 +38,21 @@ export const LeadHomePage = () => {
       source: LeadSource.EVENT,
       interactions: [],
       createdAt: "2022-12-01T00:00:00Z"
-    }]);
+    },
+    {
+      id: "2",
+      name: "מיכל כהן",
+      phone: "0527654321",
+      email: "michal@example.com",
+      status: LeadStatus.INTERESTED,
+      updatedAt: "2023-02-15T00:00:00Z",
+      businessType: "עסק בינוני",     
+      interestedIn: [],
+      source: LeadSource.WEBSITE,
+      interactions: [],
+      createdAt: "2022-11-10T00:00:00Z"
+    }
+  ]);
   //יצירת מערך עם ערכים המתאימים לטבלה
   const valuesToTable: ValuesToTable[] = leads.map(lead => ({
     name: lead.name,

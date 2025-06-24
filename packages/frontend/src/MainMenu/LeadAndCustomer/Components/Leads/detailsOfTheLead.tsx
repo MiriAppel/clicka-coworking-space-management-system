@@ -13,7 +13,7 @@ export const DetailsOfTheLead = () => {
     const [currentLead, setCurrentLead] = useState<Lead>({
         id: leadId || '1',
         name: 'יוסי כהן',
-        phone: '050-1234567',
+        phone: '0501234567',
         email: 'yossi@example.com',
         businessType: 'סטארטאפ',
         interestedIn: [

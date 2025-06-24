@@ -28,6 +28,7 @@ export interface FormComponentProps<T extends FieldValues>
   error?: string;
   required?: boolean;
   disabled?: boolean;
+  methods?: UseFormReturn<T>;
   schema?: ZodType<T>; // ← ahora opcional
   onSubmit: SubmitHandler<T>;
 }
@@ -37,6 +38,7 @@ export function Form<T extends FieldValues>({
   label,
   schema,
   onSubmit,
+  methods: externalMethods,
   className,
   dir,
   "data-testid": testId,
@@ -47,10 +49,11 @@ export function Form<T extends FieldValues>({
   const effectiveDir = dir || theme.direction;
 
   // Configurar useForm con o sin schema
-  const methods: UseFormReturn<T> = useForm<T>({
+  const internalMethods = useForm<T>({
     ...(schema ? { resolver: zodResolver(schema) } : {}),
     mode: "onSubmit",
   });
+  const methods: UseFormReturn<T> = externalMethods ?? internalMethods;
 
   return (
     <FormProvider {...methods}>

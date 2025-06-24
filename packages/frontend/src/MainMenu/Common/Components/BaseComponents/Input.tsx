@@ -11,7 +11,7 @@
     className?: string;
     "data-testid"?: string;
     type?: React.HTMLInputTypeAttribute;
-    defaultValue?: string | number;
+    // defaultValue?: string | number;
     placeholder?: string;
     multiple?:boolean
   }
@@ -24,7 +24,7 @@
     className,
     "data-testid": testId,
     type = "text",
-    defaultValue,
+    // defaultValue,
     placeholder,
     multiple
   }) => {
@@ -48,7 +48,7 @@
           aria-label={label}
           data-testid={testId}
           type={type || "text"}
-          defaultValue={defaultValue}
+          // defaultValue={defaultValue}
           placeholder={placeholder}
           multiple={multiple && type === "file"} //אם לא אומרים לו על הTYPE הוא לא יהיה יעיל ולא יעלה גלום רק מתי שאומרים לו שהוא מסוג הזה אז מעלה את כל הFILE
           className={clsx(
