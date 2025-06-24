@@ -1,17 +1,19 @@
 import { Router } from 'express';
 import multer from 'multer';
 import {
-  uploadFile,
-  fetchFile,
+  postFile,
+  getFile,
   deleteFile,
-  shareFile
+  shareFile,
+  getFileMetadata 
 } from '../controllers/drive-controller';
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
 
-router.post('/v3/files', upload.single('file'), uploadFile);
-router.get('/v3/files/:fileId', fetchFile);
+router.get('/v3/files/:fileId/metadata', getFileMetadata); // ← להוסיף את זה
+router.get('/v3/files/:fileId', getFile);
+router.post('/v3/files', upload.single('file'), postFile);
 router.delete('/v3/files/:fileId', deleteFile);
 router.post('/v3/files/:fileId/permissions', shareFile);
 

@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { Readable } from 'stream';
 
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();
@@ -15,23 +16,43 @@ export async function uploadFileToDrive(file: Express.Multer.File, token: string
     },
     media: {
       mimeType: file.mimetype,
-      body: Buffer.from(file.buffer),
+      body: Readable.from(file.buffer), 
     },
   });
 
   return res.data;
 }
 
-export async function fetchFileFromDrive(fileId: string, token: string): Promise<any> {
+export async function getFileFromDrive(fileId: string, token: string): Promise<NodeJS.ReadableStream> {
   const drive = google.drive({ version: 'v3', auth: getAuth(token) });
 
-  const res = await drive.files.get(
-    { fileId, alt: 'media' },
-    { responseType: 'stream' }
-  );
+  try {
+    const res = await drive.files.get(
+      { fileId, alt: 'media' },
+      { responseType: 'stream' }
+    );
+    return res.data as NodeJS.ReadableStream;
+  } catch (error: any) {
+    if (error.code === 404) {
+      const notFound = new Error('File not found in Google Drive');
+      (notFound as any).status = 404;
+      throw notFound;
+    }
+    throw error;
+  }
+}
+
+export async function getFileMetadataFromDrive(fileId: string, token: string) {
+  const drive = google.drive({ version: 'v3', auth: getAuth(token) });
+
+  const res = await drive.files.get({
+    fileId,
+    fields: 'id, name, mimeType, size, createdTime, modifiedTime',
+  });
 
   return res.data;
 }
+
 
 export async function deleteFileFromDrive(fileId: string, token: string): Promise<void> {
   const drive = google.drive({ version: 'v3', auth: getAuth(token) });

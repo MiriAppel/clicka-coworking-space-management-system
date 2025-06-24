@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import {
   uploadFileToDrive,
-  fetchFileFromDrive,
+  getFileFromDrive,
   deleteFileFromDrive,
   shareDriveFile,
+  getFileMetadataFromDrive 
 } from '../services/drive-service';
 
 import {
@@ -16,7 +17,9 @@ interface MulterRequest extends Request {
   file: Express.Multer.File;
 }
 
-export async function uploadFile(req: Request, res: Response, next: NextFunction) {
+export async function postFile(req: Request, res: Response, next: NextFunction) {
+  console.log('uploadFile hit');
+  console.log('req.file:', req.file);
   const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) return next({ status: 401, message: 'Missing token' });
@@ -34,7 +37,24 @@ export async function uploadFile(req: Request, res: Response, next: NextFunction
   }
 }
 
-export async function fetchFile(req: Request, res: Response, next: NextFunction) {
+export async function getFile(req: Request, res: Response, next: NextFunction) {
+  const token = req.headers.authorization?.split(' ')[1];
+  const fileId = req.params.fileId;
+  console.log('fileId:', req.params.fileId);
+
+  if (!token) return next({ status: 401, message: 'Missing token' });
+
+  try {
+    validateFileId(fileId);
+    const fileStream = await getFileFromDrive(fileId, token);
+    fileStream.pipe(res);
+  } catch (err: any) {
+    if (!err.status) err.status = 500;
+    next(err);
+  }
+}
+
+export async function getFileMetadata(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.authorization?.split(' ')[1];
   const fileId = req.params.fileId;
 
@@ -42,8 +62,8 @@ export async function fetchFile(req: Request, res: Response, next: NextFunction)
 
   try {
     validateFileId(fileId);
-    const fileStream = await fetchFileFromDrive(fileId, token);
-    fileStream.pipe(res);
+    const metadata = await getFileMetadataFromDrive(fileId, token);
+    res.status(200).json(metadata);
   } catch (err: any) {
     if (!err.status) err.status = 500;
     next(err);
