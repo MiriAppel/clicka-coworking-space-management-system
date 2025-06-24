@@ -3,7 +3,6 @@ import { ContractStatus } from "shared-types";
 import type { Contract, DateISO, FileReference, ID } from "shared-types";
 import { ContractModel } from "../models/contract.model";
 import { baseService } from "./baseService";
-import { Contract, ContractStatus } from "../../../../types/customer";
 import { supabase } from "../db/supabaseClient";
 
 export class contractService extends baseService<ContractModel> {

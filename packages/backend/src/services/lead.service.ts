@@ -2,6 +2,7 @@ import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
 import { LeadModel } from "../models/lead.model";
 import Papa, { parse } from 'papaparse';
+import { ID, LeadSource, UpdateLeadRequest } from "shared-types";
 
 export class leadService extends baseService <LeadModel> {
 

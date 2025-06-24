@@ -1,10 +1,9 @@
 import { CustomerModel } from "../models/customer.model";
-import{ ConvertLeadToCustomerRequest,CustomerStatus, GetCustomersRequest, RecordExitNoticeRequest, UpdateCustomerRequest, CustomerPeriod, CreateCustomerRequest} from '../../../../types/customer'
 import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
 import { createObjectCsvStringifier } from "csv-writer";
 import { leadService } from "./lead.service";
-import { PaymentMethodType } from "../../../../types/billing";
+import { CreateCustomerRequest, CustomerPeriod, CustomerStatus, GetCustomersRequest, ID, PaginatedResponse, PaymentMethodType, RecordExitNoticeRequest, UpdateCustomerRequest } from "shared-types";
 
 export class customerService extends baseService <CustomerModel> {
 
