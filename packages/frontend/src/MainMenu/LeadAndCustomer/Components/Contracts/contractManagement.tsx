@@ -3,14 +3,16 @@ import { NavLink, Outlet } from "react-router";
 import { useNavigate } from 'react-router-dom';
 import { ID } from '../../../../types/core';
 import { Contract, ContractStatus, WorkspaceType } from '../../../../types/customer'; // יש להחליף עם הנתיב הנכון
-import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
-import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
+import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+
+//צריך לבדוק אם לעשות מכאן את העריכה או מהפרטי חוזה ואם בכלל לעשות פרטי חוזה
 
 interface ValuesToTable {
+    id: ID
     customerId: ID; //  מזהה הלקוח בעל החוזה -כדאי להחליף לשם שלו
     status: ContractStatus; // סטטוס החוזה
     linkToDetails: React.ReactElement; // קישור לפרטים של החוזה
-    deleteButton: ButtonProps; // כפתור למחיקת החוזה - או שהמחיקה תהיה מתוך פרטי החוזה
 }
 
 export const ContractManagement = () => {
@@ -57,26 +59,23 @@ export const ContractManagement = () => {
     ]);
 
     const valuesToTable: ValuesToTable[] = contracts.map(contract => ({
+        id: contract.id,
         customerId: contract.customerId,
         status: contract.status,
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
         linkToDetails: <NavLink to={`:${contract.customerId}`} className="text-blue-500 hover:underline">פרטי חוזה</NavLink>, // קישור
-        deleteButton: (
-            <Button variant="accent" size="sm" onClick={() => deleteContract(contract.id)}>X</Button>
-        ),
     }));
 
     const Columns: TableColumn<ValuesToTable>[] = [
         { header: "מזהה הלקוח", accessor: "customerId" }, // כדאי לשנות לשם הלקוח
         { header: "סטטוס", accessor: "status" },
         { header: "פרטים", accessor: "linkToDetails" },
-        { header: "מחיקה", accessor: "deleteButton" }
     ];
 
-    const deleteContract = (id: string) => {
+    const deleteContract = (val: ValuesToTable) => {
         //כאן יהיה קריאת שרת למחיקת חוזה ועדכון מחדש של המערך המקומי
         //זה רק דוג' למחיקה מקומית
-        const newCustomers = contracts.filter(c => c.id !== id);
+        const newCustomers = contracts.filter(c => c.id !== val.id);
         setContracts(newCustomers); // עדכון ה-state
 
     }
@@ -89,7 +88,7 @@ export const ContractManagement = () => {
 
             {/* כאן יהיה טבלה של כל החוזים עם הפרטים (אם זה מדי הרבה פרטים ולא יפה לעשות הכל כאן אפשר לנתב לעמוד של פרטי חוזה בודד) */}
 
-            <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" />
+            <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteContract}/>
 
         </div>
 

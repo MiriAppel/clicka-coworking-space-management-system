@@ -1,9 +1,9 @@
-import { Button } from '../../../Common/Components/BaseComponents/Button';
-import { Form } from '../../../Common/Components/BaseComponents/Form';
 import { z } from "zod";
-import { InputField } from "../../../Common/Components/BaseComponents/Input";
-import { CheckboxField } from "../../../Common/Components/BaseComponents/CheckBox";
+import { InputField } from "../../../../Common/Components/BaseComponents/Input";
+import { CheckboxField } from "../../../../Common/Components/BaseComponents/CheckBox";
 
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
+import { Form } from '../../../../Common/Components/BaseComponents/Form';
 
 export const AddContract = () => {
     const schema = z.object({
@@ -28,9 +28,10 @@ export const AddContract = () => {
             >
                 <InputField name="email" label="Email" required />
                 <CheckboxField name="acceptTerms" label="Accept the terms" required />
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                <Button variant="primary"
+                    size="sm" type="submit" >
                     Send
-                </button>
+                </Button>
             </Form>
         </div>
     );

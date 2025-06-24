@@ -15,9 +15,11 @@ export const Button: React.FC<ButtonProps> = ({
   size = "md",
   dir,
   "data-testid": testId,
+  type = "button", 
   ...props
 }) => {
   const theme = useTheme();
+//  const focusRingColor = theme.colors.semantic.info; //מגדיר את הצבע למתי שנעבור על הכפתורים בעזרת המקלדת יעשה לנו את הצבע הדרוש 
   const effectiveDir = dir || theme.direction; // או שלוקח את הכיוון שמבקשים או שלוקח מהTHEME את הכיוון של ברירת מחדל
   const color = theme.colors[variant];// אותו דבר כמו הכיוון
   const sizeClasses = {
@@ -29,10 +31,11 @@ export const Button: React.FC<ButtonProps> = ({
     <button
       dir={effectiveDir} 
       aria-label={typeof children === "string" ? children : undefined}
+      //מתי שהטיפוס מסוג STRING משתמש בARIA 
       data-testid={testId}
       className={clsx(//מגדיר את העיצוב של הכפתור בצורה מסודרת
         "rounded focus:outline-none focus:ring-2 transition-colors font-semibold shadow-sm",
-        `text-white hover:brightness-90`,
+        `text-white hover:brightness-90`,  "focus:ring-[rgba(59,130,246,0.5)]",
         sizeClasses[size],
         effectiveDir === "rtl" ? "text-right" : "text-left",
         className

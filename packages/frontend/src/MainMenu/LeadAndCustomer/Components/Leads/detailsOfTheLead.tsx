@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useState } from "react";
-import { Button } from '../../../Common/Components/BaseComponents/Button';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { Lead, LeadSource, LeadStatus, InteractionType } from "../../../../types/lead";
 import { WorkspaceType } from "../../../../types/customer";
+
+//אין צורך בעמוד זה כי בעריכה רואים את הפרטים...!!
 
 //יש לנו לינק שלוחצים על מתעניין מגיעים לדף הזה
 export const DetailsOfTheLead = () => {

@@ -10,8 +10,9 @@ interface FileInputFieldProps {
   dir?: "rtl" | "ltr";
   className?: string;
   "data-testid"?: string;
-  multiple?: boolean; //אפשרות להוספת הרבה קבצים
+  multiple?: boolean; //אפשרות להוספת הרבה קבצים 
 }
+
 export const FileInputField: React.FC<FileInputFieldProps> = ({
   name,
   label,
@@ -24,26 +25,30 @@ export const FileInputField: React.FC<FileInputFieldProps> = ({
 }) => {
   const theme = useTheme();
   const {
-    control,
-    //משתנה שמשתמשים בו כדי להביא את הCONTROLLER של REACT-HOOK
+    control, 
+    //משתנה שמשתמשים בו כדי להביא את הCONTROLLER של REACT-HOOK 
     watch,//עוזר לי להסתכל על השינוים שבINPUT
     setValue,//מאפשר לשנות בצורה ידנית את הVALUE של הFORM
     formState: { errors },
   } = useFormContext();
-  const error = errors[name]?.message as string | undefined;//זריקת הודעה של שגיאה
+
+  const error = errors[name]?.message as string | undefined;//זריקת הודעה של שגיאה 
   const effectiveDir = dir || theme.direction;
+
   const files = watch(name);
-  // פה אנחנו מסתכלים על השינוים שבINPUT כדי לקבל את השינויים
-  // :white_check_mark: useEffect- משתמשים בו כדי להפוך את הקבצים למחרך ואם אין קבצים אז מביא לי מערך ריק
+  // פה אנחנו מסתכלים על השינוים שבINPUT כדי לקבל את השינויים 
+
+  // ✅ useEffect- משתמשים בו כדי להפוך את הקבצים למחרך ואם אין קבצים אז מביא לי מערך ריק 
   useEffect(() => {
     if (!files) {
-      setValue(name, []); // אם אין קבצים שבחרו אותם משנה את ה למערך ריק
+      setValue(name, []); // אם אין קבצים שבחרו אותם משנה את ה למערך ריק 
     } else if (files instanceof FileList) {
       const fileArray = Array.from(files);
-      // משתנה שבREACT-HOOK-FORM שיעזור לשנות את המערך למערך ריק
+      // משתנה שבREACT-HOOK-FORM שיעזור לשנות את המערך למערך ריק 
       setValue(name, fileArray);
     }
   }, [files, name, setValue]);
+
   return (
     <div className="space-y-1 w-full" dir={effectiveDir}>
       <label
@@ -59,8 +64,8 @@ export const FileInputField: React.FC<FileInputFieldProps> = ({
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <Controller
-      //הקונטרולר קורא את השם וונותנת לו גם אפשרות להיכנס לתוך הקומטרול ננותנים לו RENDER
-      //שזה איפה שמכניסים את מה שאנחנו רוצים קורא מה שרשום שם קורא גם לONCHANGE עושה ולידציות וזורק שגיאות
+      //הקונטרולר קורא את השם וונותנת לו גם אפשרות להיכנס לתוך הקומטרול ננותנים לו RENDER 
+      //שזה איפה שמכניסים את מה שאנחנו רוצים קורא מה שרשום שם קורא גם לONCHANGE עושה ולידציות וזורק שגיאות 
         name={name}
         control={control}
         render={({ field }) => (
@@ -87,7 +92,7 @@ export const FileInputField: React.FC<FileInputFieldProps> = ({
                   : theme.typography.fontFamily.latin,
             }}
             onChange={(e) => {
-              //לוקח את הקבצים הנבחרים מחליף את זה למערך ואז שומר את זה בFILE
+              //לוקח את הקבצים הנבחרים מחליף את זה למערך ואז שומר את זה בFILE 
               const selectedFiles = e.target.files
                 ? Array.from(e.target.files)
                 : [];

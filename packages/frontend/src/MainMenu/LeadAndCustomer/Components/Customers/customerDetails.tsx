@@ -2,7 +2,10 @@ import { useParams } from "react-router";
 import { NavLink, Outlet, Link } from "react-router";
 import { useState } from "react";
 import { Customer, CustomerStatus, WorkspaceType, ExitReason } from "../../../../types/customer";
-import { Button } from '../../../Common/Components/BaseComponents/Button';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
+
+//לא צריך את העמוד הזה!!!!
+//בגלל שכבר פונים מהטבלה על ידי עריכה לפרטים...
 
 export const CustomerDetails = () => {
     const { customerId } = useParams();

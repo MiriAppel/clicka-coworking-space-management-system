@@ -3,26 +3,34 @@ import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
 
-interface SelectFieldProps {
+interface NumberInputFieldProps {
   name: string;
   label: string;
-  options: { label: string; value: string }[];
   required?: boolean;
   disabled?: boolean;
-  dir?: 'rtl' | 'ltr';
+  dir?: "rtl" | "ltr";
   className?: string;
   "data-testid"?: string;
+  placeholder?: string;
+  defaultValue?: number;
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
-export const SelectField: React.FC<SelectFieldProps> = ({
+export const NumberInputField: React.FC<NumberInputFieldProps> = ({
   name,
   label,
-  options,
   required,
   disabled,
   dir,
   className,
   "data-testid": testId,
+  placeholder,
+  defaultValue,
+  min,
+  max,
+  step,
 }) => {
   const theme = useTheme();
   const {
@@ -35,16 +43,31 @@ export const SelectField: React.FC<SelectFieldProps> = ({
 
   return (
     <div className="space-y-1 w-full" dir={effectiveDir}>
-      <label className="block text-sm font-medium text-gray-700" style={{ fontFamily: theme.typography.fontFamily.hebrew }}>
-        {label} {required && <span className="text-red-500 ml-1">*</span>}
+      <label
+        className="block text-sm font-medium text-gray-700"
+        style={{
+          fontFamily:
+            effectiveDir === "rtl"
+              ? theme.typography.fontFamily.hebrew
+              : theme.typography.fontFamily.latin,
+        }}
+      >
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
-      <select
-        {...register(name)}
+      <input
+        {...register(name, { valueAsNumber: true })}
         disabled={disabled}
         aria-required={required}
         aria-invalid={!!error}
         aria-label={label}
         data-testid={testId}
+        type="number"
+        placeholder={placeholder}
+        defaultValue={defaultValue}
+        min={min}
+        max={max}
+        step={step}
         className={clsx(
           "w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 transition",
           error
@@ -58,15 +81,18 @@ export const SelectField: React.FC<SelectFieldProps> = ({
               ? theme.typography.fontFamily.hebrew
               : theme.typography.fontFamily.latin,
         }}
-      >
-        <option value="">בחר אפשרות</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
-          //המפ עובר לי על המערך אופטיונס שהוא בנוי בצורה של LABEL-VALUE 
-          //ואז הוא מייצר לכל OPT את הOPTION שלו 
-        ))}
-      </select>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      />
+      {error && (
+        <p
+          className="text-sm"
+          role="alert"
+          aria-live="assertive"
+          tabIndex={-1}
+          style={{ color: theme.colors.semantic.error }}
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 };

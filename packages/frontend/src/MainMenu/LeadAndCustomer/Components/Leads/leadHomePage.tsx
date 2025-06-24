@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
-import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
+import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 
 import { useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
@@ -15,10 +15,9 @@ import { LeadStatus, LeadSource } from "../../../../types/lead";
 //  רק את הדף הזה צריך לראות שלוחצים על מתענינים
 
 interface ValuesToTable {
+  id: string
   name: string; // שם המתעניין 
   status: LeadStatus; // סטטוס המתעניין 
-  linkToDetails: React.ReactElement; // קישור לפרטים של המתעניין
-  deleteButton: ButtonProps; // כפתור למחיקת המתעניין
 }
 //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
 
@@ -46,7 +45,7 @@ export const LeadHomePage = () => {
       email: "michal@example.com",
       status: LeadStatus.INTERESTED,
       updatedAt: "2023-02-15T00:00:00Z",
-      businessType: "עסק בינוני",     
+      businessType: "עסק בינוני",
       interestedIn: [],
       source: LeadSource.WEBSITE,
       interactions: [],
@@ -55,28 +54,30 @@ export const LeadHomePage = () => {
   ]);
   //יצירת מערך עם ערכים המתאימים לטבלה
   const valuesToTable: ValuesToTable[] = leads.map(lead => ({
+    id: lead.id,
     name: lead.name,
     status: lead.status,
-    linkToDetails: <NavLink to={`:${lead.id}`} className="text-blue-500 hover:underline">פרטי מתעניין</NavLink>, // קישור
-    deleteButton: (
-      <Button variant="accent" size="sm" onClick={() => deleteLead(lead.id)}>X</Button>
-    ),
+
   }));
 
   // 3. מגדיר את הCOLUMN
   const columns: TableColumn<ValuesToTable>[] = [
     { header: "שם", accessor: "name" },
     { header: "סטטוס", accessor: "status" },
-    { header: "פרטים", accessor: "linkToDetails" },
-    { header: "מחיקה", accessor: "deleteButton" },
   ];
 
-  const deleteLead = (id: string) => {
+  const deleteLead = (val: ValuesToTable) => {
     //כאן יהיה קריאת שרת למחיקת לקוח ועדכון מחדש של המערך המקומי
     //זה רק דוג' למחיקה מקומית
-    const newCustomers = leads.filter(lead => lead.id !== id);
+    const newCustomers = leads.filter(lead => lead.id !== val.id);
     setLeads(newCustomers); // עדכון ה-state
   }
+
+  const updateLead = (val: ValuesToTable) => {
+
+  }
+
+
   const goToAnotherPage = () => {
     // navigate("detailsOfTheLead");
     {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
@@ -95,7 +96,7 @@ export const LeadHomePage = () => {
     {/* של חיפוש והתשובה שתגיע תשלח לפונקצייה של חיפוש לפי סטטוס/שם/ת.ז   */}
 
     {/* <h3>List of Leads</h3> */}
-    <Button variant="primary" size="sm" onClick={() => navigate('intersections')}>אינטראקציות של מתעניינים</Button>
+    <Button variant="primary" size="sm" onClick={() => navigate('intersections')}>אינטראקציות של מתעניינים</Button><br/>
 
 
     {/*כאן יהיה את  טבלה של רשימת המתענינים 
@@ -103,17 +104,19 @@ export const LeadHomePage = () => {
     {/*נ.ב(רשימת המתעניינים תהיה לפי סדר כזה שמי שבסטטוס שלו יהיה לחזור אליו בימים הקרובים כדי
       לשאול אותו איפה הוא אוחז והאם הוא מעוניין יהיה בראש הרשימה וכל השאר
       לפי א' ב אבל למעלה יהיה לפי תאריך השיחה מי שדיברנו בתאריך מוקדם יותר הוא יהיה בראש הרשימה)*/ }
-    <Button onClick={goToAnotherPage} variant="primary" size="sm" >הוספת מתענין חדש/עדכון פרטי מתעניין </Button>
-    {/*ברגע שלוחצים על הכפתור הוא מעביר אותנו לעמוד הוספת פרטים למתענין*/}
-    {/* הקישור הוא לדף פרטי המתעניין אם חסר פרטים הוא יציג רק את הפרטים שחסרים אם חסר את כל הפרטים
-   הוא יבקש ממנו את כל הפרטים זה פונקציות שצריכות להעשות לא עשיתי אותם*/ }
+    <Button onClick={goToAnotherPage} variant="primary" size="sm" >הוספת מתענין חדש </Button>
 
-    {/*(המטרה העיקרית בדף הזה הוא להשתמש בכמה שיותר דברים שאני כבר יודעת ולא צריך להתחיל לתשאל על כל הפרטים שאני יודעת כבר!!
-צריך לעשות פונקצייה שתבדוק אילו פרטים שאני צריכה ללקוח חסר לי עליו ובנוסף אני 
-רוצה לשמור את מי הביא את המתעניין והאינטרקציות הקודמות שלנו איתו כדי שנחמה תדע 
-מה הולך איתו מתחילה-ברגע שלוחצת על הכפתור הזה היא עוברת לדף של כל מה שצריך בלקוח
- מלא במה שיש לו כבר מהנתונים שיש לנו ומה שחסר ועדיין צריך למלא וכמובן מילוי חוזה.
-*/ }
-    <Table<ValuesToTable> data={valuesToTable} columns={columns} dir="rtl" />
+    <Table<ValuesToTable> data={valuesToTable} columns={columns} onDelete={deleteLead} onUpdate={updateLead}
+      renderActions={(row) => (
+          <NavLink
+            state={{ data: leads.find(lead => lead.id == row.id) }}
+            to={`interestedCustomerRegistration`}
+            className="text-blue-500 hover:underline ml-2"
+          >
+            לטופס רישום ללקוח
+          </NavLink>
+
+      )}
+    />
   </div>
 }

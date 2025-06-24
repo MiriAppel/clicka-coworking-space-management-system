@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button } from '../../../Common/Components/BaseComponents/Button';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CreateCustomerRequest, WorkspaceType } from "../../../../types/customer";
-import { Form } from '../../../Common/Components/BaseComponents/Form';
-import { InputField } from "../../../Common/Components/BaseComponents/Input";
-import { FileInputField } from "../../../Common/Components/BaseComponents/FileInputFile";
-import { SelectField } from '../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
+import { Form } from '../../../../Common/Components/BaseComponents/Form';
+import { InputField } from "../../../../Common/Components/BaseComponents/Input";
+import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
+import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
+import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber"
 import { z } from "zod";
 import { Lead } from "../../../../types/lead";
-import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 //בשביל שבתצוגה זה יהיה בעברית
@@ -21,13 +22,13 @@ const workspaceTypeOptions = [
 
 const schema = z.object({
     name: z.string().nonempty("חובה למלא שם"),
-    phone: z.string().nonempty("חובה למלא טלפון"),
+    phone: z.string().nonempty("חובה למלא טלפון").refine(val => /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }),
     email: z.string().email("Invalid email").nonempty("חובה למלא אימייל"),
     idNumber: z.string().nonempty("חובה למלא ת\"ז").refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // לא אופציונלי
     businessName: z.string().nonempty("חובה למלא שם עסק"), // לא אופציונלי
     businessType: z.string().nonempty("חובה למלא סוג עסק"), // לא אופציונלי
     workspaceType: z.nativeEnum(WorkspaceType).refine(val => !!val, { message: "חובה למלא סוג חלל עבודה" }),
-    // workspaceCount: z.number().positive("Workspace count must be a positive number"), // חובה
+    workspaceCount: z.number().positive("כמות חללי עבודה חייב להיות חיובי"), // חובה
     contractSignDate: z.string().nonempty("חובה למלא תאריך חתימת חוזה"), // חובה
     contractStartDate: z.string().nonempty("חובה למלא תאריך תחילת חוזה"), // חובה
     billingStartDate: z.string().nonempty("חובה למלא תאריך תחילת חיוב"), // חובה
@@ -35,9 +36,9 @@ const schema = z.object({
     invoiceName: z.string().optional(), // אופציונלי
     paymentMethod: z.object({
         creditCardLast4: z.string().optional().refine(val => !val || (/^\d{4}$/.test(val)), { message: "חובה להזין 4 ספרות בדיוק" }), // אופציונלי
-        creditCardExpiry: z.string().optional(), // אופציונלי
+        creditCardExpiry: z.string().optional().refine(val => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val),{ message: "פורמט תוקף לא תקין (MM/YY)" }), // אופציונלי
         creditCardHolderIdNumber: z.string().optional().refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // אופציונלי
-        creditCardHolderPhone: z.string().optional(), // אופציונלי
+        creditCardHolderPhone: z.string().optional().refine(val => !val || /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }), // אופציונלי
     }).optional(), // אופציונלי
     contractDocuments: z.array(z.any()).optional(),
 
@@ -64,7 +65,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
         //ואז צריך למלא ב idNumber את התז של הלקוח שעדיין אין לי
         //או שצריך להכניס אוטומטית בidNumber את lead.id
         //ואז גם אפשר להכניס את זה אוטומטית לcreditCardHolderIdNumber 
-        defaultValues: { ...lead, workspaceType: undefined }
+        defaultValues: { ...lead, workspaceCount: 1, paymentMethod: { creditCardHolderPhone: lead.phone } }
 
     });
 
@@ -78,7 +79,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
     //         businessName: "",
     //         businessType: lead?.businessType || "",
     //         workspaceType: undefined,
-    //         // workspaceCount: ""
+    //         // workspaceCount: 1
     //         notes: "", // גם אם אופציונלי, תני ערך ריק
     //         invoiceName: "",
     //         contractSignDate: "",
@@ -97,11 +98,10 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
     const stepFieldNames = [
         ["name", "phone", "email", "idNumber", "businessName", "businessType"] as const,
-        ["workspaceType", "notes", "invoiceName"] as const,
+        ["workspaceType", "workspaceCount", "notes", "invoiceName"] as const,
         ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
     ];
 
-    //השדות שבהערה זה השדות שהם לא מסוג טקסט וזה עושה בעיה
     const steps = [
         {
             title: "פרופיל",
@@ -126,6 +126,15 @@ export const InterestedCustomerRegistration: React.FC = () => {
                         options={workspaceTypeOptions}
                         required
                     />
+                    <NumberInputField
+                        name="workspaceCount"
+                        label="כמות חללי עבודה"
+                        required
+                        // placeholder="הכנס כמות"
+                        min={1}
+                        // step={1}
+                        dir="rtl"
+                    />
                     <InputField name="notes" label="הערות" />
                     <InputField name="invoiceName" label="שם לחשבונית" />
                 </>
@@ -138,27 +147,14 @@ export const InterestedCustomerRegistration: React.FC = () => {
                     <InputField name="contractSignDate" label="תאריך חתימת חוזה" required type="date" />
                     <InputField name="contractStartDate" label="תאריך תחילת חוזה" required type="date" />
                     <InputField name="billingStartDate" label="תאריך תחילת חיוב" required type="date" />
-                    <div>
-                        {/* כדי לסדר יפה את השגיאה מתחת לאינפוט - בגלל שזה מקונן */}
-                        <InputField name="paymentMethod.creditCardLast4" label="4 ספרות אחרונות של כרטיס אשראי" />
-                        {methods.formState.errors?.paymentMethod?.creditCardLast4?.message && (
-                            <p className="text-sm text-red-600">
-                                {methods.formState.errors.paymentMethod.creditCardLast4.message}
-                            </p>
-                        )}
-                    </div>
-                    <InputField name="paymentMethod.creditCardExpiry" label="תוקף כרטיס אשראי" />
-                    <div>
-                        {/* כנל בגלל שזה מקונן ולא תומך בשגיאות אני שמה אותם לבד */}
-                        <InputField name="paymentMethod.creditCardHolderIdNumber" label="תעודת זהות בעל הכרטיס" />
-                        {methods.formState.errors?.paymentMethod?.creditCardHolderIdNumber?.message && (
-                            <p className="text-sm text-red-600">
-                                {methods.formState.errors.paymentMethod.creditCardHolderIdNumber.message}
-                            </p>
-                        )}
-                    </div>
-                    <InputField name="paymentMethod.creditCardHolderPhone" label="טלפון בעל הכרטיס" />
                     <FileInputField name="contractDocuments" label="מסמכי חוזה" multiple />
+                    <div className="col-span-2 mt-4 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-700 pb-1">פרטי אשראי</h3>
+                    </div>
+                    <InputField name="paymentMethod.creditCardLast4" label="4 ספרות אחרונות של כרטיס אשראי" />
+                    <InputField name="paymentMethod.creditCardExpiry" label="תוקף כרטיס אשראי" />
+                    <InputField name="paymentMethod.creditCardHolderIdNumber" label="תעודת זהות בעל הכרטיס" />
+                    <InputField name="paymentMethod.creditCardHolderPhone" label="טלפון בעל הכרטיס" />
                 </>
             )
         }
@@ -189,9 +185,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
         alert("The form has been sent successfully:\n" + JSON.stringify(data, null, 2));
         console.log(data);
 
-        //ברגע שלא יהיו שדות בהערה זה יתאים לדאטה
-        // const customerRequest: CreateCustomerRequest = data;
-        // console.log(customerRequest);
+        const customerRequest: CreateCustomerRequest = data;
+        console.log(customerRequest);
 
         //לשלוח לשרת את הנתונים
         //לבדוק מה עם החוזה, איך הוא נוצר ומה צריך לעשות בשביל זה
@@ -217,33 +212,35 @@ export const InterestedCustomerRegistration: React.FC = () => {
                     {/* <div></div> */}
                     <div
                         key={currentStep}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                        className="grid grid-cols-1 sm:grid-cols-2 gap-4 col-span-2"
                     >
                         {steps[currentStep].content}
 
+                        <div className="col-span-2 flex justify-between">
+                            {/* צד ימין: כפתור הקודם או ריק */}
+                            {currentStep > 0 ? (
+                                <Button onClick={prevStep} variant="primary" size="sm">
+                                    הקודם
+                                </Button>
+                            ) : (
+                                <span /> // אלמנט ריק כדי לדחוף את הבא לשמאל
+                            )}
 
-                    </div>
-                    <div className="col-span-2 flex justify-between">
-                        {currentStep > 0 && (
-                            <Button onClick={prevStep} variant="secondary" size="sm">
-                                הקודם
-                            </Button>
-                        )}
-                        {currentStep < steps.length - 1 && (
-                            <Button onClick={nextStep} variant="secondary" size="sm">
-                                הבא
-                            </Button>
-                        )}
-                        {currentStep === steps.length - 1 && (
-                            <Button
-                                // className="bg-blue-600 text-white px-20 py-1 rounded hover:bg-blue-700"
-                                variant="primary"
-                                size="sm"
-                                type="submit"
-                            >
-                                שלח
-                            </Button>
-                        )}
+                            {/* צד שמאל: הבא או שלח */}
+                            {currentStep < steps.length - 1 ? (
+                                <Button onClick={nextStep} variant="primary" size="sm">
+                                    הבא
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="primary"
+                                    size="sm"
+                                    type="submit"
+                                >
+                                    שלח
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </Form>
             </div>
