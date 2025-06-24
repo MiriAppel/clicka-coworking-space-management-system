@@ -1,5 +1,6 @@
-import { Button } from '../../../Common/Components/BaseComponents/Button';
-import { Form } from '../../../Common/Components/BaseComponents/Form';
+import { Button } from "../../../../Common/Components/BaseComponents/Button";
+import { Form } from "../../../../Common/Components/BaseComponents/Form";
+
 
 export const AddContract = () => {
     return (

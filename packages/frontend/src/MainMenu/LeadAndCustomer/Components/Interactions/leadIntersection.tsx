@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Table } from "../../../Common/Components/BaseComponents/Table";
 import { FaBell, FaBellSlash } from "react-icons/fa";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
