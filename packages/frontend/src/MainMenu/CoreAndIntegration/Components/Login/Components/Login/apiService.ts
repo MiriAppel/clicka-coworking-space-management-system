@@ -1,6 +1,6 @@
 // src/utils/apiService.ts
 import axios from 'axios';
-import { useAuthStore } from '../../Stores/Auth/useAuthStore'
+import { useAuthStore } from '../../../../../../Stores/Auth/useAuthStore';
 import { Response } from 'express';
 
 interface RequestOptions extends RequestInit {

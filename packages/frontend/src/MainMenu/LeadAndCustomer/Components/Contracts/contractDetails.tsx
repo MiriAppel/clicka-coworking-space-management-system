@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useState } from "react";
-import { Button } from '../../../Common/Components/BaseComponents/Button';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import type { Contract } from "shared-types";
 import { ContractStatus, WorkspaceType } from "shared-types";
 

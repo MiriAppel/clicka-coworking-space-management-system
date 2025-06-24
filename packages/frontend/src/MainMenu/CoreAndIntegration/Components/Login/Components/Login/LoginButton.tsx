@@ -1,6 +1,6 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { googleAuthConfig } from '../Config/googleAuth';
+import { googleAuthConfig } from '../../Config/googleAuth';
 import { LoginResponse } from '../../../../../types/auth';
 import { useAuthStore } from '../../Stores/Auth/useAuthStore';
 
