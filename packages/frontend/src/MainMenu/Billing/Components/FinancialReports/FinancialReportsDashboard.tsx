@@ -43,7 +43,7 @@ export const FinancialReportsDashboard: React.FC = () => {
           label="סוג דוח"
           options={reportTypes}
           required
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedType(e.target.value as ReportType)}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedType(e.target.value as ReportType)}  // הוספת פונקציית onChange
         />
 
         {/* טווח תאריכים */}

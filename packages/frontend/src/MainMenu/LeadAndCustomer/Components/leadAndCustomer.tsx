@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../Common/Components/BaseComponents/Button';
 import '../Css/leadAndCustomer.css'
 
@@ -10,11 +10,9 @@ export const LeadAndCustomer = () => {
 
     return <div className='leadAndCustomer' style={{ direction: 'rtl' }}>
         <h1>Lead & Customer</h1>
-        <Button variant="primary" size="sm" onClick={() => navigate('customers')}>לקוחות</Button>
-        <Button variant="primary" size="sm" onClick={() => navigate('leads')}>מתעניינים</Button>
-        <Button variant="primary" size="sm" onClick={() => navigate('contractManagement')}>חוזים</Button>
-        <Button variant="primary" size="sm" onClick={() => navigate('leads/intersections')}>אינטראקציות</Button>
-        <Button variant="primary" size="sm" onClick={() => navigate('/')}>Back</Button>
-        <Outlet />
+        <Button variant="primary" size="md" onClick={() => navigate('customers')}>לקוחות</Button>
+        <Button variant="primary" size="md" onClick={() => navigate('leads')}>מתעניינים</Button>
+        <Button variant="primary" size="md" onClick={() => navigate('contractManagement')}>חוזים</Button>
+        <Button variant="accent" size="sm" onClick={() => navigate('/')}>Back</Button>
     </div>
 }
