@@ -1,8 +1,13 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CustomerStatus, ExitReason } from 'shared-types';
+import { Form } from '../../../../Common/Components/BaseComponents/Form';
+import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
+import { InputField } from '../../../../Common/Components/BaseComponents/Input';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
+import { CheckboxField } from '../../../../Common/Components/BaseComponents/CheckBox';
 
 interface Props {
   open: boolean;
@@ -12,7 +17,7 @@ interface Props {
 
 const schema = z.object({
   status: z.nativeEnum(CustomerStatus),
-  effectiveDate: z.string().min(1, "חובה לבחור תאריך"),
+  effectiveDate: z.string().min(1, 'חובה לבחור תאריך'),
   notifyCustomer: z.boolean(),
   reason: z.string().optional(),
   exitNoticeDate: z.string().optional(),
@@ -25,153 +30,134 @@ const schema = z.object({
       ctx.addIssue({
         path: ['exitNoticeDate'],
         code: z.ZodIssueCode.custom,
-        message: "יש להזין תאריך הודעת עזיבה"
+        message: 'יש להזין תאריך הודעת עזיבה',
       });
     }
     if (!data.plannedExitDate) {
       ctx.addIssue({
         path: ['plannedExitDate'],
         code: z.ZodIssueCode.custom,
-        message: "יש להזין תאריך עזיבה מתוכנן"
+        message: 'יש להזין תאריך עזיבה מתוכנן',
       });
     }
     if (!data.exitReason) {
       ctx.addIssue({
         path: ['exitReason'],
         code: z.ZodIssueCode.custom,
-        message: "יש לבחור סיבת עזיבה"
+        message: 'יש לבחור סיבת עזיבה',
       });
     }
   }
 });
 
 const statusLabels: Record<CustomerStatus, string> = {
-  ACTIVE: "פעיל",
-  NOTICE_GIVEN: "הודעת עזיבה",
-  EXITED: "עזב",
-  PENDING: "בהמתנה"
+  ACTIVE: 'פעיל',
+  NOTICE_GIVEN: 'הודעת עזיבה',
+  EXITED: 'עזב',
+  PENDING: 'בהמתנה',
 };
 
 const reasonLabels: Record<ExitReason, string> = {
-  RELOCATION : 'מעבר למיקום אחר',
-  BUSINESS_CLOSED : 'סגירת עסק',
-  PRICE : 'מחיר',
-  WORK_FROM_HOME : 'עבודה מהבית',
-  SPACE_NEEDS : 'צרכי חלל',
-  DISSATISFACTION : 'חוסר שביעות רצון',
-  OTHER: 'אחר'
+  RELOCATION: 'מעבר למיקום אחר',
+  BUSINESS_CLOSED: 'סגירת עסק',
+  PRICE: 'מחיר',
+  WORK_FROM_HOME: 'עבודה מהבית',
+  SPACE_NEEDS: 'צרכי חלל',
+  DISSATISFACTION: 'חוסר שביעות רצון',
+  OTHER: 'אחר',
 };
 
-
 type FormData = z.infer<typeof schema>;
+
 export const CustomerStatusChanged: React.FC<Props> = ({ open, onClose, customerId }) => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    control,
-    formState: { errors }
-  } = useForm<FormData>({
+  const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues: {
       status: CustomerStatus.ACTIVE,
-      notifyCustomer: false
-    }
+      notifyCustomer: false,
+    },
   });
 
-  const selectedStatus = watch('status');
+  const selectedStatus = methods.watch('status');
 
-  // ✅ כאן צריך להוסיף קריאת API בפועל – שליחת שינוי סטטוס לשרת
   const onSubmit = async (data: FormData) => {
-    console.log("שליחה:", data);
-
-    try {
-      // ✳️ כאן צריכה לבוא קריאה לשרת (POST או PUT)
-      // לדוגמה:
-      // await customerApi.changeCustomerStatus(customerId, data);
-
-      // אם מדובר ב־NOTICE_GIVEN, צריכה לבוא גם קריאה ל־recordExitNotice
-
-      alert("הטופס נשלח בהצלחה");
-      onClose();
-    } catch (error) {
-      console.error("שגיאה בשליחה לשרת", error);
-      alert("שגיאה בשליחת הטופס לשרת");
-    }
+    console.log('שליחה:', data);
+    // כאן תבוא קריאת API לשינוי סטטוס לקוח ושליחת פרטי עזיבה אם רלוונטי
+    onClose();
   };
 
   if (!open) return null;
 
   return (
-    <div>
-      <h2>שינוי סטטוס לקוח</h2>
-      <form onSubmit={handleSubmit(onSubmit)} dir="rtl">
+    <div className="max-w-xl mx-auto mt-6">
+      <h2 className="text-xl font-bold text-center text-blue-700 mb-4">שינוי סטטוס לקוח</h2>
 
-        <div>
-          <label>סטטוס חדש:</label>
-          <select {...register("status")}>
-            {Object.entries(statusLabels).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
-            ))}
-          </select>
-          {errors.status && <p style={{ color: 'red' }}>{errors.status.message}</p>}
-        </div>
+      <Form
+        schema={schema}
+        onSubmit={onSubmit}
+        methods={methods}
+        label="עדכון סטטוס"
+        className="space-y-4"
+      >
+        <SelectField
+          name="status"
+          label="סטטוס חדש"
+          options={Object.entries(statusLabels).map(([value, label]) => ({ value, label }))}
+          required
+        />
 
-        <div>
-          <label>תאריך שינוי:</label>
-          <input type="date" {...register("effectiveDate")} />
-          {errors.effectiveDate && <p style={{ color: "red" }}>{errors.effectiveDate.message}</p>}
-        </div>
+        <InputField
+          name="effectiveDate"
+          label="תאריך שינוי"
+          required
+        />
 
-        <div>
-          <label>סיבת שינוי:</label>
-          <textarea {...register("reason")} />
-        </div>
+        <InputField
+          name="reason"
+          label="סיבת שינוי"
+        />
 
-        <div>
-          <label>
-            <input type="checkbox" {...register("notifyCustomer")} />
-            שלח התראה ללקוח
-          </label>
-        </div>
+        <CheckboxField
+          name="notifyCustomer"
+          label="שלח התראה ללקוח"
+        />
 
         {selectedStatus === CustomerStatus.NOTICE_GIVEN && (
-          <div style={{ border: '1px solid gray', padding: '10px', marginTop: '10px' }}>
-            <h3>פרטי עזיבה</h3>
+          <div className="border p-4 rounded bg-gray-50">
+            <h3 className="font-semibold text-gray-700 mb-2">פרטי עזיבה</h3>
 
-            <div>
-              <label>תאריך הודעת יציאה:</label>
-              <input type="date" {...register("exitNoticeDate")} />
-            </div>
+            <InputField
+              name="exitNoticeDate"
+              label="תאריך הודעת עזיבה"
+              required
+            />
 
-            <div>
-              <label>תאריך עזיבה מתוכנן:</label>
-              <input type="date" {...register("plannedExitDate")} />
-            </div>
-            
-            <div>
-              <label>סיבת עזיבה:</label>
-              <select {...register("exitReason")}>
-                <option value="">בחר</option>
-                {Object.entries(reasonLabels).map(([key, label]) => (
-                  <option key={key} value={key}>{label}</option>
-                ))}
-              </select>
-              {errors.exitReason && <p style={{ color: 'red' }}>{errors.exitReason.message}</p>}
-            </div>
+            <InputField
+              name="plannedExitDate"
+              label="תאריך עזיבה מתוכנן"
+              required
+            />
 
-            <div>
-              <label>פירוט נוסף:</label>
-              <textarea {...register("exitReasonDetails")} />
-            </div>
+            <SelectField
+              name="exitReason"
+              label="סיבת עזיבה"
+              options={Object.entries(reasonLabels).map(([value, label]) => ({ value, label }))}
+              required
+            />
+
+            <InputField
+              name="exitReasonDetails"
+              label="פירוט נוסף"
+            />
           </div>
         )}
 
-        <br />
-        <button type="submit">שמור</button>
-        <button type="button" onClick={onClose} style={{ marginRight: '10px' }}>סגור</button>
-      </form>
+        <div className="flex justify-between mt-6">
+          <Button type="button" variant="secondary" onClick={onClose}>סגור</Button>
+          <Button type="submit" variant="primary">שמור</Button>
+        </div>
+      </Form>
     </div>
   );
 };
