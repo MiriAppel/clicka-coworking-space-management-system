@@ -24,10 +24,16 @@ export enum BookingStatus {
   CANCELED = 'CANCELED',
   COMPLETED = 'COMPLETED'
 }
+export interface RoomFeature {
+  id: ID;
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
 
 // Room model
 export interface Room {
-  id: ID;
+  id?: ID;
   name: string;
   description?: string;
   type: RoomType;

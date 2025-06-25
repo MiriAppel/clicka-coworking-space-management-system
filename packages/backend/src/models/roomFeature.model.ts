@@ -1,6 +1,5 @@
-<<<<<<< HEAD
-import { ID } from "../../../../types/core";
-import { Room,RoomFeature } from "../../../../types/booking";
+import { ID } from "../../../shared-types/core";
+import { Room,RoomFeature } from "../../../shared-types/booking";
 
 export class RoomFeatureModel implements RoomFeature {
   id: ID;
@@ -18,41 +17,6 @@ export class RoomFeatureModel implements RoomFeature {
     this.IsIncluded = IsIncluded;
     this.additionalCost = additionalCost;
     this.description = description;
-=======
-import type{ ID, Room } from "shared-types";
-
-export class RoomFaeature {
-    id!: ID;
-    name: string;
-    description?: string;
-    IsIncluded:boolean;
-    additionalCost:number;
-      // קשר: פיצ'ר שייך לחדר אחד
-  room?: Room;
-    constructor(
-      id:ID,
-      name: string,
-      description: string,
-      IsIncluded: boolean,
-      additionalCost: number,
-    ) {
-      this.id=id;
-      this.name = name;
-      this.description = description;
-     this.IsIncluded=IsIncluded;
-     this.additionalCost=additionalCost;
-    }
-  
-    toDatabaseFormat() {
-      return {
-        id:this.id,
-        name: this.name,
-        description: this.description,
-        IsIncluded:this.IsIncluded,
-        additionalCost:this.additionalCost
-      };
-    }
->>>>>>> c87559f51ec16ab5ae4f8105ad6ad1b70185d243
   }
 
   toDatabaseFormat() {

@@ -1,4 +1,4 @@
-import { ID, DateISO } from '../types/core';
+import { ID, DateISO } from '../shared-types/core';
 
 export enum StatusOccupancy {
   HIGH_OCCUPANCY = 'HIGH_OCCUPANCY',

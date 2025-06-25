@@ -34,12 +34,7 @@ export interface BookingRules{
   FreeHoursForKlikcaCard:number;
 }
 //interface in room
-export interface RoomFeature {
-  id: ID;
-  description?: string;
-  IsIncluded: boolean;
-  additionalCost: number;
-}
+
 
 // Room model
 export interface Room {

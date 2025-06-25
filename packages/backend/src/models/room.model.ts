@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from '../../../../types/booking';
-import { ID, DateISO } from '../../../../types/core';
+
+import { ID, DateISO } from '../../../shared-types/core';
+import {Room,RoomFeature,RoomType,RoomStatus}from '../../../shared-types/booking'
 
 export class RoomModel implements Room {
-=======
-import type{ RoomStatus } from "shared-types";
-import {ID,DateISO} from "../controllers/occupancyTrend.controllers";
-//import{MeetingRoomManagement} from "../controllers/roomController"
-import { OccupancyAlert } from "./occupancyTrend.model";
-import { OccupancySnapshot } from "./occupancyTrend.model";
-export interface MeetingRoomManagement{
-  
-}
-export interface RoomFeature {
->>>>>>> c87559f51ec16ab5ae4f8105ad6ad1b70185d243
-  id: ID;
+  id?: ID;
   name: string;
   description?: string;
   type: RoomType;

@@ -1,51 +1,69 @@
-
-
-// דוגמה למימוש של פונקציות שיכולות להשתמש בטיפוסים
-
-import type{ CreateSpaceRequest, DateISO, GetSpacesRequest, ID, Space, UpdateSpaceRequest } from "shared-types";
-import { SpaceStatus } from "shared-types";
+import type { ID, DateISO, SpaceStatus, WorkspaceType } from "shared-types";
 
 export class SpaceModel {
-    private spaces: Space[] = [];
+  id?: ID;
+  name: string;
+  description?: string;
+  type: WorkspaceType;
+  status: SpaceStatus;
+  room?: string;
+  currentCustomerId?: ID;
+  currentCustomerName?: string;
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
+  createdAt: DateISO;
+  updatedAt: DateISO;
 
-    // פונקציה להוסיף מקום חדש
-    createSpace(request: CreateSpaceRequest): Space {
-        const newSpace: Space = {
-            id: this.generateId(),
-            name: request.name,
-            description: request.description,
-            type: request.type,
-            status: SpaceStatus.AVAILABLE,
-            room: request.room,
-            positionX: request.positionX,
-            positionY: request.positionY,
-            width: request.width,
-            height: request.height,
-            createdAt: new Date().toISOString() as DateISO,
-            updatedAt: new Date().toISOString() as DateISO,
-        };
-        this.spaces.push(newSpace);
-        return newSpace;
-    }
+  constructor(
+    id: ID,
+    name: string,
+    description: string,
+    type: WorkspaceType,
+    status: SpaceStatus,
+    room: string | undefined,
+    currentCustomerId: ID | undefined,
+    currentCustomerName: string | undefined,
+    positionX: number,
+    positionY: number,
+    width: number,
+    height: number,
+    createdAt: DateISO,
+    updatedAt: DateISO
+  ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.type = type;
+    this.status = status;
+    this.room = room;
+    this.currentCustomerId = currentCustomerId;
+    this.currentCustomerName = currentCustomerName;
+    this.positionX = positionX;
+    this.positionY = positionY;
+    this.width = width;
+    this.height = height;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
-    // פונקציה לעדכון מקום קיים
-    updateSpace(id: ID, request: UpdateSpaceRequest): Space | undefined {
-        const space = this.spaces.find(space => space.id === id);
-        if (space) {
-            Object.assign(space, request, { updatedAt: new Date().toISOString() as DateISO });
-            return space;
-        }
-        return undefined;
-    }
-
-    // פונקציה לקבלת מקומות לפי בקשה
-    getSpaces(request: GetSpacesRequest): Space[] {
-        // לוגיקה לסינון מקומות לפי הבקשה
-        return this.spaces; // החזר את כל המקומות לדוגמה
-    }
-
-    // פונקציה ליצירת מזהה ייחודי
-    private generateId(): ID {
-        return Math.random().toString(36).substr(2, 9) as ID; // דוגמה ליצירת מזהה
-    }
+  toDatabaseFormat() {
+    return {
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      type: this.type,
+      status: this.status,
+      room: this.room,
+      currentCustomerId: this.currentCustomerId,
+      currentCustomerName: this.currentCustomerName,
+      positionX: this.positionX,
+      positionY: this.positionY,
+      width: this.width,
+      height: this.height,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt
+    };
+  }
 }

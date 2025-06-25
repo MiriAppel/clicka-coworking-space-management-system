@@ -1,8 +1,9 @@
-import { TimePeriod, OccupancyTrend, OccupancyAlert, StatusOccupancy, WorkSpaceType } from '../../../../types/occupancy';
-import { ID, DateISO } from '../../../../types/core';
+import { TimePeriod,  StatusOccupancy, WorkSpaceType } from '../../../frontend/occupancy';
+import { ID, DateISO } from '../../../shared-types/core';
+import { OccupancyTrend, OccupancyAlert }from '../../../shared-types/occupancy'
 
 export class OccupancyTrendModel implements OccupancyTrend, OccupancyAlert {
-  period: TimePeriod;
+  peroid?: TimePeriod;
   roomId: string;
   customerId: string;
   data: {
