@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-import { Button } from './MainMenu/Common/Components/BaseComponents/Button';
+import { Button } from './Common/Components/BaseComponents/Button';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 
 function App() {

@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import React from 'react';
-import { Button, ButtonProps } from '../../../Common/Components/BaseComponents/Button';
+import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
 import { NavLink, Outlet } from "react-router";
 import { ExportToExcel } from '../exportToExcel';
 import { useState } from "react";
-import { Table, TableColumn } from "../../../Common/Components/BaseComponents/Table";
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import type{ Customer } from "shared-types";
 import { CustomerStatus, PaymentMethodType } from "shared-types";
 
