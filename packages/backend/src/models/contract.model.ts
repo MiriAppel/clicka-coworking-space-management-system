@@ -51,28 +51,18 @@ export class ContractModel implements Contract {
   toDatabaseFormat?() {
     return {
       id: this.id,
-      customerId: this.customerId,
+      customer_id: this.customerId,
       version: this.version,
       status: this.status,
-      signDate: this.signDate,
-      startDate: this.startDate,
-      endDate: this.endDate,
+      sign_date: this.signDate,
+      start_date: this.startDate,
+      end_date: this.endDate,
       terms: this.terms,
-      documents: this.documents.map(doc => ({
-        id: doc.id,
-        name: doc.name,
-        path: doc.path,
-        mimeType: doc.mimeType,
-        size: doc.size,
-        url: doc.url,
-        googleDriveId: doc.googleDriveId,
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt
-      })),
-      signedBy: this.signedBy,
-      witnessedBy: this.witnessedBy,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      documents: this.documents,
+      signed_by: this.signedBy,
+      witnessed_by: this.witnessedBy,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt
     };   
   }
 }
