@@ -13,8 +13,7 @@ export interface GoogleOAuthTokenData {
 // types/google.ts
 
 // תאריך בפורמט ISO 8601
-export type DateISO = string;
-
+import { DateISO } from './core';
 // טווח תאריכים
 export interface TimeRange {
   start: DateISO;
