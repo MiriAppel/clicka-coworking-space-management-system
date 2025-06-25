@@ -72,7 +72,6 @@ export class BookingModel implements Booking {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
       room_id: this.roomId,
       room_name: this.roomName,
       customer_id: this.customerId,

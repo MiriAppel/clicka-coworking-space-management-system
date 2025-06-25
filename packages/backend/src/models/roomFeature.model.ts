@@ -21,7 +21,6 @@ export class RoomFeatureModel implements RoomFeature {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
       description: this.description,
       IsIncluded: this.IsIncluded,
       additionalCost: this.additionalCost

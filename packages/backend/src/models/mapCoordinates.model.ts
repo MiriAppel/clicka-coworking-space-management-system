@@ -27,7 +27,6 @@ export class MapCoordinatesModel implements MapCoordinates {
   }
     toDatabaseFormat() {
     return {
-      id: this.id,
       workspace_map: this.workspaceMapid,
       x: this.x,
       y: this.y,

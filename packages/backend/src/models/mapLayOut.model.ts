@@ -31,7 +31,6 @@ export class MapLayoutModel implements MapLayout {
 
   toDatabaseFormat() {
 	  return {
-      id:this.id,
      workspace_mapid:this.workspaceMapid,
 	  width: this.width,
       height: this.height,
