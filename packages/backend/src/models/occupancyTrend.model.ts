@@ -1,83 +1,88 @@
-import {TimePeriod,ID,DateISO,WorkSpaceType,statusOccupancy} from "../controllers/occupancyTrend.controllers"
-import { Room } from "./room.model";
-export interface OccupancySnapshot{
-  id: ID;
-  customerId:string;
-  roomId:string;
-  date: DateISO;
+import {TimePeriod,OccupancyTrend,OccupancyAlert,StatusOccupancy,WorkSpaceType} from '../../../shared-types/occupancy';
+import { ID, DateISO } from '../../../shared-types/core';
+
+export class OccupancyTrendModel implements OccupancyTrend, OccupancyAlert {
+  // ---- OccupancyTrend ----
+  period: TimePeriod;
+  roomId: string;
+  customerId: string;
+  date: string;
+  occupancyRate: number;
   totalSpace: number;
-  OccupiendSpaces: number;
-  availableSpaces: number;
-  OccupancyRate: number;
-  BreakDown: {
-    [key in WorkSpaceType]: {
-      total: number;
-      occupied: number;
-      occupancyRate: number;
-    };
-  };
-  createdAt: DateISO;
-}
-export interface OccupancyAlert{
-  id:ID;
-  roomId:string;
-  customerId:string ;
-  type:statusOccupancy;
-  threshold:number;
-  currentValue:number;
-  workspaceType:WorkSpaceType;
-  isActive:boolean;
-  triggeredAT:DateISO;
-}
-export class OccupancyTrend {
-    period: TimePeriod;
-    customerId!:string;
-    data: {
-      date: string;
-      occupancyRate: number;
-      totalSpace: number;
-      occupiedSpaces: number;
-    }[];
-    summary: {
-      averageOccupancy: number;
-      peakOccupancy: number;
-      lowOccupancy: number;
-      growthRate: number;
-    };
-    // קשר: אופציונלי אם את רוצה לקשר למזהה חדר
-    room?: Room;
-    constructor(
-      period: TimePeriod,
-      customerId:string,
-      data: {
-        date: string;
-        occupancyRate: number;
-        totalSpace: number;
-        occupiedSpaces: number;
-      }[],
-      averageOccupancy: number,
-      peakOccupancy: number,
-      lowOccupancy: number,
-      growthRate: number
-    ) {
-      this.period = period;
-      this.customerId=customerId;
-      this.data = data;
-      this.summary = {
-        averageOccupancy,
-        peakOccupancy,
-        lowOccupancy,
-        growthRate,
-      };
-    }
-  
-    toDatabaseFormat() {
-      return {
-        period: this.period,
-        customerId:this.customerId,
-        data: this.data,
-        summary: this.summary,
-      };
-    }
+  occupiedSpaces: number;
+  averageOccupancy: number;
+  peakOccupancy: number;
+  lowOccupancy: number;
+  growthRate: number;
+  // ---- OccupancyAlert ----
+  id: ID;
+  type: StatusOccupancy;
+  threshold: number;
+  currentValue: number;
+  workspaceType: WorkSpaceType;
+  isActive: boolean;
+  triggeredAt: DateISO;
+  constructor(
+    period: TimePeriod,
+    roomId: string,
+    customerId: string,
+    date: string,
+    occupancyRate: number,
+    totalSpace: number,
+    occupiedSpaces: number,
+    averageOccupancy: number,
+    peakOccupancy: number,
+    lowOccupancy: number,
+    growthRate: number,
+    id: ID,
+    type: StatusOccupancy,
+    threshold: number,
+    currentValue: number,
+    workspaceType: WorkSpaceType,
+    isActive: boolean,
+    triggeredAt: DateISO
+  ) {
+    // Trend
+    this.period = period;
+    this.roomId = roomId;
+    this.customerId = customerId;
+    this.date = date;
+    this.occupancyRate = occupancyRate;
+    this.totalSpace = totalSpace;
+    this.occupiedSpaces = occupiedSpaces;
+    this.averageOccupancy = averageOccupancy;
+    this.peakOccupancy = peakOccupancy;
+    this.lowOccupancy = lowOccupancy;
+    this.growthRate = growthRate;
+    // Alert
+    this.id = id;
+    this.type = type;
+    this.threshold = threshold;
+    this.currentValue = currentValue;
+    this.workspaceType = workspaceType;
+    this.isActive = isActive;
+    this.triggeredAt = triggeredAt;
   }
-  
+  toDatabaseFormat() {
+    return {
+      period: this.period,
+      roomId: this.roomId,
+      customerId: this.customerId,
+      date: this.date,
+      occupancyRate: this.occupancyRate,
+      totalSpace: this.totalSpace,
+      occupiedSpaces: this.occupiedSpaces,
+      averageOccupancy: this.averageOccupancy,
+      peakOccupancy: this.peakOccupancy,
+      lowOccupancy: this.lowOccupancy,
+      growthRate: this.growthRate,
+      id: this.id,
+      type: this.type,
+      threshold: this.threshold,
+      currentValue: this.currentValue,
+      workspaceType: this.workspaceType,
+      isActive: this.isActive,
+      triggeredAt: this.triggeredAt,
+    };
+  }
+}

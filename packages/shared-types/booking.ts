@@ -39,7 +39,18 @@ export interface Room {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
-
+export interface RoomFeature{
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
+export interface BookingRules{
+  MinimumBookingMinutes: number;
+  MaximumBookingMinutes: number;
+  AdvanceBookingDays: number;
+  RequiredApproval: boolean;
+  FreeHoursForKlikcaCard: number;
+}
 // Booking model
 export interface Booking {
   id: ID;
