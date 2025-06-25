@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
-import { LoginRequest, LoginResponse, User } from '../../../../types/auth';
+import { LoginRequest, LoginResponse, User } from "shared-types";
 import { getTokens, getGoogleUserInfo } from '../auth/googleApiClient';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
+import { UserService } from './user-service';
 
 
 export const generateJwtToken = (payload: { userId: string; email: string; googleId: string }): string => {
@@ -40,16 +41,13 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    //need to save access token and refresh token in the database nad crypt them
-    // const encryptedAccessToken = encrypt(tokens.access_token);
-    // const encryptedRefreshToken = encrypt(tokens.refresh_token || '');
-    // Save user and tokens to the database here
-    // ----------------------------------------------------------------------------
-    //Connect to DB to save refresh token
-    /*
-    */
-    //-----------------------------------------------------------------------------
-    await saveUserTokens(user.id, tokens.access_token, tokens.refresh_token || '');
+    //need to check if the user have permission to login
+    // const checkUser=await UserService.loginByGoogleId(user.googleId)
+    // if(checkUser===null){
+    //   throw new Error('User not found or not authorized to login');
+    // }
+//---------------------------------------------------
+    await saveUserTokens(user.id, tokens.refresh_token || '');
 
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);

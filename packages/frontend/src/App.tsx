@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Button } from './Common/Components/BaseComponents/Button';
-import { LeadInteraction } from './MainMenu/LeadAndCustomer/Components/Interactions/leadIntersection';
-import { AuthenticationScreen } from './Login/Components/AuthenticationScreen';
-import { useAuthStore } from './Stores/Auth/useAuthStore';
-import { AuthProvider } from './auth/Components/AuthProvider';
+import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
+import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -70,10 +67,8 @@ function App() {
           Billing
         </Button>
       </div>
-      <LeadInteraction></LeadInteraction>
       {/* 👇 נתיבים */}
       <Routes>
-        <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
       </Routes>
       <AuthenticationScreen />
     </div>

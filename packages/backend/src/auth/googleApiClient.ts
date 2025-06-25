@@ -2,6 +2,11 @@ import { google } from 'googleapis';
 import dotenv from 'dotenv';
 import axios from 'axios';
 
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:3001',
+  withCredentials: true, // Ensure cookies are sent with requests
+});
+
 dotenv.config();
 //parameters for Google OAuth2 from environment variables
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -33,15 +38,15 @@ export async function getTokens(code: string) {
 
 
 export async function getGoogleUserInfo(access_token: string) {
-  const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+  const response = await axiosInstance.get('https://www.googleapis.com/oauth2/v2/userinfo', {
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
   });
 
-  if (!response.ok) throw new Error('Failed to fetch user info');
+  if (response.status !== 200) throw new Error('Failed to fetch user info');
 
-  return response.json();
+  return response.data;
 }
 
 

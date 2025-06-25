@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserRole } from '../../../../types/auth';
+import { UserRole } from "shared-types";
 
 
 // Auth middleware to check user permissions

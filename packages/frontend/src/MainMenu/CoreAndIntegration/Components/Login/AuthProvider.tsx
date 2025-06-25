@@ -1,10 +1,14 @@
 import { Children, ReactNode, useEffect } from "react";
-import { useAuthStore } from "../../Stores/Auth/useAuthStore";
+import { useAuthStore } from "../../../../Stores/Auth/useAuthStore";
+import axios from "axios";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
-
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:3001',
+  withCredentials: true, // Ensure cookies are sent with requests
+});
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const { setUser, clearUser, setLoading,isLoading } = useAuthStore();
 
@@ -13,28 +17,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const checkAuth = async () => {
             try {
                 setLoading(true);
-                let res = await fetch("/api/auth/verify", {
-                    credentials: "include", // חשוב לשם שליחת ה-cookie
-                });
+                let res = await axiosInstance.get("/api/auth/verify");
                 if (res.status == 200) {
                     console.log("Authenticated successfully in useEffect at App");
-                    const data = await res.json();
+                    const data = res.data;
                     setUser(data.user);
-                    console.log(data.user);
                 } else if (res.status == 401) {
-                    const data = await res.json();
+                    const data = res.data;
                     if (data.error === 'TokenExpired') {
-                        const refreshRes = await fetch("/api/auth/refresh", {
-                            method: "POST",
-                            credentials: "include", // חשוב לשם שליחת ה-cookie
-                        });
-                        if (refreshRes.ok) {
+                        const refreshRes = await axiosInstance.post("/api/auth/refresh");
+                        if (refreshRes.status === 200) {
                             console.log("Refresh token success in useEffect at App");
-                            res = await fetch("/api/auth/verify", {
-                                credentials: "include",
-                            });
-                            if (res.ok) {
-                                const data = await res.json();
+                            res = await axiosInstance.get("/api/auth/verify");
+                            if (res.status === 200) {
+                                const data = res.data;
                                 setUser(data.user);
                                 return;
                             }
@@ -53,9 +49,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         };
         checkAuth();
     }, [setUser, clearUser, setLoading]);
-if(isLoading){
-    return <div className="auth-loading"> מאמת זהות...</div>
-}
+// if(isLoading){
+//     return <div className="auth-loading"> מאמת זהות...</div>
+// }
 return<>{children}</>
 
 }

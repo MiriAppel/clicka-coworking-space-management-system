@@ -1,5 +1,4 @@
-import { ID, DateISO } from "../../../../types/core";
-import { User,UserRole } from "../../../../types/auth";
+import { ID, DateISO , User,UserRole} from "shared-types";
 
 // User model
 export class UserModel implements User{
@@ -10,8 +9,6 @@ export class UserModel implements User{
     lastName: string;
     role: UserRole;
     googleId: string;
-    access_token:string;
-    refresh_token:string;
     lastLogin?: DateISO;
     active: boolean;
     createdAt: DateISO;
@@ -24,8 +21,6 @@ export class UserModel implements User{
         lastName: string,
         role: UserRole, 
         googleId: string,
-        access_token:string,
-        refresh_token:string,
         active: boolean,
         createdAt: DateISO,
         updatedAt: DateISO,
@@ -37,8 +32,6 @@ export class UserModel implements User{
         this.lastName = lastName || '';
         this.role = role;
         this.googleId = googleId;
-        this.access_token = access_token;
-        this.refresh_token = refresh_token;
         this.lastLogin = lastLogin;
         this.active = active;
         this.createdAt = createdAt;
@@ -53,8 +46,6 @@ export class UserModel implements User{
             lastName: this.lastName,
             role: this.role,
             googleId: this.googleId,
-            access_token: this.access_token,
-            refresh_token: this.refresh_token,
             lastLogin: this.lastLogin,
             active: this.active,
             createdAt: this.createdAt,

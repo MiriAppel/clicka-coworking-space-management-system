@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { UserController } from "../controllers/user-controller";
 import { authorizeUser}  from "../middleware/authorizeUser-middleware";
-import { UserRole } from "../../../../types/auth";
+import { UserRole } from "shared-types";
 
 const userController = new UserController();
 const userRouter = Router();

@@ -1,8 +1,8 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { googleAuthConfig } from '../Config/googleAuth';
-import { LoginResponse } from '../../../../../types/auth';
-import { useAuthStore } from '../../Stores/Auth/useAuthStore';
+import { googleAuthConfig } from '../../Config/googleAuth';
+import { LoginResponse } from "shared-types"
+import { useAuthStore } from "../../../../Stores/Auth/useAuthStore";
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:3001',

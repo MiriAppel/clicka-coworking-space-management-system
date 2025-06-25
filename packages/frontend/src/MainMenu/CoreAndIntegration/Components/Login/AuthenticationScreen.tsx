@@ -2,9 +2,9 @@ import { use } from "react";
 import { LoginWithGoogle } from "./LoginButton";
 import { LogoutButton } from "./LogoutButton";
 import { useEffect } from "react";
-import { useAuthStore } from "../../Stores/Auth/useAuthStore";
+import { useAuthStore } from "../../../../Stores/Auth/useAuthStore";
 export const AuthenticationScreen = () => {
-  const { user, isAuthenticated, setUser, clearUser, setLoading } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
   return (
     <div className="authentication-screen">

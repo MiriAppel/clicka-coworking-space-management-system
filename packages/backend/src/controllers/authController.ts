@@ -1,9 +1,8 @@
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 import * as tokenService from '../services/tokenService';
-import { LoginRequest, LoginResponse, User } from './../../../../types/auth';
-import { decrypt } from '../services/cryptoService';
-import { refreshAccessToken } from '../auth/googleApiClient';
+import { LoginResponse } from "shared-types";
+
 import { HttpStatusCode } from 'axios';
 
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
@@ -16,33 +15,61 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
       return;
     }
     const loginResult = await authService.exchangeCodeAndFetchUser(code);
-    tokenService.setAuthCookie(res, loginResult.token);
-    res.status(200).json(loginResult);
+
+    tokenService.setAuthCookie(res, loginResult.token, loginResult.sessionId!);
+    const response = {
+      ...loginResult,
+      message: 'התחברת בהצלחה. נותקת ממכשירים אחרים.'
+    };
+    res.status(200).json(response);
   } catch (error) {
-    console.error('Google login failed:', error);
-    res.status(500).json({ error: 'Authentication failed' });
+    if ((error as any).message === 'User not found or not authorized to login') {
+      res.status(HttpStatusCode.Forbidden).json({ error: 'User not found or not authorized to login' });
+    } else {
+      console.error('Google login failed:', error);
+      res.status(500).json({ error: 'Authentication failed' });
+    }
   }
 };
 
-export const logout = (req: Request, res: Response) => {
-  tokenService.clearAuthCookie(res);
-
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const userId = await tokenService.getUserFromCookie(req);
+    if (userId) {
+      await tokenService.logoutUser(userId, res);
+    }
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+  finally {
+    // Clear the auth cookie
+    tokenService.clearAuthCookie(res);
+  }
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
 export const refreshTokenHandler = async (req: Request, res: Response) => {
   try {
     const sessionToken = req.cookies.session;
-    if (!sessionToken) {
+    const sessionId = req.cookies.sessionId;
+    if (!sessionToken || !sessionId) {
       res.status(401).json({ error: 'not authenticated' });
       return;
     }
-    const newJwt = await tokenService.refreshUserToken(sessionToken);
-    tokenService.setAuthCookie(res, newJwt);
+    const newJwt = await tokenService.refreshUserToken(sessionToken, sessionId);
+    tokenService.setAuthCookie(res, newJwt, sessionId);
     res.status(200).json({ message: 'Token refreshed successfully' });
 
   } catch (err) {
     console.error('Error refreshing token', err);
-    res.status(500).json({ error: 'Error refreshing token' });
+    if ((err as any).message === 'INVALID_SESSION') {
+      // Session לא תקף - המשתמש צריך להתחבר מחדש
+      tokenService.clearAuthCookie(res);
+      res.status(401).json({
+        error: 'Session expired',
+        message: 'Please login again'
+      });
+      res.status(500).json({ error: 'Error refreshing token' });
+    }
   }
-};
+}

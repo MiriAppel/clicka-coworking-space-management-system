@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../services/user-service';
-import { User } from '../../../../types/auth';
+import { User } from "shared-types";
 
 export const verifySession = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.session;

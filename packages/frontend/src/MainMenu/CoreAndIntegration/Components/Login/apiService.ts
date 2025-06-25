@@ -1,6 +1,6 @@
 // src/utils/apiService.ts
 import axios from 'axios';
-import { useAuthStore } from '../../../../../../Stores/Auth/useAuthStore';
+import { useAuthStore } from '../../../../Stores/Auth/useAuthStore';
 import { Response } from 'express';
 
 interface RequestOptions extends RequestInit {
@@ -30,24 +30,20 @@ async function refreshAuthToken(): Promise<boolean> {
       return false;
     }
 
-    const data = response.data;
-    const newAccessToken: string = data.accessToken;
-    localStorage.setItem('accessToken', newAccessToken); // שמור את ה-Access Token החדש
-    console.log('Access token refreshed successfully.');
-    return true; // הריענון הצליח
+    return true; // refresh successful
 
   } catch (error) {
     console.error('Error refreshing token:', error);
-    clearUser(); // נקה את המשתמש במקרה של שגיאה
+    clearUser(); // clear the user if there's an error
     return false;
   }
 }
 
-// פונקציית fetch עוטפת עם לוגיקת ריענון
+// function feth with authentication and retry logic
 export async function authenticatedFetch<T>(
   url: RequestInfo,
   options: RequestOptions = {},
-  isRetry = false // דגל לבדיקה אם זו בקשה חוזרת
+  isRetry = false // flag to indicate if this is a retry attempt
 ): Promise<T> {
   const accessToken = localStorage.getItem('accessToken');
   const headers = {

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import { User } from '../../../../types/auth'
+import { User } from "shared-types"
 import { log } from 'console'
-import { DateISO } from '../types/core'
+import { DateISO } from "shared-types"
 
 
 interface AuthState {

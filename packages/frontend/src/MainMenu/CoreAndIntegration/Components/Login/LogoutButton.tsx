@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '../../Stores/Auth/useAuthStore'; // ודאי שהנתיב נכון
+import { useAuthStore } from '../../../../Stores/Auth/useAuthStore'; // ודאי שהנתיב נכון
 import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({

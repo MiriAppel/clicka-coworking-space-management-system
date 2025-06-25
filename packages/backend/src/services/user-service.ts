@@ -7,6 +7,7 @@ const supabaseAnonKey = 'your-anon-key'; // החלף עם ה-Anon Key שלך
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export class UserService {
+    static loginByGoogleId: any;
 
     // פונקציה ליצירת משתמש
     async createUser(user: UserModel): Promise<UserModel | null> {
