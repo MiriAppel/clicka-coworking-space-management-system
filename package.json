@@ -2,14 +2,12 @@
   "name": "clicka-project",
   "version": "1.0.0",
   "main": "index.js",
-
   "private": true,
-
-  "scripts": {
-    "start:backend": "yarn workspace clicka-backend dev",
-    "start:frontend": "yarn workspace clicka-frontend start",
-    "build": "yarn workspaces run build"
-  },
+    "scripts": {
+      "start:backend": "yarn workspace clicka-backend dev",
+      "start:frontend": "yarn workspace clicka-frontend start",
+      "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
+    },
   "workspaces": [
     "packages/*"
   ],
@@ -24,6 +22,10 @@
     "mailcomposer": "^4.0.2",
     "multer": "^2.0.1",
     "nodemailer": "^7.0.3",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "@supabase/supabase-js": "^2.50.0",
+    "ts-node": "^10.9.2",
+    "yarn": "^1.22.22"
+
   }
 }

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -16,8 +20,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@types/*": ["../../types/*"]
+      "@types/*": ["../backend/src/types/*"]
     }
   },
-  "include": ["src", "../../types"]
+  "include": ["src", "../backend/src/types"]
 }

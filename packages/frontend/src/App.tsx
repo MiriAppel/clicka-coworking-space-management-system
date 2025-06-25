@@ -1,35 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { LoginWithGoogle } from './Login/Components/LoginButton';
 import { AuthenticationScreen } from './Login/Components/AuthenticationScreen';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+import { Button } from './Common/Components/BaseComponents/Button';
 
-// Simple component to demonstrate the project
 function App() {
-  const [healthStatus, setHealthStatus] = useState<{ status: string, timestamp: string } | null>(null);
+  const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  //////
   const navigate = useNavigate();
 
-
-
   useEffect(() => {
-    // Check API health
     fetch('http://localhost:3001/api/health')
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           throw new Error('API server not responding');
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         setHealthStatus(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error fetching API health:', err);
         setError('Could not connect to API server. Make sure it is running.');
         setLoading(false);
@@ -43,13 +39,41 @@ function App() {
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
-      <div className='menu' style={{ backgroundColor: 'black' }}>
-        <Button variant="outlined" onClick={() => { navigate('/leadAndCustomer') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Lead & Customer</Button>
-        <Button variant="outlined" onClick={() => { navigate('/workspaceMap') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Workspace</Button>
-        <Button variant="outlined" onClick={() => { navigate('/billing') }} sx={{ backgroundColor: 'black', color: 'white', borderColor: 'black', '&:hover': { borderColor: 'white' } }}>Billing</Button>
+
+      <div className="space-x-4">
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => navigate('/leadAndCustomer')}
+          className="border border-black hover:border-white bg-black text-white"
+        >
+          Lead & Customer
+        </Button>
+
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => navigate('/workspaceMap')}
+          className="border border-black hover:border-white bg-black text-white"
+        >
+          Workspace
+        </Button>
+
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => navigate('/billing')}
+          className="border border-black hover:border-white bg-black text-white"
+        >
+          Billing
+        </Button>
       </div>
       <AuthenticationScreen />
 
+      {/* 👇 נתיבים */}
+      <Routes>
+        <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+      </Routes>
     </div>
   );
 }

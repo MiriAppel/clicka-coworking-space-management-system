@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // // SpaceModel.ts
 // import { ID, DateISO } from '../../../../types/core';
 // import {
@@ -13,10 +14,14 @@
 // } from '../../../../types/workspace';
 
 // // דוגמה למימוש של פונקציות שיכולות להשתמש בטיפוסים
+=======
+
+>>>>>>> origin/main
 
 // export class SpaceModel {
 //     private spaces: Space[] = [];
 
+<<<<<<< HEAD
 //     // פונקציה להוסיף מקום חדש
 //     createSpace(request: CreateSpaceRequest): Space {
 //         const newSpace: Space = {
@@ -36,6 +41,13 @@
 //         this.spaces.push(newSpace);
 //         return newSpace;
 //     }
+=======
+import type{ CreateSpaceRequest, DateISO, GetSpacesRequest, ID, Space, UpdateSpaceRequest } from "shared-types";
+import { SpaceStatus } from "shared-types";
+
+export class SpaceModel {
+    private spaces: Space[] = [];
+>>>>>>> origin/main
 
 //     // פונקציה לעדכון מקום קיים
 //     updateSpace(id: ID, request: UpdateSpaceRequest): Space | undefined {

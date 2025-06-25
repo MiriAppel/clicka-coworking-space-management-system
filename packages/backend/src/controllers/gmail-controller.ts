@@ -2,7 +2,7 @@ import { validateSendEmailInput } from '../utils/validateSendEmailInput';
 import { validateListEmailQuery } from '../utils/validateListEmailQuery';
 import { Request, Response, NextFunction } from 'express';
 import { sendEmail, listEmails } from '../services/gmail-service';
-import { SendEmailRequest } from '../../../../types/google';
+import { SendEmailRequest } from '../../../shared-types/google';
 
 export async function postEmail(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.authorization?.split(' ')[1];
