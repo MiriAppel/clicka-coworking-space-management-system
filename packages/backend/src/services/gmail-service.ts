@@ -18,10 +18,8 @@ function encodeMessage(request: SendEmailRequest): string {
     `MIME-Version: 1.0`,
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
   ].filter(Boolean).join('\n');
-
   const bodyPlain = request.isHtml ? '' : request.body;
   const bodyHtml = request.isHtml ? request.body : '';
-
   const message = [
     headers,
     '',
@@ -35,7 +33,6 @@ function encodeMessage(request: SendEmailRequest): string {
     bodyHtml,
     `--${boundary}--`,
   ].join('\n');
-
   return Buffer.from(message).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
@@ -57,7 +54,6 @@ export async function listEmails(
   }
 ) {
   const gmail = google.gmail({ version: 'v1', auth: getAuth(token) });
-
   let listRes;
   try {
     listRes = await gmail.users.messages.list({
@@ -73,7 +69,6 @@ export async function listEmails(
 
   const messages = listRes.data?.messages;
   if (!messages || messages.length === 0) return [];
-
   const detailed = await Promise.all(
     messages.map(async (msg) => {
       try {
@@ -95,6 +90,5 @@ export async function listEmails(
       }
     })
   );
-
   return detailed;
 }

@@ -7,17 +7,16 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
-import cookieParser from 'cookie-parser'; // 👈 הוספת זה
+import cookieParser from 'cookie-parser'; 
 import router from './routes'; 
 const app = express();
-
 
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use(cookieParser()); // 👈 זה חייב לבוא לפני השורה הבאה
+app.use(cookieParser());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true,

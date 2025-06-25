@@ -6,7 +6,6 @@ import { Request } from 'express';
  */
 export function validateListEmailQuery(req: Request) {
   const { maxResults, q, labelIds, pageToken } = req.query;
-
   if (maxResults !== undefined) {
     const num = Number(maxResults);
     if (isNaN(num) || !Number.isInteger(num)) {
@@ -16,11 +15,9 @@ export function validateListEmailQuery(req: Request) {
       throw { status: 422, message: 'maxResults must be between 1 and 500' };
     }
   }
-
   if (q !== undefined && typeof q !== 'string') {
     throw { status: 400, message: 'q must be a string' };
   }
-
   if (labelIds !== undefined) {
     const labels = Array.isArray(labelIds) ? labelIds : [labelIds];
     for (const label of labels) {
@@ -29,7 +26,6 @@ export function validateListEmailQuery(req: Request) {
       }
     }
   }
-
   if (pageToken !== undefined && typeof pageToken !== 'string') {
     throw { status: 400, message: 'pageToken must be a string' };
   }

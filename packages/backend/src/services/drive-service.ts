@@ -9,7 +9,6 @@ function getAuth(token: string) {
 
 export async function uploadFileToDrive(file: Express.Multer.File, token: string) {
   const drive = google.drive({ version: 'v3', auth: getAuth(token) });
-
   const res = await drive.files.create({
     requestBody: {
       name: file.originalname,
@@ -19,13 +18,11 @@ export async function uploadFileToDrive(file: Express.Multer.File, token: string
       body: Readable.from(file.buffer), 
     },
   });
-
   return res.data;
 }
 
 export async function getFileFromDrive(fileId: string, token: string): Promise<NodeJS.ReadableStream> {
   const drive = google.drive({ version: 'v3', auth: getAuth(token) });
-
   try {
     const res = await drive.files.get(
       { fileId, alt: 'media' },
@@ -44,12 +41,10 @@ export async function getFileFromDrive(fileId: string, token: string): Promise<N
 
 export async function getFileMetadataFromDrive(fileId: string, token: string) {
   const drive = google.drive({ version: 'v3', auth: getAuth(token) });
-
   const res = await drive.files.get({
     fileId,
     fields: 'id, name, mimeType, size, createdTime, modifiedTime',
   });
-
   return res.data;
 }
 
@@ -61,7 +56,6 @@ export async function deleteFileFromDrive(fileId: string, token: string): Promis
 
 export async function shareDriveFile(fileId: string, permissions: any, token: string): Promise<void> {
   const drive = google.drive({ version: 'v3', auth: getAuth(token) });
-
   await drive.permissions.create({
     fileId,
     requestBody: permissions,

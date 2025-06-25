@@ -8,9 +8,9 @@ import gmailRouter from './gmail-route';
 const router = Router();
 
 router.use('/health', healthRouter);     
-router.use('/drive', driveRouter);      // <--- שים את זה לפני ה־auth // /api/health
-router.use('/calendar', calendarRouter);  // /api/calendar/...
-router.use('/gmail', gmailRouter);        // /api/gmail/...
-router.use('/', authRouter);              // /api/google, /api/verify וכו'
+router.use('/drive', driveRouter);      
+router.use('/calendar', calendarRouter);  
+router.use('/gmail', gmailRouter);       
+router.use('/', authRouter);             
 
 export default router;

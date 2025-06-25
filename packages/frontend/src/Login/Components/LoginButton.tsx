@@ -34,31 +34,31 @@ export const LoginWithGoogle = () => {
                 if (googleAccessToken) {
                     localStorage.setItem('google_token', googleAccessToken); // שמירה ב-localStorage
                     // שליחת מייל
-                    // const sendRes = await fetch('http://localhost:3001/api/gmail/v1/users/me/messages/send', {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //         'Authorization': `Bearer ${googleAccessToken}`,
-                    //     },
-                    //     body: JSON.stringify({
-                    //         to: ['L0548544962@gmail.com'],
-                    //         subject: 'welcome',
-                    //         body: 'זהו מייל שנשלח לאחר login מוצלח',
-                    //         isHtml: false,
-                    //     }),
-                    // });
-                    // console.log('Send mail response:', sendRes);
-                    // try {
-                    //     const sendData = await sendRes.json();
-                    //     console.log('Send mail data:', sendData);
-                    //     if (sendRes.ok) {
-                    //         alert('המייל נשלח בהצלחה!');
-                    //     } else {
-                    //         alert('שליחת המייל נכשלה: ' + (sendData.error || sendRes.status));
-                    //     }
-                    // } catch (e) {
-                    //     alert('שגיאה בקריאת תשובת השרת');
-                    // }
+                    const sendRes = await fetch('http://localhost:3001/api/gmail/v1/users/me/messages/send', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${googleAccessToken}`,
+                        },
+                        body: JSON.stringify({
+                            to: ['L0548544962@gmail.com'],
+                            subject: 'welcome',
+                            body: 'זהו מייל שנשלח לאחר login מוצלח',
+                            isHtml: false,
+                        }),
+                    });
+                    console.log('Send mail response:', sendRes);
+                    try {
+                        const sendData = await sendRes.json();
+                        console.log('Send mail data:', sendData);
+                        if (sendRes.ok) {
+                            alert('המייל נשלח בהצלחה!');
+                        } else {
+                            alert('שליחת המייל נכשלה: ' + (sendData.error || sendRes.status));
+                        }
+                    } catch (e) {
+                        alert('שגיאה בקריאת תשובת השרת');
+                    }
 
                     // }
                     // --- כאן להוסיף בדיקת GET gmail---
