@@ -231,13 +231,8 @@ export interface ConvertLeadToCustomerRequest {
   contractDocuments?: FileReference[];
 }
 
-export interface StatusChangeRequest {
-  newStatus: CustomerStatus;
-  effectiveDate: DateISO;
-  reason?: string;
-  notes?: string;
-  notifyCustomer: boolean;
-}
+
+
 
 
 // export interface SavedSearch {
