@@ -27,7 +27,7 @@ export const createCalendarEvent=async(event:CreateGoogleCalendarEventRequest)=>
 // detectCalendarConflicts תתבצע שליחה ל conflict-אם הסטטוס 
 //תקבל את הקונפליקטים הקיימים
 //ותציג את ההצעות לפתרון הקונפליקטים
-  
+
 }
 
 export const detectCalendarConflicts=async(calendar:CalendarSync):Promise<CalendarConflict[]>=>{

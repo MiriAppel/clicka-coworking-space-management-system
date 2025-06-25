@@ -4,13 +4,9 @@ import { ThemeConfig } from '../Service/themeConfig';
 // ברירת מחדל
 const defaultTheme: ThemeConfig = {
   colors: {
-    // primary: '#2563EB', // כחול
-    primary:'#007BFF', 
-    // secondary: '#F59E0B', // זהב
-    secondary:'#a5d8ff', //כחול יותר חזק 
-    // accent: '#64748B', // אפור
-    accent:'#E0E0E0',
-    background:'',
+    primary: '#2563EB', // כחול
+    secondary: '#F59E0B', // זהב
+    accent: '#64748B', // אפור
     neutral: ['#F3F4F6', '#E5E7EB'],
     semantic: {
       success: '#10B981',

@@ -1,7 +1,8 @@
 import type{ BookingStatus, DateISO, ID } from "shared-types";
+import {Booking} from '../../../shared-types/book'
 
-export class MapCoordinates {
-  id: ID;
+export class BookingModel implements Booking {
+  id?: ID;
   roomId: ID;
   roomName: string;
   customerId?: ID;
@@ -71,16 +72,15 @@ export class MapCoordinates {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
-      roomId: this.roomId,
-      roomName: this.roomName,
-      customerId: this.customerId,
-      customerName: this.customerName,
-      externalUserName: this.externalUserName,
-      externalUserEmail: this.externalUserEmail,
-      externalUserPhone: this.externalUserPhone,
-      startTime: this.startTime,
-      endTime: this.endTime,
+      room_id: this.roomId,
+      room_name: this.roomName,
+      customer_id: this.customerId,
+      customer_name: this.customerName,
+      external_user_name: this.externalUserName,
+      external_user_email: this.externalUserEmail,
+      external_user_phone: this.externalUserPhone,
+      start_time: this.startTime,
+      end_time: this.endTime,
       status: this.status,
       notes: this.notes,
 }}

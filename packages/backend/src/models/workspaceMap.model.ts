@@ -1,49 +1,34 @@
+import { WorkspaceMap } from 'shared-types/workspaceMap';
+import {MapLayout} from 'shared-types/mapLayout'
+import { RoomModel } from './room.model';
 import type{ DateISO, ID, SpaceStatus, WorkspaceType } from "shared-types";
-import { WorkspaceMapItem } from "./workspaceMapItem.model";
+import{SpaceModel}from './workspace '
 
-export interface MapLayout {
-  width: number;
-  height: number;
-  backgroundImage?: string;
-  scale: number;
-  viewBox: string;
-}
-export interface MapCoordinates {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotation?: number;
-}
-export interface MapFilters {
-
-workspaceTypes: WorkspaceType[];
-  statuses: SpaceStatus[];
-  showOccupantNames: boolean;
-  showAvailableOnly: boolean;
-}
-export class WorkspaceMapModel {
-  id: ID;
+export class WorkspaceMapModel implements WorkspaceMap {
+  id?: ID;
   name: string;
   layout: MapLayout;
-  workspaces: WorkspaceMapItem[];
+  workspaces: SpaceModel[];
+  rooms:RoomModel[];
   lastUpdated: DateISO;
 
-  constructor(id: ID,name: string, layout: MapLayout, workspaces: WorkspaceMapItem[], lastUpdated: DateISO) {
+  constructor(id: ID,name: string, layout: MapLayout, workspaces: SpaceModel[], lastUpdated: DateISO) {
     this.id = id;
     this.name = name;
     this.layout = layout;
     this.workspaces = workspaces;
+    this.rooms = [];
     this.lastUpdated = lastUpdated;
   }
 
   toDatabaseFormat() {
     return {
-      id: this.id,
       name: this.name,
        layout: this.layout,
       workspaces: this.workspaces.map(w => w.toDatabaseFormat()),
-      lastUpdated: this.lastUpdated,
+      rooms: this.rooms.map(r => r.toDatabaseFormat()),
+      last_updated: this.lastUpdated,
     };
   }
+
 }
