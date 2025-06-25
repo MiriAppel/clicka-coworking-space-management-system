@@ -9,9 +9,8 @@ import { Language } from './language';
 export interface Translation {
   id: ID;
   key: string;           // מזהה ייחודי למחרוזת (כגון: 'menu.dashboard')
-  lang: Language;        // שפת התרגום (לדוגמה: 'he', 'en')
-  text: string;          // המחרוזת המתורגמת
-  context?: string;      // הקשר/הסבר פנימי או הערה למתרגם (אופציונלי)
+  en: string;        // שפת התרגום (לדוגמה: 'he', 'en')
+  he: string;          // המחרוזת המתורגמת
   createdAt: DateISO;
   updatedAt: DateISO;
 }
