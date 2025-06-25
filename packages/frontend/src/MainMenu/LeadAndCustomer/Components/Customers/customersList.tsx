@@ -33,7 +33,6 @@ export const CustomersList = () => {
             workspaceCount: 5,
             createdAt: '2023-01-01T00:00:00Z',
             updatedAt: '2023-01-10T00:00:00Z',
-            paymentMethodsType: PaymentMethodType.CREDIT_CARD,
             paymentMethods: [
                 {
                     id: 'pm1',
@@ -66,7 +65,6 @@ export const CustomersList = () => {
             workspaceCount: 3,
             createdAt: '2023-02-01T00:00:00Z',
             updatedAt: '2023-02-10T00:00:00Z',
-            paymentMethodsType:PaymentMethodType.BANK_TRANSFER,
             paymentMethods: [
                 {
                     id: 'pm2',

@@ -40,7 +40,6 @@ export const CustomerDetails = () => {
             createdAt: new Date().toISOString() as any,
             updatedAt: new Date().toISOString() as any,
         }],
-        paymentMethodsType:PaymentMethodType.CREDIT_CARD,
         paymentMethods: [{
             id: "",
             customerId: customerId || "",

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { useNavigate, Routes, Route } from 'react-router-dom';
-import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+import { useNavigate } from 'react-router-dom';
 import { Button } from './Common/Components/BaseComponents/Button';
-import { LeadInteraction } from './MainMenu/LeadAndCustomer/Components/Interactions/leadIntersection';
+import { CustomerStatusChanged } from './MainMenu/LeadAndCustomer/Components/Customers/CustomerStatusChanged';
 
+// Simple component to demonstrate the project
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,11 +32,10 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h3>welcome to our world</h3>
-        <h1>Clicka</h1>
-        <h2>Co-working Space Management System</h2>
-      </header>
+      <h3>welcome to our world</h3>
+      <h1>Clicka</h1>
+      <h2>Co-working Space Management System</h2>
+
 
       <div className="space-x-4">
         <Button
@@ -66,10 +65,11 @@ function App() {
           Billing
         </Button>
       </div>
-      {/* 👇 נתיבים */}
-      <Routes>
-        <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-      </Routes>
+      <CustomerStatusChanged
+        open={true}
+        onClose={() => { }}
+        customerId={"0"}
+      />
     </div>
   );
 }

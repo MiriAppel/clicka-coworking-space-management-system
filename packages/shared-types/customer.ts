@@ -4,23 +4,23 @@ import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
 export enum TimelineEventType {
-    LEAD_CREATED = 'LEAD_CREATED',
-    INTERACTION = 'INTERACTION',
-    CONVERSION = 'CONVERSION',
-    CONTRACT_SIGNED = 'CONTRACT_SIGNED',
-    WORKSPACE_ASSIGNED = 'WORKSPACE_ASSIGNED',
-    PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
-    STATUS_CHANGE = 'STATUS_CHANGE',
-    NOTE_ADDED = 'NOTE_ADDED'
+  LEAD_CREATED = 'LEAD_CREATED',
+  INTERACTION = 'INTERACTION',
+  CONVERSION = 'CONVERSION',
+  CONTRACT_SIGNED = 'CONTRACT_SIGNED',
+  WORKSPACE_ASSIGNED = 'WORKSPACE_ASSIGNED',
+  PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
+  STATUS_CHANGE = 'STATUS_CHANGE',
+  NOTE_ADDED = 'NOTE_ADDED'
 }
 
 export enum ContractStatus {
-    DRAFT = 'DRAFT',
-    PENDING_SIGNATURE = 'PENDING_SIGNATURE',
-    SIGNED = 'SIGNED',
-    ACTIVE = 'ACTIVE',
-    EXPIRED = 'EXPIRED',
-    TERMINATED = 'TERMINATED'
+  DRAFT = 'DRAFT',
+  PENDING_SIGNATURE = 'PENDING_SIGNATURE',
+  SIGNED = 'SIGNED',
+  ACTIVE = 'ACTIVE',
+  EXPIRED = 'EXPIRED',
+  TERMINATED = 'TERMINATED'
 }
 
 // Workspace type enum
@@ -75,19 +75,19 @@ export interface ContractTerms {
 }
 
 export interface Contract {
-    id: ID;
-    customerId: ID;
-    version: number;
-    status: ContractStatus;
-    signDate?: DateISO;
-    startDate?: DateISO;
-    endDate?: DateISO;
-    terms?: ContractTerms;
-    documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
-    signedBy?: string;
-    witnessedBy?: string;
-    createdAt: DateISO;
-    updatedAt: DateISO;
+  id: ID;
+  customerId: ID;
+  version: number;
+  status: ContractStatus;
+  signDate?: DateISO;
+  startDate?: DateISO;
+  endDate?: DateISO;
+  terms?: ContractTerms;
+  documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
+  signedBy?: string;
+  witnessedBy?: string;
+  createdAt: DateISO;
+  updatedAt: DateISO;
 }
 
 
@@ -121,12 +121,11 @@ export interface Customer {
   billingStartDate?: DateISO;
   notes?: string;
   invoiceName?: string;
-  contractDocuments?: FileReference[];
-  paymentMethods: CustomerPaymentMethod[];
-  paymentMethodsType: PaymentMethodType;
-  periods: CustomerPeriod[];
-  createdAt: DateISO;
-  updatedAt: DateISO;
+contractDocuments?: FileReference[];
+paymentMethods: CustomerPaymentMethod[];
+periods: CustomerPeriod[];
+createdAt: DateISO;
+updatedAt: DateISO;
 }
 
 // Create customer request
