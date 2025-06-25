@@ -1,5 +1,5 @@
 //This is example code for how to use Zustand for state management using store and hooks in a React component.
-import { User } from '../../../../../types/auth'
+import { User } from '../../../../shared-types/auth'
 import { useAuthStore } from '../../store/useAuthStore'
 
 export const Dashboard = () => {
