@@ -35,7 +35,6 @@ export interface BookingRules{
 }
 //interface in room
 export interface RoomFeature {
-  id: ID;
   description?: string;
   IsIncluded: boolean;
   additionalCost: number;

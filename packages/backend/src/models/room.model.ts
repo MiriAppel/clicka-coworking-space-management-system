@@ -1,19 +1,7 @@
-<<<<<<< HEAD
-import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from '../../../../types/booking';
-import { ID, DateISO } from '../../../../types/core';
+import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from '../../../shared-types/booking';
+import { ID, DateISO } from '../../../shared-types/core';
 
-export class RoomModel implements Room {
-=======
-import type{ RoomStatus } from "shared-types";
-import {ID,DateISO} from "../controllers/occupancyTrend.controllers";
-//import{MeetingRoomManagement} from "../controllers/roomController"
-import { OccupancyAlert } from "./occupancyTrend.model";
-import { OccupancySnapshot } from "./occupancyTrend.model";
-export interface MeetingRoomManagement{
-  
-}
-export interface RoomFeature {
->>>>>>> c87559f51ec16ab5ae4f8105ad6ad1b70185d243
+export class RoomModel implements Room, BookingRules{
   id: ID;
   name: string;
   description?: string;
@@ -102,7 +90,7 @@ export interface RoomFeature {
       equipment: this.equipment,
 
       // BookingRules fields:
-      MinimumBookingMinutes: this.MinimumBookingMinutes,
+      MinimumBookingMiniuts: this.MinimumBookingMinutes,
       MaximumBookingMinutes: this.MaximumBookingMinutes,
       AdvanceBookingDays: this.AdvanceBookingDays,
       RequiredApproval: this.RequiredApproval,

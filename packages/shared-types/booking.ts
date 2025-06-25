@@ -7,7 +7,11 @@ export enum RoomType {
   MEETING_ROOM = 'MEETING_ROOM',
   LOUNGE = 'LOUNGE'
 }
-
+export interface RoomFeature {
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
 // Room status enum
 export enum RoomStatus {
   AVAILABLE = 'AVAILABLE',
@@ -39,6 +43,14 @@ export interface Room {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
+export interface BookingRules {
+  MinimumBookingMinutes: number;
+  MaximumBookingMinutes: number;
+  AdvanceBookingDays: number;
+  RequiredApproval: boolean;
+  FreeHoursForKlikcaCard: number;
+}
+
 
 // Booking model
 export interface Booking {

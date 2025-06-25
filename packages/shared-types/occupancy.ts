@@ -1,5 +1,6 @@
 import { ID, DateISO } from '../shared-types/core';
 
+// --- ENUMS ---
 export enum StatusOccupancy {
   HIGH_OCCUPANCY = 'HIGH_OCCUPANCY',
   LOW_OCCUPANCY = 'LOW_OCCUPANCY',
@@ -9,7 +10,22 @@ export enum StatusOccupancy {
 export type TimePeriod = 'daily' | 'weekly' | 'monthly';
 
 export enum WorkSpaceType {
-  // הוסיפי ערכים אם יש לך
+  // הוסיפי ערכים אם צריך
+}
+
+// --- INTERFACES ---
+export interface OccupancyTrend {
+  period: TimePeriod;
+  roomId: string;
+  customerId: string;
+  date: string;
+  occupancyRate: number;
+  totalSpace: number;
+  occupiedSpaces: number;
+  averageOccupancy: number;
+  peakOccupancy: number;
+  lowOccupancy: number;
+  growthRate: number;
 }
 
 export interface OccupancyAlert {
@@ -22,22 +38,4 @@ export interface OccupancyAlert {
   workspaceType: WorkSpaceType;
   isActive: boolean;
   triggeredAt: DateISO;
-}
-
-export interface OccupancyTrend {
-  period: TimePeriod;
-  roomId: string;
-  customerId: string;
-  data: {
-    date: string;
-    occupancyRate: number;
-    totalSpace: number;
-    occupiedSpaces: number;
-  }[];
-  summary: {
-    averageOccupancy: number;
-    peakOccupancy: number;
-    lowOccupancy: number;
-    growthRate: number;
-  };
 }
