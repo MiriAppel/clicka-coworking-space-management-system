@@ -2,7 +2,7 @@ import { WorkspaceMap } from 'shared-types/workspaceMap';
 import {MapLayout} from 'shared-types/mapLayout'
 import { RoomModel } from './room.model';
 import type{ DateISO, ID, SpaceStatus, WorkspaceType } from "shared-types";
-import{SpaceModel}from './Workspace '
+import{SpaceModel}from './workspace '
 
 export class WorkspaceMapModel implements WorkspaceMap {
   id?: ID;
