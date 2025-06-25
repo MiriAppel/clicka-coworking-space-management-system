@@ -1,5 +1,6 @@
 // lead-types.d.ts
 
+import { Person } from './person';
 import { ID, DateISO, ApiResponse, PaginatedResponse } from './core';
 import { WorkspaceType } from './customer';
 
@@ -51,12 +52,8 @@ export interface LeadInteraction {
 }
 
 // Lead model
-export interface Lead {
-  id: ID;
+export interface Lead extends Person {
   idNumber: ID;
-  name: string;
-  phone: string;
-  email: string;
   businessType: string;
   interestedIn: WorkspaceType[];
   source: LeadSource;
