@@ -1,4 +1,4 @@
-import { ID } from "core";
+import { ID } from "./core";
 
 export interface Person {
     id: ID;
