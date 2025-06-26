@@ -2,7 +2,7 @@
 import type{ Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethodType, WorkspaceType } from "shared-types";
 
 export class CustomerModel implements Customer   {
-  id: ID; //PK
+  id?: ID; //PK
   name: string;
   phone: string;
   email: string;
@@ -50,7 +50,6 @@ export class CustomerModel implements Customer   {
     periods: CustomerPeriod[] = [],
     contracts: Contract[] = []
   ) {
-    this.id = id;
     this.name = name;
     this.phone = phone;
     this.email = email;
@@ -76,30 +75,29 @@ export class CustomerModel implements Customer   {
   paymentMethods: CustomerPaymentMethod[];
   
 
-  toDatabaseFormat?() {
+  toDatabaseFormat() {
     return {
-      id: this.id,
       name: this.name,
       email: this.email,
       phone: this.phone,
-      idNumber: this.idNumber,
-      businessName: this.businessName,
-      businessType: this.businessType,
+      id_number: this.idNumber,
+      business_name: this.businessName,
+      business_type: this.businessType,
       status: this.status,
-      currentWorkspaceType: this.currentWorkspaceType,
-      workspaceCount: this.workspaceCount,
-      contractSignDate: this.contractSignDate,
-      contractStartDate: this.contractStartDate,
-      billingStartDate: this.billingStartDate,
+      current_workspace_type: this.currentWorkspaceType,
+      workspace_count: this.workspaceCount,
+      contract_sign_date: this.contractSignDate,
+      contract_start_date: this.contractStartDate,
+      billing_start_date: this.billingStartDate,
       notes: this.notes,
-      invoiceName: this.invoiceName,
-      contractDocuments: this.contractDocuments,
+      invoice_name: this.invoiceName,
+      contract_documents: this.contractDocuments,
      // paymentMethods: this.paymentMethods,
-      paymentMethodsType: this.paymentMethodsType,
+      payment_methods_type: this.paymentMethodsType,
       periods: this.periods,
       contracts: this.contracts,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      created_at: this.createdAt,
+      updated_at: this.updatedAt
     };
   }
 }

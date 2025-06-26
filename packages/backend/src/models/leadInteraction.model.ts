@@ -2,7 +2,7 @@ import type{ DateISO, ID, InteractionType, LeadInteraction } from "shared-types"
 
 export class LeadInteractionModel implements LeadInteraction {
 
-  id: ID; // PK
+  id?: ID; // PK
   leadId: ID; // FK
   type: InteractionType;
   date: DateISO;
@@ -36,7 +36,6 @@ export class LeadInteractionModel implements LeadInteraction {
 
   toDatabaseFormat(): any {
     return {
-      id: this.id,
       lead_id: this.leadId,
       type: this.type,
       date: this.date,

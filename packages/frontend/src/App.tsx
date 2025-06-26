@@ -66,7 +66,6 @@ function App() {
           Billing
         </Button>
       </div>
-      <SearchCustomer></SearchCustomer>
       {/* 👇 נתיבים */}
       <Routes>
         <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
@@ -74,5 +73,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
