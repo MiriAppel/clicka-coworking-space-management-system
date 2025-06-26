@@ -4,6 +4,7 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Button } from './Common/Components/BaseComponents/Button';
 import { LeadInteraction } from './MainMenu/LeadAndCustomer/Components/Interactions/leadIntersection';
+import PaymentForm from './MainMenu/Workspace/Components/invoice-generation-engine/PaymentForm';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -32,6 +33,7 @@ function App() {
 
   return (
     <div className="App">
+      
       <header className="App-header">
         <h3>welcome to our world</h3>
         <h1>Clicka</h1>
@@ -70,6 +72,7 @@ function App() {
       {/* 👇 נתיבים */}
       <Routes>
         <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+       
       </Routes>
     </div>
   );
