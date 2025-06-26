@@ -3,8 +3,10 @@ import { DateISO, ID } from "shared-types";
 
 
 export class UserTokens {
-  id: ID;
+  id?: ID;
   userId: ID;
+  accessToken:string;
+  accessTokenExpiry: DateISO;
   refreshToken: string;
   activeSessionId: string | null = null;
   sessionCreatedAt: DateISO | null = null; // add session creation time
@@ -15,6 +17,8 @@ export class UserTokens {
   constructor(
     id: ID,
     userId: ID,
+    accessToken:string,
+  accessTokenExpiry: DateISO,
     refreshToken: string,
     createdAt: DateISO,
     updatedAt: DateISO,
@@ -24,6 +28,8 @@ export class UserTokens {
   ) {
     this.id = id;
     this.userId = userId;
+    this.accessToken = accessToken;
+    this.accessTokenExpiry = accessTokenExpiry;
     this.refreshToken = refreshToken;
     this.activeSessionId = activeSessionId || null;
     this.sessionCreatedAt = sessionCreatedAt || null;
@@ -36,6 +42,8 @@ export class UserTokens {
     return {
       id: this.id,
       userId: this.userId,
+      accessToken:this.accessToken,
+      accessTokenExpiry: this.accessTokenExpiry,
       refreshToken: this.refreshToken,
       activeSessionId: this.activeSessionId,
       sessionCreatedAt: this.sessionCreatedAt,

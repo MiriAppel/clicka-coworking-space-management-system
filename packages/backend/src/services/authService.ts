@@ -4,16 +4,18 @@ import { getTokens, getGoogleUserInfo } from '../auth/googleApiClient';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
 import { UserService } from './user-service';
+import { randomUUID } from 'crypto';
 
 
 export const generateJwtToken = (payload: { userId: string; email: string; googleId: string }): string => {
   return jwt.sign(
-  {    userId: payload.userId,
-    email: payload.email,
-    googleId: payload.googleId
-  },
+    {
+      userId: payload.userId,
+      email: payload.email,
+      googleId: payload.googleId
+    },
     process.env.JWT_SECRET!,
-    { expiresIn:  '8h' } // 8 hours
+    { expiresIn: '8h' } // 8 hours
   );
 };
 
@@ -46,8 +48,11 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     // if(checkUser===null){
     //   throw new Error('User not found or not authorized to login');
     // }
-//---------------------------------------------------
-    await saveUserTokens(user.id, tokens.refresh_token || '');
+    //---------------------------------------------------
+    const newSessionId = randomUUID();
+    console.log('in exchange code and fetch user, newSessionId:', newSessionId);
+
+    await saveUserTokens(user.id, tokens.refresh_token || '', tokens.access_token, newSessionId);
 
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);
@@ -59,6 +64,7 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     return {
       user,
       token: jwtToken,
+      sessionId: newSessionId,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
@@ -67,7 +73,4 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     console.error('שגיאה בהחלפת קוד או בשליפת משתמש:', error);
     throw new Error('ההתחברות עם Google נכשלה');
   }
-  // לדוגמה: חיפוש או יצירת משתמש במסד נתונים
-  // const user = await UserModel.findOrCreate(userInfo);
-
 };

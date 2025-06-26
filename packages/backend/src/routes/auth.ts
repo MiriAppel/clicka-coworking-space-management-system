@@ -10,7 +10,8 @@ routerAuth.post('/google', handleGoogleAuthCode);
 routerAuth.post('/logout',  logout);
 routerAuth.get('/verify', verifySession,(req,res) => {
     const user= (req as any).user;
-    res.status(200).json({ user });
+    const sessionId=(req as any).sessionId ; 
+    res.status(200).json({ user ,sessionId});
 });  
 
 

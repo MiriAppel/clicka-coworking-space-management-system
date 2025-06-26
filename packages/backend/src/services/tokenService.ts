@@ -13,6 +13,7 @@ export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, 
         sameSite: 'strict',
         maxAge: 8 * 60 * 60 * 1000, // 8 שעות
     });
+    console.log('setAuthCookie', sessionId);
     res.cookie('sessionId', sessionId, {
         httpOnly: true,
         secure: true,
@@ -65,12 +66,10 @@ export const refreshUserToken = async (sessionToken: string, sessionId: string):
     // const record = await userTokensService.findByUserId(userId);
     const UserTokenRecord = await userTokenService.findByUserId(userId);
     //------------------------------------------------------------------
-    if (!UserTokenRecord?.refreshToken)
+    //if userTokenRecord is null, then the user is not logged in
+    if (!UserTokenRecord)
         throw new Error('TOKEN_NOT_FOUND');
-
-    const refreshToken = decrypt(UserTokenRecord.refreshToken);
-    const tokens = await refreshAccessToken(refreshToken);
-
+    await userTokenService.getAccessTokenByUserId(userId);
     const newJwt = generateJwtToken({
         userId,
         email: payload.email,
@@ -79,9 +78,9 @@ export const refreshUserToken = async (sessionToken: string, sessionId: string):
     return newJwt;
 }
 
-export const saveUserTokens = async (userId: string, refreshToken: string, sessionId?: string): Promise<void> => {
+export const saveUserTokens = async (userId: string, refreshToken: string, access_token: string, sessionId?: string): Promise<void> => {
     const userTokenService = new UserTokenService();
-    await userTokenService.saveTokens(userId, refreshToken, sessionId);
+    await userTokenService.saveTokens(userId, refreshToken, access_token, sessionId);
 
 }
 export const logoutUser = async (userId: string, res: Response): Promise<void> => {

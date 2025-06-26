@@ -15,7 +15,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
       return;
     }
     const loginResult = await authService.exchangeCodeAndFetchUser(code);
-
+    console.log('Login result:', loginResult);
     tokenService.setAuthCookie(res, loginResult.token, loginResult.sessionId!);
     const response = {
       ...loginResult,

@@ -9,7 +9,8 @@ const axiosInstance = axios.create({
     withCredentials: true, // Ensure cookies are sent with requests
 });
 export const LoginWithGoogle = () => {
-    const setUser = useAuthStore((state) => state.setUser);
+    // const setUser = useAuthStore((state) => state.setUser);
+    const {setUser, setSessionId}=useAuthStore();
     const login = useGoogleLogin({
         flow: 'auth-code',
         onSuccess: async (codeResponse) => {
@@ -28,6 +29,7 @@ export const LoginWithGoogle = () => {
 
                 console.log('Server response:', response.data);
                 setUser(response.data.user);
+                setSessionId(response.data.sessionId!)
                 // Optionally, you can handle the token and expiration here
             } catch (error) {
                 console.error('Error sending code to server:', error);

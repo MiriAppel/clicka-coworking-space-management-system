@@ -10,7 +10,7 @@ export class sessionManager {
 
     // set a new session
     setActiveSession(userTokens: UserTokens): void {
-        userTokens.activeSessionId = userTokens.id;
+        userTokens.activeSessionId = userTokens.activeSessionId;
         userTokens.sessionCreatedAt = new Date().toISOString() as DateISO;
         userTokens.lastActivityAt = new Date().toISOString() as DateISO;
         userTokens.updatedAt = new Date().toISOString() as DateISO;

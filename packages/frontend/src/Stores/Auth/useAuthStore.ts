@@ -6,12 +6,14 @@ import { DateISO } from "shared-types"
 
 interface AuthState {
   user: User | null
+  sessionId: string |null
   isAuthenticated: boolean
   isLoading: boolean
   error: string | null
   sessionExpiry: DateISO | null
 
   setUser: (user: User) => void
+  setSessionId: (sessionId:string) => void
   clearUser: () => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
@@ -24,6 +26,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false,
   error: null,
   sessionExpiry: null,
+  sessionId:null,
+
+  setSessionId: (sessionId) => {
+    set({ sessionId })
+  },
 
   setUser: (user) => {
     console.log('Setting user:', user)
