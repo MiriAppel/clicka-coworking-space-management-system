@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../services/user-service';
 import { User } from "shared-types";
+import { UserTokenService } from '../services/userTokenService';
 
 export const verifySession = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.session;
@@ -21,9 +22,12 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
       res.status(404).json({ error: 'user not found' });
       return;
     }
+    const userTokenService = new UserTokenService();
+    if (await userTokenService.checkIfExpiredAccessToken(payload.userId))
+      throw new Error('TokenExpiredError');
     const user: User = result.json();
     (req as any).user = { payload, user, sessionId };
-    
+
     //------------------------------------------------------------
     (req as any).user = { payload, firstName: "לאה", sessionId }; // Store the user object in the request object for further use;
     console.log(sessionId);
