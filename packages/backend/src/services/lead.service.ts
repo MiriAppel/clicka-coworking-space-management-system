@@ -1,16 +1,14 @@
-import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
 import { LeadModel } from "../models/lead.model";
-import { parse } from 'papaparse';
-import { LeadSource } from "shared-types";
-import type{ ID, UpdateLeadRequest } from "shared-types";
-
+import Papa, { parse } from 'papaparse';
+import { ID, LeadSource, UpdateLeadRequest } from "shared-types";
+import { supabase } from '../db/supabaseClient'
 
 export class leadService extends baseService <LeadModel> {
 
 
   constructor() {
-    super("LeadModel")
+    super("leads")
 
   }
 
@@ -58,9 +56,18 @@ export class leadService extends baseService <LeadModel> {
   }
 
   convertCsvToLeads = (csvData: string): Promise <LeadModel[]> => {
-      // אמור להמיר קובץ CSV למערך של לידים
-      // עיבוד קובץ CSV והמרתו למערך של לידים
-      return Promise.resolve([]);
+    return new Promise((resolve, reject) => {
+      Papa.parse<LeadModel>(csvData, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          resolve(results.data);
+        },
+        error: (err: any) => {
+          reject(err);
+        }
+      });
+    });
   }
 
   getOpenReminders = async (): Promise<LeadModel[]> => {

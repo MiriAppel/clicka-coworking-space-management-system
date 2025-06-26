@@ -3,7 +3,7 @@ import type{ ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } 
 
 export class LeadModel implements Lead {
   
-  id: ID; // PK
+  id?: ID; // PK
   idNumber: ID; // FK
   name: string;
   phone: string;
@@ -55,8 +55,7 @@ export class LeadModel implements Lead {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
-      idNumber: this.idNumber,
+      id_number: this.idNumber,
       name: this.name,
       phone: this.phone,
       email: this.email,
@@ -67,17 +66,7 @@ export class LeadModel implements Lead {
       contact_date: this.contactDate,
       follow_up_date: this.followUpDate,
       notes: this.notes,
-      interactions: this.interactions ? this.interactions.map(int => ({
-          id: int.id,
-          leadId: int.leadId,
-          type: int.type,
-          date: int.date,
-          notes: int.notes,
-          userId: int.userId,
-          userEmail: int.userEmail,
-          createdAt: int.createdAt,
-          updatedAt: int.updatedAt
-      })) : [],
+      interactions: this.interactions,
       created_at: this.createdAt,
       updated_at: this.updatedAt,
     }

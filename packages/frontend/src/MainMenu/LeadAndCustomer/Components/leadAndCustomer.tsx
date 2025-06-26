@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../Common/Components/BaseComponents/Button';
+=======
+import { Outlet, useNavigate } from 'react-router-dom';
+>>>>>>> a84e40f069b9706528654916bbe8cfad3d7258f6
 import '../Css/leadAndCustomer.css'
+import { Button } from '../../../Common/Components/BaseComponents/Button';
 
 // יש לנו מצגת עם פירוט של כל העמודים יותר מפורט מה צריך להיות
 

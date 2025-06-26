@@ -54,7 +54,7 @@ export enum ExitReason {
 
 // Customer entry-exit period
 export interface CustomerPeriod {
-  id: ID;
+  id?: ID;
   customerId: ID;
   entryDate: DateISO;
   exitDate?: DateISO;
@@ -147,6 +147,7 @@ export interface CreateCustomerRequest {
   };
   contractDocuments?: FileReference[];
 }
+
 
 // Update customer request
 export interface UpdateCustomerRequest {

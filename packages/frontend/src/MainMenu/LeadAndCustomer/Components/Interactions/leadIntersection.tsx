@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import { FaBell, FaBellSlash, FaEdit, FaTrash } from "react-icons/fa";
+=======
+import React, { useState } from "react";
+import { FaBell, FaBellSlash } from "react-icons/fa";
+>>>>>>> a84e40f069b9706528654916bbe8cfad3d7258f6
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 interface User {

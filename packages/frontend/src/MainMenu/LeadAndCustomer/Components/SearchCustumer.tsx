@@ -1,43 +1,34 @@
-//צריך לסדר את עניין המייל והטלפון בטייפס ואז לעדכן פה את החיפוש!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-import {
-    Button,
-    List,
-    ListItem,
-    ListItemText,
-    Stack,
-    TextField,
-} from "@mui/material";
+import { Stack, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
+<<<<<<< HEAD
 import { create } from "zustand";
 import type { Person, Customer } from "shared-types";
 import { CustomerStatus, WorkspaceType } from "shared-types";
+=======
+import type { Person, Customer } from "shared-types";
+import { CustomerStatus, WorkspaceType, PaymentMethodType } from "shared-types";
+>>>>>>> a84e40f069b9706528654916bbe8cfad3d7258f6
 
-interface StoreState {
-    query: string;
-    results: Person[];
-    setQuery: (query: string) => void;
-    setResults: (results: Person[]) => void;
+interface SearchCustomerProps {
+    onResults: (results: Person[]) => void;
 }
 
-const useStore = create<StoreState>((set) => ({
-    query: '',
-    results: [],
-    setQuery: (query: string) => set({ query }),
-    setResults: (results: Person[]) => set({ results }),
-}));
-
-export const SearchCustomer = () => {
-    const { query, results, setQuery, setResults } = useStore();
-    const [data, setData] = useState<Person[]>([]);
+export const SearchCustomer = ({ onResults }: SearchCustomerProps) => {
+    const [data, setData] = useState<Customer[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const loaderRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
+        onResults(data); // כל פעם שהdata משתנה, מעדכן את ההורה
+    }, [data]);
+
+    useEffect(() => {
         const fetchItems = async () => {
-            const dummyItems: Person[] = Array.from({ length: 6 }, (_, i) => {
+            const dummyItems: Customer[] = Array.from({ length: 6 }, (_, i) => {
                 const id = (page * 6 + i).toString();
+<<<<<<< HEAD
                 return i % 2 === 0
                     ? ({
                         id,
@@ -61,6 +52,31 @@ export const SearchCustomer = () => {
                         businessType: "חברה",
                         contractEndDate: '01/05/2020'
                     });
+=======
+                return {
+                    id,
+                    name: `לקוח ${id}`,
+                    phone: `050-123456${i}`,
+                    email: `customer${id}@example.com`,
+                    idNumber: `12345678${i}`,
+                    businessName: `עסק ${id}`,
+                    businessType: "חברה בע\"מ",
+                    status: CustomerStatus.ACTIVE,
+                    currentWorkspaceType: WorkspaceType.DESK_IN_ROOM,
+                    workspaceCount: 1 + (i % 3),
+                    contractSignDate: `2023-0${(i % 9) + 1}-01`,
+                    contractStartDate: `2023-0${(i % 9) + 1}-10`,
+                    billingStartDate: `2023-0${(i % 9) + 1}-15`,
+                    notes: `הערה ללקוח ${id}`,
+                    invoiceName: `חשבונית ${id}`,
+                    contractDocuments: [],
+                    paymentMethods: [],
+                    paymentMethodsType: PaymentMethodType.BANK_TRANSFER,
+                    periods: [],
+                    createdAt: `2023-0${(i % 9) + 1}-01`,
+                    updatedAt: `2023-0${(i % 9) + 1}-02`,
+                };
+>>>>>>> a84e40f069b9706528654916bbe8cfad3d7258f6
             });
 
             setData((prev) => [...prev, ...dummyItems]);
@@ -83,6 +99,7 @@ export const SearchCustomer = () => {
         return () => observer.disconnect();
     }, [hasMore]);
 
+<<<<<<< HEAD
     function isCustomer(person: Person): person is Customer {
         return 'idNumber' in person && typeof person.idNumber === 'string';
     }
@@ -97,6 +114,8 @@ export const SearchCustomer = () => {
         return 'text';
     };
 
+=======
+>>>>>>> a84e40f069b9706528654916bbe8cfad3d7258f6
     const normalizeDate = (input: string): string | null => {
         const clean = input.trim().replace(/\s+/g, "");
         if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
@@ -113,92 +132,43 @@ export const SearchCustomer = () => {
 
     const isHebrew = (text: string): boolean => /^[\u0590-\u05FF\s]+$/.test(text);
 
-    const translateToHebrew = async (text: string): Promise<string> => {
-        try {
-            const response = await fetch("/api/translate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text }),
-            });
-
-            if (!response.ok) throw new Error("Translation failed");
-            const data = await response.json();
-            return data.translatedText;
-        } catch (error) {
-            console.error("Translation error:", error);
-            return text;
-        }
-    };
-
-    const searchFromServer = async (input: string) => {
-        try {
-            const type = checkInputType(input);
-            const res = await fetch(`/api/customers/search?query=${encodeURIComponent(type)}`);
-            const data = await res.json();
-
-            // כרגע אין API פעיל – fallback לחיפוש לוקלי
-            handleSearch(input, false);
-
-            const items: Person[] = data.map((item: any) =>
-                item.type === 'customer' ? (item) : (item)
-            );
-
-            setResults(items);
-        } catch (err) {
-            console.error("שגיאה בחיפוש:", err);
-        }
-    };
-
     const handleSearch = async (input = searchTerm.trim(), fromServer = false) => {
         if (!input) {
-            setQuery('');
             setSearchTerm('');
-            setResults([]);
+            onResults([]);
             return;
         }
 
         let searchValue = input;
 
         if (!isHebrew(searchValue)) {
-            searchValue = await translateToHebrew(searchValue);
+            console.log("הקלט לא בעברית, מדלגים על תרגום זמנית");
         }
 
-        setQuery(searchValue);
         setSearchTerm(input);
 
-        if (fromServer) {
-            await searchFromServer(searchValue);
-        } else {
-            const lower = searchValue.toLowerCase();
-            const parsedDate = normalizeDate(searchValue);
+        const lower = searchValue.toLowerCase();
+        const parsedDate = normalizeDate(searchValue);
 
-            const filtered = data.filter((person) => {
-                const nameMatch = person.name.toLowerCase().includes(lower);
-                const emailMatch = person.name.toLowerCase().includes(lower);
-                const phoneMatch = person.name.includes(searchValue);
+        const filtered = data.filter((person) => {
+            const nameMatch = person.name.toLowerCase().includes(lower);
+            const emailMatch = person.email.toLowerCase().includes(lower);
+            const phoneMatch = person.phone.toLowerCase().includes(lower);
+            const statusMatch = person.status.toLowerCase().includes(lower);
 
-                let dateMatch = false;
-                let statusMatch = false;
-                let workspaceMatch = false;
+            let dateMatch = false;
 
-                if (person as Customer) {
-                    if (parsedDate) {
-                        const normalizedDate = normalizeDate((person as Customer).contractSignDate!);
-                        dateMatch = normalizedDate === parsedDate;
-                    }
-
-                    statusMatch = Object.values((person as Customer).status).some((s) =>
-                        s.toLowerCase().includes(lower)
-                    );
-
-                    workspaceMatch = Object.values((person as Customer).currentWorkspaceType!).includes(lower)
+            if ('status' in person && 'currentWorkspaceType' in person) {
+                if (parsedDate) {
+                    const normalizedDate = normalizeDate((person as Customer).contractSignDate!);
+                    dateMatch = normalizedDate === parsedDate;
                 }
+            }
 
-                return nameMatch || emailMatch || phoneMatch || dateMatch || statusMatch || workspaceMatch;
-            });
+            return nameMatch || dateMatch || statusMatch || emailMatch || phoneMatch;
+        });
 
-            setResults(filtered);
-        }
+        onResults(filtered);
     };
 
     return (
@@ -218,22 +188,7 @@ export const SearchCustomer = () => {
                         }
                     }}
                 />
-                <Button onClick={() => handleSearch(searchTerm, true)}>חפש</Button>
             </Stack>
-
-            <List>
-                {results.map((item, index) => (
-                    <ListItem key={index}>
-                        <ListItemText
-                            primary={`${item.name} | ${item.name} | ${item.name}${item as Customer
-                                ? ` | ${Object.values((item as Customer).status).join(", ")} | ${Object.values((item as Customer).currentWorkspaceType!).join(", ")} | ${(item as Customer).contractStartDate}`
-                                : ""
-                                }`}
-                        />
-                    </ListItem>
-                ))}
-            </List>
-
             <div ref={loaderRef} style={{ height: "1px" }} />
         </div>
     );

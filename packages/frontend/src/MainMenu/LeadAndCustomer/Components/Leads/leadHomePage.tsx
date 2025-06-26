@@ -1,8 +1,24 @@
 import React, { useState } from "react";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { LeadStatus, LeadSource, Lead } from "shared-types";
+=======
+
+
+import { Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import type{ Lead } from "shared-types";
+import { LeadStatus, LeadSource } from "shared-types";
+import { Button, ButtonProps } from "../../../../Common/Components/BaseComponents/Button";
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+
+
+
+//הדף העיקרי של המתעניין וממנו בעצם יש לי קישורים לכל הקומפוננטות של המתעניין -בתחילה שיש לי מתענינים ולקוחות
+//  רק את הדף הזה צריך לראות שלוחצים על מתענינים
+>>>>>>> a84e40f069b9706528654916bbe8cfad3d7258f6
 
 interface ValuesToTable {
   id: string;
