@@ -1,24 +1,18 @@
 import React, { useState } from "react";
-import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
-import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-
 import { useNavigate } from "react-router-dom";
-import { Link, NavLink } from "react-router-dom";
-import { LeadStatus, LeadSource , Lead } from "shared-types";
-
-
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+import { LeadStatus, LeadSource, Lead } from "shared-types";
 
 interface ValuesToTable {
-  id: string
-  name: string; // שם המתעניין 
-  status: LeadStatus; // סטטוס המתעניין 
+  id: string;
+  name: string;
+  status: LeadStatus;
 }
-
 
 export const LeadHomePage = () => {
   const navigate = useNavigate();
 
-  //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
   const [leads, setLeads] = useState<Lead[]>([
     {
       id: "1",
@@ -28,7 +22,7 @@ export const LeadHomePage = () => {
       idNumber: "123456789",
       status: LeadStatus.LOST,
       updatedAt: "2023-01-10T00:00:00Z",
-      businessType: "עסק קטן",         // לדוגמה
+      businessType: "עסק קטן",
       interestedIn: [],
       source: LeadSource.EVENT,
       interactions: [],
@@ -49,72 +43,60 @@ export const LeadHomePage = () => {
       createdAt: "2022-11-10T00:00:00Z"
     }
   ]);
-  //יצירת מערך עם ערכים המתאימים לטבלה
-  const valuesToTable: ValuesToTable[] = leads.map(lead => ({
+
+  const valuesToTable: ValuesToTable[] = leads.map((lead) => ({
     id: lead.id,
     name: lead.name,
     status: lead.status,
-
   }));
 
-  // 3. מגדיר את הCOLUMN
   const columns: TableColumn<ValuesToTable>[] = [
     { header: "שם", accessor: "name" },
     { header: "סטטוס", accessor: "status" },
   ];
 
   const deleteLead = (val: ValuesToTable) => {
-    //כאן יהיה קריאת שרת למחיקת לקוח ועדכון מחדש של המערך המקומי
-    //זה רק דוג' למחיקה מקומית
-    const newCustomers = leads.filter(lead => lead.id !== val.id);
-    setLeads(newCustomers); // עדכון ה-state
-  }
+    const newLeads = leads.filter((lead) => lead.id !== val.id);
+    setLeads(newLeads);
+  };
 
   const updateLead = (val: ValuesToTable) => {
+    // עתידית: כאן נוכל להוסיף פתיחת טופס עריכה
+  };
 
-  }
+  return (
+    <div className="p-6 text-right rtl">
+      <h2 className="text-3xl font-bold text-blue-600 text-center mb-6">מתעניינים</h2>
 
+      <div className="flex flex-col sm:flex-row gap-3 mb-4 justify-start">
+        <Button variant="primary" size="sm" onClick={() => navigate("intersections")}>
+          אינטראקציות של מתעניינים
+        </Button>
+        <Button variant="primary" size="sm" onClick={() => navigate("interestedCustomerRegistration")}>
+          הוספת מתעניין חדש
+        </Button>
+      </div>
 
-  const goToAnotherPage = () => {
-    // navigate("detailsOfTheLead");
-    {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
-  }
-  // const goTointerestedCustomerRegistration = () => {
-  //   navigate("interestedCustomerRegistration");
-  //   {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
-  // }
-
-
-  return <div className="p-6">
-    <h2 className="text-3xl font-bold text-center text-blue-600 my-4">מתעניינים</h2>
-
-    {/*כאן צריך להיות */}
-    {/*input*/}
-    {/* של חיפוש והתשובה שתגיע תשלח לפונקצייה של חיפוש לפי סטטוס/שם/ת.ז   */}
-
-    {/* <h3>List of Leads</h3> */}
-    <Button variant="primary" size="sm" onClick={() => navigate('intersections')}>אינטראקציות של מתעניינים</Button><br/>
-
-
-    {/*כאן יהיה את  טבלה של רשימת המתענינים 
-   */}
-    {/*נ.ב(רשימת המתעניינים תהיה לפי סדר כזה שמי שבסטטוס שלו יהיה לחזור אליו בימים הקרובים כדי
-      לשאול אותו איפה הוא אוחז והאם הוא מעוניין יהיה בראש הרשימה וכל השאר
-      לפי א' ב אבל למעלה יהיה לפי תאריך השיחה מי שדיברנו בתאריך מוקדם יותר הוא יהיה בראש הרשימה)*/ }
-    <Button onClick={goToAnotherPage} variant="primary" size="sm" >הוספת מתענין חדש </Button>
-
-    <Table<ValuesToTable> data={valuesToTable} columns={columns} onDelete={deleteLead} onUpdate={updateLead}
-      renderActions={(row) => (
+      {/* טבלת מתעניינים */}
+      <Table<ValuesToTable>
+        data={valuesToTable}
+        columns={columns}
+        onDelete={deleteLead}
+        onUpdate={updateLead}
+        renderActions={(row) => (
           <Button
-           onClick={ () => navigate("interestedCustomerRegistration", { state: { data: leads.find(lead => lead.id == row.id) } })}
+            onClick={() =>
+              navigate("interestedCustomerRegistration", {
+                state: { data: leads.find((lead) => lead.id === row.id) },
+              })
+            }
             variant="primary"
             size="sm"
           >
             לטופס רישום ללקוח
           </Button>
-
-      )}
-    />
-  </div>
-
-}
+        )}
+      />
+    </div>
+  );
+};
