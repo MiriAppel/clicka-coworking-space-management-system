@@ -49,14 +49,38 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
         aria-label={label}
         data-testid={testId}
         className={clsx(
-          "h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-2",
-          className
-        )}
+  "h-4 w-4 rounded focus:ring-2",
+  error
+    ? `border-[${theme.colors.semantic.error}] focus:ring-[${theme.colors.semantic.error}]`
+    : `border-gray-300 focus:ring-[${theme.colors.primary}]`,
+  className
+  //שימוש בTHEEMCONFIG מתי שיזרקו שגיאה יהיה לפי התנאים והצבאים שדורשים 
+  //focus-ring: מתי שעוברים על הדברים לדוכמא בוטון עם המקלדת אז רואים שהוא מודגש גם כן עושה לפי הצבאים של הTHEMECONFIG 
+)}
       />
-      <label className="text-sm text-gray-700" style={{ fontFamily: theme.typography.fontFamily.hebrew }}>
-        {label} {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      <label
+  className="text-sm text-gray-700"
+  style={{
+    fontFamily:
+      effectiveDir === "rtl"
+        ? theme.typography.fontFamily.hebrew
+        : theme.typography.fontFamily.latin,
+  }}
+>
+  {label} {required && <span className="text-red-500 ml-1">*</span>}
+</label>
+
+{error && (
+  <p
+    className="text-sm"
+    role="alert"
+    aria-live="assertive"
+    tabIndex={-1}
+    style={{ color: theme.colors.semantic.error }}
+  >
+    {error}
+  </p>
+)}
     </div>
   );
 };

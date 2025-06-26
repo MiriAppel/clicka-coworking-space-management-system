@@ -1,5 +1,6 @@
 // customer.d.ts
 
+import { Person } from './person';
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
@@ -105,11 +106,7 @@ export interface CustomerPaymentMethod {
 }
 
 // Customer model
-export interface Customer {
-  id: ID;
-  name: string;
-  phone: string;
-  email: string;
+export interface Customer extends Person{
   idNumber: string;
   businessName: string;
   businessType: string;

@@ -4,6 +4,7 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import { Button } from './Common/Components/BaseComponents/Button';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
+import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -67,6 +68,7 @@ function App() {
           Billing
         </Button>
       </div>
+      <SearchCustomer></SearchCustomer>
       {/* 👇 נתיבים */}
       <Routes>
       </Routes>
