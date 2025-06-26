@@ -10,6 +10,7 @@ import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
+import { createCustomer } from "../../Service/LeadAndCustomersService"
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
@@ -172,7 +173,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
     const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
 
-    const onSubmit = (data: z.infer<typeof schema>) => {
+    const onSubmit = async (data: z.infer<typeof schema>) => {
 
         //צריך להמיר את הטפסים שהתקבלו ל
         // export interface FileReference {
@@ -187,15 +188,18 @@ export const InterestedCustomerRegistration: React.FC = () => {
         //     updatedAt: DateISO;
         // }
 
-        alert("The form has been sent successfully:\n" + JSON.stringify(data, null, 2));
-        console.log(data);
-
+        JSON.stringify(data, null, 2);
         const customerRequest: CreateCustomerRequest = data;
         console.log(customerRequest);
 
-        //לשלוח לשרת את הנתונים
-        //לבדוק מה עם החוזה, איך הוא נוצר ומה צריך לעשות בשביל זה
-        setShowForm(false);
+        await createCustomer(customerRequest)
+            .then(() => {
+                setShowForm(false);
+                console.log("successfully create customer");
+
+            }).catch((error: Error) => {
+                console.error("Error create customer:", error);
+            });
     }
 
 

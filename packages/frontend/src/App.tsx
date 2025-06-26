@@ -31,45 +31,40 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <h3>welcome to our world</h3>
-      <h1>Clicka</h1>
-      <h2>Co-working Space Management System</h2>
-
-
+        <div className="App">
+      <header className="App-header">
+        <h3>welcome to our world</h3>
+        <h1>Clicka</h1>
+        <h2>Co-working Space Management System</h2>
+      </header>
       <div className="space-x-4">
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate('/leadAndCustomer')}
-          className="border border-black hover:border-white bg-black text-white"
-        >
-          Lead & Customer
-        </Button>
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate('/leadAndCustomer')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Lead & Customer
+      </Button>
 
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={() => navigate('/workspaceMap')}
-          className="border border-black hover:border-white bg-black text-white"
-        >
-          Workspace
-        </Button>
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate('/workspaceMap')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Workspace
+      </Button>
 
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate('/billing')}
-          className="border border-black hover:border-white bg-black text-white"
-        >
-          Billing
-        </Button>
-      </div>
-      <CustomerStatusChanged
-        open={true}
-        onClose={() => { }}
-        customerId={"0"}
-      />
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate('/billing')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Billing
+      </Button>
+    </div>
     </div>
   );
 }

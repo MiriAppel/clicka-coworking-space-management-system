@@ -3,15 +3,25 @@ import React from 'react';
 import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
 import { NavLink, Outlet } from "react-router";
 import { ExportToExcel } from '../exportToExcel';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { Customer, CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
+import { getAllCustomers, deleteCustomer } from '../../Service/LeadAndCustomersService';
+import { response } from "express";
 
 interface ValuesToTable {
     id: string;
     name: string; // שם הלקוח
-    status: CustomerStatus; // סטטוס הלקוח
+    status: React.ReactElement; // סטטוס הלקוח
 }
+
+//בשביל שבתצוגה זה יהיה בעברית
+const statusLabels: Record<CustomerStatus, string> = {
+    ACTIVE: 'פעיל',
+    NOTICE_GIVEN: 'הודעת עזיבה',
+    EXITED: 'עזב',
+    PENDING: 'בהמתנה',
+};
 
 //כל הצבעים של הכפתורים והכל בכל העמודים הם דוג' בלבד
 export const CustomersList = () => {
@@ -35,7 +45,7 @@ export const CustomersList = () => {
             billingStartDate: new Date().toISOString() as any,
             createdAt: '2023-01-01T00:00:00Z',
             updatedAt: '2023-01-10T00:00:00Z',
-            paymentMethodsType: PaymentMethodType.CREDIT_CARD,
+            // paymentMethodsType: PaymentMethodType.CREDIT_CARD,
             notes: "הערות",
             invoiceName: "שם חשבונית",
             currentWorkspaceType: WorkspaceType.OPEN_SPACE,
@@ -74,7 +84,7 @@ export const CustomersList = () => {
             notes: "הערות",
             invoiceName: "שם חשבונית",
             currentWorkspaceType: WorkspaceType.DESK_IN_ROOM,
-            paymentMethodsType: PaymentMethodType.BANK_TRANSFER,
+            // paymentMethodsType: PaymentMethodType.BANK_TRANSFER,
             paymentMethods: [
                 {
                     id: 'pm2',
@@ -96,11 +106,42 @@ export const CustomersList = () => {
         }
     ]);
 
+    const fetchCustomers = async () => {
+        // try {
+        //     const response = await getAllCustomers();
+        //     setCustomers(response);
+        // } catch (error) {
+        //     console.error('Error fetching customers:', error);
+        // }
+        await getAllCustomers()
+            .then((data) => {
+                setCustomers(data);
+                console.log("successfully get customers");
+                
+            }).catch((error: Error) => {
+                console.error('Error fetching customers:', error);
+            });
+    }
+
+    useEffect(() => {
+        fetchCustomers();
+    }, []);
+
     //יצירת מערך עם ערכים המתאימים לטבלה
     const valuesToTable: ValuesToTable[] = customers.map(customer => ({
         id: customer.id,
         name: customer.name,
-        status: customer.status,
+        status: <div>
+            {statusLabels[customer.status]}
+            {"  "}
+            {/* כדאי במקום לכתוב עדכן - לסים אייקון של עריכה */}
+            <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => navigate(`updateStatus/${customer.id}`)}>
+                עדכן
+            </Button>
+        </div>,
 
     }));
 
@@ -109,11 +150,21 @@ export const CustomersList = () => {
         { header: "סטטוס", accessor: "status" },
     ];
 
-    const deleteCustomer = (val: ValuesToTable) => {
-        //כאן יהיה קריאת שרת למחיקת לקוח ועדכון מחדש של המערך המקומי
-        //זה רק דוג' למחיקה מקומית
-        const newCustomers = customers.filter(customer => customer.id !== val.id);
-        setCustomers(newCustomers); // עדכון ה-state
+    const deleteCurrentCustomer = async (val: ValuesToTable) => {
+
+        const customerId = val.id;
+        await deleteCustomer(customerId)
+            .then(() => {
+                fetchCustomers()
+                //  setCustomers(customers.filter(customer => customer.id !== customerId));
+                alert("customer deleted successfully");
+            })
+            .catch((error: Error) => {
+                console.error("Error deleting customer:", error);
+                alert("Failed to delete customer. Please try again.");
+            });
+        // const newCustomers = customers.filter(customer => customer.id !== customerId);
+        // setCustomers(newCustomers); // עדכון ה-state
 
     }
 
@@ -143,7 +194,12 @@ export const CustomersList = () => {
             <Button variant="secondary" size="sm" onClick={() => searchCustomer()}>חיפוש</Button>
 
             {/* טבלה של כל הלקוחות עם שם וסטטוס ולכל אחד קישור לקומפוננטה של לקוח בודד שתציג את כל הפרטים המלאים שלו */}
-            <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteCustomer} onUpdate={editCustomer}
+            <Table<ValuesToTable>
+                data={valuesToTable}
+                columns={Columns}
+                // dir="rtl"
+                onDelete={deleteCurrentCustomer}
+                onUpdate={editCustomer}
                 renderActions={(row) => (
                     <>
                         {/* לא בטוח שצריך את הדברים האלה!!!! */}

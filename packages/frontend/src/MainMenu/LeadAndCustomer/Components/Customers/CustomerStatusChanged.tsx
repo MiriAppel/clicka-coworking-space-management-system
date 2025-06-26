@@ -1,5 +1,5 @@
 // CustomerStatusChanged.tsx
-
+import { useParams, useNavigate } from 'react-router-dom';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -17,11 +17,11 @@ import {
   recordExitNotice,
 } from '../../Service/LeadAndCustomersService';
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-  customerId: string;
-}
+// interface Props {
+//   open: boolean;
+//   onClose: () => void;
+//   customerId: string;
+// }
 
 const schema = z
   .object({
@@ -79,7 +79,13 @@ const reasonLabels: Record<ExitReason, string> = {
   OTHER: 'אחר',
 };
 
-export const CustomerStatusChanged: React.FC<Props> = ({ open, onClose, customerId }) => {
+export const CustomerStatusChanged: React.FC = () => {
+  const { customerId } = useParams<{ customerId: string }>();
+  const navigate = useNavigate();
+  
+   if (!customerId) return null;
+  const handleClose = () => navigate(-1);
+
   const methods = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
@@ -98,7 +104,7 @@ export const CustomerStatusChanged: React.FC<Props> = ({ open, onClose, customer
   const selectedStatus = methods.watch('status');
 
   useCustomerFormData({
-    open,
+    open: true,
     customerId,
     methods,
     fetchCustomerData: async (id) => {
@@ -137,13 +143,11 @@ export const CustomerStatusChanged: React.FC<Props> = ({ open, onClose, customer
         notifyCustomer: data.notifyCustomer,
       });
 
-      onClose();
+      // onClose();
     } catch (error) {
       console.error('שגיאה בשליחת שינוי סטטוס:', error);
     }
   };
-
-  if (!open) return null;
 
   return (
     <div className="max-w-xl mx-auto mt-6">
@@ -186,7 +190,7 @@ export const CustomerStatusChanged: React.FC<Props> = ({ open, onClose, customer
         )}
 
         <div className="flex justify-between mt-6">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button type="button" variant="secondary" onClick={handleClose}>
             סגור
           </Button>
           <Button type="submit" variant="primary">

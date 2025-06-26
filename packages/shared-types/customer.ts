@@ -121,11 +121,11 @@ export interface Customer {
   billingStartDate?: DateISO;
   notes?: string;
   invoiceName?: string;
-contractDocuments?: FileReference[];
-paymentMethods: CustomerPaymentMethod[];
-periods: CustomerPeriod[];
-createdAt: DateISO;
-updatedAt: DateISO;
+  contractDocuments?: FileReference[];
+  paymentMethods: CustomerPaymentMethod[];
+  periods: CustomerPeriod[];
+  createdAt: DateISO;
+  updatedAt: DateISO;
 }
 
 // Create customer request
@@ -232,7 +232,13 @@ export interface ConvertLeadToCustomerRequest {
 }
 
 
-
+export interface StatusChangeRequest {
+  newStatus: CustomerStatus;
+  effectiveDate: DateISO;
+  reason?: string;
+  notes?: string;
+  notifyCustomer: boolean;
+}
 
 
 // export interface SavedSearch {

@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
-
+import { patchCustomer } from "../../Service/LeadAndCustomersService"
 
 const schema = z.object({
     name: z.string().optional(),
@@ -43,19 +43,22 @@ export const UpdateCustomer: React.FC = () => {
     const [showForm, setShowForm] = useState<boolean>(true);
 
 
-    const onSubmit = (data: z.infer<typeof schema>) => {
-
-        alert("The form has been sent successfully:\n" + JSON.stringify(data, null, 2));
-        console.log(data);
-
-
+    const onSubmit = async (data: z.infer<typeof schema>) => {
+        JSON.stringify(data, null, 2);
         const updateCustomer: Partial<UpdateCustomerRequest> = { ...data }
-
         console.log(updateCustomer);
 
-        //לשלוח לשרת את הנתונים
 
-        setShowForm(false);
+        await patchCustomer(customer.id, updateCustomer)
+            .then(() => {
+                setShowForm(false);
+                console.log("Customer update successfully");
+            })
+            .catch((error: Error) => {
+                alert("Failed to update customer. Please try again.");
+                console.error("Error update customer:", error);
+            });
+
     }
 
     const methods = useForm<z.infer<typeof schema>>({

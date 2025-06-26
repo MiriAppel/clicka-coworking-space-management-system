@@ -5,6 +5,7 @@ import {
   CreateLeadRequest,
   Customer,
   UpdateCustomerRequest,
+  CreateCustomerRequest,
   RecordExitNoticeRequest,
   StatusChangeRequest,
 } from 'shared-types';
@@ -34,9 +35,12 @@ export const createLead = async (lead: CreateLeadRequest): Promise<Lead> => {
 
 // ---------- לקוחות ----------
 
+const CUSTOMERS_BASE_PATH = '/api/customers';
+
+
 export const getAllCustomers = async (): Promise<Customer[]> => {
   try {
-    const response = await axiosInstance.get<Customer[]>('/customers');
+    const response = await axiosInstance.get<Customer[]>(CUSTOMERS_BASE_PATH);
     return response.data;
   } catch (error) {
     console.error('Error getting all customers:', error);
@@ -46,7 +50,7 @@ export const getAllCustomers = async (): Promise<Customer[]> => {
 
 export const getCustomersByPage = async (page = 1, pageSize = 50): Promise<Customer[]> => {
   try {
-    const response = await axiosInstance.get<Customer[]>(`/customers/page?page=${page}&pageSize=${pageSize}`);
+    const response = await axiosInstance.get<Customer[]>(`${CUSTOMERS_BASE_PATH}/page?page=${page}&pageSize=${pageSize}`);
     return response.data;
   } catch (error) {
     console.error('Error getting customers by page:', error);
@@ -56,7 +60,7 @@ export const getCustomersByPage = async (page = 1, pageSize = 50): Promise<Custo
 
 export const getAllCustomerStatus = async (): Promise<string[]> => {
   try {
-    const response = await axiosInstance.get<string[]>('/customers/status/all');
+    const response = await axiosInstance.get<string[]>(`${CUSTOMERS_BASE_PATH}/status/all`);
     return response.data;
   } catch (error) {
     console.error('Error getting customer statuses:', error);
@@ -66,7 +70,7 @@ export const getAllCustomerStatus = async (): Promise<string[]> => {
 
 export const getCustomersToNotify = async (id: string): Promise<Customer[]> => {
   try {
-    const response = await axiosInstance.get<Customer[]>(`/customers/notify/${id}`);
+    const response = await axiosInstance.get<Customer[]>(`${CUSTOMERS_BASE_PATH}/notify/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error getting customers to notify:', error);
@@ -76,7 +80,7 @@ export const getCustomersToNotify = async (id: string): Promise<Customer[]> => {
 
 export const getCustomerById = async (id: string): Promise<Customer> => {
   try {
-    const response = await axiosInstance.get<Customer>(`/customers/id/${id}`);
+    const response = await axiosInstance.get<Customer>(`${CUSTOMERS_BASE_PATH}/id/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error getting customer by ID:', error);
@@ -86,7 +90,7 @@ export const getCustomerById = async (id: string): Promise<Customer> => {
 
 export const getCustomersByFilter = async (filters: Record<string, any>): Promise<Customer[]> => {
   try {
-    const response = await axiosInstance.get<Customer[]>('/customers/filter', { params: filters });
+    const response = await axiosInstance.get<Customer[]>(`${CUSTOMERS_BASE_PATH}/filter`, { params: filters });
     return response.data;
   } catch (error) {
     console.error('Error filtering customers:', error);
@@ -103,9 +107,9 @@ export const postExitNotice = async (id: string, data: RecordExitNoticeRequest):
   }
 };
 
-export const createCustomer = async (data: any): Promise<Customer> => {
+export const createCustomer = async (data: CreateCustomerRequest): Promise<Customer> => {
   try {
-    const response = await axiosInstance.post<Customer>('/customers/post-customer', data);
+    const response = await axiosInstance.post<Customer>(`${CUSTOMERS_BASE_PATH}/post-customer`, data);
     return response.data;
   } catch (error) {
     console.error('Error creating customer:', error);
@@ -115,7 +119,7 @@ export const createCustomer = async (data: any): Promise<Customer> => {
 
 export const patchCustomer = async (id: string, data: Partial<UpdateCustomerRequest>): Promise<void> => {
   try {
-    await axiosInstance.patch(`/customers/${id}`, data);
+    await axiosInstance.patch(`${CUSTOMERS_BASE_PATH}/${id}`, data);
   } catch (error) {
     console.error('Error patching customer:', error);
     throw error;
@@ -124,7 +128,7 @@ export const patchCustomer = async (id: string, data: Partial<UpdateCustomerRequ
 
 export const deleteCustomer = async (id: string): Promise<void> => {
   try {
-    await axiosInstance.delete(`/customers/${id}`);
+    await axiosInstance.delete(`${CUSTOMERS_BASE_PATH}/${id}`);
   } catch (error) {
     console.error('Error deleting customer:', error);
     throw error;
@@ -133,7 +137,7 @@ export const deleteCustomer = async (id: string): Promise<void> => {
 
 export const changeCustomerStatus = async (id: string, data: StatusChangeRequest): Promise<Customer> => {
   try {
-    const response = await axiosInstance.post<Customer>(`/customers/${id}/change-status`, data);
+    const response = await axiosInstance.post<Customer>(`${CUSTOMERS_BASE_PATH}/${id}/change-status`, data);
     return response.data;
   } catch (error) {
     console.error('Error changing customer status:', error);
@@ -143,7 +147,7 @@ export const changeCustomerStatus = async (id: string, data: StatusChangeRequest
 
 export const recordExitNotice = async (id: string, data: RecordExitNoticeRequest): Promise<Customer> => {
   try {
-    const response = await axiosInstance.post<Customer>(`/customers/${id}/exit-notice`, data);
+    const response = await axiosInstance.post<Customer>(`${CUSTOMERS_BASE_PATH}/${id}/exit-notice`, data);
     return response.data;
   } catch (error) {
     console.error('Error recording exit notice:', error);
