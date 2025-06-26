@@ -1,7 +1,8 @@
 type ID = string;
+import { v4 as uuid } from 'uuid';
 
 interface TranslationRecord {
-  id: ID;
+  id?: ID;
   key: string;         // המילה או הביטוי המקורי במפתח
   en: string;          // תרגום לאנגלית
   he: string;          // תרגום לעברית
@@ -10,7 +11,7 @@ interface TranslationRecord {
 }
 
 export class TranslationModel implements TranslationRecord {
-  id: ID;
+  id?: ID;
   key: string;
   en: string;
   he: string;
@@ -18,14 +19,12 @@ export class TranslationModel implements TranslationRecord {
   updatedAt: Date;
 
   constructor(
-    id: ID,
     key: string,
     en: string,
     he: string,
     createdAt: Date,
     updatedAt: Date
   ) {
-    this.id = id;
     this.key = key;
     this.en = en;
     this.he = he;
@@ -35,7 +34,7 @@ export class TranslationModel implements TranslationRecord {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
+      id: uuid(),
       key: this.key,
       en: this.en,
       he: this.he,

@@ -36,13 +36,13 @@ export const translationController = {
 
   createTranslation: async (req: Request, res: Response) => {
     try {
-      const { key, text, en } = req.body;
-      if (!key || !text || !en) {
+      const { key, text, lang } = req.body;
+      if (!key || !text || !lang) {
         res.status(400).json({ error: 'Missing key, value or lang' });
         return;
       }
 
-      const result = await translationService.createWithTranslations({ key, text, lang: en });
+      const result = await translationService.createWithTranslations({ key, text, lang });
       res.status(201).json(result);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

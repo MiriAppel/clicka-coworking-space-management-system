@@ -3,7 +3,6 @@ import { Translation } from 'shared-types';
 import { translateText } from '../utils/translate';
 import { supportedLanguages } from 'shared-types';
 import dotenv from 'dotenv';
-import { v4 as uuid } from 'uuid';
 import { TranslationModel } from '../models/TranslationRecord';
 
 dotenv.config();
@@ -62,42 +61,48 @@ export class TranslationService {
         // הבאת תרגומים קיימים
         const existing = await this.getByKey(key);
         const langsToTranslate = supportedLanguages.filter(l => l !== lang);
+        if (existing.length > 0) {
+            console.log('its exists already');
+            return [];
+        }
 
+        let translatedText = '';
+        if (lang === 'en')
+            translatedText = await translateText(text, lang, 'he');
+        else
+            translatedText = await translateText(text, lang, 'en');
         const newTranslations: TranslationModel[] = [];
 
-        for (const targetLang of langsToTranslate) {
-            const alreadyExists = existing.find(e => e.en === targetLang || e.he === targetLang);
-            if (alreadyExists) continue;
+        const alreadyExists = existing.find(e => e.en === translatedText || e.he === translatedText);
+        let translation: TranslationModel;
+        if (!alreadyExists) {
+            if (lang === 'en') {
+                 translation = new TranslationModel(
+                    key,
+                    text,
+                    translatedText,
+                    new Date(),
+                    new Date(),
+                );
 
-            const translatedText = await translateText(text, lang, targetLang);
-
-            const translation: TranslationModel = new TranslationModel(
-                uuid(),
-                key,
-                targetLang,
-                translatedText,
-                new Date(),
-                new Date(),
-            );
-
-            newTranslations.push(translation);
-        }
+            }
+            else {
+                translation = new TranslationModel(
+                    key,
+                    translatedText,
+                    text,
+                    new Date(),
+                    new Date(),
+                );
+            }
+        };
 
         const selfExists = existing.find(e => e.en === lang || e.he === lang);
-        if (!selfExists) {
-            newTranslations.push(new TranslationModel(
-                '',
-                key,
-                lang,
-                text,
-                new Date(),
-                new Date(),
-            ));
-        }
 
         const { error } = await supabase
             .from('translations')
-            .insert([...newTranslations.map(t => (t.toDatabaseFormat()))]);
+            .insert([translation!.toDatabaseFormat()]);
+        console.log('Inserting translations:', newTranslations);
 
         if (error) {
             console.error('Error inserting translations:', error);
