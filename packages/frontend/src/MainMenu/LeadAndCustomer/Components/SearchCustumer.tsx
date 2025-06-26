@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { create } from "zustand";
-import type{ Person, Customer} from "shared-types";
+import type { Person, Customer } from "shared-types";
 import { CustomerStatus, WorkspaceType } from "shared-types";
 
 interface StoreState {
@@ -59,7 +59,7 @@ export const SearchCustomer = () => {
                         phone: `050-5678${id.padStart(2, '0')}`,
                         createdAt: "2024-02-01",
                         businessType: "חברה",
-                        contractEndDate:'01/05/2020'
+                        contractEndDate: '01/05/2020'
                     });
             });
 
@@ -82,6 +82,11 @@ export const SearchCustomer = () => {
         observer.observe(loaderRef.current);
         return () => observer.disconnect();
     }, [hasMore]);
+
+    function isCustomer(person: Person): person is Customer {
+        return 'idNumber' in person && typeof person.idNumber === 'string';
+    }
+
 
     const checkInputType = (input: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
