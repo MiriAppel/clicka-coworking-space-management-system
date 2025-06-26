@@ -2,7 +2,7 @@
 import type{ Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethodType, WorkspaceType } from "shared-types";
 
 export class CustomerModel implements Customer   {
-  id: ID; //PK
+  id?: ID; //PK
   name: string;
   phone: string;
   email: string;
@@ -50,7 +50,6 @@ export class CustomerModel implements Customer   {
     periods: CustomerPeriod[] = [],
     contracts: Contract[] = []
   ) {
-    this.id = id;
     this.name = name;
     this.phone = phone;
     this.email = email;
@@ -76,9 +75,8 @@ export class CustomerModel implements Customer   {
   paymentMethods: CustomerPaymentMethod[];
   
 
-  toDatabaseFormat?() {
+  toDatabaseFormat() {
     return {
-      id: this.id,
       name: this.name,
       email: this.email,
       phone: this.phone,

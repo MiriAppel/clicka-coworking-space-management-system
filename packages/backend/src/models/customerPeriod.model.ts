@@ -3,7 +3,7 @@ import type{ CustomerPeriod, ExitReason, ID } from "shared-types";
 
 export class CustomerPeriodModel implements CustomerPeriod {
 
-  id: ID; // PK
+  id?: ID; // PK
   customerId: ID; // FK. לקוח יכול להיות פעיל בכמה תקופות שונות (לדוגמה: עזב וחזר), לכן יש טבלת תקופות נפרדת.
   entryDate: string;
   exitDate?: string;
@@ -37,7 +37,6 @@ export class CustomerPeriodModel implements CustomerPeriod {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
       customer_id: this.customerId,
       entry_date: this.entryDate,
       exit_date: this.exitDate,

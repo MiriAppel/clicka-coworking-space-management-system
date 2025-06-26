@@ -4,7 +4,7 @@ import type{ Contract, ContractStatus, ContractTerms, DateISO, FileReference, ID
 
 export class ContractModel implements Contract {
   
-  id: ID; // PK
+  id?: ID; // PK
   customerId: ID; // FK.  כל חוזה שייך ללקוח אחד בלבד. אבל ללקוח יכולים להיות כמה חוזים לאורך זמן – למשל, הוא חתם שוב אחרי שנה, או שינה תנאים.
   version: number;
   status: ContractStatus;
@@ -48,9 +48,8 @@ export class ContractModel implements Contract {
     this.updatedAt = updatedAt;
   }
 
-  toDatabaseFormat?() {
+  toDatabaseFormat() {
     return {
-      id: this.id,
       customer_id: this.customerId,
       version: this.version,
       status: this.status,

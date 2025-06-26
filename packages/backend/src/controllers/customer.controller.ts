@@ -31,7 +31,6 @@ export const postCustomer = async (req: Request, res: Response) => {
 
     const customer = await serviceCustomer.convertLeadToCustomer(
       newCustomer,
-      leadId,
       paymentMethodsType,
       businessName
     );

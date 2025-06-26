@@ -1,14 +1,14 @@
-import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
 import { LeadModel } from "../models/lead.model";
 import Papa, { parse } from 'papaparse';
 import { ID, LeadSource, UpdateLeadRequest } from "shared-types";
+import { supabase } from '../db/supabaseClient'
 
 export class leadService extends baseService <LeadModel> {
 
 
   constructor() {
-    super("LeadModel")
+    super("leads")
 
   }
 

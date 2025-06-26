@@ -1,13 +1,13 @@
 
 import { ContractStatus } from "shared-types";
-import type { Contract, DateISO, FileReference, ID } from "shared-types";
+import type { Contract, ContractTerms, DateISO, FileReference, ID } from "shared-types";
 import { ContractModel } from "../models/contract.model";
 import { baseService } from "./baseService";
-import { supabase } from "../db/supabaseClient";
+import { supabase } from '../db/supabaseClient'
 
 export class contractService extends baseService<ContractModel> {
   constructor() {
-    super("ContractModel");
+    super("contract");
   }
 
 
@@ -22,35 +22,51 @@ export class contractService extends baseService<ContractModel> {
       id: contactId,
       terms: terms,
       startDate: new Date().toISOString() as DateISO,
-      endDate: new Date(
-        new Date().setFullYear(new Date().getFullYear() + 1)
-      ).toISOString() as DateISO,
-      customerId: "customer-id", // הנח שהחוזה שייך ללקוח עם מזהה זה
-      status: ContractStatus.ACTIVE, // הנח שהחוזה פעיל
-      signDate: undefined, // הנח שהחוזה לא נחתם עדיין
-      documents: [], // הנח שאין מסמכים כרגע
-      version: 1, // הנח שהחוזה הוא גרסה 1
+      endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString() as DateISO,
+      customerId: "customer-id",
+      status: ContractStatus.ACTIVE,
+      signDate: undefined,
+      documents: [],
+      version: 1,
       createdAt: new Date().toISOString() as DateISO,
       updatedAt: new Date().toISOString() as DateISO,
-      signedBy: undefined, // הנח שהחוזה לא נחתם על ידי אף אחד
-      witnessedBy: undefined, // הנח שהחוזה לא נחתם על ידי עדים
+      signedBy: undefined,
+      witnessedBy: undefined,
+
+      toDatabaseFormat() {
+        return {
+          customer_id: this.customerId,
+          version: this.version,
+          status: this.status,
+          sign_date: this.signDate,
+          start_date: this.startDate,
+          end_date: this.endDate,
+          terms: this.terms,
+          documents: this.documents,
+          signed_by: this.signedBy,
+          witnessed_by: this.witnessedBy,
+          created_at: this.createdAt,
+          updated_at: this.updatedAt,
+        };
+      },
     };
-    await this.patch(contract ,contactId);
+
+    await this.patch(contract.toDatabaseFormat(), contactId);
     return contract; // להחזיר את החוזה המעודכן
   };
-  
+
   getAllContractsByCustomerId = async (customerId: ID): Promise<Contract[]> => {
     // אמור לשלוף את כל החוזים עבור הלקוח עם ה-customerId הנתון
-      const { data, error } = await supabase
-    .from("contracts")
-    .select("*")
-    .eq("customerId", customerId);
+    const { data, error } = await supabase
+      .from("contract")
+      .select("*")
+      .eq("customer_id", customerId);
 
-  if (error) {
-    console.error("שגיאה בעת שליפת החוזים:", error.message);
-    throw new Error("לא ניתן לשלוף את החוזים עבור לקוח זה.");
-  }
-  return data as Contract[];
+    if (error) {
+      console.error("שגיאה בעת שליפת החוזים:", error.message);
+      throw new Error("לא ניתן לשלוף את החוזים עבור לקוח זה.");
+    }
+    return data as Contract[];
 
   };
 
@@ -61,18 +77,18 @@ export class contractService extends baseService<ContractModel> {
     targetDate.setDate(today.getDate() + days);
 
     //קודם שולף את כל החוזים
-    const allContracts = await this.getByFilters({}); 
-    
+    const allContracts = await this.getByFilters({});
+
     // ואז מסנן אותם לפי התאריך
     return allContracts.filter(contract => {
 
-      if (!contract.endDate) return false;   
-        return new Date(contract.endDate) <= targetDate;
+      if (!contract.endDate) return false;
+      return new Date(contract.endDate) <= targetDate;
 
-    }); 
+    });
 
   };
-  
+
 
   postContractDocument = async (
     documentToAdd: FileReference,
@@ -90,7 +106,7 @@ export class contractService extends baseService<ContractModel> {
 
     const document = contract.documents.filter(doc => doc.id !== documentId);
 
-    await this.patch( { documents: document }, customerId);
+    await this.patch({ documents: contract.documents }, customerId);
 
   };
 

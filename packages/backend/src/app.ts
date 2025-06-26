@@ -7,7 +7,8 @@ import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
-
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 
@@ -39,6 +40,7 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.log(err);
+  console.log(req);
   res.status(err.status || 500).json({
     success: false,
     error: {

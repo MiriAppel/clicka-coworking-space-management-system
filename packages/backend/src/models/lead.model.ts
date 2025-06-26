@@ -3,7 +3,7 @@ import type{ ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } 
 
 export class LeadModel implements Lead {
   
-  id: ID; // PK
+  id?: ID; // PK
   idNumber: ID; // FK
   name: string;
   phone: string;
@@ -55,7 +55,6 @@ export class LeadModel implements Lead {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
       id_number: this.idNumber,
       name: this.name,
       phone: this.phone,

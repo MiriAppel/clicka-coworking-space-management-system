@@ -5,7 +5,7 @@ import { baseService } from "./baseService";
 
 export class interactionService extends baseService<LeadInteractionModel> {
   constructor() {
-    super("LeadInteractionModel");
+    super("lead_interaction");
   }
 
   checkIfFullInteraction = async (leadData: LeadInteractionModel): Promise<boolean> => {
