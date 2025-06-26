@@ -1,7 +1,7 @@
 // controllers/translation.controller.ts
 import { Request, Response } from 'express';
 import { translationService } from '../services/translation.service';
-import type{ ID } from 'shared-types';
+import type { ID } from 'shared-types';
 
 export const translationController = {
 
@@ -44,7 +44,8 @@ export const translationController = {
 
       const result = await translationService.createWithTranslations({ key, text, lang });
       res.status(201).json(result);
-    } catch (error: any) {
+    }
+    catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   }

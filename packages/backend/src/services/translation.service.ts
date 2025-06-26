@@ -67,6 +67,7 @@ export class TranslationService {
         }
 
         let translatedText = '';
+        
         if (lang === 'en')
             translatedText = await translateText(text, lang, 'he');
         else
