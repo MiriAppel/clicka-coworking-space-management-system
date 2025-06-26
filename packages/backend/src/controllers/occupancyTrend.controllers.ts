@@ -1,9 +1,9 @@
-const trendService = require('../../services/workspace_traking/OccupancyTrendService');
+import OccupancyTrend  from '../services/occupancyTrend.service';
 import { Request,Response } from "express";
 //כדי לראות את תמונת המצב
 export async function  getAllTrends(req:any, res:any) {
     try {
-      const trends =trendService.getAllTrends(req.params.id);
+      const trends =OccupancyTrend.getAllTrends(req.params.id);
       res.json(trends);
     } catch (err:any) {
      res.status(500).json({message: err.message });
@@ -12,7 +12,7 @@ export async function  getAllTrends(req:any, res:any) {
   //לעדכן-לבצע אופטומיזציה
   export async function  updateTrend(req:any, res:any){
     try {
-      const updated =await trendService.updateTrend(req.params.id, req.body);
+      const updated =await OccupancyTrend.updateTrend(req.params.id, req.body);
       if (!updated) {
          res.status(404).json({ message: 'Trend not found' });
       }
@@ -24,7 +24,7 @@ export async function  getAllTrends(req:any, res:any) {
   //כדי ליצא ל-csv
   export async function exportOccupancyTrendToCSV(req:Request,res:Response) {
     try{
-      const csv =await trendService.exportOccupancyTrendToCSV(req.body);
+      const csv =await OccupancyTrend.exportOccupancyTrendToCSV(req.body);
       if (!csv) {
         res.status(404).json({ message: 'Trend not found' });
       }
@@ -37,7 +37,7 @@ export async function  getAllTrends(req:any, res:any) {
   //כדי לשמור את הנתונים הישנים בארכיון
   export async function archiveOldTrend(req:Request,res:Response) {
     try{
-      const archion =await trendService.archiveOldTrend(req.body);
+      const archion =await OccupancyTrend.archiveOldTrend(req.body);
       if (!archion) {
          res.status(404).json({ message: 'Trend not found' });
       }
@@ -52,7 +52,7 @@ export async function  getAllTrends(req:any, res:any) {
  //דיווח תפוסה לפי סוג חלל עבודה ופרק זמן
 export async function getSnapshotReport(req:Request,res:Response) {
   try{
-    const result=await trendService.getSnapshotReport(req.body);
+    const result=await OccupancyTrend.getSnapshotReport(req.body);
     res.json(result);
   }
   catch(err){
@@ -63,7 +63,7 @@ export async function getSnapshotReport(req:Request,res:Response) {
 //במקרה שהחישוב יכשל 
 export async function calculateOccupancyRate(req:Request,res:Response) {
   try{
-     const calculate=await trendService.calculateOccupancyRate(req.params.id);
+     const calculate=await OccupancyTrend.calculateOccupancyRate(req.params.id);
      res.json(calculate);
   }
   catch(err){
@@ -73,7 +73,7 @@ export async function calculateOccupancyRate(req:Request,res:Response) {
 //ניהול ללקוח שיש לו כמה משימות
 export async function calculateClientOccupancySnapshot(req:Request,res:Response){
   try{
-const calculateclient=await trendService.calculateClientOccupancySnapshot(req.params.customerId);
+const calculateclient=await OccupancyTrend.calculateClientOccupancySnapshot(req.params.customerId);
 res.json(calculateclient);
   }
   catch(err){
@@ -83,7 +83,7 @@ res.json(calculateclient);
 //אינטגרציה עם סוגי לקוחות
 export async function integraionCustomer(req:Request,res:Response){
   try{
-    const integration=await trendService.integraionCustomer(req.params.customerId);
+    const integration=await OccupancyTrend.integraionCustomer(req.params.customerId);
     res.json(integration);
   }
   catch(err){
@@ -93,7 +93,7 @@ export async function integraionCustomer(req:Request,res:Response){
   //להקפיץ טריגר אם הקיבולת מתקרבת לסף
 export async function  checkAndTriggerAlert(req: Request, res: Response) {
   try {
-    const result = trendService.checkAndTriggerAlert(req.params.id);
+    const result = OccupancyTrend.checkAndTriggerAlert(req.params.id);
     res.json(result)
   } catch (err:any) {
      res.status(500).json({ message: err.message });
@@ -101,32 +101,15 @@ export async function  checkAndTriggerAlert(req: Request, res: Response) {
 }
 export async function sendOccupancyAlert(req:Request,res:Response) {
   try{
-    const result=trendService.sendOccupancyAlert(req.body);
+    const result=OccupancyTrend.sendOccupancyAlert(req.body);
   res.json(result)
   }
   catch(err:any){
     res.status(500).json({massage:err.massage});
   }
 }
-export enum statusOccupancy{
-  HIGH_OCCUPANCY='HIGH_OCCUPANCY',
-  LOW_OCCUPANCY='Low_Occupancy',
-  CAPACITY_REACHED='CAPACITY_REACHED'
-}
-export type TimePeriod = 'daily' | 'weekly' | 'monthly'; 
-export type DateISO = string;
-export type ID = string;
-export enum WorkSpaceType{ }
 
-  module.exports={
-    getAllTrends,
-    updateTrend,
-    exportOccupancyTrendToCSV,
-    archiveOldTrend,
-    calculateClientOccupancySnapshot,
-    getSnapshotReport,
-    calculateOccupancyRate,
-    integraionCustomer,
-    checkAndTriggerAlert,
-    sendOccupancyAlert
-  };
+
+
+
+
