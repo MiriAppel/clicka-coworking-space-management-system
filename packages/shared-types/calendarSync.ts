@@ -1,6 +1,6 @@
 import { ID, DateISO } from './core';
 export interface CalendarSync {
-    id: ID;
+    id?: ID;
     bookingId: ID;
     calendarId: string;
     lastSyncAt: DateISO;

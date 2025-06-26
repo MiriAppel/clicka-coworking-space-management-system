@@ -1,6 +1,7 @@
 import { ID, DateISO } from './core';
+import{BookingStatus} from './booking'
 export interface Booking {
- id: ID;
+ id?: ID;
   roomId: ID;
   roomName: string;
   customerId?: ID;

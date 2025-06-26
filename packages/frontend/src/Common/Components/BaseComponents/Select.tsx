@@ -9,7 +9,7 @@ interface SelectFieldProps {
   options: { label: string; value: string }[];
   required?: boolean;
   disabled?: boolean;
-  dir?: 'rtl' | 'ltr';
+  dir?: "rtl" | "ltr";
   className?: string;
   "data-testid"?: string;
 }
@@ -35,9 +35,19 @@ export const SelectField: React.FC<SelectFieldProps> = ({
 
   return (
     <div className="space-y-1 w-full" dir={effectiveDir}>
-      <label className="block text-sm font-medium text-gray-700" style={{ fontFamily: theme.typography.fontFamily.hebrew }}>
-        {label} {required && <span className="text-red-500 ml-1">*</span>}
+      <label
+        className="block text-sm font-medium text-gray-700"
+        style={{
+          fontFamily:
+            effectiveDir === "rtl"
+              ? theme.typography.fontFamily.hebrew
+              : theme.typography.fontFamily.latin,
+        }}
+      >
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
+
       <select
         {...register(name)}
         disabled={disabled}
@@ -59,14 +69,27 @@ export const SelectField: React.FC<SelectFieldProps> = ({
               : theme.typography.fontFamily.latin,
         }}
       >
-        <option value="">בחר אפשרות</option>
+        <option value="">{effectiveDir === "rtl" ? "בחר אפשרות" : "Select an option"}</option>
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>{opt.label}</option>
-          //המפ עובר לי על המערך אופטיונס שהוא בנוי בצורה של LABEL-VALUE 
-          //ואז הוא מייצר לכל OPT את הOPTION שלו 
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+          //יש לי מערך של OPTIONS הוא בנוי בצורה שיש לו LABEL וVALUE עובר עם בMAP כל אלאמט קוראים לא OPT
+          //אחכ שומר את זה בVALUE ובKEY כדי שיהיה מיוחד כל אלד ואחד 
+          // <option value="male">Hombre</option> לדוגמא 
         ))}
       </select>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+
+      {error && (
+        <p
+          className="text-sm text-red-600"
+          role="alert"
+          aria-live="assertive"
+          tabIndex={-1}
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 };

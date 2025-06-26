@@ -1,4 +1,12 @@
+import {WorkspaceMapModel} from '../models/workspaceMap.model';
+import { baseService } from './baseService';
+export class WorkspaceMapService extends baseService<WorkspaceMapModel> {
+    constructor() {
+        super('WorkspaceMap');
+    }
+    
 
+    }
 //קבלת כל המפות הקיימות
 // export async function getAllmaps(): Promise<WorkspaceMap[]> {
 //   try {
@@ -45,3 +53,5 @@ export async function updateWorkspace(id: any) {
 // מחיקת סביבת עבודה
 export async function deleteWorkspace(id: any) { 
 }
+   
+    
