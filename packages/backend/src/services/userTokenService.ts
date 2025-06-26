@@ -4,7 +4,7 @@ import { supabase } from "../db/supabaseClient";
 import { UserTokens } from "../models/userTokens.models";
 import { randomUUID } from "crypto";
 import { User } from "shared-types";
-import { refreshAccessToken } from "../auth/googleApiClient";
+import { refreshAccessToken } from "./googleAuthService";
 
 
 export class UserTokenService {

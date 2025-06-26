@@ -1,9 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import { LoginRequest, LoginResponse, User } from "shared-types";
-import { getTokens, getGoogleUserInfo } from '../auth/googleApiClient';
+import {  LoginResponse, User } from "shared-types";
+import { getTokens, getGoogleUserInfo } from './googleAuthService';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
-import { UserService } from './user-service';
 import { randomUUID } from 'crypto';
 
 

@@ -3,7 +3,7 @@ import { LoginResponse } from "shared-types"
 import { UserTokenService } from './userTokenService';
 import { generateJwtToken, verifyJwtToken } from './authService';
 import { decrypt } from './cryptoService';
-import { refreshAccessToken } from '../auth/googleApiClient';
+import { refreshAccessToken } from './googleAuthService';
 
 const userTokenService = new UserTokenService();
 export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, token: string, sessionId: string): void => {
