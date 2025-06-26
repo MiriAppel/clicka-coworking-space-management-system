@@ -6,12 +6,10 @@ import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
-import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber"
 import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-// import { CustomerForm } from "../Customers/customerForm";
-
+import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
