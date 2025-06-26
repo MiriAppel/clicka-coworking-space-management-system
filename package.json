@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "private": true,
-    "scripts": {
-      "start:backend": "yarn workspace clicka-backend dev",
-      "start:frontend": "yarn workspace clicka-frontend start",
-      "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
-    },
+  "scripts": {
+    "start:backend": "yarn workspace clicka-backend dev",
+    "start:frontend": "yarn workspace clicka-frontend start",
+    "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
+  },
   "workspaces": [
     "packages/*"
   ],
@@ -16,11 +16,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-
+    "@popperjs/core": "^2.11.8",
     "@supabase/supabase-js": "^2.50.0",
+    "@types/react-router-dom": "^5.3.3",
     "express": "^5.1.0",
+    "react-router-dom": "^7.6.2",
+    "react-scripts": "^0.0.0",
+    "react-transition-group": "^4.4.5",
+    "shared-types": "^1.0.0",
     "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
     "yarn": "^1.22.22"
-
   }
 }
