@@ -1,18 +1,10 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
-import { Contract, ContractStatus, WorkspaceType, ID} from "shared-types";
-import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
-import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-
-//צריך לבדוק אם לעשות מכאן את העריכה או מהפרטי חוזה ואם בכלל לעשות פרטי חוזה
-=======
 import type{ Contract, ID } from "shared-types";
 import { ContractStatus, WorkspaceType } from "shared-types";
 import { Button, ButtonProps } from "../../../../Common/Components/BaseComponents/Button";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
->>>>>>> a84e40f069b9706528654916bbe8cfad3d7258f6
 
 interface ValuesToTable {
     id: ID

@@ -70,7 +70,7 @@ export class contractService extends baseService<ContractModel> {
 
   };
 
-  getContractsEndingSoon = async (days: number = 30): Promise<Contract[]> => {
+  getContractsEndingSoon = async (days: number = 30): Promise<ContractModel[]> => {
 
     const today = new Date();
     const targetDate = new Date(today);

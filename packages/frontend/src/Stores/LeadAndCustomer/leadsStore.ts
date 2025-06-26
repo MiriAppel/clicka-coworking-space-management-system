@@ -1,0 +1,69 @@
+import { Lead } from "shared-types";
+import { UUIDTypes } from "uuid";
+import { create } from "zustand";
+
+interface LeadsState {
+    leads: Lead[];
+    selectedLead?: Lead;
+    loading: boolean;
+    error?: string;
+
+    fetchLeads: () => Promise<void>;
+    handleSelectLead: (leadId: string) => void;
+    handleDeleteLead: (leadId: string) => Promise<void>;
+    handleCreateLead: (lead: Lead) => Promise<Lead>;
+    handleUpdateLead: (leadId: string, lead: Lead) => Promise<Lead>;
+    resetSelectedLead: () => void;
+    fetchLeadDetails: (leadId: string) => Promise<Lead>;
+
+}
+
+export const useLeadsStore = create<LeadsState>((set) => ({
+    leads: [],
+    selectedLead: undefined,
+    loading: false,
+    error: undefined,
+
+    fetchLeads: async () => {
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch("http://localhost:3001/api/leads"); // כאן אתה משנה לכתובת שלך
+            if (!response.ok) {
+                throw new Error("Failed to fetch leads");
+            }
+            const data: Lead[] = await response.json();
+            set({ leads: data, loading: false });
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה בטעינת הלידים", loading: false });
+        }
+    },
+
+    handleSelectLead: (leadId: UUIDTypes) => {
+        set((state) => ({
+            selectedLead: state.leads.find(lead => lead.id === leadId)
+        }));
+    },
+
+    handleDeleteLead: async (leadId: UUIDTypes) => {
+        // Delete lead logic here
+    },
+
+    handleCreateLead: async (lead: Lead) => {
+        // Create lead logic here
+        return lead; // Return the created lead
+    },
+
+    handleUpdateLead: async (leadId: UUIDTypes, lead: Lead) => {
+        // Update lead logic here
+        return lead; // Return the updated lead
+    },
+
+    resetSelectedLead: () => {
+        set({ selectedLead: undefined });
+    },
+
+    fetchLeadDetails: async (leadId: string) => {
+        // Fetch lead details logic here
+        return {} as Lead; // Return the fetched lead details
+    }
+}));

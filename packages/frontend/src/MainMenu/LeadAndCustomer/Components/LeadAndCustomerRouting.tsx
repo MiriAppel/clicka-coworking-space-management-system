@@ -16,13 +16,8 @@ export const LeadAndCustomerRouting = () => {
     return (
         <Routes>
             <Route path="/" element={<LeadAndCustomer />} />
-<<<<<<< HEAD
-            <Route path="customers" element={<CustomersList />} />
-            {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
-=======
             <Route path="customers" element={<CustomersPage />} />
             <Route path="customers/:customerId" element={<CustomerDetails />} />
->>>>>>> a84e40f069b9706528654916bbe8cfad3d7258f6
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
             <Route path="customers/intersections" element={<CustomerInteraction />} />

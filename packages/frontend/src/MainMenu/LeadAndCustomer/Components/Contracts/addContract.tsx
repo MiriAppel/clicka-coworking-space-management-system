@@ -1,6 +1,9 @@
-import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { Form } from "../../../../Common/Components/BaseComponents/Form";
+import { z } from "zod";
+import { InputField } from "../../../../Common/Components/BaseComponents/Input";
+import { CheckboxField } from "../../../../Common/Components/BaseComponents/CheckBox";
 
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
+import { Form } from '../../../../Common/Components/BaseComponents/Form';
 
 export const AddContract = () => {
     const schema = z.object({
