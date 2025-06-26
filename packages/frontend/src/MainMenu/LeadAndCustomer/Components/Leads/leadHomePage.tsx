@@ -27,6 +27,7 @@ export const LeadHomePage = () => {
       email: "a567@gmail.com",
       idNumber: "123456789",
       status: LeadStatus.LOST,
+      notes: "מתעניין",
       updatedAt: "2023-01-10T00:00:00Z",
       businessType: "עסק קטן",         // לדוגמה
       interestedIn: [],

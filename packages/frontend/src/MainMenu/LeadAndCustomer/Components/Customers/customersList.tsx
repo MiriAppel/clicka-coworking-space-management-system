@@ -5,7 +5,7 @@ import { NavLink, Outlet } from "react-router";
 import { ExportToExcel } from '../exportToExcel';
 import { useState } from "react";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus, PaymentMethodType } from "shared-types";
+import { Customer, CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
 
 interface ValuesToTable {
     id: string;
@@ -16,22 +16,29 @@ interface ValuesToTable {
 //כל הצבעים של הכפתורים והכל בכל העמודים הם דוג' בלבד
 export const CustomersList = () => {
     const navigate = useNavigate();
+
     //דוג' בלבד לרשימת לקוחות
-    //צריך לעשות קריאת שרת לקבלת כל הלקוחות למשתנה הזה
+    //צריך לעשות קריאת שרת לקבלת כל הלקוחות למשתנה הזה צריך לעשות שהוא יתעדכן כל הזמן במקרה של מחיקה ועדכון
     const [customers, setCustomers] = useState<Customer[]>([
         {
             id: '1',
             name: 'יוסי כהן',
-            phone: '050-1234567',
+            phone: '0501234567',
             email: 'yossi@example.com',
             idNumber: '123456789',
             businessName: 'יוסי טכנולוגיות',
             businessType: 'טכנולוגיה',
             status: CustomerStatus.ACTIVE,
             workspaceCount: 5,
+            contractSignDate: new Date().toISOString() as any,
+            contractStartDate: new Date().toISOString() as any,
+            billingStartDate: new Date().toISOString() as any,
             createdAt: '2023-01-01T00:00:00Z',
             updatedAt: '2023-01-10T00:00:00Z',
             paymentMethodsType: PaymentMethodType.CREDIT_CARD,
+            notes: "הערות",
+            invoiceName: "שם חשבונית",
+            currentWorkspaceType: WorkspaceType.OPEN_SPACE,
             paymentMethods: [
                 {
                     id: 'pm1',
@@ -55,7 +62,7 @@ export const CustomersList = () => {
         {
             id: '2',
             name: 'שרה לוי',
-            phone: '052-7654321',
+            phone: '0527654321',
             email: 'sara@example.com',
             idNumber: '987654321',
             businessName: 'שרה פתרונות',
@@ -64,7 +71,10 @@ export const CustomersList = () => {
             workspaceCount: 3,
             createdAt: '2023-02-01T00:00:00Z',
             updatedAt: '2023-02-10T00:00:00Z',
-            paymentMethodsType:PaymentMethodType.BANK_TRANSFER,
+            notes: "הערות",
+            invoiceName: "שם חשבונית",
+            currentWorkspaceType: WorkspaceType.DESK_IN_ROOM,
+            paymentMethodsType: PaymentMethodType.BANK_TRANSFER,
             paymentMethods: [
                 {
                     id: 'pm2',
@@ -108,9 +118,8 @@ export const CustomersList = () => {
     }
 
     const editCustomer = (val: ValuesToTable) => {
-        //כאן יפתח טופס למילוי הפרטים האפשריים לעריכה
-        //מאותחל בכל הפרטים הנוכחחים עם אפשרות לשנות
-        //צריך להפעיל קריאת שרת של עריכת לקוח ולעדכן בהתאם את הנתונים
+        navigate("update", { state: { data: customers.find(customer => customer.id == val.id) } })
+        //כאן יפתח טופס מאותחל בכל הפרטים הנוכחחים עם אפשרות לשנות
     }
 
     const searchCustomer = () => {
