@@ -1,5 +1,5 @@
-import { ID, DateISO } from  "shared-types";
-import { CalendarSync,CalendarSyncStatus} from "shared-types/calendarSync";
+import { ID, DateISO } from  "shared-types/src/core";
+import { CalendarSync,CalendarSyncStatus} from "shared-types/src/calendarSync";
 
 // מחלקה לסינכרון קלנדר
 export class CalendarSyncModel implements CalendarSync {

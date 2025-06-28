@@ -1,4 +1,4 @@
-import OccupancyTrend  from '../services/occupancyTrend.service';
+import {OccupancyTrend}  from '../services/occupancyTrend.service';
 import { Request,Response } from "express";
 //כדי לראות את תמונת המצב
 export async function  getAllTrends(req:any, res:any) {

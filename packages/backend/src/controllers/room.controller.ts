@@ -1,10 +1,13 @@
 import { Request, Response } from 'express';
 import RoomService from '../services/room.service';
+import { RoomModel } from '../models/room.model';
 
 // ליצירת חדר
 export async function createRoom(req: Request, res: Response) {
   try {
-    const room = await RoomService.createRoom(req.body);
+    const roomclient = new RoomModel(req.body);
+    const room = await RoomService.createRoom(roomclient);
+   
     res.json(room);
   } catch (err:any) {
     res.status(500).json({ message: err.message });

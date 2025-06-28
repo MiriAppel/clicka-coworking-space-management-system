@@ -1,32 +1,45 @@
 import { error } from 'console';
-import {Room} from'../models/room';
-import { supabase } from '../supabaseClient';
+import {RoomModel} from'../models/room.model';
+// import { supabase } from '../supabaseClient';
+// import { createClient } from '@supabase/supabase-js';
+// const supabaseUrl = process.env.SUPABASE_URL || '';
+// const supabaseAnonKey = process.env.SUPABASE_SERVICE_KEY || ''; 
+// const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+import { createClient } from "@supabase/supabase-js";
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_KEY|| ''; // שימי לב לשם המדויק
+if (!supabaseUrl || !supabaseKey) {
+  console.error("חסרים ערכים ל־SUPABASE_URL או SUPABASE_SERVICE_KEY בקובץ הסביבה");
+}
+const supabase = createClient(supabaseUrl, supabaseKey)
+
 //יצירת חדר
-async function createRoom(body: any) {
+async function createRoom(body: RoomModel) {
     if (!body.name || !body.type || !body.status) {
         throw new Error("Missing required fields");
     }
-    const room = new Room(
-        body.id,
-        body.name,
-        body.type,
-        body.status,
-        body.capacity,
-        body.features || [],
-        body.hourlyRate,
-        body.discountedHourlyRate,
-        body.location,
-        body.equipment || [],
-        body.bookingRules,
-        body.nextMaintenanceDate,
-        new Date().toISOString(),
-        new Date().toISOString(),
-        body.description,
-        body.googleCalendarId
-      );
+    // const room = new RoomModel(
+    //     body.id,
+    //     body.name,
+    //     body.type,
+    //     body.status,
+    //     body.capacity,
+    //     body.features || [],
+    //     body.hourlyRate,
+    //     body.discountedHourlyRate,
+    //     body.location,
+    //     body.equipment || [],
+    //     body.bookingRules,
+    //     body.nextMaintenanceDate,
+    //     new Date().toISOString(),
+    //     new Date().toISOString(),
+    //     body.description,
+    //     body.googleCalendarId
+    //   );
       const { data, error } = await supabase
     .from('rooms')
-    .insert([room.toDatabaseFormat()]);
+    .insert([body.toDatabaseFormat()]);
 
   if (error) {
     throw error;

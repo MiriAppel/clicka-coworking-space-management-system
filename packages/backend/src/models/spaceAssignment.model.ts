@@ -1,4 +1,4 @@
-import { AssignmentStatus, SpaceAssign } from "shared-types/spaceAssignment";
+import { AssignmentStatus, SpaceAssign } from "shared-types/src/spaceAssignment";
 
 export class SpaceAssignmentModel implements SpaceAssign {
     id?: string;

@@ -1,5 +1,5 @@
-import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from '../../../shared-types/booking';
-import { ID, DateISO } from '../../../shared-types/core';
+import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from '../../../shared-types/src/booking';
+import { ID, DateISO } from 'shared-types/src/core';
 
 export class RoomModel implements Room, BookingRules{
   id: ID;
@@ -26,7 +26,7 @@ export class RoomModel implements Room, BookingRules{
   createdAt: DateISO;
   updatedAt: DateISO;
 
-  constructor(
+  constructor(data:{
     id: ID,
     name: string,
     type: RoomType,
@@ -47,30 +47,30 @@ export class RoomModel implements Room, BookingRules{
     description?: string,
     googleCalendarId?: string,
     nextMaintenanceDate?: DateISO
-  ) {
-    this.id = id;
-    this.name = name;
-    this.description = description;
-    this.type = type;
-    this.status = status;
-    this.capacity = capacity;
-    this.features = features;
-    this.hourlyRate = hourlyRate;
-    this.discountedHourlyRate = discountedHourlyRate;
-    this.googleCalendarId = googleCalendarId;
-    this.location = location;
-    this.equipment = equipment;
+  }) {
+    this.id = data.id;
+    this.name = data.name;
+    this.description = data.description;
+    this.type = data.type;
+    this.status = data.status;
+    this.capacity = data.capacity;
+    this.features = data.features;
+    this.hourlyRate = data.hourlyRate;
+    this.discountedHourlyRate = data.discountedHourlyRate;
+    this.googleCalendarId = data.googleCalendarId;
+    this.location = data.location;
+    this.equipment = data.equipment;
 
     // BookingRules fields:
-    this.MinimumBookingMinutes = MinimumBookingMinutes;
-    this.MaximumBookingMinutes = MaximumBookingMinutes;
-    this.AdvanceBookingDays = AdvanceBookingDays;
-    this.RequiredApproval = RequiredApproval;
-    this.FreeHoursForKlikcaCard = FreeHoursForKlikcaCard;
+    this.MinimumBookingMinutes = data.MinimumBookingMinutes;
+    this.MaximumBookingMinutes = data.MaximumBookingMinutes;
+    this.AdvanceBookingDays = data.AdvanceBookingDays;
+    this.RequiredApproval = data.RequiredApproval;
+    this.FreeHoursForKlikcaCard = data.FreeHoursForKlikcaCard;
 
-    this.nextMaintenanceDate = nextMaintenanceDate;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
+    this.nextMaintenanceDate = data.nextMaintenanceDate;
+    this.createdAt = data.createdAt;
+    this.updatedAt = data.updatedAt;
   }
 
 
