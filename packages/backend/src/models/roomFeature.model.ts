@@ -24,3 +24,4 @@ export class RoomFeatureModel implements RoomFeature {
     };
   }
 }
+

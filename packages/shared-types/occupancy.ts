@@ -1,4 +1,4 @@
-import { ID, DateISO } from './core';
+import { ID, DateISO } from '../shared-types/core';
 
 // --- ENUMS ---
 export enum StatusOccupancy {

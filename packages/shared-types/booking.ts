@@ -49,15 +49,27 @@ export interface Room {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
+<<<<<<< HEAD
 export interface BookingRules {
+=======
+export interface RoomFeature{
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
+export interface BookingRules{
+>>>>>>> main
   MinimumBookingMinutes: number;
   MaximumBookingMinutes: number;
   AdvanceBookingDays: number;
   RequiredApproval: boolean;
   FreeHoursForKlikcaCard: number;
 }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> main
 // Booking model
 export interface Booking {
   id: ID;

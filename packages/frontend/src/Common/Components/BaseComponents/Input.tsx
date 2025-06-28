@@ -11,6 +11,7 @@ interface InputFieldProps {
   name: string; 
   label: string;
   required?: boolean;
+  value?: string | number;
   disabled?: boolean;
   dir?: 'rtl' | 'ltr';
   className?: string;
