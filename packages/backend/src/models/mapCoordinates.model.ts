@@ -1,4 +1,4 @@
-import { MapCoordinates } from 'shared-types/src/mapCoordinates';
+import { MapCoordinates } from 'shared-types/mapCoordinates';
 
 export class MapCoordinatesModel implements MapCoordinates {
   id?: string;

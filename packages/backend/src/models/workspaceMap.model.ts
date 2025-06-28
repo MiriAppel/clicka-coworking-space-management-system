@@ -1,7 +1,7 @@
-import { WorkspaceMap} from '../../../shared-types/src/workspaceMap';
+import { WorkspaceMap} from 'shared-types/workspaceMap';
 import {MapLayout} from 'shared-types/src/mapLayout'
 import { RoomModel } from './room.model';
-import type{ DateISO, ID } from "../../../shared-types/src/core";
+import type{ DateISO, ID } from "shared-types/core";
 // import{SpaceModel}from '../../../shared-types/src/workspaceMap'
 
 export class WorkspaceMapModel implements WorkspaceMap {

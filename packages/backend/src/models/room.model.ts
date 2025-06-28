@@ -1,5 +1,5 @@
-import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from '../../../shared-types/src/booking';
-import { ID, DateISO } from 'shared-types/src/core';
+import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from 'shared-types/booking';
+import { ID, DateISO } from 'shared-types/core';
 
 export class RoomModel implements Room, BookingRules{
   id: ID;

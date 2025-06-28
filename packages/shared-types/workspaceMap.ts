@@ -1,4 +1,4 @@
-  import {MapLayout} from './mapLayout'
+  import {MapLayout} from './mapLayout';
   // import {SpaceModel} from '../../backend/src/models/workspace.model';
   import {ID,DateISO} from './core'
 import { Room } from './booking';

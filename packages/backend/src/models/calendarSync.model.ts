@@ -1,4 +1,4 @@
-import { ID, DateISO } from  "shared-types/src/core";
+import { ID, DateISO } from  "shared-types/core";
 import { CalendarSync,CalendarSyncStatus} from "shared-types/src/calendarSync";
 
 // מחלקה לסינכרון קלנדר

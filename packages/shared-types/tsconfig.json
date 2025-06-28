@@ -2,7 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": false,
-    "rootDir": "src", 
+    "rootDir": ".",  
     "outDir": "dist",
     "module": "CommonJS",
     "target": "ESNext",
@@ -17,5 +17,6 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"]
+  // "include": [ "core.ts", "customer.ts", "google.ts", "language.ts", "mapCoordinates.ts", "occupancy.ts", "report.ts", "spaceAssignment.ts", "workspaceMap.ts"]
+  "include": ["./"]
 }
