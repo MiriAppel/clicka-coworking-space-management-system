@@ -34,29 +34,37 @@ export class baseService<T> {
     return data;
   };
 
-  getByFilters = async (filters: Partial<T>): Promise<T[]> => {
-    const orConditions = Object.entries(filters).map(([key, value]) => {
-      if (typeof value === "string") {
-        return `${key}.ilike.%${value}%`;
-      } else {
-        return `${key}.eq.${value}`;
-      }
-    });
+getByFilters = async (filters: Partial<T> & { page?: number; limit?: number }): Promise<T[]> => {
+  const { page, limit, ...filterColumns } = filters;
 
-    let query = supabase
-      .from(this.tableName)
-      .select("*")
-      .or(orConditions.join(","));
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("שגיאה בשליפת נתונים עם פילטרים:", error);
-      throw error;
+  const orConditions = Object.entries(filterColumns).map(([key, value]) => {
+    if (typeof value === "string") {
+      return `${key}.ilike.%${value}%`;
+    } else {
+      return `${key}.eq.${value}`;
     }
+  });
 
-    return data ?? [];
-  };
+  let query = supabase
+    .from(this.tableName)
+    .select("*");
+
+  if (orConditions.length > 0) {
+    query = query.or(orConditions.join(","));
+  }
+
+  // כאן אפשר להוסיף טיפול בפגינציה עם page ו-limit (כגון .range)
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("שגיאה בשליפת נתונים עם פילטרים:", error);
+    throw error;
+  }
+
+  return data ?? [];
+};
+
 
   getAll = async (): Promise<T[]> => {
     console.log("🧾 טבלה:", this.tableName);
@@ -107,7 +115,7 @@ export class baseService<T> {
 
     const { data, error } = await supabase
       .from(this.tableName)
-      //   .insert([dataForInsert])
+        .insert([dataForInsert])
       .select();
 
     console.log("added");

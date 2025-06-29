@@ -7,6 +7,8 @@ import { CustomerStatus, PaymentMethodType } from "shared-types";
 import { Button, ButtonProps } from "../../../../Common/Components/BaseComponents/Button";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { SearchCustomer } from "../SearchCustumer";
+import axios from "axios";
+import { response } from "express";
 
 interface ValuesToTable {
     id: ID;
@@ -28,7 +30,7 @@ export const CustomersList = ({ customers, onDelete }: CustomersListProps) => {
     const navigate = useNavigate();
 
     const valuesToTable: ValuesToTable[] = customers.map(customer => ({
-        id: customer.id,
+        id: customer.id!,
         name: customer.name,
         status: customer.status,
         phone: customer.phone,
@@ -89,9 +91,16 @@ export const CustomersPage = () => {
     const [customers, setCustomers] = useState<Customer[]>([]);
 
     useEffect(() => {
-        // טעינת הלקוחות — יכול להיות קריאה ל-API או סטטי:
-        const initialCustomers: Customer[] = [ /* ...רשימת לקוחות ראשונית */];
-        setCustomers(initialCustomers);
+        axios.get('http://localhost:3001/api/customers')
+            .then(response => {
+                setCustomers(response.data);
+                console.log("Customers fetched successfully:", response.data);
+            })
+            .catch(error => {
+                console.error("Error fetching customers:", error);
+            });
+        // const initialCustomers: Customer[] = [ /* ...רשימת לקוחות ראשונית */];
+        // setCustomers(initialCustomers);
     }, []);
 
     const handleDeleteCustomer = (id: string) => {
