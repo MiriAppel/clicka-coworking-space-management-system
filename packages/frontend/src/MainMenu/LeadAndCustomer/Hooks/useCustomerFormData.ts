@@ -1,9 +1,7 @@
-// useCustomerFormData.ts (בתיקיית Hooks)
 import { useEffect } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { CustomerStatus, ExitReason } from 'shared-types';
 import { z } from 'zod';
-
 const schema = z.object({
   status: z.nativeEnum(CustomerStatus),
   effectiveDate: z.string().min(1),
@@ -14,16 +12,13 @@ const schema = z.object({
   exitReason: z.nativeEnum(ExitReason).optional(),
   exitReasonDetails: z.string().optional(),
 });
-
 type FormData = z.infer<typeof schema>;
-
 interface UseCustomerFormDataParams {
   open: boolean;
   customerId: string;
   methods: UseFormReturn<FormData>;
   fetchCustomerData?: (id: string) => Promise<FormData>;
 }
-
 export function useCustomerFormData({
   open,
   customerId,
@@ -32,7 +27,7 @@ export function useCustomerFormData({
 }: UseCustomerFormDataParams) {
   useEffect(() => {
     if (!open) return;
-
+    let cancelled = false;
     const fetchData = async () => {
       try {
         const data = fetchCustomerData
@@ -47,13 +42,18 @@ export function useCustomerFormData({
               exitReason: ExitReason.RELOCATION,
               exitReasonDetails: 'מעבר לעיר אחרת',
             };
-
-        methods.reset(data);
+        const { effectiveDate } = methods.getValues();
+        const alreadyHasData = !!effectiveDate;
+        if (!cancelled && !alreadyHasData) {
+          methods.reset(data);
+        }
       } catch (err) {
         console.error('שגיאה בטעינת לקוח:', err);
       }
     };
-
     fetchData();
-  }, [open, customerId, methods, fetchCustomerData]);
+    return () => {
+      cancelled = true;
+    };
+  }, [open, customerId]);
 }

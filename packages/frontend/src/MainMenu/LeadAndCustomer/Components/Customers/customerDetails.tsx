@@ -113,7 +113,7 @@ export const CustomerDetails = () => {
                 ))}
 
                 <h3 className="mt-4 text-lg font-semibold">תקופות</h3>
-                {customer.periods.map(period => (
+                {customer.periods!.map(period => (
                     <div key={period.id} >
                         <p><strong>תאריך כניסה:</strong> {new Date(period.entryDate).toLocaleDateString()}</p>
                         {period.exitDate && <p><strong>תאריך יציאה:</strong> {new Date(period.exitDate).toLocaleDateString()}</p>}

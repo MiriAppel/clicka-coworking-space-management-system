@@ -51,7 +51,7 @@ export const UpdateCustomer: React.FC = () => {
         console.log(updateCustomer);
 
 
-        await patchCustomer(customer.id, updateCustomer)
+        await patchCustomer(customer.id!, updateCustomer)
             .then(() => {
                 setShowForm(false);
                 console.log("Customer update successfully");

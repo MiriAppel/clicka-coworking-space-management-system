@@ -74,7 +74,7 @@ export const CustomersList = () => {
 
     const getValuseToTable = () => {
         const valuesToTable: ValuesToTable[] = customers!.map(customer => ({
-            id: customer.id,
+            id: customer.id!,
             name: customer.name,
             phone: customer.phone,
             email: customer.email,
@@ -179,5 +179,44 @@ export const CustomersList = () => {
             }
         </>
     );
-}
+};
+// export const CustomersPage = () => {
+
+//     const [customers, setCustomers] = useState<Customer[]>([]);
+
+//     useEffect(() => {
+//         axios.get('http://localhost:3001/api/customers')
+//             .then(response => {
+//                 setCustomers(response.data);
+//                 console.log("Customers fetched successfully:", response.data);
+//             })
+//             .catch(error => {
+//                 console.error("Error fetching customers:", error);
+//             });
+//         // const initialCustomers: Customer[] = [ /* ...רשימת לקוחות ראשונית */];
+//         // setCustomers(initialCustomers);
+//     }, []);
+
+//     const handleDeleteCustomer = (id: string) => {
+//         setCustomers(prev => prev.filter(c => c.id !== id));
+//     };
+
+//     const handleSearchResults = (results: Person[]) => {
+
+//         const onlyCustomers = results.filter((p): p is Customer =>
+//             'status' in p && 'contractSignDate' in p
+//         );
+//         setCustomers(onlyCustomers);
+//     };
+
+//     return (
+        
+
+//         <div style={{ direction: "rtl", padding: "20px" }}>
+//             <h1>לקוחות</h1>
+//             <SearchCustomer onResults={handleSearchResults} />
+//             <CustomersList customers={customers} onDelete={handleDeleteCustomer} />
+//         </div>
+//     );
+// };
 

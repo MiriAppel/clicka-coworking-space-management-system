@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CreateCustomerRequest, WorkspaceType, Lead } from "shared-types";
+import { CreateCustomerRequest, WorkspaceType, Lead, PaymentMethodType } from "shared-types";
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
@@ -20,6 +20,15 @@ const workspaceTypeOptions = [
     { value: WorkspaceType.KLIKAH_CARD, label: 'כרטיס קליקה' },
 ];
 
+const PaymentMethodTypeOptions = [
+    { value: PaymentMethodType.CREDIT_CARD , label: 'כרטיס אשראי' },
+    { value: PaymentMethodType.BANK_TRANSFER, label: 'העברה בנקאית' },
+    { value: PaymentMethodType.CHECK, label: 'שיק' },
+    { value: PaymentMethodType.CASH, label: 'מזומן' },
+    { value: PaymentMethodType.OTHER, label: 'אחר' },
+
+];
+
 const schema = z.object({
     name: z.string().nonempty("חובה למלא שם"),
     phone: z.string().nonempty("חובה למלא טלפון").refine(val => /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }),
@@ -34,12 +43,14 @@ const schema = z.object({
     billingStartDate: z.string().nonempty("חובה למלא תאריך תחילת חיוב"), // חובה
     notes: z.string().optional(), // אופציונלי
     invoiceName: z.string().optional(), // אופציונלי
-    paymentMethod: z.object({
-        creditCardLast4: z.string().optional().refine(val => !val || (/^\d{4}$/.test(val)), { message: "חובה להזין 4 ספרות בדיוק" }), // אופציונלי
-        creditCardExpiry: z.string().optional().refine(val => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }), // אופציונלי
-        creditCardHolderIdNumber: z.string().optional().refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // אופציונלי
-        creditCardHolderPhone: z.string().optional().refine(val => !val || /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }), // אופציונלי
-    }).optional(), // אופציונלי
+    //לבדוק דחוף מה עם זה!!!!!!!
+    // paymentMethod: z.object({
+    //     creditCardLast4: z.string().optional().refine(val => !val || (/^\d{4}$/.test(val)), { message: "חובה להזין 4 ספרות בדיוק" }), // אופציונלי
+    //     creditCardExpiry: z.string().optional().refine(val => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }), // אופציונלי
+    //     creditCardHolderIdNumber: z.string().optional().refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // אופציונלי
+    //     creditCardHolderPhone: z.string().optional().refine(val => !val || /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }), // אופציונלי
+    // }).optional(), // אופציונלי
+    paymentMethodType: z.nativeEnum(PaymentMethodType).refine(val => !!val, { message: "חובה" }),
     contractDocuments: z.array(z.any()).optional(),
 
 });
@@ -59,7 +70,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        defaultValues: { ...lead, workspaceCount: 1, paymentMethod: { creditCardHolderPhone: lead.phone, creditCardHolderIdNumber: lead.idNumber } }
+        // defaultValues: { ...lead, workspaceCount: 1, paymentMethod: { creditCardHolderPhone: lead.phone, creditCardHolderIdNumber: lead.idNumber } }
+        defaultValues: { ...lead, workspaceCount: 1 }
 
     });
 
@@ -93,7 +105,9 @@ export const InterestedCustomerRegistration: React.FC = () => {
     const stepFieldNames = [
         ["name", "phone", "email", "idNumber", "businessName", "businessType"] as const,
         ["workspaceType", "workspaceCount", "notes", "invoiceName"] as const,
-        ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
+        // ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
+        ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType", "contractDocuments"] as const
+
     ];
 
     const steps = [
@@ -142,13 +156,19 @@ export const InterestedCustomerRegistration: React.FC = () => {
                     <InputField name="contractStartDate" label="תאריך תחילת חוזה" required type="date" />
                     <InputField name="billingStartDate" label="תאריך תחילת חיוב" required type="date" />
                     <FileInputField name="contractDocuments" label="מסמכי חוזה" multiple />
-                    <div className="col-span-2 mt-4 mb-2">
+                    <SelectField
+                        name="paymentMethodType"
+                        label="בחר צורת תשלום"
+                        options={PaymentMethodTypeOptions}
+                        required
+                    />
+                    {/* <div className="col-span-2 mt-4 mb-2">
                         <h3 className="text-lg font-semibold text-gray-700 pb-1">פרטי אשראי</h3>
                     </div>
                     <InputField name="paymentMethod.creditCardLast4" label="4 ספרות אחרונות של כרטיס אשראי" />
                     <InputField name="paymentMethod.creditCardExpiry" label="תוקף כרטיס אשראי" />
                     <InputField name="paymentMethod.creditCardHolderIdNumber" label="תעודת זהות בעל הכרטיס" />
-                    <InputField name="paymentMethod.creditCardHolderPhone" label="טלפון בעל הכרטיס" />
+                    <InputField name="paymentMethod.creditCardHolderPhone" label="טלפון בעל הכרטיס" /> */}
                 </>
             )
         }

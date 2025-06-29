@@ -58,7 +58,7 @@ export const ContractManagement = () => {
     ]);
 
     const valuesToTable: ValuesToTable[] = contracts.map(contract => ({
-        id: contract.id,
+        id: contract.id!,
         customerId: contract.customerId,
         status: contract.status,
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון

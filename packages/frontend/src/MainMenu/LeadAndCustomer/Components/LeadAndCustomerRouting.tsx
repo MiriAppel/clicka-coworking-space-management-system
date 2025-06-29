@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import { LeadAndCustomer } from "./leadAndCustomer";
-import { CustomersList } from "./Customers/customersList";
 import { CustomerDetails } from "./Customers/customerDetails";
 import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
@@ -13,6 +12,7 @@ import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegist
 import { CustomerInteraction } from "./Interactions/customerInteraction";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
+import { CustomersList } from "./Customers/customersList"
 
 export const LeadAndCustomerRouting = () => {
     return (

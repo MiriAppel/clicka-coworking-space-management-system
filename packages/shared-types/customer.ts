@@ -53,7 +53,7 @@ export enum ExitReason {
 
 // Customer entry-exit period
 export interface CustomerPeriod {
-  id: ID;
+  id?: ID;
   customerId: ID;
   entryDate: DateISO;
   exitDate?: DateISO;
@@ -75,7 +75,7 @@ export interface ContractTerms {
 }
 
 export interface Contract {
-  id: ID;
+  id?: ID;
   customerId: ID;
   version: number;
   status: ContractStatus;
@@ -93,7 +93,7 @@ export interface Contract {
 
 // Payment method
 export interface CustomerPaymentMethod {
-  id: ID;
+  id?: ID;
   customerId: ID;
   creditCardLast4?: string;
   creditCardExpiry?: string;
@@ -106,7 +106,7 @@ export interface CustomerPaymentMethod {
 
 // Customer model
 export interface Customer {
-  id: ID;
+  id?: ID;
   name: string;
   phone: string;
   email: string;
@@ -129,11 +129,13 @@ export interface Customer {
 }
 
 // Create customer request
+
 export interface CreateCustomerRequest {
   name: string;
   phone: string;
   email: string;
   idNumber: string;
+  businessName: string;
   businessType: string;
   workspaceType: WorkspaceType;
   workspaceCount: number;
@@ -141,6 +143,7 @@ export interface CreateCustomerRequest {
   contractStartDate: DateISO;
   billingStartDate: DateISO;
   notes?: string;
+  invoiceName?: string;
   paymentMethod?: {
     creditCardLast4?: string;
     creditCardExpiry?: string;
@@ -149,6 +152,7 @@ export interface CreateCustomerRequest {
   };
   contractDocuments?: FileReference[];
 }
+
 
 // Update customer request
 export interface UpdateCustomerRequest {

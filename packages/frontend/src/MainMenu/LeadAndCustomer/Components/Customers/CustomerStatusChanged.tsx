@@ -1,6 +1,6 @@
 // CustomerStatusChanged.tsx
 import { useParams, useNavigate } from 'react-router-dom';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -83,7 +83,7 @@ export const CustomerStatusChanged: React.FC = () => {
   const { customerId } = useParams<{ customerId: string }>();
   const navigate = useNavigate();
   
-   if (!customerId) return null;
+  //  if (!customerId) return null;
   const handleClose = () => navigate(-1);
 
   const methods = useForm<FormData>({
@@ -103,11 +103,7 @@ export const CustomerStatusChanged: React.FC = () => {
 
   const selectedStatus = methods.watch('status');
 
-  useCustomerFormData({
-    open: true,
-    customerId,
-    methods,
-    fetchCustomerData: async (id) => {
+  const fetchCustomerData = useCallback(async (id: string) => {
       const customer = await getCustomerById(id);
       const latestPeriod = customer.periods?.[0];
 
@@ -122,7 +118,16 @@ export const CustomerStatusChanged: React.FC = () => {
         exitReasonDetails: latestPeriod?.exitReasonDetails ?? '',
       };
     },
+[]);
+  useCustomerFormData({
+    open: !!customerId,
+    customerId: customerId ?? "",
+    methods,
+    fetchCustomerData
+    ,
   });
+
+    if (!customerId) return null;
 
   const onSubmit = async (data: FormData) => {
     try {
