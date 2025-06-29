@@ -9,7 +9,7 @@ dotenv.config();
 
 // יצירת לקוח Supabase
 const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_KEY || '';
+const supabaseAnonKey = process.env.SUPABASE_SERVICE_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // בדיקת תקינות שפה
