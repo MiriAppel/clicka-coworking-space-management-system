@@ -69,18 +69,6 @@ export class UserTokenService {
             throw new Error('Failed to update user tokens');
         }
     }
-    /**
-     * 
-     *    id?: ID;
-       userId: ID;
-       refreshToken: string;
-       activeSessionId: string | null = null;
-       sessionCreatedAt: DateISO | null = null; // add session creation time
-       lastActivityAt: DateISO | null = null;   // add last activity time
-       createdAt: DateISO;
-       updatedAt: DateISO;
-     * 
-     */
     async findByUserId(userId: string): Promise<UserTokens | null> {
         return {
             userId: "1234",accessToken:"1244dcvbnm,",accessTokenExpiry:new Date(Date.now()+60*60*1000).toISOString(),
@@ -148,7 +136,7 @@ export class UserTokenService {
         }
         if (!data || !data.accessTokenExpiry) {
             console.warn('accessTokenExpiry is missing');
-            return true; // אם אין ערך, נחשב כפג תוקף
+            return true; // If there is no value, consider it expired
         }
         const now = new Date();
         const expiryDate = new Date(data.accessTokenExpiry);

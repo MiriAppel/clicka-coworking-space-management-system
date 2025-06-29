@@ -26,7 +26,7 @@ export async function getTokens(code: string) {
     id_token: tokens.id_token,
     scope: tokens.scope,
     token_type: tokens.token_type,
-    expires_in: tokens.expiry_date ? Math.floor((tokens.expiry_date - Date.now()) / 1000) : 8 * 60 * 60, // ברירת מחדל ל־8 שעות
+    expires_in: tokens.expiry_date ? Math.floor((tokens.expiry_date - Date.now()) / 1000) : 8 * 60 * 60, //  Default to 8 hours
     expires_at: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
   };
 }

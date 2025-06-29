@@ -3,6 +3,7 @@ import { getTokens, getGoogleUserInfo } from './googleAuthService';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
 import { randomUUID } from 'crypto';
+import { UserService } from "./user-service";
 
 
 export const generateJwtToken = (payload: { userId: string; email: string; googleId: string }): string => {

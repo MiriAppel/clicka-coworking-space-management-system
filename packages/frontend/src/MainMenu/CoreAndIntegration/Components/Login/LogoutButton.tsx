@@ -7,14 +7,14 @@ const axiosInstance = axios.create({
      withCredentials: true, // Ensure cookies are sent with requests
 });
 export const LogoutButton = () => {
-  const clearAuth = useAuthStore((state) => state.clearUser); // פונקציה שמנקה את ה־auth state
+  const clearAuth = useAuthStore((state) => state.clearUser); // Function that clears the auth state
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await axiosInstance.post('/api/auth/logout', {}, { withCredentials: true });
       clearAuth();
-      navigate('/'); // או כל דף אחר
+      navigate('/'); // // Or any other page
     } catch (error) {
       console.error('Logout failed:', error);
     }

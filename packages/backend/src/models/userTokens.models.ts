@@ -5,7 +5,7 @@ import { DateISO, ID } from "shared-types";
 export class UserTokens {
   id?: ID;
   userId: ID;
-  accessToken:string;
+  accessToken: string;
   accessTokenExpiry: DateISO;
   refreshToken: string;
   activeSessionId: string | null = null;
@@ -17,8 +17,8 @@ export class UserTokens {
   constructor(
     id: ID,
     userId: ID,
-    accessToken:string,
-  accessTokenExpiry: DateISO,
+    accessToken: string,
+    accessTokenExpiry: DateISO,
     refreshToken: string,
     createdAt: DateISO,
     updatedAt: DateISO,
@@ -42,7 +42,7 @@ export class UserTokens {
     return {
       id: this.id,
       userId: this.userId,
-      accessToken:this.accessToken,
+      accessToken: this.accessToken,
       accessTokenExpiry: this.accessTokenExpiry,
       refreshToken: this.refreshToken,
       activeSessionId: this.activeSessionId,

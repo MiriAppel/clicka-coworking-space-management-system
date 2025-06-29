@@ -62,7 +62,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Error refreshing token', err);
     if ((err as any).message === 'INVALID_SESSION') {
-      // Session לא תקף - המשתמש צריך להתחבר מחדש
+      // Session expired- need to login again
       tokenService.clearAuthCookie(res);
       res.status(401).json({
         error: 'Session expired',

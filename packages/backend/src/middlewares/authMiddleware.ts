@@ -26,10 +26,10 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
     if (await userTokenService.checkIfExpiredAccessToken(payload.userId))
       throw new Error('TokenExpiredError');
     const user: User = result.json();
-    (req as any).user = { payload, user, sessionId };
+    (req as any).user = { payload, user, sessionId };// Store the user object in the request object for further use;
 
     //------------------------------------------------------------
-    (req as any).user = { payload, firstName: "לאה", sessionId }; // Store the user object in the request object for further use;
+    (req as any).user = { payload, firstName: "aaaa", sessionId }; 
     console.log(sessionId);
     (req as any).sessionId = { sessionId };
     next();

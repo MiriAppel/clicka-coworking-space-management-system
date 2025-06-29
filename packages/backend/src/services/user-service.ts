@@ -1,10 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { UserModel } from '../models/User'; // נניח שהמודל User נמצא באותו תיק
 import { logUserActivity } from '../utils/logger';
-
-const supabaseUrl = 'https://your-project.supabase.co'; // החלף עם ה-URL של פרויקט ה-Supabase שלך
-const supabaseAnonKey = 'your-anon-key'; // החלף עם ה-Anon Key שלך
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from '../db/supabaseClient';
 
 export class UserService {
     static loginByGoogleId: any;
@@ -72,7 +69,7 @@ export class UserService {
         const { data, error } = await supabase
             .from('users')
             .select('*')
-            .eq('googleId', googleId)
+            .eq('google_id', googleId)
             .single();
 
         if (error) {
