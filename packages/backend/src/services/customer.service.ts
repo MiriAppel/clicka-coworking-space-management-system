@@ -174,45 +174,45 @@ export class customerService extends baseService<CustomerModel> {
 const serviceCustomer = new customerService();
 
 // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
-export const exportCustomersToFileByFilter = async (
-  filter: Partial<CustomerModel>
-): Promise<Buffer | null> => {
-  const customerToExport = await serviceCustomer.getByFilters(filter);
+// export const exportCustomersToFileByFilter = async (
+//   filter: Partial<CustomerModel>
+// ): Promise<Buffer | null> => {
+  // const customerToExport = await serviceCustomer.getByFilters(filter);
 
-  if (!customerToExport || customerToExport.length === 0) {
-    return null;
-  }
+  // if (!customerToExport || customerToExport.length === 0) {
+  //   return null;
+  // }
 
-  // פונקציה מהספריה csv-writer
-  const csvStringifier = createObjectCsvStringifier({
-    header: [
-      { id: "id", title: "ID" },
-      { id: "name", title: "Name" },
-      { id: "idNumber", title: "ID Number" },
-      { id: "businessName", title: "Business Name" },
-      { id: "businessType", title: "Business Type" },
-      { id: "currentWorkspaceType", title: "Current Workspace Type" },
-      { id: "workspaceCount", title: "Workspace Count" },
-      { id: "contractSignDate", title: "Contract Sign Date" },
-      { id: "billingStartDate", title: "Billing Start Date" },
-      { id: "invoiceName", title: "InvoiceName" },
-      { id: "contractDocuments", title: "Contract Documents" },
-      { id: "paymentMethodsType", title: "Payment Methods Type" },
-      { id: "notes", title: "Notes" },
-      { id: "updatedAt", title: "Updated At" },
-      { id: "contracts", title: "Contracts" },
-      { id: "phone", title: "Phone" },
-      { id: "status", title: "Status" },
-      { id: "createdAt", title: "Created At" },
-    ],
-  });
+//   // פונקציה מהספריה csv-writer
+//   const csvStringifier = createObjectCsvStringifier({
+//     header: [
+//       { id: "id", title: "ID" },
+//       { id: "name", title: "Name" },
+//       { id: "idNumber", title: "ID Number" },
+//       { id: "businessName", title: "Business Name" },
+//       { id: "businessType", title: "Business Type" },
+//       { id: "currentWorkspaceType", title: "Current Workspace Type" },
+//       { id: "workspaceCount", title: "Workspace Count" },
+//       { id: "contractSignDate", title: "Contract Sign Date" },
+//       { id: "billingStartDate", title: "Billing Start Date" },
+//       { id: "invoiceName", title: "InvoiceName" },
+//       { id: "contractDocuments", title: "Contract Documents" },
+//       { id: "paymentMethodsType", title: "Payment Methods Type" },
+//       { id: "notes", title: "Notes" },
+//       { id: "updatedAt", title: "Updated At" },
+//       { id: "contracts", title: "Contracts" },
+//       { id: "phone", title: "Phone" },
+//       { id: "status", title: "Status" },
+//       { id: "createdAt", title: "Created At" },
+//     ],
+//   });
 
-  const csvHeader = csvStringifier.getHeaderString();
-  const csvBody = csvStringifier.stringifyRecords(customerToExport);
-  const csvFull = csvHeader + csvBody;
+//   const csvHeader = csvStringifier.getHeaderString();
+//   // const csvBody = csvStringifier.stringifyRecords(customerToExport);
+//   // const csvFull = csvHeader + csvBody;
 
-  return Buffer.from(csvFull, "utf-8");
-};
+//   // return Buffer.from(csvFull, "utf-8");
+// };
 
 // לשאול את שולמית
 

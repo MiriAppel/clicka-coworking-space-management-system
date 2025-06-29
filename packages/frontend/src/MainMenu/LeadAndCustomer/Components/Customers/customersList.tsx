@@ -27,6 +27,8 @@ interface CustomersListProps {
 }
 
 export const CustomersList = ({ customers, onDelete }: CustomersListProps) => {
+    console.log(customers + "customer in start");
+    
     const navigate = useNavigate();
 
     const valuesToTable: ValuesToTable[] = customers.map(customer => ({
@@ -120,6 +122,7 @@ export const CustomersPage = () => {
 
         <div style={{ direction: "rtl", padding: "20px" }}>
             <h1>לקוחות</h1>
+            
             <SearchCustomer onResults={handleSearchResults} />
             <CustomersList customers={customers} onDelete={handleDeleteCustomer} />
         </div>

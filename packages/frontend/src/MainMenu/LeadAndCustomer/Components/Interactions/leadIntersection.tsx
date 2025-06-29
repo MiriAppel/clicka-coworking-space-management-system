@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import React from "react";
+import React, { useState } from "react";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 
 //אנטרקציות של המתעניין 
@@ -69,7 +69,7 @@ export const LeadInteraction = () => {
   return (
     <div className="p-6">
             <h2 className="text-xl font-bold mb-4">אינטראקציות של מתעניינים</h2>
-      <Table<User> data={users} columns={columns} dir="rtl" />
+      {/* <Table<User> data={users} columns={columns} dir="rtl" /> */}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { customerService } from '../services/customer.service';
 import { CreateCustomerRequest, ID, PaymentMethodType } from 'shared-types';
+import { CustomerModel } from '../models/customer.model';
 
 const serviceCustomer = new customerService();
 
@@ -8,6 +9,7 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 
     try {
         const customers = await serviceCustomer.getAll()
+        customers as CustomerModel[];
         res.status(200).json(customers);
     } 
     catch (error) {

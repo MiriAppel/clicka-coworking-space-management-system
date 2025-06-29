@@ -56,16 +56,16 @@ export const ContractManagement = () => {
         },
     ]);
 
-    const valuesToTable: ValuesToTable[] = contracts.map(contract => ({
-        id: contract.id,
-        customerId: contract.customerId,
-        status: contract.status,
-        //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
-        linkToDetails: <NavLink to={`:${contract.customerId}`}>פרטי חוזה</NavLink>, // קישור
-        deleteButton: (
-            <Button variant="primary" size="sm" onClick={() => deleteContract(contract.id!)}>X</Button>
-        ),
-    }));
+    // const valuesToTable: ValuesToTable[] = contracts.map(contract => ({
+    //     id: contract.id,
+    //     customerId: contract.customerId,
+    //     status: contract.status,
+    //     //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
+    //     linkToDetails: <NavLink to={`:${contract.customerId}`}>פרטי חוזה</NavLink>, // קישור
+    //     deleteButton: (
+    //         <Button variant="primary" size="sm" onClick={() => deleteContract(contract.id!)}>X</Button>
+    //     ),
+    // }));
 
     const Columns: TableColumn<ValuesToTable>[] = [
         { header: "מזהה הלקוח", accessor: "customerId" }, // כדאי לשנות לשם הלקוח
@@ -89,7 +89,7 @@ export const ContractManagement = () => {
 
             {/* כאן יהיה טבלה של כל החוזים עם הפרטים (אם זה מדי הרבה פרטים ולא יפה לעשות הכל כאן אפשר לנתב לעמוד של פרטי חוזה בודד) */}
 
-            <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteContract}/>
+            {/* <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteContract}/> */}
 
         </div>
 

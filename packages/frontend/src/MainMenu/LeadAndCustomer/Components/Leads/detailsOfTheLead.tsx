@@ -1,8 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useState } from "react";
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
-import { Lead, LeadSource, LeadStatus, InteractionType } from "../../../../types/lead";
-import { WorkspaceType } from "../../../../types/customer";
+import { InteractionType, Lead, LeadSource, LeadStatus, WorkspaceType } from "shared-types";
 
 //אין צורך בעמוד זה כי בעריכה רואים את הפרטים...!!
 
@@ -16,6 +15,7 @@ export const DetailsOfTheLead = () => {
         id: leadId || '1',
         name: 'יוסי כהן',
         phone: '0501234567',
+        idNumber: '123456789',
         email: 'yossi@example.com',
         businessType: 'סטארטאפ',
         interestedIn: [
