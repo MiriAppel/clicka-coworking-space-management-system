@@ -46,7 +46,7 @@ export function Form<T extends FieldValues>({
   children,
   methods: externalMethods,
 }: FormComponentProps<T>) {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const { t } = useTranslation();
   //שימוש לתירגום עם I18NEXT לפי הנדרש 
   const effectiveDir = dir || theme.direction;

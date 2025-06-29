@@ -33,7 +33,7 @@ export const Table = <T extends Record<string, any>>({
    onUpdate,
    onDelete,
 }: TableProps<T>) => {
-  const theme = useTheme();
+ const {theme} = useTheme();
   const effectiveDir = dir || theme.direction;
 
   return (
