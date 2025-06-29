@@ -23,10 +23,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const data = res.data;
           setUser(data.user); 
           setSessionId(data.sessionId);
-          console.log("User data:", data.sessionId);
           return;
-
-         
+          
         } else if (res.status == 401) {
           const data = res.data;
           if (data.error === 'TokenExpired') {

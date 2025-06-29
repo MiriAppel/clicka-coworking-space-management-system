@@ -9,14 +9,14 @@ const userTokenService = new UserTokenService();
 export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, token: string, sessionId: string): void => {
     res.cookie('session', token, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 8 * 60 * 60 * 1000, // 8 שעות
     });
     console.log('setAuthCookie', sessionId);
     res.cookie('sessionId', sessionId, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 8 * 60 * 60 * 1000, // 8 שעות
     });
@@ -25,12 +25,12 @@ export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, 
 export const clearAuthCookie = (res: Response): void => {
     res.clearCookie('session', {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
     });
     res.clearCookie('sessionId', {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
     });
 };

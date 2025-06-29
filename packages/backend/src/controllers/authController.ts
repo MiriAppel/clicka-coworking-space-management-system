@@ -59,7 +59,6 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
     const newJwt = await tokenService.refreshUserToken(sessionToken, sessionId);
     tokenService.setAuthCookie(res, newJwt, sessionId);
     res.status(200).json({ message: 'Token refreshed successfully' });
-
   } catch (err) {
     console.error('Error refreshing token', err);
     if ((err as any).message === 'INVALID_SESSION') {
@@ -69,7 +68,8 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
         error: 'Session expired',
         message: 'Please login again'
       });
-      res.status(500).json({ error: 'Error refreshing token' });
+      return;
     }
+    res.status(500).json({ error: 'Error refreshing token' });
   }
-}
+}    

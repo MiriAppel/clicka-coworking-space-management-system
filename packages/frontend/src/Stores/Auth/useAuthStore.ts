@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { User } from "shared-types"
-import { log } from 'console'
 import { DateISO } from "shared-types"
 
 
