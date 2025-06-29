@@ -44,6 +44,8 @@ export const UpdateCustomer: React.FC = () => {
 
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
+
+        //צריך לשלוח רק את השדות ששונו - אם אפשר לדעת
         JSON.stringify(data, null, 2);
         const updateCustomer: Partial<UpdateCustomerRequest> = { ...data }
         console.log(updateCustomer);

@@ -35,7 +35,7 @@ export const createLead = async (lead: CreateLeadRequest): Promise<Lead> => {
 
 // ---------- לקוחות ----------
 
-const CUSTOMERS_BASE_PATH = '/api/customers';
+const CUSTOMERS_BASE_PATH = '/customers';
 
 
 export const getAllCustomers = async (): Promise<Customer[]> => {
