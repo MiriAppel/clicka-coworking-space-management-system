@@ -8,7 +8,7 @@ import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 
-
+import emailTemplateRouter from './routes/emailTemplate.route';
 
 
 // Create Express app
@@ -25,7 +25,7 @@ app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 // app.use('/api/leadInteraction', routerCstomer);
-
+app.use('/api/templates', emailTemplateRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
