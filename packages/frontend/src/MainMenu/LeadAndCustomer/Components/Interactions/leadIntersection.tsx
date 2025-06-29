@@ -1,8 +1,12 @@
-import React, { useState } from "react";
-import { FaBell, FaBellSlash } from "react-icons/fa";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useParams } from "react-router";
+import React from "react";
+import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 
-interface User {
+//אנטרקציות של המתעניין 
+//קודם input 
+//של חיפוש המזכירה תוכל לחפש למשל מי שהפעמוןשלו דולק וזה אומר שהוא צריך תזכורת 
+// בנוסף צריך שיהיה בחירת מרובים או בחירה של כולם כמו ריבוע כזה בצד שאפשר לבחור כמה  
+interface User { // לדוגמא של טבלה 
   id: number;
   name: string;
   email: string;
@@ -63,78 +67,9 @@ export const LeadInteraction = () => {
   }));
 
   return (
-    <div dir="rtl" style={{ padding: "2rem" }}>
-      <h2>רשימת אינטראקציות</h2>
-
-      <input
-        type="text"
-        placeholder="חפש לפי שם..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ padding: "0.5rem", marginBottom: "1rem", width: "300px" }}
-      />
-
-      <table>
-        <thead>
-          <tr>
-            <th>
-              <input
-                type="checkbox"
-                onChange={(e) => {
-                  setSelectedIds(
-                    e.target.checked ? filteredUsers.map((u) => u.id) : []
-                  );
-                }}
-                checked={
-                  selectedIds.length === filteredUsers.length &&
-                  filteredUsers.length > 0
-                }
-              />
-            </th>
-            <th>שם</th>
-            <th>סוג אינטראקציה</th>
-            <th>תזכורת</th>
-            <th>תאריך קרוב</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((user) => (
-            <tr key={user.id}>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={selectedIds.includes(user.id)}
-                  onChange={() => handleCheckboxChange(user.id)}
-                />
-              </td>
-              <td>{user.name}</td>
-              <td>{user.InteractionType || "-"}</td>
-              <td>
-                <button onClick={() => toggleReminder(user.id)}>
-                  {user.reminder ? (
-                    <FaBell color="orange" />
-                  ) : (
-                    <FaBellSlash color="gray" />
-                  )}
-                </button>
-              </td>
-              <td>{user.Dates?.[0] || "-"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h3 style={{ marginTop: "2rem" }}>גרף אינטראקציות לפי תאריך</h3>
-      <div style={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer>
-          <BarChart data={chartData}>
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="p-6">
+            <h2 className="text-xl font-bold mb-4">אינטראקציות של מתעניינים</h2>
+      <Table<User> data={users} columns={columns} dir="rtl" />
     </div>
   );
 };

@@ -1,5 +1,7 @@
 // expense-types.d.ts
+
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
+
 // Expense category enum
 export enum ExpenseCategory {
   RENT = 'RENT',

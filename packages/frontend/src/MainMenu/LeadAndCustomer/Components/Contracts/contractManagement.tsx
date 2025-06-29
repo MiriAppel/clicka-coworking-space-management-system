@@ -7,10 +7,10 @@ import { Button, ButtonProps } from "../../../../Common/Components/BaseComponent
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 
 interface ValuesToTable {
+    id: ID
     customerId: ID; //  מזהה הלקוח בעל החוזה -כדאי להחליף לשם שלו
     status: ContractStatus; // סטטוס החוזה
     linkToDetails: React.ReactElement; // קישור לפרטים של החוזה
-    deleteButton: ButtonProps; // כפתור למחיקת החוזה - או שהמחיקה תהיה מתוך פרטי החוזה
 }
 
 export const ContractManagement = () => {
@@ -57,6 +57,7 @@ export const ContractManagement = () => {
     ]);
 
     const valuesToTable: ValuesToTable[] = contracts.map(contract => ({
+        id: contract.id,
         customerId: contract.customerId,
         status: contract.status,
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
@@ -70,26 +71,25 @@ export const ContractManagement = () => {
         { header: "מזהה הלקוח", accessor: "customerId" }, // כדאי לשנות לשם הלקוח
         { header: "סטטוס", accessor: "status" },
         { header: "פרטים", accessor: "linkToDetails" },
-        { header: "מחיקה", accessor: "deleteButton" }
     ];
 
-    const deleteContract = (id: string) => {
+    const deleteContract = (val: ValuesToTable) => {
         //כאן יהיה קריאת שרת למחיקת חוזה ועדכון מחדש של המערך המקומי
         //זה רק דוג' למחיקה מקומית
-        const newCustomers = contracts.filter(c => c.id !== id);
+        const newCustomers = contracts.filter(c => c.id !== val.id);
         setContracts(newCustomers); // עדכון ה-state
 
     }
 
     return (
-        <div>
-            <h1>Contract Management</h1>
+        <div className="p-6">
+            <h2 className="text-3xl font-bold text-center text-blue-600 my-4">ניהול חוזים</h2>
             {/* Add your contract management implementation here */}
             <Button variant="primary" size="sm" onClick={() => navigate('new')}>new contract</Button>
 
             {/* כאן יהיה טבלה של כל החוזים עם הפרטים (אם זה מדי הרבה פרטים ולא יפה לעשות הכל כאן אפשר לנתב לעמוד של פרטי חוזה בודד) */}
 
-            <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" />
+            <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteContract}/>
 
         </div>
 
