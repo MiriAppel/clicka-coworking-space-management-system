@@ -7,6 +7,7 @@ import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
+import userRouter from './routes/user.route';
 
 
 
@@ -21,6 +22,7 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);

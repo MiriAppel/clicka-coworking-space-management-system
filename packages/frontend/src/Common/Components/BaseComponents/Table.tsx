@@ -14,6 +14,7 @@ export interface BaseComponentProps {
 export interface TableColumn<T> {
   header: string;//הכותרת של העמודות של הטבלה 
   accessor: keyof T;// כל מה שיש בתוך הטבלה וזה מסוג גנרי כדי שנוכל להכניס מה שרוצים מכל טיפוס שהוא
+  render?: (value: any, row: T) => React.ReactNode;
 }
 
 export interface TableProps<T> extends BaseComponentProps {
@@ -88,7 +89,12 @@ export const Table = <T extends Record<string, any>>({
           {data.map((row, rowIdx) => (
             <tr key={rowIdx} className="hover:bg-gray-50">
               {columns.map((col, colIdx) => (
-                <td key={colIdx} className="border px-4 py-2">{row[col.accessor]}</td>
+                <td key={colIdx} className="border px-4 py-2">
+                  {col.render
+                    ? col.render(row[col.accessor], row)
+                    : String(row[col.accessor] ?? '')
+                  }
+                </td>
                 // {/* //ניגש לכל מה שכתוב בעמודות לדוג אם ACCESOR=NAME אז מדפיס לי ROW[NAME] */}
               ))}
 
@@ -110,7 +116,7 @@ export const Table = <T extends Record<string, any>>({
                 >
                   Delete
                 </Button>
-                
+
 
               </td>
             </tr>

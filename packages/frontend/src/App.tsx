@@ -5,6 +5,7 @@ import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/Le
 import { Button } from './Common/Components/BaseComponents/Button';
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 
+
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,11 +66,20 @@ function App() {
         >
           Billing
         </Button>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => navigate('/users')}
+          className="border border-black hover:border-white bg-black text-white"
+        >
+          users
+        </Button>
       </div>
       <SearchCustomer></SearchCustomer>
       {/* 👇 נתיבים */}
       <Routes>
         <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        {/* <Route path="./users" element={<UserTable/>} /> */}
       </Routes>
     </div>
   );
