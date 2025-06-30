@@ -2,28 +2,39 @@ import { ID } from "../../../shared-types/core";
 import { Room,RoomFeature } from "../../../shared-types/booking";
 
 export class RoomFeatureModel implements RoomFeature {
-  id: ID;
+  id?: ID;
   description?: string;
   IsIncluded: boolean;
   additionalCost: number;
 
-  constructor(
-    id: ID,
-    IsIncluded: boolean,
-    additionalCost: number,
-    description?: string
-  ) {
-    this.id = id;
-    this.IsIncluded = IsIncluded;
-    this.additionalCost = additionalCost;
-    this.description = description;
-  }
+   constructor(params: {
+    id: ID;
+    description?: string;
+    IsIncluded: boolean;
+    additionalCost: number;
+   }) {
+    this.id = params.id;
+    this.description = params.description;
+    this.IsIncluded = params.IsIncluded;
+    this.additionalCost = params.additionalCost; 
+   }
 
   toDatabaseFormat() {
     return {
       description: this.description,
-      IsIncluded: this.IsIncluded,
-      additionalCost: this.additionalCost
+      isincluded: this.IsIncluded,
+      additional_cost: this.additionalCost
     };
   }
+      static fromDatabaseFormat(dbData: any): RoomFeatureModel {
+        return new RoomFeatureModel({
+            id: dbData.id,
+            description: dbData.description,
+            IsIncluded: dbData.isincluded,
+            additionalCost: dbData.additional_cost
+        });
+    }
+    static fromDatabaseFormatArray(dbDataArray: any[] ): RoomFeatureModel[] {
+        return dbDataArray.map(dbData => RoomFeatureModel.fromDatabaseFormat(dbData));
+    }
 }

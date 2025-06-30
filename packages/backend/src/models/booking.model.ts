@@ -83,5 +83,6 @@ export class BookingModel implements Booking {
       end_time: this.endTime,
       status: this.status,
       notes: this.notes,
+      is_paid:this.isPaid,
 }}
 }

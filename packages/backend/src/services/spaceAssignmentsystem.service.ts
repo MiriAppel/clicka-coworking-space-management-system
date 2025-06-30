@@ -1,20 +1,112 @@
-//import {space_assignmentsystem} from '../models/';
-//פונקציה המקצה חדר למשתמש תוך בדיקה שאין התנגשויות
-async function assignCustomerToWorkspace(customerId:any) {
-}
-//פונקציה המעבירה לקוח לחדר אחר תוך כדי בדיקה שאין התנגשויות
-async function unassignCustomerFromWorkspace(customerId:any,roomid:any) {
-}
-//פונקציה המחירה את כל ההקצאות בעבר ללקוח
-async function getAssignmentHistoryForCustomer(customerId:any) {
-}
-//פונקציה המקצה ללקוח חדרים מרובים
-async function assignCustomerToWorkspaces(workspaceid:any,customerId:any) {
+
+// import { createClient } from '@supabase/supabase-js';
+// import { RoomModel } from "../models/room.model";
+// import type { ID } from "shared-types";
+// import dotenv from 'dotenv';
+// import { SpaceModel } from '../models/spaceAssingment.model';
+// dotenv.config();
+
+// const supabaseUrl = process.env.SUPABASE_URL || '';
+// const supabaseKey = process.env.SUPABASE_KEY || '';
+// const supabase = createClient(supabaseUrl, supabaseKey);
+
+// function logUserActivity(userId: string, action: string) {
+//   console.log(`[Activity Log] ${userId}: ${action}`);
+// }
+// //יצירת מרחב
+// export class SpaceAssignmentService {
+// async  createSpace(space: SpaceModel): Promise<SpaceModel | null> {
+//         console.log('📦 Inserting space:', space.toDatabaseFormat());
+//         const { data, error } = await supabase
+//           .from('space_assignment') 
+//           .insert([space.toDatabaseFormat()])
+//           .select()
+//           .single();
     
-}
-export default{
-    assignCustomerToWorkspace,
-    unassignCustomerFromWorkspace,
-    getAssignmentHistoryForCustomer,
-    assignCustomerToWorkspaces
-}
+    
+//        if (error) {
+//       console.log('❌ Supabase Insert Error:', error); 
+//     throw new Error(`Failed to create space: ${error.message}`);
+//       }
+    
+//         const createdspace = data as unknown as SpaceModel;
+//         //logUserActivity(room.id ?? room.name, 'book created');
+//         return createdspace;
+// }
+// //קבלת כל המרחבים
+// //החזרת כל המרחבים מהמסד נתונים
+
+//       async getAllSpaces() {
+//     try {
+//       const { data, error } = await supabase
+//         .from('space_assignment') // שם הטבלה שלך ב-Supabase
+//         .select('*');
+
+//       if (error) {
+//         console.error('Supabase error:', error.message);
+//         return null;
+//       }
+
+//       return data;
+//     } catch (err) {
+//       console.error('Unexpected error:', err);
+//       return null;
+//     }
+//   }
+
+// //עדכון מרחב
+//       async updateSpace(id: string, updatedData: SpaceModel): Promise<SpaceModel | null> {
+    
+//         const { data, error } = await supabase
+//             .from('space_assignment')
+//             .update([updatedData.toDatabaseFormat()])
+//             .eq('id', id)
+//             .select()
+//             .single();
+
+//         if (error) {
+//             console.error('Error updating space:', error);
+//             return null;
+//         }
+//         const space = data as unknown as SpaceModel; // המרה לסוג UserModel
+        
+//         //logUserActivity(feature.description, 'feature updated');
+       
+//         return space; 
+// }
+// //מחיקת מרחב
+// async  deleteSpace(id:string) {
+//             const { error } = await supabase
+//             .from('space_assignment')
+//             .delete()
+//             .eq('id', id);
+
+//         if (error) {
+//             console.error('Error deleting space:', error);
+//             return false;
+//         }
+        
+//        // logUserActivity(id, 'User deleted');
+      
+//         return true; 
+// }
+
+// //קבלת  מרחב לפי ID
+// async  getSpaceById(id:string) {
+//          const { data, error } = await supabase
+//                 .from('space_assignment')
+//                 .select('*')
+//                 .eq('id', id)
+//                 .single();
+    
+//             if (error) {
+//                 console.error('Error fetching space:', error);
+//                 return null;
+//             }
+    
+//             const space = data as SpaceModel; // המרה לסוג UserModel
+         
+//             return space;
+// }
+
+// }

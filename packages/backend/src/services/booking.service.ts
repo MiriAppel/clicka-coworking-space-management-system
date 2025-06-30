@@ -1,168 +1,106 @@
+import { createClient } from '@supabase/supabase-js';
 import { BookingModel } from "../models/booking.model";
-import type { CreateBookingRequest, ID, DateISO, BookingStatus } from "shared-types";
+import type { ID } from "shared-types";
+import dotenv from 'dotenv';
+dotenv.config();
 
-// נניח שיש לנו שכבת גישה ל־DB
-// import { db } from "../db";
-// import { sendNotification } from "../utils/notification";
-// import { getRoomNameById } from "../utils/rooms";
-// import { generateId } from "../utils/id";
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+function logUserActivity(userId: string, action: string) {
+  console.log(`[Activity Log] ${userId}: ${action}`);
+}
 
 export class BookingService {
-  /**
-   * יצירת הזמנה חדשה ללקוח או משתמש חיצוני
-   */
-  async createBooking(request: CreateBookingRequest): Promise<BookingModel> {
-    const hasConflict = await this.detectConflicts(request.startTime, request.endTime, request.roomId);
-    if (hasConflict) throw new Error("Room is already booked for the selected time");
+  async createBooking(book: BookingModel): Promise<BookingModel | null> {
+    console.log('📦 Inserting booking:', book.toDatabaseFormat());
+    const { data, error } = await supabase
+      .from('booking')
+      .insert([book.toDatabaseFormat()])
+      .select()
+      .single();
 
-    const booking = new BookingModel({
-      id: generateId(),
-      roomId: request.roomId,
-      roomName: await getRoomNameById(request.roomId),
-      customerId: request.customerId,
-      externalUserName: request.externalUserName,
-      externalUserEmail: request.externalUserEmail,
-      externalUserPhone: request.externalUserPhone,
-      startTime: request.startTime,
-      endTime: request.endTime,
-      status: "PENDING",
-      notes: request.notes,
-    });
 
-    await db.bookings.insert(booking.toDatabaseFormat());
-
-    // שליחת התראה
-    await sendNotification({
-      to: "admin@yourdomain.com",
-      subject: "New Booking Pending Approval",
-      body: `New booking request for room ${booking.roomName} from ${booking.startTime} to ${booking.endTime}`
-    });
-
-    return booking;
+   if (error) {
+  console.log('❌ Supabase Insert Error:', error); // ✅ הוספתי הדפסה מפורטת
+throw new Error(`Failed to create booking: ${error.message}`);
   }
 
-  /**
-   * קבלת הזמנה לפי מזהה
-   */
-  async getBookingById(id: ID): Promise<BookingModel | null> {
-    const raw = await db.bookings.findById(id);
-    return raw ? new BookingModel(raw) : null;
-  }
-
-  /**
-   * קבלת כל ההזמנות
-   */
-  async getAllBookings(): Promise<BookingModel[]> {
-    const rawList = await db.bookings.findAll();
-    return rawList.map(data => new BookingModel(data));
-  }
-
-  /**
-   * עדכון הזמנה
-   */
-  async updateBooking(id: ID, updates: Partial<CreateBookingRequest>): Promise<BookingModel> {
-    const booking = await this.getBookingById(id);
-    if (!booking) throw new Error("Booking not found");
-
-    if (updates.startTime || updates.endTime || updates.roomId) {
-      const conflict = await this.detectConflicts(
-        updates.startTime ?? booking.startTime,
-        updates.endTime ?? booking.endTime,
-        updates.roomId ?? booking.roomId,
-        id // exclude self
-      );
-      if (conflict) throw new Error("Updated booking conflicts with existing one");
+    const createdBook = data as unknown as BookingModel;
+    logUserActivity(book.id ?? book.roomName, 'book created');
+    return createdBook;
     }
+      async getAllBooking() {
+    try {
+      const { data, error } = await supabase
+        .from('booking') 
+        .select('*');
 
-    Object.assign(booking, updates, {
-      updatedAt: new Date().toISOString()
-    });
+      if (error) {
+        console.error('Supabase error:', error.message);
+        return null;
+      }
 
-    await db.bookings.update(id, booking.toDatabaseFormat());
-    return booking;
-  }
-
-  /**
-   * ביטול הזמנה
-   */
-  async cancelBooking(id: ID): Promise<void> {
-    const booking = await this.getBookingById(id);
-    if (!booking) throw new Error("Booking not found");
-
-    booking.status = "CANCELED";
-    booking.updatedAt = new Date().toISOString();
-
-    await db.bookings.update(id, booking.toDatabaseFormat());
-  }
-
-  /**
-   * אישור הזמנה
-   */
-  async approveBooking(id: ID, approvedBy: ID): Promise<BookingModel> {
-    const booking = await this.getBookingById(id);
-    if (!booking) throw new Error("Booking not found");
-
-    if (booking.status !== "PENDING") throw new Error("Only pending bookings can be approved");
-
-    booking.status = "APPROVED";
-    booking.approvedBy = approvedBy;
-    booking.approvedAt = new Date().toISOString();
-    booking.updatedAt = new Date().toISOString();
-
-    await db.bookings.update(id, booking.toDatabaseFormat());
-
-    // שליחת אישור
-    const recipient = booking.externalUserEmail ?? booking.customerEmail;
-    if (recipient) {
-      await sendNotification({
-        to: recipient,
-        subject: "Booking Approved",
-        body: `Your booking for room ${booking.roomName} has been approved.`
-      });
+      return data;
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      return null;
     }
-
-    return booking;
   }
-
-  /**
-   * דחיית הזמנה
-   */
-  async rejectBooking(id: ID, rejectedBy: ID): Promise<BookingModel> {
-    const booking = await this.getBookingById(id);
-    if (!booking) throw new Error("Booking not found");
-
-    booking.status = "REJECTED";
-    booking.approvedBy = rejectedBy;
-    booking.approvedAt = new Date().toISOString();
-    booking.updatedAt = new Date().toISOString();
-
-    await db.bookings.update(id, booking.toDatabaseFormat());
-    return booking;
+      async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
+      
+          const { data, error } = await supabase
+              .from('booking')
+              .update([updatedData.toDatabaseFormat()])
+              .eq('id', id)
+              .select()
+              .single();
+  
+          if (error) {
+              console.error('Error updating booking:', error);
+              return null;
+          }
+          const booking = data as unknown as BookingModel; // המרה לסוג UserModel
+          
+          return booking; 
   }
-
-  /**
-   * מחיקת הזמנה
-   */
-  async deleteBooking(id: ID): Promise<void> {
-    await db.bookings.delete(id);
+  //מחיקת פגישה
+  async  deleteBooking(id:string) {
+              const { error } = await supabase
+              .from('booking')
+              .delete()
+              .eq('id', id);
+  
+          if (error) {
+              console.error('Error deleting booking:', error);
+              return false;
+          }
+          
+         // logUserActivity(id, 'User deleted');
+          // מחזיר true אם הפיצ'ר נמחק בהצלחה
+          return true; 
   }
-
-  /**
-   * בדיקת התנגשויות עם הזמנות קיימות
-   */
-  async detectConflicts(start: DateISO, end: DateISO, roomId: ID, excludeId?: ID): Promise<boolean> {
-    const existing = await db.bookings.find({
-      roomId,
-      status: { $in: ["APPROVED", "PENDING"] },
-      $or: [
-        { startTime: { $lt: end }, endTime: { $gt: start } }
-      ]
-    });
-
-    const conflicts = excludeId
-      ? existing.filter(b => b.id !== excludeId)
-      : existing;
-
-    return conflicts.length > 0;
+  
+  //קבלת  פגישה לפי ID
+  async  getBookingById(id:string) {
+           const { data, error } = await supabase
+                  .from('booking')
+                  .select('*')
+                  .eq('id', id)
+                  .single();
+      
+              if (error) {
+                  console.error('Error fetching booking:', error);
+                  return null;
+              }
+      
+              const booking = data as BookingModel; // המרה לסוג UserModel
+              // רישום פעילות המשתמש
+             // logUserActivity(feature.id? feature.id:feature.description, 'User fetched by ID');
+              // מחזיר את המשתמש שנמצא
+              return booking;
   }
 }
+
+

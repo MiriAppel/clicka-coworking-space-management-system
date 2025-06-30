@@ -7,26 +7,17 @@ import{SpaceModel}from './workspace '
 export class WorkspaceMapModel implements WorkspaceMap {
   id?: ID;
   name: string;
-  layout: MapLayout;
-  workspaces: SpaceModel[];
-  rooms:RoomModel[];
   lastUpdated: DateISO;
 
   constructor(id: ID,name: string, layout: MapLayout, workspaces: SpaceModel[], lastUpdated: DateISO) {
     this.id = id;
     this.name = name;
-    this.layout = layout;
-    this.workspaces = workspaces;
-    this.rooms = [];
     this.lastUpdated = lastUpdated;
   }
 
   toDatabaseFormat() {
     return {
       name: this.name,
-       layout: this.layout,
-      workspaces: this.workspaces.map(w => w.toDatabaseFormat()),
-      rooms: this.rooms.map(r => r.toDatabaseFormat()),
       last_updated: this.lastUpdated,
     };
   }

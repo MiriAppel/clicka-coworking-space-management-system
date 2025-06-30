@@ -25,7 +25,7 @@ export enum BookingStatus {
   COMPLETED = 'COMPLETED'
 }
 export interface RoomFeature {
-  id: ID;
+  id?: ID;
   description?: string;
   IsIncluded: boolean;
   additionalCost: number;
