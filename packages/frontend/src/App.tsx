@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate } from 'react-router-dom';
 import {Button} from './Common/Components/BaseComponents/Button'
+import {Accesibility} from './Common/Components/BaseComponents/Accesibility'
 
 // Simple component to demonstrate the project
 function App() {
@@ -68,6 +69,7 @@ function App() {
         Billing
       </Button>
     </div>
+    <Accesibility></Accesibility>
     </div>
   );
 }

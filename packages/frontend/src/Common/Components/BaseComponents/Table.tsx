@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
 import { Button } from "./Button";
+import { Pencil, Trash } from "lucide-react"; 
 
 
 export interface BaseComponentProps {
@@ -14,6 +15,7 @@ export interface BaseComponentProps {
 export interface TableColumn<T> {
   header: string;//הכותרת של העמודות של הטבלה 
   accessor: keyof T;// כל מה שיש בתוך הטבלה וזה מסוג גנרי כדי שנוכל להכניס מה שרוצים מכל טיפוס שהוא
+   render?: (value: any, row: T) => React.ReactNode;
 }
 
 export interface TableProps<T> extends BaseComponentProps {
@@ -85,8 +87,13 @@ export const Table = <T extends Record<string, any>>({
         <tbody>
           {data.map((row, rowIdx) => ( 
             <tr key={rowIdx} className="hover:bg-gray-50">
-  {columns.map((col, colIdx) => (
-    <td key={colIdx}>{row[col.accessor]}</td>
+            {columns.map((col, colIdx) => (
+            <td key={colIdx} className="border px-4 py-2">
+                  {col.render
+                    ? col.render(row[col.accessor], row)
+                    : String(row[col.accessor] ?? '')
+                  }
+                </td>
     // {/* //ניגש לכל מה שכתוב בעמודות לדוג אם ACCESOR=NAME אז מדפיס לי ROW[NAME] */}
   ))}
 
@@ -96,16 +103,20 @@ export const Table = <T extends Record<string, any>>({
       size="sm"
       className="hover:scale-105 hover:brightness-110 transition"
        onClick={() => onUpdate && onUpdate(row)}
-    >
-      Update
+      aria-label="Update"
+    title="Update"
+  >
+    <Pencil size={16} />
     </Button>
     <Button
       variant="accent"
       size="sm"
       className="hover:scale-105 hover:brightness-125 transition"
       onClick={() => onDelete && onDelete(row)}
-    >
-      Delete
+     aria-label="Delete"
+    title="Delete"
+  >
+    <Trash size={16} />
     </Button>
   </td>
 </tr>

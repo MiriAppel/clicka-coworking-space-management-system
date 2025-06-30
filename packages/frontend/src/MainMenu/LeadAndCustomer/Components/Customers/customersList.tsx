@@ -6,6 +6,7 @@ import { ExportToExcel } from '../exportToExcel';
 import { useState } from "react";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { Customer, CustomerStatus, WorkspaceType, ExitReason } from "../../../../types/customer";
+import { Search } from 'lucide-react';
 
 interface ValuesToTable {
     name: string; // שם הלקוח
@@ -128,7 +129,10 @@ export const CustomersList = () => {
             {/* אפשרות חיפוש - בחירה לפי מה לחפש ושדה להכנסת ערך לחיפוש - אפשר בקומפוננטה נפרדת */}
             <input type="text" placeholder="הכנס ערך לחיפוש" />
             {/* לא חייבים את הכפתור אפשר בכל לחיצת מקלדת של קלט לחפש */}
-            <Button variant="primary" size="sm" onClick={() => searchCustomer()}>חיפוש</Button>
+            <Button variant="primary" size="sm" onClick={() => searchCustomer()}
+                >
+                    <Search size={16} className="mr-1" />
+                    </Button>
 
             {/* טבלה של כל הלקוחות עם שם וסטטוס ולכל אחד קישור לקומפוננטה של לקוח בודד שתציג את כל הפרטים המלאים שלו */}
             <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" />
