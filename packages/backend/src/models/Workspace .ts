@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // SpaceModel.ts
 
 import {
@@ -14,6 +15,15 @@ import {
 
 // דוגמה למימוש של פונקציות שיכולות להשתמש בטיפוסים
 
+=======
+
+
+// דוגמה למימוש של פונקציות שיכולות להשתמש בטיפוסים
+
+import type{ CreateSpaceRequest, DateISO, GetSpacesRequest, ID, Space, UpdateSpaceRequest } from "shared-types";
+import { SpaceStatus } from "shared-types";
+
+>>>>>>> main
 export class SpaceModel {
     private spaces: Space[] = [];
 

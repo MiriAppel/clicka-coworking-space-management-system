@@ -23,6 +23,7 @@ export const menus: Menu[] = [
       { label: 'חוזים קרובים', path: '/dashboard/contracts' },
       { label: 'תשלומים אחרונים', path: '/dashboard/payments' },
       { label: 'מפת חללים', path: '/workspaceMap' }
+
     ]
   },
   {
@@ -30,8 +31,9 @@ export const menus: Menu[] = [
     title: 'לקוחות',
     icon: <Users size={18} style={{ marginLeft: 8 }} />,
     items: [
-      { label: 'לקוחות', path: '/leadAndCustomer' },
-      { label: 'חוזים', path: '/contracts' },
+      { label: 'מתעניינים', path: '/leadAndCustomer/leads' },
+      { label: 'לקוחות', path: '/leadAndCustomer/customers' },
+      { label: 'חוזים', path: '/leadAndCustomer/contracts' },
       { label: 'היסטוריית לקוח', path: '/customerHistory' }
     ]
   },
