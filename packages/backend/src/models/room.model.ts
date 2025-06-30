@@ -1,9 +1,8 @@
+import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from 'shared-types/booking';
+import { ID, DateISO } from 'shared-types/core';
 
-import { ID, DateISO } from '../../../shared-types/core';
-import {Room,RoomFeature,RoomType,RoomStatus}from '../../../shared-types/booking'
-
-export class RoomModel implements Room {
-  id?: ID;
+export class RoomModel implements Room, BookingRules{
+  id: ID;
   name: string;
   description?: string;
   type: RoomType;
@@ -75,6 +74,7 @@ export class RoomModel implements Room {
    }
 toDatabaseFormat() {
     return {
+      id: this.id,
       name: this.name,
       description: this.description,
       type: this.type,

@@ -1,5 +1,5 @@
-import type{ BookingStatus, DateISO, ID } from "shared-types";
-import {Booking} from '../../../shared-types/book'
+import type{  DateISO, ID } from "shared-types/core";
+import {Booking,BookingStatus} from 'shared-types/booking'
 
 export class BookingModel implements Booking {
   id?: ID;

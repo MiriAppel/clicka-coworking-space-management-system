@@ -47,8 +47,8 @@ async createRoom(req: Request, res: Response) {
       const updateRoom=await this.roomService.updateRoom(req.params.id,room);
       res.json(updateRoom);
     }
-    catch(err){
-       res.status(500).json({massage:'err.message'});
+    catch(err:any){
+       res.status(500).json({massage:err.message});
     }
 }
 
@@ -57,8 +57,8 @@ async createRoom(req: Request, res: Response) {
         const getRoom=await this.roomService.getRoomById(req.params.id);
         res.json(getRoom);
     }
-    catch(err){
-res.status(500).json({massage:'err.massage'});
+    catch(err:any){
+res.status(500).json({massage:err.massage});
     }
 }
 
@@ -72,3 +72,6 @@ res.status(500).json({massage:'err.massage'});
     }
 }
 }
+
+
+

@@ -1,8 +1,9 @@
-import type{ DateISO, ID } from "shared-types";
+import { ID, DateISO } from  "shared-types/core";
+import { CalendarSync,CalendarSyncStatus} from "shared-types/src/calendarSync";
 
 // מחלקה לסינכרון קלנדר
 export class CalendarSyncModel implements CalendarSync {
-  id: ID;
+  id?: ID;
   bookingId: ID;
   calendarId: string;
   lastSyncAt: DateISO;
@@ -17,7 +18,7 @@ export class CalendarSyncModel implements CalendarSync {
     syncStatus: CalendarSyncStatus;
     syncErrors?: string[];
   }) {
-    this.id = params.id;
+    this.id = params.id|| undefined;
     this.bookingId = params.bookingId;
     this.calendarId = params.calendarId;
     this.lastSyncAt = params.lastSyncAt;
@@ -29,12 +30,11 @@ export class CalendarSyncModel implements CalendarSync {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
-      bookingId: this.bookingId,
-      calendarId: this.calendarId,
-      lastSyncAt: this.lastSyncAt,
-      syncStatus: this.syncStatus,
-      syncErrors: this.syncErrors,
+      booking_id: this.bookingId,
+      calendar_id: this.calendarId,
+      last_sync_at: this.lastSyncAt,
+      sync_status: this.syncStatus,
+      sync_errors: this.syncErrors,
     };
   }
 }

@@ -3,7 +3,7 @@ import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Button } from './Common/Components/BaseComponents/Button';
-import { LeadInteraction } from './MainMenu/LeadAndCustomer/Components/Interactions/leadIntersection';
+import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -66,7 +66,7 @@ function App() {
           Billing
         </Button>
       </div>
-      <LeadInteraction></LeadInteraction>
+      <SearchCustomer></SearchCustomer>
       {/* 👇 נתיבים */}
       <Routes>
         <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />

@@ -1,23 +1,21 @@
-import { TimePeriod,  StatusOccupancy, WorkSpaceType } from '../../../frontend/occupancy';
-import { ID, DateISO } from '../../../shared-types/core';
-import { OccupancyTrend, OccupancyAlert }from '../../../shared-types/occupancy'
+// import { TimePeriod,  StatusOccupancy, WorkSpaceType } from 'frontend/occupancy';
+import { ID, DateISO } from 'shared-types/core';
+import { OccupancyTrend, OccupancyAlert, TimePeriod, StatusOccupancy, WorkSpaceType }from 'shared-types/occupancy'
 
 export class OccupancyTrendModel implements OccupancyTrend, OccupancyAlert {
-  peroid?: TimePeriod;
+  // ---- OccupancyTrend ----
+  period: TimePeriod;
   roomId: string;
   customerId: string;
-  data: {
-    date: string;
-    occupancyRate: number;
-    totalSpace: number;
-    occupiedSpaces: number;
-  }[];
-  summary: {
-    averageOccupancy: number;
-    peakOccupancy: number;
-    lowOccupancy: number;
-    growthRate: number;
-  };
+  date: string;
+  occupancyRate: number;
+  totalSpace: number;
+  occupiedSpaces: number;
+  averageOccupancy: number;
+  peakOccupancy: number;
+  lowOccupancy: number;
+  growthRate: number;
+  // ---- OccupancyAlert ----
   id: ID;
   type: StatusOccupancy;
   threshold: number;
@@ -25,23 +23,18 @@ export class OccupancyTrendModel implements OccupancyTrend, OccupancyAlert {
   workspaceType: WorkSpaceType;
   isActive: boolean;
   triggeredAt: DateISO;
-
   constructor(
     period: TimePeriod,
     roomId: string,
     customerId: string,
-    data: {
-      date: string;
-      occupancyRate: number;
-      totalSpace: number;
-      occupiedSpaces: number;
-    }[],
-    summary: {
-      averageOccupancy: number;
-      peakOccupancy: number;
-      lowOccupancy: number;
-      growthRate: number;
-    },
+    date: string,
+    occupancyRate: number,
+    totalSpace: number,
+    occupiedSpaces: number,
+    averageOccupancy: number,
+    peakOccupancy: number,
+    lowOccupancy: number,
+    growthRate: number,
     id: ID,
     type: StatusOccupancy,
     threshold: number,
@@ -50,12 +43,19 @@ export class OccupancyTrendModel implements OccupancyTrend, OccupancyAlert {
     isActive: boolean,
     triggeredAt: DateISO
   ) {
+    // Trend
     this.period = period;
     this.roomId = roomId;
     this.customerId = customerId;
-    this.data = data;
-    this.summary = summary;
-
+    this.date = date;
+    this.occupancyRate = occupancyRate;
+    this.totalSpace = totalSpace;
+    this.occupiedSpaces = occupiedSpaces;
+    this.averageOccupancy = averageOccupancy;
+    this.peakOccupancy = peakOccupancy;
+    this.lowOccupancy = lowOccupancy;
+    this.growthRate = growthRate;
+    // Alert
     this.id = id;
     this.type = type;
     this.threshold = threshold;
@@ -64,14 +64,19 @@ export class OccupancyTrendModel implements OccupancyTrend, OccupancyAlert {
     this.isActive = isActive;
     this.triggeredAt = triggeredAt;
   }
-
   toDatabaseFormat() {
     return {
       period: this.period,
       roomId: this.roomId,
       customerId: this.customerId,
-      data: this.data,
-      summary: this.summary,
+      date: this.date,
+      occupancyRate: this.occupancyRate,
+      totalSpace: this.totalSpace,
+      occupiedSpaces: this.occupiedSpaces,
+      averageOccupancy: this.averageOccupancy,
+      peakOccupancy: this.peakOccupancy,
+      lowOccupancy: this.lowOccupancy,
+      growthRate: this.growthRate,
       id: this.id,
       type: this.type,
       threshold: this.threshold,
