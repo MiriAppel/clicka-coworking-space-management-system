@@ -20,5 +20,7 @@ routerLead.post('/upload/csv', controllerLead.postLeadFromCSV);
 
 routerLead.get('/reminders/open', controllerLead.getLeadsToRemind);
 
+routerLead.get("/by-page", controllerLead.getLeadsByPage);
+
 
 export default routerLead;

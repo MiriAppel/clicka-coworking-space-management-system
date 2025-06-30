@@ -69,7 +69,7 @@ export class baseService<T> {
     const { data, error } = await supabase.from(this.tableName).select("*");
 
     if (!data || data.length === 0) {
-      console.log(`🔍 אין נתונים בטבלה ${this.tableName}`);
+      console.log(` אין נתונים בטבלה ${this.tableName}`);
       return []; // תחזירי מערך ריק במקום לזרוק שגיאה
     }
 
@@ -106,9 +106,9 @@ export class baseService<T> {
     console.log("tableName:", this.tableName);
 
     // אם יש פונקציה toDatabaseFormat - נשתמש בה כדי להמיר את האובייקט
-    // if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
-    //   dataForInsert = (dataToAdd as any).toDatabaseFormat();
-    // }
+    if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
+      dataForInsert = (dataToAdd as any).toDatabaseFormat();
+    }
 
     const { data, error } = await supabase
       .from(this.tableName)

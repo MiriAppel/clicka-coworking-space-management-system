@@ -12,7 +12,7 @@ import {
   RecordExitNoticeRequest,
   UpdateCustomerRequest,
 } from "shared-types";
-import { supabase } from '../db/supabaseClient'
+import { supabase } from "../db/supabaseClient";
 
 export class customerService extends baseService<CustomerModel> {
   constructor() {
@@ -177,11 +177,11 @@ const serviceCustomer = new customerService();
 // export const exportCustomersToFileByFilter = async (
 //   filter: Partial<CustomerModel>
 // ): Promise<Buffer | null> => {
-  // const customerToExport = await serviceCustomer.getByFilters(filter);
+// const customerToExport = await serviceCustomer.getByFilters(filter);
 
-  // if (!customerToExport || customerToExport.length === 0) {
-  //   return null;
-  // }
+// if (!customerToExport || customerToExport.length === 0) {
+//   return null;
+// }
 
 //   // פונקציה מהספריה csv-writer
 //   const csvStringifier = createObjectCsvStringifier({
@@ -209,9 +209,9 @@ const serviceCustomer = new customerService();
 
 //   const csvHeader = csvStringifier.getHeaderString();
 //   // const csvBody = csvStringifier.stringifyRecords(customerToExport);
-//   // const csvFull = csvHeader + csvBody;
+  // const csvFull = csvHeader + csvBody;
 
-//   // return Buffer.from(csvFull, "utf-8");
+  // return Buffer.from(csvFull, "utf-8");
 // };
 
 // לשאול את שולמית

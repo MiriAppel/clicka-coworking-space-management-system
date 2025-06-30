@@ -112,3 +112,23 @@ export const getLeadsByFilter = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error filtering customers", error });
   }
 };
+
+export const getLeadsByPage = async (req: Request, res: Response) => {
+  const { page, limit } = req.query;
+
+  try {
+    const pageNum = Math.max(1, Number(page) || 1);
+    const limitNum = Math.max(1, Number(limit) || 50);
+
+    const leads = await serviceLead.getLeadsByPage(pageNum, limitNum);
+
+
+    if (leads.length > 0) {
+      res.status(200).json(leads);
+    } else {
+      res.status(404).json({ message: "No leads found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching leads by page", error });
+  }
+}
