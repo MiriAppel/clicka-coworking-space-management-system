@@ -5,6 +5,8 @@ import { Button } from './Common/Components/BaseComponents/Button';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
+import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -67,10 +69,21 @@ function App() {
         >
           Billing
         </Button>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => navigate('/users')}
+          className="border border-black hover:border-white bg-black text-white"
+        >
+          users
+        </Button>
       </div>
       <SearchCustomer></SearchCustomer>
       {/* 👇 נתיבים */}
       <Routes>
+        <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        {/* <Route path="./users" element={<UserTable/>} /> */}
+
       </Routes>
       <AuthenticationScreen />
     </div>

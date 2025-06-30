@@ -26,10 +26,13 @@ app.use(express.json());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
+
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true,
 }));
+
+app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);

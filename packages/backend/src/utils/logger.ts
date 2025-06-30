@@ -7,9 +7,11 @@ import fs from 'fs';
  */
 export function logUserActivity(userId: string, activity: string) {
     const logEntry = `${new Date().toISOString()} - User: ${userId} - Activity: ${activity}\n`;
+
     fs.appendFile('user_activity.log', logEntry, (err) => {
         if (err) {
             console.error('Error writing to log file', err);
         }
     });
 }
+
