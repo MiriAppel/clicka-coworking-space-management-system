@@ -65,7 +65,7 @@ export class UserModel implements User{
             lastLogin: dbData.last_login,
         });
     }
-    static fromDatabaseFormatArray(dbDataArray: any[]): UserModel[] {
+    static fromDatabaseFormatArray(dbDataArray: any[] ): UserModel[] {
         return dbDataArray.map(dbData => UserModel.fromDatabaseFormat(dbData));
     }
 }

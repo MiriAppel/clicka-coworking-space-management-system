@@ -49,8 +49,8 @@ export class UserController {
             date.setTime(date.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
 
             // שמירת ה-cookie עם ה-role
-            res.cookie('role', role, { 
-                expires: date, 
+            res.cookie('role', role, {
+                expires: date,
                 httpOnly: true // httpOnly כדי למנוע גישה דרך JavaScript
             });
 
@@ -60,6 +60,31 @@ export class UserController {
         }
     }
 
+    async getUserByEmail(req: Request, res: Response) {
+        const email = req.params.email;
+        const result = await this.userService.getUserByEmail(email);
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({ error: "User not found" });
+        }
+    }
+
+    async updateGoogleIdUser (req: Request, res: any) {
+        const userId = req.params.id;
+        const googleId = req.body.googleId;
+
+        if (!googleId) {
+            return res.status(400).json({ error: "Google ID is required" });
+        }
+
+        const result = await this.userService.updateGoogleIdUser(userId, googleId);
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(500).json({ error: "Failed to update Google ID" });
+        }
+    }
 
     async updateUser(req: Request, res: Response) {
         const userId = req.params.id;
@@ -78,7 +103,7 @@ export class UserController {
         const userId = req.params.id;
         const result = await this.userService.deleteUser(userId);
         if (result) {
-            res.status(200).send(); 
+            res.status(200).send();
         } else {
             res.status(500).json({ error: "Failed to delete user" });
         }
