@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Button } from './Common/Components/BaseComponents/Button';
+import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
+import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
   }, []);
 
   return (
+    <AuthProvider>
     <div className="App">
       <header className="App-header">
         <h3>welcome to our world</h3>
@@ -69,9 +71,11 @@ function App() {
       <SearchCustomer></SearchCustomer>
       {/* 👇 נתיבים */}
       <Routes>
-        <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
       </Routes>
+      <AuthenticationScreen />
     </div>
+    </AuthProvider>
+    
   );
 }
 
