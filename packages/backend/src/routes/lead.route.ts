@@ -3,6 +3,9 @@ import * as controllerLead from '../controllers/lead.controller';
 
 const routerLead = express.Router();
 
+routerLead.get('/by-page', controllerLead.getLeadsByPage);
+
+
 routerLead.get('/filter', controllerLead.getLeadsByFilter);
 
 routerLead.get('/', controllerLead.getAllLeads);
@@ -20,7 +23,6 @@ routerLead.post('/upload/csv', controllerLead.postLeadFromCSV);
 
 routerLead.get('/reminders/open', controllerLead.getLeadsToRemind);
 
-routerLead.get("/by-page", controllerLead.getLeadsByPage);
 
 
 export default routerLead;

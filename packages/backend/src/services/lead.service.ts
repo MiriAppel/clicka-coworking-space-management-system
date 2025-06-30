@@ -85,24 +85,38 @@ export class leadService extends baseService<LeadModel> {
     return false;
   };
 
-  getLeadsByPage = async (
-    page: number,
-    pageSize: number
-  ): Promise<LeadModel[]> => {
-    const pageNum = Math.max(1, page);
-    const size = Math.max(1, pageSize);
-    const from = (pageNum - 1) * size;
-    const to = from + size - 1;
+  getLeadsByPage = async (filters: {
+    page?: number;
+    limit?: number;
+  }): Promise<LeadModel[]> => {
+    console.log("Service getLeadsByPage called with:", filters);
+
+    const { page, limit } = filters;
+
+    const pageNum = Number(filters.page);
+    const limitNum = Number(filters.limit);
+
+    if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
+      throw new Error("Invalid filters provided for pagination");
+    }
+
+    const from = (pageNum - 1) * limitNum;
+    const to = from + limitNum - 1;
 
     const { data, error } = await supabase
       .from("leads")
       .select("*")
-      .order("created_at", { ascending: false }) 
+      .order("created_at", { ascending: false })
       .range(from, to);
 
+    console.log("Supabase data:", data);
+    console.log("Supabase error:", error);
+
     if (error) {
-      console.error("Error fetching leads by page:", error);
-      throw new Error("Failed to fetch leads by page");
+      console.error("❌ Supabase error:", error.message || error);
+      return Promise.reject(
+        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+      );
     }
 
     return data || [];
