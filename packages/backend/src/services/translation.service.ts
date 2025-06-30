@@ -8,6 +8,8 @@ import { supabase } from '../db/supabaseClient';
 
 dotenv.config();
 
+
+
 // בדיקת תקינות שפה
 function isLanguage(value: string): value is string {
     return supportedLanguages.includes(value as any);
