@@ -18,7 +18,7 @@ import { utils, writeFile } from 'xlsx'; // utils: המרת JSON ל־sheet, writ
 interface ExportButtonsProps {
   title?: string; // כותרת הדוח (לא חובה)
   exportData?: Record<string, any>[]; // מערך אובייקטים שמיועדים לייצוא כ־Excel
-  refContent: React.RefObject<HTMLDivElement>; // רפרנס לתוכן שיומר לתמונה לצורך PDF
+ refContent: React.RefObject<HTMLDivElement | null>; // רפרנס לתוכן שיומר לתמונה לצורך PDF
 }
 
 /**
