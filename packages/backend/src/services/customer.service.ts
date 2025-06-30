@@ -1,6 +1,6 @@
 import { CustomerModel } from "../models/customer.model";
 import { baseService } from "./baseService";
-import { createObjectCsvStringifier } from "csv-writer";
+import { serviceCustomerPeriod } from "./customerPeriod.service";
 import {
     CreateCustomerRequest,
     CustomerPeriod,
@@ -13,6 +13,7 @@ import {
     UpdateCustomerRequest,
 } from "shared-types";
 import { supabase } from '../db/supabaseClient'
+import { error } from "node:console";
 
 export class customerService extends baseService<CustomerModel> {
     constructor() {
@@ -60,16 +61,11 @@ export class customerService extends baseService<CustomerModel> {
             billingStartDate: newCustomer.billingStartDate,
             notes: newCustomer.notes,
             invoiceName: newCustomer.invoiceName,
-            //   contractDocuments: newCustomer.contractDocuments,
             paymentMethodsType: newCustomer.paymentMethodType,
-            //   periods: [],
-            //   contracts: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             paymentMethods: [],
             toDatabaseFormat() {
-                // return super.toDatabaseFormat()
-
                 return {
                     name: this.name,
                     email: this.email,
@@ -85,10 +81,7 @@ export class customerService extends baseService<CustomerModel> {
                     billing_start_date: this.billingStartDate,
                     notes: this.notes,
                     invoice_name: this.invoiceName,
-                    //   contract_documents: this.contractDocuments,
                     payment_methods_type: this.paymentMethodsType,
-                    //   periods: this.periods,
-                    //   contracts: this.contracts,
                     created_at: this.createdAt,
                     updated_at: this.updatedAt,
                 };
@@ -137,7 +130,12 @@ export class customerService extends baseService<CustomerModel> {
                 createdAt: customerLeave.createdAt,
                 updatedAt: customerLeave.updatedAt,
             };
-            customerLeave.periods = [period];
+            try{
+             await serviceCustomerPeriod.post(period);
+
+            }catch (error){
+                console.error("in Period ", error)
+            }
         }
 
         if (customerLeave && customerLeave.id) {
