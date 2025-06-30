@@ -42,7 +42,6 @@ export const CustomerDetails = () => {
             createdAt: new Date().toISOString() as any,
             updatedAt: new Date().toISOString() as any,
         }],
-        paymentMethodsType:PaymentMethodType.CREDIT_CARD,
         paymentMethods: [{
             id: "",
             customerId: customerId || "",
@@ -114,13 +113,13 @@ export const CustomerDetails = () => {
                 ))}
 
                 <h3 className="mt-4 text-lg font-semibold">תקופות</h3>
-                {customer.periods.map(period => (
+                {/* {customer.periods.map(period => (
                     <div key={period.id} >
                         <p><strong>תאריך כניסה:</strong> {new Date(period.entryDate).toLocaleDateString()}</p>
                         {period.exitDate && <p><strong>תאריך יציאה:</strong> {new Date(period.exitDate).toLocaleDateString()}</p>}
                         <p><strong>סיבת יציאה:</strong> {period.exitReasonDetails}</p>
                     </div>
-                ))}
+                ))} */}
 
                 {/* צריך להוסיף לינקים לחוזים ואינטרקציות */}
             </div>

@@ -184,8 +184,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
         alert("The form has been sent successfully:\n" + JSON.stringify(data, null, 2));
         console.log(data);
 
-        const customerRequest: CreateCustomerRequest = data;
-        console.log(customerRequest);
+        // const customerRequest: CreateCustomerRequest = data;
+        // console.log(customerRequest);
 
         //לשלוח לשרת את הנתונים
         //לבדוק מה עם החוזה, איך הוא נוצר ומה צריך לעשות בשביל זה
