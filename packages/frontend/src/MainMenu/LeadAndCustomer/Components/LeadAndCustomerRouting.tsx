@@ -5,7 +5,7 @@ import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
-import { LeadHomePage } from "./Leads/leadHomePage";
+import { LeadHomePage, LeadsPage } from "./Leads/leadHomePage";
 import { LeadInteraction } from "./Interactions/leadIntersection";
 import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
@@ -28,7 +28,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="contractManagement" element={<ContractManagement />}/>
             <Route path="contractManagement/:customerId" element={<ContractDetails />} />
             <Route path="contractManagement/new" element={<AddContract />} />
-            <Route path="leads" element={<LeadHomePage />} />
+            <Route path="leads" element={<LeadsPage />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteraction />} />

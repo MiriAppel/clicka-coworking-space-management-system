@@ -1,58 +1,46 @@
 import { useNavigate } from "react-router-dom";
-import React from 'react';
-import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
-import { NavLink, Outlet } from "react-router";
+import React, { useRef, useState, useEffect } from "react";
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
+import { NavLink } from "react-router";
 import { ExportToExcel } from '../exportToExcel';
-import { useState, useEffect } from "react";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
-import { getAllCustomers, deleteCustomer } from '../../Service/LeadAndCustomersService';
-import { supabase } from '../../../../Services/supabaseClient';
-
+import { Customer, CustomerStatus } from "shared-types";
+import { deleteCustomer, getAllCustomers } from "../../Service/LeadAndCustomersService";
+import { Stack, TextField } from '@mui/material';
 interface ValuesToTable {
     id: string;
-    name: string; // שם הלקוח
-    phone: string; // פלאפון
+    name: string;
+    phone: string;
     email: string;
-    status: React.ReactElement; // סטטוס הלקוח
-    //להוסיף שם עסק, סוג עסק וכו לפי מה שרוצים
+    status: React.ReactElement;
+    businessName: string;
+    businessType: string;
 }
-
-//בשביל שבתצוגה זה יהיה בעברית
 const statusLabels: Record<CustomerStatus, string> = {
     ACTIVE: 'פעיל',
     NOTICE_GIVEN: 'הודעת עזיבה',
     EXITED: 'עזב',
     PENDING: 'בהמתנה',
 };
-
-//כל הצבעים של הכפתורים והכל בכל העמודים הם דוג' בלבד
 export const CustomersList = () => {
     const navigate = useNavigate();
-
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [customers, setCustomers] = useState<Customer[]>();
-
+    const [isLoading, setIsLoading] = useState(true);
+    const [customers, setCustomers] = useState<Customer[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const fetchCustomers = async () => {
-        setIsLoading(true)
-        await getAllCustomers()
-            .then((data) => {
-                console.log(data);
-
-                setCustomers(data);
-                setIsLoading(false)
-
-                console.log("successfully get customers");
-
-            }).catch((error: Error) => {
-                console.error('Error fetching customers:', error);
-            });
-    }
-
+        try {
+            setIsLoading(true);
+            const data = await getAllCustomers();
+            setCustomers(data);
+        } catch (error) {
+            console.error('Error fetching customers:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     useEffect(() => {
         fetchCustomers();
-
-        //לבדוק למה לא עובד המשתני סביבה!!!
+         //לבדוק למה לא עובד המשתני סביבה!!!
         // האזנה לשינויים בטבלת customers
         // const channel = supabase
         //     .channel('public:customers')
@@ -71,152 +59,87 @@ export const CustomersList = () => {
         //     supabase.removeChannel(channel);
         // };
     }, []);
-
-    const getValuseToTable = () => {
-        const valuesToTable: ValuesToTable[] = customers!.map(customer => ({
+    const handleSearch = (term: string) => {
+        const lower = term.toLowerCase();
+        const filtered = customers.filter((c) =>
+            c.name.toLowerCase().includes(lower) ||
+            c.email.toLowerCase().includes(lower) ||
+            c.phone.toLowerCase().includes(lower) ||
+            statusLabels[c.status].toLowerCase().includes(lower)||
+            c.businessName.toLowerCase().includes(lower)||
+            c.businessType.toLowerCase().includes(lower)
+        );
+        return filtered;
+    };
+    const getValuseToTable = (): ValuesToTable[] => {
+        return handleSearch(searchTerm).map(customer => ({
             id: customer.id!,
             name: customer.name,
             phone: customer.phone,
             email: customer.email,
-            status: <div className="flex justify-between">
-                {statusLabels[customer.status]}
-                {/* כדאי במקום לכתוב עדכון - לסים אייקון של עריכה */}
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => navigate(`updateStatus/${customer.id}`)}>
-                    עדכון
-                </Button>
-            </div>,
-
+            status: (
+                <div className="flex justify-between">
+                    {statusLabels[customer.status]}
+                    <Button variant="secondary" size="sm" onClick={() => navigate(`updateStatus/${customer.id}`)}>עדכון</Button>
+                </div>
+            ),
+            businessName: customer.businessName,
+            businessType: customer.businessType,
         }));
-        return valuesToTable;
-    }
-
-    //יצירת מערך עם ערכים המתאימים לטבלה
-
-
-    const Columns: TableColumn<ValuesToTable>[] = [
+    };
+    const columns: TableColumn<ValuesToTable>[] = [
         { header: "שם", accessor: "name" },
         { header: "פלאפון", accessor: "phone" },
         { header: "מייל", accessor: "email" },
         { header: "סטטוס", accessor: "status" },
+        { header: "שם העסק", accessor: "businessName" },
+        { header: "סוג עסק", accessor: "businessType" }
     ];
-
     const deleteCurrentCustomer = async (val: ValuesToTable) => {
-
-        const customerId = val.id;
-        await deleteCustomer(customerId)
-            .then(() => {
-                //לאחר שיהיה את העדכון האוטומטי לא צריך את זה
-                fetchCustomers()
-                alert("customer deleted successfully");
-            })
-            .catch((error: Error) => {
-                console.error("Error deleting customer:", error);
-                alert("Failed to delete customer. Please try again.");
-            });
-        // const newCustomers = customers.filter(customer => customer.id !== customerId);
-        // setCustomers(newCustomers); // עדכון ה-state
-
-    }
-
+        try {
+            await deleteCustomer(val.id);
+            fetchCustomers();
+            alert("לקוח נמחק בהצלחה");
+        } catch (error) {
+            console.error("שגיאה במחיקת לקוח:", error);
+            alert("מחיקה נכשלה");
+        }
+    };
     const editCustomer = (val: ValuesToTable) => {
-        navigate("update", { state: { data: customers!.find(customer => customer.id == val.id) } })
-        //כאן יפתח טופס מאותחל בכל הפרטים הנוכחחים עם אפשרות לשנות
-    }
-
-    const searchCustomer = () => {
-
-        //חיפוש לקוח לפי הערך שהוזן באינפוט
-        //שימוש בפונצקית חיפוש המוכנה
-        //אפשר לעשות יותר מתקדם עם בחירה וכו לפי הדרישה
-    }
-
+        const selected = customers.find(c => c.id === val.id);
+        navigate("update", { state: { data: selected } });
+    };
     return (
         <>
-            {isLoading && <h2 className="text-3xl font-bold text-center text-blue-600 my-4">Loading...</h2>}
-            {!isLoading && <div className="p-6">
-                <h2 className="text-3xl font-bold text-center text-blue-600 my-4">לקוחות</h2>
-
-                {/* שימוש בקומפוננטה של יצוא לאקסל */}
-                <ExportToExcel data={customers!} fileName="לקוחות" /><br /> <br />
-                {/* <Button variant="primary" size="sm" onClick={() => navigate('intersections')}>אינטראקציות של לקוחות</Button><br /> */}
-
-                {/* אפשרות חיפוש - בחירה לפי מה לחפש ושדה להכנסת ערך לחיפוש - אפשר בקומפוננטה נפרדת */}
-                <input type="text" placeholder="הכנס ערך לחיפוש" />
-                {/* לא חייבים את הכפתור אפשר בכל לחיצת מקלדת של קלט לחפש */}
-                <Button variant="secondary" size="sm" onClick={() => searchCustomer()}>חיפוש</Button>
-
-                {/* טבלה של כל הלקוחות עם שם וסטטוס ולכל אחד קישור לקומפוננטה של לקוח בודד שתציג את כל הפרטים המלאים שלו */}
-
-                <Table<ValuesToTable>
-                    data={getValuseToTable()}
-                    columns={Columns}
-                    // dir="rtl"
-                    onDelete={deleteCurrentCustomer}
-                    onUpdate={editCustomer}
-                    renderActions={(row) => (
-                        <>
-                            {/* לא בטוח שצריך את הדברים האלה!!!! */}
-                            <NavLink
-                                to={`:${row.id}/dashboard`}
-                                className="text-blue-500 hover:underline ml-2"
-                            >
-                                לוח בקרה
-                            </NavLink>
-                            <NavLink
-                                to={`:${row.id}/contract`}
-                                className="text-blue-500 hover:underline ml-2"
-                            >
-                                חוזה לקוח
-                            </NavLink>
-                        </>
-
-                    )}
-                />
-            </div>
-            }
+            {isLoading ? (
+                <h2 className="text-3xl font-bold text-center text-blue-600 my-4">טוען...</h2>
+            ) : (
+                <div className="p-6">
+                    <h2 className="text-3xl font-bold text-center text-blue-600 my-4">לקוחות</h2>
+                    <ExportToExcel data={customers} fileName="לקוחות" /><br /><br />
+                    <Stack spacing={2} direction="row">
+                        <TextField
+                            label="חיפוש"
+                            fullWidth
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </Stack>
+                    <br />
+                    <Table<ValuesToTable>
+                        data={getValuseToTable()}
+                        columns={columns}
+                        onDelete={deleteCurrentCustomer}
+                        onUpdate={editCustomer}
+                        renderActions={(row) => (
+                            <>
+                                <NavLink to={`:${row.id}/dashboard`} className="text-blue-500 hover:underline ml-2">לוח בקרה</NavLink>
+                                <NavLink to={`:${row.id}/contract`} className="text-blue-500 hover:underline ml-2">חוזה לקוח</NavLink>
+                            </>
+                        )}
+                    />
+                </div>
+            )}
         </>
     );
 };
-// export const CustomersPage = () => {
-
-//     const [customers, setCustomers] = useState<Customer[]>([]);
-
-//     useEffect(() => {
-//         axios.get('http://localhost:3001/api/customers')
-//             .then(response => {
-//                 setCustomers(response.data);
-//                 console.log("Customers fetched successfully:", response.data);
-//             })
-//             .catch(error => {
-//                 console.error("Error fetching customers:", error);
-//             });
-//         // const initialCustomers: Customer[] = [ /* ...רשימת לקוחות ראשונית */];
-//         // setCustomers(initialCustomers);
-//     }, []);
-
-//     const handleDeleteCustomer = (id: string) => {
-//         setCustomers(prev => prev.filter(c => c.id !== id));
-//     };
-
-//     const handleSearchResults = (results: Person[]) => {
-
-//         const onlyCustomers = results.filter((p): p is Customer =>
-//             'status' in p && 'contractSignDate' in p
-//         );
-//         setCustomers(onlyCustomers);
-//     };
-
-//     return (
-        
-
-//         <div style={{ direction: "rtl", padding: "20px" }}>
-//             <h1>לקוחות</h1>
-//             <SearchCustomer onResults={handleSearchResults} />
-//             <CustomersList customers={customers} onDelete={handleDeleteCustomer} />
-//         </div>
-//     );
-// };
-

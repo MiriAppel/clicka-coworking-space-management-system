@@ -1,16 +1,21 @@
 import { Request, Response } from 'express';
 import { customerService } from '../services/customer.service';
-import { CreateCustomerRequest, ID, PaymentMethodType } from 'shared-types';
+import { CreateCustomerRequest, ID, PaymentMethodType, ContractStatus } from 'shared-types';
 import { CustomerModel } from '../models/customer.model';
+import { contractService } from '../services/contract.service';
+import { ContractModel } from '../models/contract.model';
+import { date } from 'zod';
 
 
 const serviceCustomer = new customerService();
+const serviceContract = new contractService();
+
 
 export const getAllCustomers = async (req: Request, res: Response) => {
     try {
         // const customers = await serviceCustomer.getAll()
         const customers = await serviceCustomer.getAllCustomers()
-        
+
         res.status(200).json(customers);
     }
     catch (error) {
@@ -19,33 +24,48 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 }
 
 export const postCustomer = async (req: Request, res: Response) => {
-  try {
-    // const {
-    //   newCustomer,
-    // //   paymentMethodsType,
-    // }: {
-    //   newCustomer: CreateCustomerRequest;
-    // //   leadId: ID;
-    // //   paymentMethodsType: PaymentMethodType;
-    // //   businessName: string;
-    // } = req.body;
+    try {
 
-    const newCustomer: CreateCustomerRequest = req.body
+        const newCustomer: CreateCustomerRequest = req.body
 
-    console.log("in controller");
-    console.log(newCustomer);
-    
-    
+        // console.log("in controller");
+        // console.log(newCustomer);  
 
-    const customer = await serviceCustomer.convertLeadToCustomer(
-      newCustomer,
-    //   paymentMethodsType,
-    );
-    console.log("in controller");
-    console.log(customer);
-    
+        const customer = await serviceCustomer.convertLeadToCustomer(newCustomer);
+        console.log("in controller");
+        console.log(customer);
 
-    res.status(200).json(customer);
+        const newContract: ContractModel = {
+            customerId: customer.id!, // FK.  כל חוזה שייך ללקוח אחד בלבד. אבל ללקוח יכולים להיות כמה חוזים לאורך זמן – למשל, הוא חתם שוב אחרי שנה, או שינה תנאים.
+            version: 1,
+            status: ContractStatus.DRAFT,
+            documents: newCustomer.contractDocuments || [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            toDatabaseFormat() {
+                return {
+                    customer_id: this.customerId,
+                    version: this.version,
+                    status: this.status,
+                    sign_date: this.signDate,
+                    start_date: this.startDate,
+                    end_date: this.endDate,
+                    terms: this.terms,
+                    documents: this.documents,
+                    signed_by: this.signedBy,
+                    witnessed_by: this.witnessedBy,
+                    created_at: this.createdAt,
+                    updated_at: this.updatedAt
+                };
+            }
+        }
+
+        const contract = await serviceContract.post(newContract)
+
+        console.log("in controller");
+        console.log(contract);
+
+        res.status(200).json(customer);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching customers', error });
     }
@@ -60,7 +80,7 @@ export const getCustomerById = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'Customer not found' });
         }
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching customer', error });
     }
@@ -76,7 +96,7 @@ export const getCustomersByFilter = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'No customers found' });
         }
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error filtering customers', error });
     }
@@ -88,7 +108,7 @@ export const getAllCustomerStatus = async (req: Request, res: Response) => {
     try {
         const statuses = await serviceCustomer.getAllCustomerStatus();
         res.status(200).json(statuses);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching all statuses', error });
     }
@@ -110,7 +130,7 @@ export const getCustomersToNotify = async (req: Request, res: Response) => {
     try {
         const customers = await serviceCustomer.getCustomersToNotify(id);
         res.status(200).json(customers);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching customers to notify', error });
     }
@@ -124,7 +144,7 @@ export const postExitNotice = async (req: Request, res: Response) => {
     try {
         await serviceCustomer.postExitNotice(exitNotice, id);
         res.status(200).json({ message: 'Exit notice posted' });
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error posting exit notice', error });
     }
@@ -141,7 +161,7 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
         res.status(200).json(paginatedCustomers);
     } catch (error) {
         console.error('Error in getCustomersByPage controller:', error);
-        res.status(500).json({ message: 'Error fetching paginated customers', error});
+        res.status(500).json({ message: 'Error fetching paginated customers', error });
     }
 }
 
@@ -152,12 +172,13 @@ export const patchCustomer = async (req: Request, res: Response) => {
     const updateData = req.body; // נתוני העדכון החלקיים
 
     try {
-        await serviceCustomer.patch(updateData, id)
+        // await serviceCustomer.patch(updateData, id)
+        await serviceCustomer.updateCustomer(updateData, id)
         res.status(200).json({ message: 'Customer updated successfully (PATCH)' });
-    } 
+    }
     catch (error) {
         console.error('Error in patchCustomer controller:', error);
-        res.status(500).json({ message: 'Error patching customer', error});
+        res.status(500).json({ message: 'Error patching customer', error });
     }
 }
 
