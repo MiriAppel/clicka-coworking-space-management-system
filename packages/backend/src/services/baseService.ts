@@ -1,6 +1,5 @@
 import type { ID } from "shared-types";
 import { createClient } from "@supabase/supabase-js";
-import { log } from "util";
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || ''; // שימי לב לשם המדויק
@@ -35,34 +34,25 @@ export class baseService<T> {
     return data;
   };
 
-  getByFilters = async (filters: Partial<T> & { page?: number; limit?: number }): Promise<T[]> => {
-    const { page, limit, ...filterColumns } = filters;
-
-    const orConditions = Object.entries(filterColumns).map(([key, value]) => {
-      if (typeof value === "string") {
-        return `${key}.ilike.%${value}%`;
-      } else {
-        return `${key}.eq.${value}`;
-      }
-    });
-
-    let query = supabase
-      .from(this.tableName)
-      .select("*");
-
-    if (orConditions.length > 0) {
-      query = query.or(orConditions.join(","));
+  getByFilters = async (filters: { q?: string; page?: number; limit?: number;}): Promise<T[]> => {
+    const { q, page, limit } = filters;
+    let query = supabase.from(this.tableName).select("*");
+    if (q) {
+      const searchValue = `%${q}%`;
+      query = query.or(
+        `name.ilike.${searchValue},email.ilike.${searchValue},phone.ilike.${searchValue},id_number.ilike.${searchValue}`
+      );
     }
-
-    // כאן אפשר להוסיף טיפול בפגינציה עם page ו-limit (כגון .range)
-
+    if (page && limit) {
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+      query = query.range(from, to);
+    }
     const { data, error } = await query;
-
     if (error) {
-      console.error("שגיאה בשליפת נתונים עם פילטרים:", error);
+      console.error("Error fetching filtered data:", error);
       throw error;
     }
-
     return data ?? [];
   };
 

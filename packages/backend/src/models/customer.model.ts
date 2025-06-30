@@ -130,4 +130,28 @@ export class CustomerModel implements Customer {
   static fromDatabaseFormatArray(dbDataArray: any[]): CustomerModel[] {
     return dbDataArray.map(dbData => CustomerModel.fromDatabaseFormat(dbData));
   }
+
+  static partialToDatabaseFormat(data: Partial<CustomerModel>) {
+    const dbObj: any = {};
+    if (data.name !== undefined) dbObj.name = data.name;
+    if (data.email !== undefined) dbObj.email = data.email;
+    if (data.phone !== undefined) dbObj.phone = data.phone;
+    if (data.idNumber !== undefined) dbObj.id_number = data.idNumber;
+    if (data.businessName !== undefined) dbObj.business_name = data.businessName;
+    if (data.businessType !== undefined) dbObj.business_type = data.businessType;
+    if (data.status !== undefined) dbObj.status = data.status;
+    if (data.currentWorkspaceType !== undefined) dbObj.current_workspace_type = data.currentWorkspaceType;
+    if (data.workspaceCount !== undefined) dbObj.workspace_count = data.workspaceCount;
+    if (data.contractSignDate !== undefined) dbObj.contract_sign_date = data.contractSignDate;
+    if (data.contractStartDate !== undefined) dbObj.contract_start_date = data.contractStartDate;
+    if (data.billingStartDate !== undefined) dbObj.billing_start_date = data.billingStartDate;
+    if (data.notes !== undefined) dbObj.notes = data.notes;
+    if (data.invoiceName !== undefined) dbObj.invoice_name = data.invoiceName;
+    if (data.paymentMethodsType !== undefined) dbObj.payment_methods_type = data.paymentMethodsType;
+    if (data.createdAt !== undefined) dbObj.created_at = data.createdAt;
+    if (data.updatedAt !== undefined) dbObj.updated_at = data.updatedAt;
+    // הוסיפי כאן שדות נוספים במידת הצורך
+    return dbObj;
+  }
+
 }

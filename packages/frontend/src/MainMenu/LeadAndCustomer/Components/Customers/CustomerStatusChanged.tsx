@@ -12,8 +12,8 @@ import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { CheckboxField } from '../../../../Common/Components/BaseComponents/CheckBox';
 import { useCustomerFormData } from '../../Hooks/useCustomerFormData';
 import {
-  changeCustomerStatus,
   getCustomerById,
+  patchCustomer,
   recordExitNotice,
 } from '../../Service/LeadAndCustomersService';
 
@@ -130,29 +130,28 @@ export const CustomerStatusChanged: React.FC = () => {
     if (!customerId) return null;
 
   const onSubmit = async (data: FormData) => {
-    try {
-      if (data.status === CustomerStatus.NOTICE_GIVEN) {
-        await recordExitNotice(customerId, {
-          exitNoticeDate: data.exitNoticeDate!,
-          plannedExitDate: data.plannedExitDate!,
-          exitReason: data.exitReason!,
-          exitReasonDetails: data.exitReasonDetails,
-        });
-      }
-
-      await changeCustomerStatus(customerId, {
-        newStatus: data.status,
-        effectiveDate: data.effectiveDate,
-        reason: data.reason,
-        notes: data.exitReasonDetails,
-        notifyCustomer: data.notifyCustomer,
+  try {
+    // 1. אם מדובר בעזיבה – קודם נקליט את פרטי העזיבה
+    if (data.status === CustomerStatus.NOTICE_GIVEN) {
+      await recordExitNotice(customerId, {
+        exitNoticeDate: data.exitNoticeDate!,
+        plannedExitDate: data.plannedExitDate!,
+        exitReason: data.exitReason!,
+        exitReasonDetails: data.exitReasonDetails,
       });
-
-      // onClose();
-    } catch (error) {
-      console.error('שגיאה בשליחת שינוי סטטוס:', error);
     }
-  };
+    // 2. שולחים את עדכון הלקוח
+    await patchCustomer(customerId, {
+      status: data.status,
+      notes: data.exitReasonDetails,
+      ...(data.reason && { reason: data.reason }),
+    });
+    // סגירה
+    navigate(-1);
+  } catch (error) {
+    console.error('שגיאה בעדכון לקוח:', error);
+  }
+};
 
   return (
     <div className="max-w-xl mx-auto mt-6">

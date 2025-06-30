@@ -35,35 +35,36 @@ export const postCustomer = async (req: Request, res: Response) => {
         console.log("in controller");
         console.log(customer);
 
-        const newContract: ContractModel = {
-            customerId: customer.id!, // FK.  כל חוזה שייך ללקוח אחד בלבד. אבל ללקוח יכולים להיות כמה חוזים לאורך זמן – למשל, הוא חתם שוב אחרי שנה, או שינה תנאים.
-            version: 1,
-            status: ContractStatus.DRAFT,
-            documents: newCustomer.contractDocuments || [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            toDatabaseFormat() {
-                return {
-                    customer_id: this.customerId,
-                    version: this.version,
-                    status: this.status,
-                    sign_date: this.signDate,
-                    start_date: this.startDate,
-                    end_date: this.endDate,
-                    terms: this.terms,
-                    documents: this.documents,
-                    signed_by: this.signedBy,
-                    witnessed_by: this.witnessedBy,
-                    created_at: this.createdAt,
-                    updated_at: this.updatedAt
-                };
-            }
-        }
+        //כשהחוזה יהיה מוכן בסכמה להוסיף את זה
+        // const newContract: ContractModel = {
+        //     customerId: customer.id!, // FK.  כל חוזה שייך ללקוח אחד בלבד. אבל ללקוח יכולים להיות כמה חוזים לאורך זמן – למשל, הוא חתם שוב אחרי שנה, או שינה תנאים.
+        //     version: 1,
+        //     status: ContractStatus.DRAFT,
+        //     documents: newCustomer.contractDocuments || [],
+        //     createdAt: new Date().toISOString(),
+        //     updatedAt: new Date().toISOString(),
+        //     toDatabaseFormat() {
+        //         return {
+        //             customer_id: this.customerId,
+        //             version: this.version,
+        //             status: this.status,
+        //             sign_date: this.signDate,
+        //             start_date: this.startDate,
+        //             end_date: this.endDate,
+        //             terms: this.terms,
+        //             documents: this.documents,
+        //             signed_by: this.signedBy,
+        //             witnessed_by: this.witnessedBy,
+        //             created_at: this.createdAt,
+        //             updated_at: this.updatedAt
+        //         };
+        //     }
+        // }
 
-        const contract = await serviceContract.post(newContract)
+        // const contract = await serviceContract.post(newContract)
 
-        console.log("in controller");
-        console.log(contract);
+        // console.log("in controller");
+        // console.log(contract);
 
         res.status(200).json(customer);
     } catch (error) {

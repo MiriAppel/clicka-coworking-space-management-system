@@ -12,6 +12,11 @@ export class leadService extends baseService <LeadModel> {
 
   }
 
+    getAllLeads = async (): Promise<LeadModel[] | null> => {
+        const leads = await this.getAll();
+        return LeadModel.fromDatabaseFormatArray(leads) // המרה לסוג UserModel
+    }
+
   getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
 
     const { data, error } = await supabase

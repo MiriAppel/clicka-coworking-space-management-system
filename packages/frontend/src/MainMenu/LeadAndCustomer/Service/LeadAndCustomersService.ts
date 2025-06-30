@@ -135,16 +135,6 @@ export const deleteCustomer = async (id: string): Promise<void> => {
   }
 };
 
-export const changeCustomerStatus = async (id: string, data: StatusChangeRequest): Promise<Customer> => {
-  try {
-    const response = await axiosInstance.post<Customer>(`${CUSTOMERS_BASE_PATH}/${id}/change-status`, data);
-    return response.data;
-  } catch (error) {
-    console.error('Error changing customer status:', error);
-    throw error;
-  }
-};
-
 export const recordExitNotice = async (id: string, data: RecordExitNoticeRequest): Promise<Customer> => {
   try {
     const response = await axiosInstance.post<Customer>(`${CUSTOMERS_BASE_PATH}/${id}/exit-notice`, data);

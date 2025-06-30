@@ -8,7 +8,7 @@ export const getAllLeads = async (req: Request, res: Response) => {
   try {
     console.log("enter");
 
-    const leads = await serviceLead.getAll();
+    const leads = await serviceLead.getAllLeads();
     console.log(leads);
     console.log("controller get");
 

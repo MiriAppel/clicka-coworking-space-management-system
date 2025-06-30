@@ -108,39 +108,8 @@ export class customerService extends baseService<CustomerModel> {
         return customerData;
     };
 
-    updateCustomer = async (dataToUpdate: CustomerModel, id: ID) => {
-
-        this.patch(dataToUpdate.toDatabaseFormat(), id)
-        //לבדוק איך ממירים חלק מהאוביקט!!!
-        // const customerData: Partial<CustomerModel> = {
-        //     ...dataToUpdate,
-        //     // toDatabaseFormat() {
-        //     //     // return super.toDatabaseFormat()
-
-        //     //     return {
-        //     //         name: this.name,
-        //     //         email: this.email,
-        //     //         phone: this.phone,
-        //     //         id_number: this.idNumber,
-        //     //         business_name: this.businessName,
-        //     //         business_type: this.businessType,
-        //     //         status: this.status,
-        //     //         current_workspace_type: this.currentWorkspaceType,
-        //     //         workspace_count: this.workspaceCount,
-        //     //         contract_sign_date: this.contractSignDate,
-        //     //         contract_start_date: this.contractStartDate,
-        //     //         billing_start_date: this.billingStartDate,
-        //     //         notes: this.notes,
-        //     //         invoice_name: this.invoiceName,
-        //     //         //   contract_documents: this.contractDocuments,
-        //     //         payment_methods_type: this.paymentMethodsType,
-        //     //         //   periods: this.periods,
-        //     //         //   contracts: this.contracts,
-        //     //         created_at: this.createdAt,
-        //     //         updated_at: this.updatedAt,
-        //     //     };
-        //     // },
-        // }
+    updateCustomer = async (dataToUpdate: Partial<CustomerModel>, id: ID) => {
+        this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id)
     }
 
     // יצרית הודעת עזיבה של לקוח
@@ -221,45 +190,45 @@ export class customerService extends baseService<CustomerModel> {
 const serviceCustomer = new customerService();
 
 // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
-export const exportCustomersToFileByFilter = async (
-    filter: Partial<CustomerModel>
-): Promise<Buffer | null> => {
-    const customerToExport = await serviceCustomer.getByFilters(filter);
+// export const exportCustomersToFileByFilter = async (
+//     filter: Partial<CustomerModel>
+// ): Promise<Buffer | null> => {
+//     const customerToExport = await serviceCustomer.getByFilters(filter);
 
-    if (!customerToExport || customerToExport.length === 0) {
-        return null;
-    }
+//     if (!customerToExport || customerToExport.length === 0) {
+//         return null;
+//     }
 
-    // פונקציה מהספריה csv-writer
-    const csvStringifier = createObjectCsvStringifier({
-        header: [
-            { id: "id", title: "ID" },
-            { id: "name", title: "Name" },
-            { id: "idNumber", title: "ID Number" },
-            { id: "businessName", title: "Business Name" },
-            { id: "businessType", title: "Business Type" },
-            { id: "currentWorkspaceType", title: "Current Workspace Type" },
-            { id: "workspaceCount", title: "Workspace Count" },
-            { id: "contractSignDate", title: "Contract Sign Date" },
-            { id: "billingStartDate", title: "Billing Start Date" },
-            { id: "invoiceName", title: "InvoiceName" },
-            { id: "contractDocuments", title: "Contract Documents" },
-            { id: "paymentMethodsType", title: "Payment Methods Type" },
-            { id: "notes", title: "Notes" },
-            { id: "updatedAt", title: "Updated At" },
-            { id: "contracts", title: "Contracts" },
-            { id: "phone", title: "Phone" },
-            { id: "status", title: "Status" },
-            { id: "createdAt", title: "Created At" },
-        ],
-    });
+//     // פונקציה מהספריה csv-writer
+//     const csvStringifier = createObjectCsvStringifier({
+//         header: [
+//             { id: "id", title: "ID" },
+//             { id: "name", title: "Name" },
+//             { id: "idNumber", title: "ID Number" },
+//             { id: "businessName", title: "Business Name" },
+//             { id: "businessType", title: "Business Type" },
+//             { id: "currentWorkspaceType", title: "Current Workspace Type" },
+//             { id: "workspaceCount", title: "Workspace Count" },
+//             { id: "contractSignDate", title: "Contract Sign Date" },
+//             { id: "billingStartDate", title: "Billing Start Date" },
+//             { id: "invoiceName", title: "InvoiceName" },
+//             { id: "contractDocuments", title: "Contract Documents" },
+//             { id: "paymentMethodsType", title: "Payment Methods Type" },
+//             { id: "notes", title: "Notes" },
+//             { id: "updatedAt", title: "Updated At" },
+//             { id: "contracts", title: "Contracts" },
+//             { id: "phone", title: "Phone" },
+//             { id: "status", title: "Status" },
+//             { id: "createdAt", title: "Created At" },
+//         ],
+//     });
 
-    const csvHeader = csvStringifier.getHeaderString();
-    const csvBody = csvStringifier.stringifyRecords(customerToExport);
-    const csvFull = csvHeader + csvBody;
+//     const csvHeader = csvStringifier.getHeaderString();
+//     const csvBody = csvStringifier.stringifyRecords(customerToExport);
+//     const csvFull = csvHeader + csvBody;
 
-    return Buffer.from(csvFull, "utf-8");
-};
+//     return Buffer.from(csvFull, "utf-8");
+// };
 
 // לשאול את שולמית
 
