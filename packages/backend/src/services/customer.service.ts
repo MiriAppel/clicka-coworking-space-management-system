@@ -14,6 +14,7 @@ import {
 } from "shared-types";
 import { supabase } from '../db/supabaseClient'
 import { error } from "node:console";
+import { CustomerPeriodModel } from "../models/customerPeriod.model";
 
 export class customerService extends baseService<CustomerModel> {
     constructor() {
@@ -120,20 +121,32 @@ export class customerService extends baseService<CustomerModel> {
 
         if (customerLeave) {
             // יצירת תקופת עזיבה ללקוח
-            const period: CustomerPeriod = {
+            const period: CustomerPeriodModel = {
                 customerId: id,
-                entryDate: new Date().toISOString(),
-                exitDate: new Date().toISOString(),
+                entryDate: customerLeave.createdAt || new Date().toISOString(),
+                exitDate: exitNotice.plannedExitDate,
                 exitNoticeDate: exitNotice.exitNoticeDate,
                 exitReason: exitNotice.exitReason,
                 exitReasonDetails: exitNotice.exitReasonDetails,
-                createdAt: customerLeave.createdAt,
-                updatedAt: customerLeave.updatedAt,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                toDatabaseFormat() {
+                    return {
+                        customer_id: this.customerId,
+                        entry_date: this.entryDate,
+                        exit_date: this.exitDate,
+                        exit_notice_date: this.exitNoticeDate,
+                        exit_reason: this.exitReason,
+                        exit_reason_details: this.exitReasonDetails,
+                        created_at: this.createdAt,
+                        updated_at: this.updatedAt
+                    };
+                }
             };
-            try{
-             await serviceCustomerPeriod.post(period);
+            try {
+                await serviceCustomerPeriod.post(period);
 
-            }catch (error){
+            } catch (error) {
                 console.error("in Period ", error)
             }
         }

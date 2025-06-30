@@ -130,6 +130,8 @@ export const CustomerStatusChanged: React.FC = () => {
     if (!customerId) return null;
 
   const onSubmit = async (data: FormData) => {
+    console.log("data in submit", data);
+    
   try {
     // 1. אם מדובר בעזיבה – קודם נקליט את פרטי העזיבה
     if (data.status === CustomerStatus.NOTICE_GIVEN) {
