@@ -1,5 +1,4 @@
 // workspace-types.d.ts
-
 import { ID, DateISO, ApiResponse, PaginatedResponse } from './core';
 import { WorkspaceType } from './customer';
 

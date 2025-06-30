@@ -22,7 +22,7 @@ export const verifyJwtToken = (token: string) => {
   return jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string };
 };
 
-export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse> => {
+export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse & { googleAccessToken: string }> => {
   try {
     const tokens = await getTokens(code);
     if (!tokens.access_token) {
@@ -64,6 +64,7 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       user,
       token: jwtToken,
       sessionId: newSessionId,
+      googleAccessToken:tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };

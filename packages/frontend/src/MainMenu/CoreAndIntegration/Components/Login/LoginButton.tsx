@@ -16,7 +16,7 @@ export const LoginWithGoogle = () => {
         onSuccess: async (codeResponse) => {
             try {
                 console.log('Code received from Google:', codeResponse);
-                
+
                 const response = await axiosInstance.post<LoginResponse>(
                     '/api/auth/google',
                     { code: codeResponse.code },
@@ -44,5 +44,3 @@ export const LoginWithGoogle = () => {
         <button onClick= {() => login()}> Google התחבר עם </button>
     );
 };
-
-

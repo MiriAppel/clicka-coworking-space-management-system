@@ -37,6 +37,7 @@ export interface LoginResponse {
   sessionId?: string;
   expiresAt: DateISO;
   cookie?: string; // Optional cookie for session management
+  googleAccessToken?: string; // ← הוספה: הטוקן של גוגל לשליחת מיילים
 }
 
 // Register user request

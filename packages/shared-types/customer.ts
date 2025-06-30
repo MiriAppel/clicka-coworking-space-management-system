@@ -1,3 +1,4 @@
+
 // customer.d.ts
 
 import { Person } from './person';
