@@ -1,10 +1,13 @@
+
 // ייבוא React (כולל טיפוסי FC)
 import React from 'react';
+
 // ייבוא רכיבי גרפים מהספרייה Recharts
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
+
 // ייבוא קריאת ערכת עיצוב (theme) מתוך hook פנימי
 import { useTheme } from '../themeConfig';
 
@@ -26,7 +29,7 @@ interface ChartDisplayProps {
 
 // קומפוננטת ChartDisplay – מציגה גרף לפי סוג שנבחר
 export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = true }) => {
-  const { colors } = useTheme(); // שליפת צבעים מה־theme (צבעים אחידים לגרפים)
+  const { theme: { colors } } = useTheme(); // שליפת צבעים מה־theme (צבעים אחידים לגרפים)
 
   // מערך צבעים לפרוסות גרף עוגה
   const COLORS = [colors.primary, colors.secondary, colors.accent];

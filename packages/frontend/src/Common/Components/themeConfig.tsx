@@ -1,8 +1,11 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { ThemeConfig } from '../Service/themeConfig';
 
 // ברירת מחדל
-const defaultTheme: ThemeConfig = {
+export const defaultTheme: ThemeConfig = {
+  isKeyboardNavigation: false, 
+  lang: "en",
+  isHighContrast: false,
   colors: {
     // primary: '#2563EB', // כחול
     primary:'#007BFF', 
@@ -18,6 +21,7 @@ const defaultTheme: ThemeConfig = {
       error: '#EF4444',
       info: '#3B82F6',
     },
+    text: '#000000',
   },
   typography: {
     fontFamily: {
@@ -30,13 +34,29 @@ const defaultTheme: ThemeConfig = {
   direction: 'rtl',
 };
 
-//יצירת הקונטקסט
-const ThemeContext = createContext<ThemeConfig>(defaultTheme);
-
-// ✅ 3.  לכל המחלקות האחרות שאח"כ נוכל להשתמש עם פרוויידר 
-export const ThemeProvider = ({ children, theme = defaultTheme }: { children: ReactNode; theme?: ThemeConfig }) => {
-  return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
+// יצירת הקונטקסט עם טיפוס הכולל theme ו‑setTheme
+type ThemeContextType = {
+  theme: ThemeConfig;
+  setTheme: React.Dispatch<React.SetStateAction<ThemeConfig>>;
 };
 
-//משמש את הקונטקסט שיצרתי 
+const ThemeContext = createContext<ThemeContextType>({
+  theme: defaultTheme,
+  setTheme: () => {
+  throw new Error("setTheme called outside of ThemeProvider");
+},
+});
+
+// ✅ 3.  לכל המחלקות האחרות שאח"כ נוכל להשתמש עם פרוויידר 
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const [theme, setTheme] = useState<ThemeConfig>(defaultTheme);
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+// משמש את הקונטקסט שיצרתי 
 export const useTheme = () => useContext(ThemeContext);

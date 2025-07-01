@@ -7,6 +7,7 @@ import { Table, TableColumn } from "../../../../Common/Components/BaseComponents
 
 //צריך לבדוק אם לעשות מכאן את העריכה או מהפרטי חוזה ואם בכלל לעשות פרטי חוזה
 
+
 interface ValuesToTable {
     id: ID
     customerId: ID; //  מזהה הלקוח בעל החוזה -כדאי להחליף לשם שלו

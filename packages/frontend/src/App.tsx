@@ -6,6 +6,7 @@ import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/L
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 
 
 function App() {
@@ -77,6 +78,7 @@ function App() {
         >
           users
         </Button>
+        <Accesibility></Accesibility>
       </div>
       <SearchCustomer></SearchCustomer>
       {/* 👇 נתיבים */}

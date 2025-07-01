@@ -23,7 +23,7 @@ export const FileInputField: React.FC<FileInputFieldProps> = ({
   "data-testid": testId,
   multiple = false,
 }) => {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const {
     control, 
     //משתנה שמשתמשים בו כדי להביא את הCONTROLLER של REACT-HOOK 
