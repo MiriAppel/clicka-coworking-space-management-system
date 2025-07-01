@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom"
 import App from "./App"
-import { WorkspaceMap } from "./MainMenu/Workspace/Components/workspaceMap"
+import { WorkspaceMap } from "./MainMenu/Workspace/Components/workspaceMaps"
 import { LeadAndCustomerRouting } from "./MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting"
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 

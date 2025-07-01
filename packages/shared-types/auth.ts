@@ -38,7 +38,7 @@ export interface LoginResponse {
   expiresAt: DateISO;
   cookie?: string; // Optional cookie for session management
   googleAccessToken?: string;
-}
+
 
 // Register user request
 export interface RegisterUserRequest {
