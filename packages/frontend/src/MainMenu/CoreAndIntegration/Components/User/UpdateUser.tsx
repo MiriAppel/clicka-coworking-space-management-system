@@ -165,7 +165,6 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                     <h4 className="font-semibold text-gray-700 mb-2">Current User Info:</h4>
                     <div className="text-sm text-gray-600 space-y-1">
-                        <p><strong>ID:</strong> {user.id}</p>
                         <p><strong>Created:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
                         <p><strong>Last Updated:</strong> {new Date(user.updatedAt).toLocaleDateString()}</p>
                     </div>
