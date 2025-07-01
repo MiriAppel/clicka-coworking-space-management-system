@@ -1,7 +1,7 @@
 import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from 'shared-types/booking';
 import { ID, DateISO } from 'shared-types/core';
 
-export class RoomModel implements Room, BookingRules{
+export class RoomModel implements Room{
   id: ID;
   name: string;
   description?: string;
@@ -51,7 +51,7 @@ export class RoomModel implements Room, BookingRules{
      createdAt?: DateISO;
      updatedAt?: DateISO;
    }) {
-    this.id = params.id;
+    this.id = params.id ?? crypto.randomUUID(); // Generate a unique ID if not provided
     this.name = params.name;  
     this.description = params.description;
     this.type = params.type;
@@ -99,4 +99,29 @@ toDatabaseFormat() {
        updatedat: this.updatedAt
     };
   }
+       static fromDatabaseFormat(dbData: any): RoomModel {
+        return new RoomModel({
+            id: dbData.id,
+            name: dbData.name,
+            description: dbData.description,
+            type: dbData.type,
+            status: dbData.status,
+            capacity: dbData.capacity,
+            features: dbData.features,
+            hourlyRate: dbData.hourly_rate,
+            discountedHourlyRate: dbData.discounted_hourly_rate,
+            googleCalendarId: dbData.google_calendar_id,
+            location: dbData.location,
+            equipment: dbData.equipment,
+            MinimumBookingMinutes: dbData.minimum_booking_minutes,
+            MaximumBookingMinutes: dbData.maximum_booking_minutes,
+            RequiredApproval: dbData.required_approval,
+            FreeHoursForKlikcaCard: dbData.free_hours_for_klikca_card,
+            nextMaintenanceDate: dbData.next_maintenance_date,
+            workspaceMapId: dbData.workspace_map_id, // Reference to a WorkspaceMap
+        });
+    }
+    static fromDatabaseFormatArray(dbDataArray: any[] ): RoomModel[] {
+        return dbDataArray.map(dbData => RoomModel.fromDatabaseFormat(dbData));
+    }
 }

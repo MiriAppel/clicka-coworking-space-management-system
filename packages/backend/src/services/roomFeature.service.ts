@@ -42,8 +42,8 @@ async  CreateFeature(feature: RoomFeatureModel): Promise<RoomFeatureModel | null
         console.error('Supabase error:', error.message);
         return null;
       }
-
-      return data;
+ const createdfeature = RoomFeatureModel.fromDatabaseFormatArray(data)
+      return createdfeature;
     } catch (err) {
       console.error('Unexpected error:', err);
       return null;
@@ -68,7 +68,7 @@ async  CreateFeature(feature: RoomFeatureModel): Promise<RoomFeatureModel | null
             console.error('Error updating feature:', error);
             return null;
         }
-        const feature = data as unknown as RoomFeatureModel; 
+        const feature = RoomFeatureModel.fromDatabaseFormat(data);; 
         // רישום פעילות המשתמש
         //logUserActivity(feature.description, 'feature updated');
         // מחזיר את המשתמש המעודכן
@@ -88,7 +88,7 @@ async  GetFeatureById(id: string): Promise<RoomFeatureModel | null>
             return null;
         }
 
-        const feature = data as RoomFeatureModel; // המרה לסוג UserModel
+        const feature =  RoomFeatureModel.fromDatabaseFormat(data);; // המרה לסוג UserModel
         // רישום פעילות המשתמש
        // logUserActivity(feature.id? feature.id:feature.description, 'User fetched by ID');
         // מחזיר את המשתמש שנמצא

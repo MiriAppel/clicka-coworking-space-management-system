@@ -1,5 +1,5 @@
 import { WorkspaceMap} from 'shared-types/workspaceMap';
-import {MapLayout} from 'shared-types/src/mapLayout'
+import {MapLayout} from 'shared-types/mapLayout'
 import { RoomModel } from './room.model';
 import type{ DateISO, ID } from "shared-types/core";
 // import{SpaceModel}from '../../../shared-types/src/workspaceMap'

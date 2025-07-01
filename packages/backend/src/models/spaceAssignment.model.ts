@@ -49,4 +49,21 @@ export class SpaceAssignmentModel implements SpaceAssign {
             updated_at: this.updatedAt,
         };
     }
+         static fromDatabaseFormat(dbData: any): SpaceAssignmentModel {
+        return new SpaceAssignmentModel({
+               id: dbData.id,
+    workspaceId: dbData.workspace_id,
+    customerId: dbData.customer_id,
+    assignedDate: dbData.assigned_date,
+    unassignedDate: dbData.unassigned_date,    
+    notes: dbData.notes,
+    assignedBy: dbData.assigned_by,
+    status: dbData.status,
+    createdAt: dbData.created_at,
+    updatedAt: dbData.updated_at,
+        });
+    }
+    static fromDatabaseFormatArray(dbDataArray: any[] ): SpaceAssignmentModel[] {
+        return dbDataArray.map(dbData => SpaceAssignmentModel.fromDatabaseFormat(dbData));
+    }
 }

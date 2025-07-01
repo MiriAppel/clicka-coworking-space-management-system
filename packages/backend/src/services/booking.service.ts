@@ -27,7 +27,7 @@ export class BookingService {
 throw new Error(`Failed to create booking: ${error.message}`);
   }
 
-    const createdBook = data as unknown as BookingModel;
+    const createdBook =   BookingModel.fromDatabaseFormat(data);
     logUserActivity(book.id ?? book.roomName, 'book created');
     return createdBook;
     }
@@ -41,8 +41,8 @@ throw new Error(`Failed to create booking: ${error.message}`);
         console.error('Supabase error:', error.message);
         return null;
       }
-
-      return data;
+ const booking = BookingModel.fromDatabaseFormatArray(data)
+      return booking;
     } catch (err) {
       console.error('Unexpected error:', err);
       return null;
@@ -61,7 +61,7 @@ throw new Error(`Failed to create booking: ${error.message}`);
               console.error('Error updating booking:', error);
               return null;
           }
-          const booking = data as unknown as BookingModel; // המרה לסוג UserModel
+          const booking =  BookingModel.fromDatabaseFormat(data); // המרה לסוג UserModel
           
           return booking; 
   }
@@ -95,7 +95,7 @@ throw new Error(`Failed to create booking: ${error.message}`);
                   return null;
               }
       
-              const booking = data as BookingModel; // המרה לסוג UserModel
+              const booking = BookingModel.fromDatabaseFormat(data); // המרה לסוג UserModel
               // רישום פעילות המשתמש
              // logUserActivity(feature.id? feature.id:feature.description, 'User fetched by ID');
               // מחזיר את המשתמש שנמצא

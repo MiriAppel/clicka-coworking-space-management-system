@@ -28,7 +28,7 @@ async  createRoomRequest(room: RoomModel): Promise<RoomModel | null> {
     throw new Error(`Failed to create booking: ${error.message}`);
       }
     
-        const createdroom = data as unknown as RoomModel;
+        const createdroom =   RoomModel.fromDatabaseFormat(data);
         logUserActivity(room.id ?? room.name, 'book created');
         return createdroom;
 }
@@ -44,8 +44,8 @@ async  createRoomRequest(room: RoomModel): Promise<RoomModel | null> {
         console.error('Supabase error:', error.message);
         return null;
       }
-
-      return data;
+ const createdroom = RoomModel.fromDatabaseFormatArray(data)
+      return createdroom;
     } catch (err) {
       console.error('Unexpected error:', err);
       return null;
@@ -69,7 +69,7 @@ async  createRoomRequest(room: RoomModel): Promise<RoomModel | null> {
             console.error('Error updating room:', error);
             return null;
         }
-        const room = data as unknown as RoomModel; // המרה לסוג UserModel
+        const room =  RoomModel.fromDatabaseFormat(data); 
         // רישום פעילות המשתמש
         //logUserActivity(feature.description, 'feature updated');
         // מחזיר את המשתמש המעודכן
@@ -105,7 +105,7 @@ async  getRoomById(id:string) {
                 return null;
             }
     
-            const room = data as RoomModel; // המרה לסוג UserModel
+             const room =  RoomModel.fromDatabaseFormat(data); 
             // רישום פעילות המשתמש
            // logUserActivity(feature.id? feature.id:feature.description, 'User fetched by ID');
             // מחזיר את המשתמש שנמצא

@@ -9,7 +9,7 @@ import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import bookRouter from './routes/booking.route';
 import featureRouter from './routes/roomFaeature.route';
-//import spaceRouter from './routes/spaceAssignmemt.route';
+import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import routerMap from './routes/WorkspaceMapRoute'
 import swaggerUi from 'swagger-ui-express';
@@ -30,7 +30,7 @@ app.use(urlencoded({ extended: true }));
 app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
-//app.use('/api/space', spaceRouter);
+app.use('/api/space', spaceRouter);
 app.use('/api/map',routerMap);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);

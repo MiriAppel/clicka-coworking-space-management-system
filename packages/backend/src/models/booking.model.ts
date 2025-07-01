@@ -85,4 +85,26 @@ export class BookingModel implements Booking {
       notes: this.notes,
       is_paid:this.isPaid,
 }}
+     static fromDatabaseFormat(dbData: any): BookingModel {
+        return new BookingModel({
+            id: dbData.id,
+            roomId: dbData.room_id,
+            roomName: dbData.room_name,
+            customerId: dbData.customer_id,
+            customerName: dbData.customer_name,
+            externalUserName: dbData.external_user_name,
+            externalUserEmail: dbData.external_user_email,
+            externalUserPhone: dbData.external_user_phone,
+            startTime: dbData.start_time,
+            endTime: dbData.end_time,
+            status: dbData.status,
+            notes: dbData.notes,
+            googleCalendarEventId: dbData.google_calendar_event_id,
+            isPaid: dbData.is_paid,
+            totalHours: dbData.total_hours,
+        });
+    }
+    static fromDatabaseFormatArray(dbDataArray: any[] ): BookingModel[] {
+        return dbDataArray.map(dbData => BookingModel.fromDatabaseFormat(dbData));
+    }
 }
