@@ -6,6 +6,7 @@ import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/L
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 
 
 function App() {
@@ -61,31 +62,16 @@ function App() {
           Workspace
         </Button>
 
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate('/billing')}
-          className="border border-black hover:border-white bg-black text-white"
-        >
-          Billing
-        </Button>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate('/users')}
-          className="border border-black hover:border-white bg-black text-white"
-        >
-          users
-        </Button>
-      </div>
-      <SearchCustomer></SearchCustomer>
-      {/* 👇 נתיבים */}
-      <Routes>
-        <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-        {/* <Route path="./users" element={<UserTable/>} /> */}
-
-      </Routes>
-      <AuthenticationScreen />
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate('/billing')}
+        className="border border-black hover:border-white bg-black text-white"
+      >
+        Billing
+      </Button>
+    </div>
+    <Accesibility></Accesibility>
     </div>
     </AuthProvider>
     

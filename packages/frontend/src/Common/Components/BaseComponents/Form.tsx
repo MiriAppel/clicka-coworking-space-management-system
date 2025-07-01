@@ -22,6 +22,7 @@ export interface BaseComponentProps {
   children?: React.ReactNode;
 }
 
+
 export interface FormComponentProps<T extends FieldValues>
   extends BaseComponentProps {
   label?: string;
@@ -45,7 +46,7 @@ export function Form<T extends FieldValues>({
   children,
   methods: externalMethods,
 }: FormComponentProps<T>) {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const { t } = useTranslation();
   //שימוש לתירגום עם I18NEXT לפי הנדרש 
 

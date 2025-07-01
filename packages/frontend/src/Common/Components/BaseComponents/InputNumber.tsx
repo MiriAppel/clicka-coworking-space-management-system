@@ -32,7 +32,7 @@ export const NumberInputField: React.FC<NumberInputFieldProps> = ({
   max,
   step,
 }) => {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const {
     register,
     formState: { errors },

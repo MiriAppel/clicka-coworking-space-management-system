@@ -1,5 +1,8 @@
 
 export interface ThemeConfig {
+  isKeyboardNavigation:boolean, 
+    lang: "en" | "he",
+  isHighContrast: boolean,
   colors: {
     primary: string;
     secondary: string;
@@ -12,7 +15,9 @@ export interface ThemeConfig {
       error: string;
       info: string;
     };
+    text:string
   };
+
   typography: {
     fontFamily: {
       hebrew: string;
