@@ -6,11 +6,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { Link, NavLink } from "react-router-dom";
 import { Lead, LeadSource, LeadStatus, Person } from "shared-types";
 import { SearchLeads } from "./searchLead";
-//הערה חשובה!!
-//בכל המקומות ששולחים שכתוב שצריך לעשות קריאת שרת כדי לקבל בודד מתוך הרשימה אפשר להעביר את כל האובייקט מהקומפוננטה של הרשימה ליחיד
-//אבל זה אולי פחות בטיחותי
-//הדף העיקרי של המתעניין וממנו בעצם יש לי קישורים לכל הקומפוננטות של המתעניין -בתחילה שיש לי מתענינים ולקוחות
-//  רק את הדף הזה צריך לראות שלוחצים על מתענינים
+import { deleteLead } from "../../Service/LeadAndCustomersService";
+
 interface ValuesToTable {
   id: string
   name: string; // שם המתעניין
@@ -39,12 +36,16 @@ export const LeadHomePage = ({ leads, onDelete }: LeadsListProps) => {
     { header: "פלאפון", accessor: "phone" },
     { header: "מייל", accessor: "email" },
   ];
-  const deleteLead = (val: ValuesToTable) => {
-    //כאן יהיה קריאת שרת למחיקת לקוח ועדכון מחדש של המערך המקומי
-    //זה רק דוג' למחיקה מקומית
-    const newCustomers = leads.filter(lead => lead.id !== val.id);
-    // setLeads(newCustomers); // עדכון ה-state
-  }
+  const deleteCurrentLead = async (val: ValuesToTable) => {
+          try {
+              await deleteLead(val.id);
+              // fetchCustomers();
+              alert("מתעניין נמחק בהצלחה");
+          } catch (error) {
+              console.error("שגיאה במחיקת מתעניין:", error);
+              alert("מחיקה נכשלה");
+          }
+      };
   const updateLead = (val: ValuesToTable) => {
   }
 
@@ -54,7 +55,7 @@ export const LeadHomePage = ({ leads, onDelete }: LeadsListProps) => {
   // }
   return <div className="p-6">
 
-    <Table<ValuesToTable> data={valuesToTable} columns={Columns} onDelete={deleteLead} onUpdate={updateLead}
+    <Table<ValuesToTable> data={valuesToTable} columns={Columns} onDelete={deleteCurrentLead} onUpdate={updateLead}
       renderActions={(row) => (
         <Button
           onClick={() => navigate("interestedCustomerRegistration", { state: { data: leads.find(lead => lead.id == row.id) } })}

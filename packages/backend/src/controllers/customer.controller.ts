@@ -31,7 +31,7 @@ export const postCustomer = async (req: Request, res: Response) => {
         // console.log("in controller");
         // console.log(newCustomer);  
 
-        const customer = await serviceCustomer.convertLeadToCustomer(newCustomer);
+        const customer = await serviceCustomer.createCustomer(newCustomer);
         console.log("in controller");
         console.log(customer);
 

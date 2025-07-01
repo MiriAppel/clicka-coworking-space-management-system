@@ -20,4 +20,7 @@ routerLead.get('/reminders/open', controllerLead.getLeadsToRemind);
 
 routerLead.get('/filter/customers', controllerLead.getLeadsByFilter);
 
+routerLead.delete('/:id', controllerLead.deleteLead);
+
+
 export default routerLead;

@@ -112,3 +112,13 @@ export const getLeadsByFilter = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error filtering customers", error });
   }
 };
+
+export const deleteLead = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const leads = await serviceLead.delete(id);
+        res.status(200).json(leads);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching all statuses', error });
+    }
+}

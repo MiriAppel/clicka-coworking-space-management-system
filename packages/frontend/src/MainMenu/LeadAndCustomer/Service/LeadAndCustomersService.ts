@@ -33,6 +33,16 @@ export const createLead = async (lead: CreateLeadRequest): Promise<Lead> => {
   }
 };
 
+export const deleteLead = async (id: string): Promise<void> => {
+  try {
+    await axiosInstance.delete(`/leads/${id}`);
+  } catch (error) {
+    console.error('Error deleting lead:', error);
+    throw error;
+  }
+};
+
+
 // ---------- לקוחות ----------
 
 const CUSTOMERS_BASE_PATH = '/customers';

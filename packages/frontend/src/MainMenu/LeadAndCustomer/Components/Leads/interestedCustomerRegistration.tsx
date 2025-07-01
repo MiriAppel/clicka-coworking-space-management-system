@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
-import { createCustomer } from "../../Service/LeadAndCustomersService"
+import { createCustomer, deleteLead } from "../../Service/LeadAndCustomersService"
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
@@ -21,7 +21,7 @@ const workspaceTypeOptions = [
 ];
 
 const PaymentMethodTypeOptions = [
-    { value: PaymentMethodType.CREDIT_CARD , label: 'כרטיס אשראי' },
+    { value: PaymentMethodType.CREDIT_CARD, label: 'כרטיס אשראי' },
     { value: PaymentMethodType.BANK_TRANSFER, label: 'העברה בנקאית' },
     { value: PaymentMethodType.CHECK, label: 'שיק' },
     { value: PaymentMethodType.CASH, label: 'מזומן' },
@@ -220,6 +220,15 @@ export const InterestedCustomerRegistration: React.FC = () => {
             }).catch((error: Error) => {
                 console.error("Error create customer:", error);
             });
+
+            //מחיקת המתעניין
+        try {
+            await deleteLead(lead.id!);
+        } catch (error) {
+            console.error("שגיאה במחיקת מתעניין:", error);
+            alert("מחיקה נכשלה");
+        }
+
     }
 
 

@@ -37,17 +37,12 @@ export class customerService extends baseService<CustomerModel> {
         return [];
     };
 
-    // המרת ליד ללקוח
-    //למחוק את הליד!!!
-    convertLeadToCustomer = async (
+    createCustomer = async (
         newCustomer: CreateCustomerRequest,
-        // paymentMethodsType: PaymentMethodType,
     ): Promise<CustomerModel> => {
         console.log("in servise");
         console.log(newCustomer);
 
-
-        // המרה של ליד ללקוח
         const customerData: CustomerModel = {
             name: newCustomer.name,
             email: newCustomer.email,

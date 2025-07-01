@@ -7,6 +7,8 @@ import { Table, TableColumn } from "../../../../Common/Components/BaseComponents
 import { Customer, CustomerStatus } from "shared-types";
 import { deleteCustomer, getAllCustomers } from "../../Service/LeadAndCustomersService";
 import { Stack, TextField } from '@mui/material';
+import { supabase } from "../../../../Services/supabaseClient";
+
 interface ValuesToTable {
     id: string;
     name: string;
@@ -27,6 +29,7 @@ export const CustomersList = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+
     const fetchCustomers = async () => {
         try {
             setIsLoading(true);
@@ -38,27 +41,29 @@ export const CustomersList = () => {
             setIsLoading(false);
         }
     };
+
     useEffect(() => {
         fetchCustomers();
          //לבדוק למה לא עובד המשתני סביבה!!!
         // האזנה לשינויים בטבלת customers
-        // const channel = supabase
-        //     .channel('public:customers')
-        //     .on(
-        //         'postgres_changes',
-        //         { event: '*', schema: 'public', table: 'customers' },
-        //         (payload) => {
-        //             // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
-        //             fetchCustomers();
-        //         }
-        //     )
-        //     .subscribe();
+        const channel = supabase
+            .channel('public:customer')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'customers' },
+                (payload) => {
+                    // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
+                    fetchCustomers();
+                }
+            )
+            .subscribe();
 
-        // // ניקוי מאזין כשיוצאים מהקומפוננטה
-        // return () => {
-        //     supabase.removeChannel(channel);
-        // };
+        // ניקוי מאזין כשיוצאים מהקומפוננטה
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
+
     const handleSearch = (term: string) => {
         const lower = term.toLowerCase();
         const filtered = customers.filter((c) =>
@@ -71,6 +76,7 @@ export const CustomersList = () => {
         );
         return filtered;
     };
+
     const getValuseToTable = (): ValuesToTable[] => {
         return handleSearch(searchTerm).map(customer => ({
             id: customer.id!,
@@ -87,6 +93,7 @@ export const CustomersList = () => {
             businessType: customer.businessType,
         }));
     };
+
     const columns: TableColumn<ValuesToTable>[] = [
         { header: "שם", accessor: "name" },
         { header: "פלאפון", accessor: "phone" },
@@ -95,6 +102,7 @@ export const CustomersList = () => {
         { header: "שם העסק", accessor: "businessName" },
         { header: "סוג עסק", accessor: "businessType" }
     ];
+
     const deleteCurrentCustomer = async (val: ValuesToTable) => {
         try {
             await deleteCustomer(val.id);
