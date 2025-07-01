@@ -23,15 +23,15 @@
 //     }
 //   },
 
-//   getByLang: async (req: Request, res: Response) => {
-//     try {
-//       const lang = req.params.lang;
-//       const data = await translationService.getByLang(lang);
-//       res.json(data);
-//     } catch (error: any) {
-//       res.status(500).json({ error: error.message });
-//     }
-//   },
+//   // getByLang: async (req: Request, res: Response) => {
+//   //   try {
+//   //     const lang = req.params.lang;
+//   //     const data = await translationService.getByLang(lang);
+//   //     res.json(data);
+//   //   } catch (error: any) {
+//   //     res.status(500).json({ error: error.message });
+//   //   }
+//   // },
 
 //   getByKey: async (req: Request, res: Response) => {
 //     try {

@@ -8,6 +8,11 @@
     "start:frontend": "yarn workspace clicka-frontend start",
     "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
   },
+  "scripts": {
+    "start:backend": "yarn workspace clicka-backend dev",
+    "start:frontend": "yarn workspace clicka-frontend start",
+    "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
+  },
   "workspaces": [
     "packages/*"
   ],
@@ -17,7 +22,7 @@
   "description": "",
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
-    "@supabase/supabase-js": "^2.50.0",
+    "@supabase/supabase-js": "^2.50.2",
     "express": "^5.1.0",
     "react-hook-form": "^7.58.1",
     "ts-node": "^10.9.2",

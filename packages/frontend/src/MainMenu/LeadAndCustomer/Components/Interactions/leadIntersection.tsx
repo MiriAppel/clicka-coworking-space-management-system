@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { FaBell, FaBellSlash, FaEdit, FaTrash } from "react-icons/fa";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-interface User {
+//אנטרקציות של המתעניין 
+//קודם input 
+//של חיפוש המזכירה תוכל לחפש למשל מי שהפעמוןשלו דולק וזה אומר שהוא צריך תזכורת 
+// בנוסף צריך שיהיה בחירת מרובים או בחירה של כולם כמו ריבוע כזה בצד שאפשר לבחור כמה  
+interface User { // לדוגמא של טבלה 
   id: number;
   name: string;
   email: string;

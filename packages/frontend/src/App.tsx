@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { CustomerStatusChanged } from './MainMenu/LeadAndCustomer/Components/Customers/CustomerStatusChanged';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
-import { Button } from './Common/Components/BaseComponents/Button';
+// import { Button } from './Common/Components/BaseComponents/Button';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);

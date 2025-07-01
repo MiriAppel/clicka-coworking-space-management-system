@@ -122,3 +122,48 @@ export const deleteLead = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching all statuses', error });
     }
 }
+export const getLeadsByPage = async (req: Request, res: Response) => {
+  console.log("getLeadsByPage called");
+
+  const filters = req.params; // הנח שהפרמטרים מגיעים מה-params של הבקשה
+  console.log("Filters received:", filters);
+
+  console.log(
+    "getLeadsByPage called with page:",
+    filters.page,
+    "and limit:",
+    filters.limit
+  );
+
+  try {
+    const pageNum = Math.max(1, Number(filters.page) || 1);
+    const limitNum = Math.max(1, Number(filters.limit) || 50);
+    const filtersForService = {
+      page: pageNum,
+      limit: limitNum,
+    };
+
+    console.log("Filters passed to service:", filtersForService);
+
+    const leads = await serviceLead.getLeadsByPage(filtersForService);
+
+    if (leads.length > 0) {
+      res.status(200).json(leads);
+    } else {
+      res.status(404).json({ message: "No leads found" });
+    }
+  } catch (error: any) {
+    console.error("❌ Error in getLeadsByPage controller:");
+    if (error instanceof Error) {
+      console.error("🔴 Message:", error.message);
+      console.error("🟠 Stack:", error.stack);
+    } else {
+      console.error("🟡 Raw error object:", error);
+    }
+
+    res
+      .status(500)
+      .json({ message: "Server error", error: error?.message || error });
+  }
+  console.log("getLeadsByPage completed");
+};

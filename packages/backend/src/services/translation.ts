@@ -14,27 +14,27 @@
 //   }
 
 //   // אפשר גם להוסיף פונקציות ייחודיות רק לשירות הזה כאן
-//   async getByKey(key: string): Promise<Translation[]> {
-//     return this.getByFilters({ key });
-//   }
+//   // async getByKey(key: string): Promise<Translation[]> {
+//   //   return this.getByFilters({ key });
+//   // }
 
-//   async getByLang(lang: string): Promise<Translation[]> {
-//     if (!isLanguage(lang)) {
-//       throw new Error(`Invalid language: ${lang}`);
-//     }
-//     return this.getByFilters({ lang });
-//   }
+//   // async getByLang(lang: string): Promise<Translation[]> {
+//   //   if (!isLanguage(lang)) {
+//   //     throw new Error(`Invalid language: ${lang}`);
+//   //   }
+//   //   return this.getByFilters({ lang });
+//   // }
 //   async createWithTranslations(base: { key: string; text: string; lang: Language }) {
 //     const { key, text, lang } = base;
     
-//     const existing = await this.getByKey(key);
+//     // const existing = await this.getByKey(key);
 //     const langsToTranslate = supportedLanguages.filter(l => l !== lang);
 
 //     const newTranslations: Translation[] = [];
 
 //     for (const targetLang of langsToTranslate) {
-//       const alreadyExists = existing.find(e => e.lang === targetLang);
-//       if (alreadyExists) continue; // דילוג אם כבר קיים
+//       // const alreadyExists = existing.find(e => e.lang === targetLang);
+//       // if (alreadyExists) continue; // דילוג אם כבר קיים
 
 //       const translatedValue = await translateText(text, lang, targetLang);
 
@@ -51,17 +51,17 @@
 //     }
 
 //     // נוסיף את המקורי אם גם הוא לא קיים
-//     const selfExists = existing.find(e => e.lang === lang);
-//     if (!selfExists) {
-//       newTranslations.push({
-//         id: uuid(),
-//         key,
-//         lang,
-//         text: text,
-//         createdAt: new Date().toISOString(),
-//         updatedAt: new Date().toISOString(),
-//       });
-//     }
+//     // const selfExists = existing.find(e => e.lang === lang);
+//     // if (!selfExists) {
+//     //   newTranslations.push({
+//     //     id: uuid(),
+//     //     key,
+//     //     lang,
+//     //     text: text,
+//     //     createdAt: new Date().toISOString(),
+//     //     updatedAt: new Date().toISOString(),
+//     //   });
+//     // }
 
 //     // שמירה
 //     await Promise.all(newTranslations.map(t => this.post(t)));

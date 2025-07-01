@@ -234,6 +234,13 @@ export interface ConvertLeadToCustomerRequest {
   paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
+export interface StatusChangeRequest {
+    newStatus: CustomerStatus;
+    effectiveDate: DateISO;
+    reason?: string;
+    notes?: string;
+    notifyCustomer: boolean;
+}
 
 
 export interface StatusChangeRequest {
