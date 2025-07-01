@@ -38,6 +38,7 @@ export class customerService extends baseService<CustomerModel> {
     };
 
     // המרת ליד ללקוח
+    //למחוק את הליד!!!
     convertLeadToCustomer = async (
         newCustomer: CreateCustomerRequest,
         // paymentMethodsType: PaymentMethodType,

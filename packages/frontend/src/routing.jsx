@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import MainLayout from './layout/MainLayout';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { Billing } from './MainMenu/Billing/Components/billing';
-import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
+import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting'
 import App from './App';
 
 export const routing = () => {

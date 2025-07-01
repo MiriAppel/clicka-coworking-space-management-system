@@ -4,7 +4,6 @@ import { CustomerStatusChanged } from './MainMenu/LeadAndCustomer/Components/Cus
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Button } from './Common/Components/BaseComponents/Button';
-import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -38,7 +37,7 @@ function App() {
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
-      <div className="space-x-4">
+      {/* <div className="space-x-4">
       <Button
         variant="primary"
         size="md"
@@ -65,17 +64,11 @@ function App() {
       >
         Billing
       </Button>
-    </div>
+    </div> */}
 
       <div className='menu' style={{ backgroundColor: 'black' }}>
 
       </div>
-
-      <SearchCustomer></SearchCustomer>
-      {/* 👇 נתיבים */}
-      <Routes>
-        <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-      </Routes>
     </div>
   );
 }
