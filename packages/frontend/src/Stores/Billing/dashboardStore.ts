@@ -1,4 +1,3 @@
-
 import { create } from "zustand";
 import type{ ID, Expense, Payment, Invoice } from "shared-types";
 
