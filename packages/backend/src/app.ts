@@ -19,6 +19,10 @@ import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 
+// Create Express app
+const app = express();
+
+
 // Apply middlewares
 app.use(helmet());
 app.use(morgan('dev'));
