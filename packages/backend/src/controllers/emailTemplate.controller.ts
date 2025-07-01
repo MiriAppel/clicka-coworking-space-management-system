@@ -69,20 +69,20 @@ export class EmailTemplateController {
         }
     }
 
-    // פונקציה לתצוגה מקדימה של תבנית דוא"ל כולל הזרקת והצגת משתנים בתבנית כולה
     async previewTemplate(req: Request, res: Response) {
-        const templateId = req.params.id; // קבלת ה-ID של התבנית מהפרמטרים של הבקשה
-        const dynamicVariables = req.body; // קבלת המשתנים הדינמיים מהגוף של הבקשה
+        const templateId = req.params.id; // מזהה התבנית
+        const variables = req.body.variables; // משתנים שנשלחו בבקשה
         try {
-            const preview = await this.emailTemplateService.previewTemplate(templateId, dynamicVariables); // קריאה לסרביס עם ה-ID והמשתנים
-            if (preview) {
-                console.log(preview); // מדפיסים את התוצאה ללוג
-                res.json({ preview }); // מחזירים את התוצאה כתגובה
+            const template = await this.emailTemplateService.getTemplateById(templateId);
+            if (template) {
+                // כאן אנו קוראים לפונקציה renderTemplate מהסרביס
+                const renderedHtml = await this.emailTemplateService.renderTemplate(template.bodyHtml, variables);
+                res.json({ renderedHtml }); // מחזירים את ה-HTML המוגמר
             } else {
-                res.status(404).json({ error: "Template not found" }); // אם התבנית לא נמצאה
+                res.status(404).json({ error: "Template not found" });
             }
         } catch (err) {
-            res.status(500).json({ error: (err as Error).message }); // טיפול בשגיאות
+            res.status(500).json({ error: (err as Error).message });
         }
     }
 }
