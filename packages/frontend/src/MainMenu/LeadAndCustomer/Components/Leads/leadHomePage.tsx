@@ -96,7 +96,7 @@ export const LeadsPage = () => {
   // שליפה ראשונית מהשרת
   useEffect(() => {
     console.log("Fetching initial leads...");
-    
+
     axios
       .get("http://localhost:3001/api/leads/by-page", {
         params: { page, limit: 50 },
@@ -126,9 +126,8 @@ export const LeadsPage = () => {
       })
       .catch((error) => {
         console.log("error in leadHomePage.tsx useEffect:", error);
-        
-        console.error("Error fetching leads:", error);
 
+        console.error("Error fetching leads:", error);
       });
   }, [page]);
 
@@ -194,7 +193,11 @@ export const LeadsPage = () => {
   return (
     <div style={{ direction: "rtl", padding: "20px" }}>
       <h1>מתעניינים</h1>
-      <SearchLeads onSearch={handleSearch} />
+      <SearchLeads
+        term={searchTerm}
+        setTerm={setSearchTerm}
+        onSearch={handleSearch}
+      />
       <LeadHomePage leads={leads} onDelete={handleDeleteLeads} />
       <div ref={loaderRef} style={{ height: "1px" }} />
     </div>
