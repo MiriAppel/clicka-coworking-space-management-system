@@ -3,6 +3,10 @@ import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
 
+function getNestedError(obj: any, path: string) {
+  return path.split('.').reduce((o, k) => (o ? o[k] : undefined), obj);
+}
+
 interface InputFieldProps {
   name: string; 
   label: string;
@@ -37,7 +41,7 @@ export const InputField: React.FC<InputFieldProps> = ({
     // זה השימוש של REACT-HOOK כדי שאני לא יצטרך להעביר את כל הPROPS בצורה ידיני מביא לי אותם ככה 
   } = useFormContext();
 
-  const error = errors[name]?.message as string | undefined;
+  const error = getNestedError(errors, name)?.message as string | undefined;
   const effectiveDir = dir || theme.direction;
 
   return (

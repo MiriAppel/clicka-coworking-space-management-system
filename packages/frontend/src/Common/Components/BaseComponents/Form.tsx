@@ -22,7 +22,6 @@ export interface BaseComponentProps {
   children?: React.ReactNode;
 }
 
-
 export interface FormComponentProps<T extends FieldValues>
   extends BaseComponentProps {
   label?: string;
@@ -45,7 +44,6 @@ export function Form<T extends FieldValues>({
   "data-testid": testId,
   children,
   methods: externalMethods,
-
 }: FormComponentProps<T>) {
   const theme = useTheme();
   const { t } = useTranslation();

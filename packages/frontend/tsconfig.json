@@ -1,7 +1,13 @@
+
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "incremental": false,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -16,8 +22,9 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@types/*": ["../backend/src/types/*"]
-    }
+      "shared-types": ["../shared-types/src"]
+    },
+    // "types": ["cookie-parser"]
   },
-  "include": ["src", "../backend/src/types"]
+  "include": ["src", "../shared-types/src"]
 }
