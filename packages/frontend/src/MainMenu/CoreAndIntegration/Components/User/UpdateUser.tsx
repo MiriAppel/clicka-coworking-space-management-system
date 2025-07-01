@@ -149,17 +149,6 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
                     >
                         {isSubmitting ? "Updating..." : "Update User"}
                     </Button>
-
-                    {onClose && (
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={onClose}
-                            className="flex-1"
-                        >
-                            Cancel
-                        </Button>
-                    )}
                 </div>
 
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
