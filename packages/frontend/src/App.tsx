@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import { useNavigate } from 'react-router-dom';
-import { Button } from './Common/Components/BaseComponents/Button';
 import { CustomerStatusChanged } from './MainMenu/LeadAndCustomer/Components/Customers/CustomerStatusChanged';
+import { useNavigate, Routes, Route } from 'react-router-dom';
+import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+import { Button } from './Common/Components/BaseComponents/Button';
+import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 
-// Simple component to demonstrate the project
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,9 +66,18 @@ function App() {
         Billing
       </Button>
     </div>
+
+      <div className='menu' style={{ backgroundColor: 'black' }}>
+
+      </div>
+
+      <SearchCustomer></SearchCustomer>
+      {/* 👇 נתיבים */}
+      <Routes>
+        <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+      </Routes>
     </div>
   );
 }
-
 
 export default App;

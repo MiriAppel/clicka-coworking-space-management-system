@@ -244,7 +244,6 @@ const serviceCustomer = new customerService();
 // לשאול את שולמית
 
 // export const getStatusChanges = async (id:ID): Promise<CustomerStatus[] | null> => {
-
 //     const customer: GetCustomersRequest | null = await getCustomerById(id);
 
 //     if (customer && customer.status) {
