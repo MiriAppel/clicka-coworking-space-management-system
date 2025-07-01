@@ -106,7 +106,7 @@ export class leadService extends baseService<LeadModel> {
     const { data, error } = await supabase
       .from("leads")
       .select("*")
-      .order("created_at", { ascending: false })
+      .order("name", { ascending: false })
       .range(from, to);
 
     console.log("Supabase data:", data);

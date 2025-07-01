@@ -137,40 +137,43 @@ export class customerService extends baseService<CustomerModel> {
   };
 
   //מחזיר את כל הלקוחות רק של העמוד הראשון
-  getCustomersByPage = async (
-    page: number = 1,
-    pageSize: number = 50
-  ): Promise<PaginatedResponse<CustomerModel>> => {
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-
-    const { data, error, count } = await supabase
-      .from("customer")
-      .select("*", { count: "exact" }) // count: 'exact' סופר את כל התוצאות
-      .range(from, to)
-      .order("created_at", { ascending: false }); // ממיין
-
-    if (error) {
-      console.error("Error fetching customers by page:", error);
-      throw new Error("Failed to fetch paginated customers");
-    }
-
-    const totalPages = count ? Math.ceil(count / pageSize) : 1;
-
-    return {
-      data: data as CustomerModel[],
-      meta: {
-        currentPage: page,
-        totalPages,
-        pageSize,
-        totalCount: count ?? 0,
-        hasNext: page < totalPages,
-        hasPrevious: page > 1,
-      },
+  getCustomersByPage = async (filters: {
+      page?: number;
+      limit?: number;
+    }): Promise<CustomerModel[]> => {
+      console.log("Service getCustomersByPage called with:", filters);
+  
+      const { page, limit } = filters;
+  
+      const pageNum = Number(filters.page);
+      const limitNum = Number(filters.limit);
+  
+      if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
+        throw new Error("Invalid filters provided for pagination");
+      }
+  
+      const from = (pageNum - 1) * limitNum;
+      const to = from + limitNum - 1;
+  
+      const { data, error } = await supabase
+        .from("customer")
+        .select("*")
+        .order("name", { ascending: false })
+        .range(from, to);
+  
+      console.log("Supabase data:", data);
+      console.log("Supabase error:", error);
+  
+      if (error) {
+        console.error("❌ Supabase error:", error.message || error);
+        return Promise.reject(
+          new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+        );
+      }
+  
+      return data || [];
     };
-  };
-}
-
+  }
 const serviceCustomer = new customerService();
 
 // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
