@@ -158,7 +158,7 @@ export class customerService extends baseService<CustomerModel> {
       const { data, error } = await supabase
         .from("customer")
         .select("*")
-        .order("name", { ascending: false })
+        .order("name", { ascending: true }) // מיון לפי שם
         .range(from, to);
   
       console.log("Supabase data:", data);

@@ -8,13 +8,10 @@ import {
   TableColumn,
 } from "../../../../Common/Components/BaseComponents/Table";
 import { Customer, CustomerStatus } from "shared-types";
-import {
-  deleteCustomer,
-} from "../../service/LeadAndCustomersService";
+import { deleteCustomer } from "../../service/LeadAndCustomersService";
 import { Stack, TextField } from "@mui/material";
 import axios from "axios";
 import debounce from "lodash/debounce";
-
 
 interface ValuesToTable {
   id: string;
@@ -91,7 +88,6 @@ export const CustomersList = () => {
         console.error("Error fetching leads:", error);
       })
       .finally(() => setIsLoading(false));
-      
   }, [page]);
 
   useEffect(() => {
@@ -111,11 +107,11 @@ export const CustomersList = () => {
   const handleSearch = (term: string) => {
     setSearchTerm(term);
 
-    if (!term) {
+    if (!term || term.trim() === "") {
       setIsSearching(false);
-      setCustomers(allCustomers);
-      setPage(1); // מחזיר לעמוד הראשון
-      setHasMore(true); // מאפס את הסטטוס של יש עוד עמוד
+      setPage(1); // זה יגרום ל-useEffect לטעון את הדף הראשון
+      setCustomers([]); // מרוקן את הקיימים כדי שיטען מחדש
+      setHasMore(true);
       return;
     }
 
@@ -128,7 +124,12 @@ export const CustomersList = () => {
       (customer) =>
         customer.name.toLowerCase().includes(term.toLowerCase()) ||
         customer.phone.includes(term) ||
-        customer.email.toLowerCase().includes(term.toLowerCase())
+        customer.email.toLowerCase().includes(term.toLowerCase()) ||
+        customer.businessName?.toLowerCase().includes(term.toLowerCase()) ||
+        customer.businessType?.toLowerCase().includes(term.toLowerCase()) ||
+        statusLabels[customer.status]?.includes(term) ||
+        translateStatus(customer.status)?.includes(term) // תרגום הסטטוס לחיפוש 
+        || customer.status.toLowerCase().includes(term.toLowerCase()) // הוספת חיפוש ישיר על הסטטוס
     );
 
     if (filtered.length > 0) {
@@ -158,6 +159,9 @@ export const CustomersList = () => {
       name: customer.name,
       phone: customer.phone,
       email: customer.email,
+      businessName: customer.businessName || "לא זמין",
+      businessType: customer.businessType || "לא זמין",
+      // המרת הסטטוס לאלמנט ריאקט עם כפתור עדכון
       status: (
         <div className="flex justify-between">
           {statusLabels[customer.status]}
@@ -170,8 +174,6 @@ export const CustomersList = () => {
           </Button>
         </div>
       ),
-      businessName: customer.businessName,
-      businessType: customer.businessType,
     }));
   };
 
@@ -183,8 +185,6 @@ export const CustomersList = () => {
     { header: "שם העסק", accessor: "businessName" },
     { header: "סוג עסק", accessor: "businessType" },
   ];
-  <div ref={loaderRef} className="h-4"></div>
-
 
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
     try {
@@ -202,18 +202,31 @@ export const CustomersList = () => {
     navigate("update", { state: { data: selected } });
   };
 
-const debouncedSearch = useRef(
-  debounce((value: string) => handleSearch(value), 400)
-).current;
+  const debouncedSearch = useRef(
+    debounce((value: string) => handleSearch(value), 400)
+  ).current;
 
-const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value;
-  setTerm(value);
-  setSearchTerm(value);
-  debouncedSearch(value);
-};
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTerm(value);
+    setSearchTerm(value);
+    debouncedSearch(value);
+  };
 
-
+  const translateStatus = (status: CustomerStatus): string => {
+    switch (term) {
+      case "פעיל":
+        return CustomerStatus.ACTIVE;
+      case "הודעת עזיבה":
+        return CustomerStatus.NOTICE_GIVEN;
+      case "עזב":
+        return CustomerStatus.EXITED;
+      case "בהמתנה":
+        return CustomerStatus.PENDING;
+      default:
+        return status; // מחזיר את הסטטוס המקורי אם לא נמצא ת
+    }
+  };
 
   return (
     <>
@@ -226,11 +239,9 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
             לקוחות
           </h2>
-
           <ExportToExcel data={customers} fileName="לקוחות" />
           <br />
           <br />
-
           <Stack spacing={2} direction="row">
             <TextField
               label="חיפוש"
@@ -245,7 +256,6 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             />
           </Stack>
           <br />
-
           <Table<ValuesToTable>
             data={getValuseToTable()}
             columns={columns}
@@ -267,7 +277,8 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 </NavLink>
               </>
             )}
-          />
+          />{" "}
+          <div ref={loaderRef} className="h-4"></div>
         </div>
       )}
     </>
