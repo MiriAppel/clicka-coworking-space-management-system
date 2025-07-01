@@ -1,4 +1,4 @@
-// customer-types.d.ts
+// customer.d.ts
 
 import { Person } from './person';
 import { PaymentMethodType } from './billing';
