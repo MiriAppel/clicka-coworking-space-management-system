@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom"
 import App from "./App"
-import { WorkspaceMap } from "./MainMenu/Workspace/Components/workspaceMap"
-import { Billing } from "./MainMenu/Billing/Components/billing"
+import { WorkspaceMap } from "./MainMenu/Workspace/Components/workspaceMaps"
 import { LeadAndCustomerRouting } from "./MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting"
+import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 
 
 export const routing = () => {
@@ -11,7 +11,8 @@ export const routing = () => {
             <Route path="/" element={<App />} />
             <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
             <Route path="workspaceMap" element={< WorkspaceMap />} />
-            <Route path="billing" element={< Billing />} />
+            <Route path="users" element={< UserTable />} />
+
         </Routes>
     </>
 }
