@@ -19,7 +19,7 @@ routerCstomer.get('/id/:id', customerController.getCustomerById);
 routerCstomer.get('/filter', customerController.getCustomersByFilter);
 
 //(POST)
-routerCstomer.post('/exit-notice', customerController.postExitNotice); 
+routerCstomer.post('/:id/exit-notice', customerController.postExitNotice); 
 
 routerCstomer.post('/post-customer', customerController.postCustomer); 
 

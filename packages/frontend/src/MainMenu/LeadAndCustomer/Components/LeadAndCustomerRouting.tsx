@@ -10,14 +10,18 @@ import { LeadInteraction } from "./Interactions/leadIntersection";
 import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { CustomerInteraction } from "./Interactions/customerInteraction";
-import { CustomersPage } from "./Customers/customersList";
+import { UpdateCustomer } from "./Customers/updateCustomer";
+import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
+import { CustomersList } from "./Customers/customersList"
 
 export const LeadAndCustomerRouting = () => {
     return (
         <Routes>
             <Route path="/" element={<LeadAndCustomer />} />
-            <Route path="customers" element={<CustomersPage />} />
-            <Route path="customers/:customerId" element={<CustomerDetails />} />
+            <Route path="customers" element={<CustomersList />} />
+            <Route path="customers/update" element={<UpdateCustomer />} />
+            {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
+            <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
             <Route path="customers/intersections" element={<CustomerInteraction />} />

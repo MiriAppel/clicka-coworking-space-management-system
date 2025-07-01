@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import { useNavigate } from 'react-router-dom';
-import type{ Contract, ID } from "shared-types";
-import { ContractStatus, WorkspaceType } from "shared-types";
-import { Button, ButtonProps } from "../../../../Common/Components/BaseComponents/Button";
+import { Contract, ContractStatus, WorkspaceType, ID} from "shared-types";
+import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+
+//צריך לבדוק אם לעשות מכאן את העריכה או מהפרטי חוזה ואם בכלל לעשות פרטי חוזה
 
 interface ValuesToTable {
     id: ID
@@ -57,7 +58,7 @@ export const ContractManagement = () => {
     ]);
 
     const valuesToTable: ValuesToTable[] = contracts.map(contract => ({
-        id: contract.id,
+        id: contract.id!,
         customerId: contract.customerId,
         status: contract.status,
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון

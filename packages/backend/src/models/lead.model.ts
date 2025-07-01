@@ -66,9 +66,33 @@ export class LeadModel implements Lead {
       contact_date: this.contactDate,
       follow_up_date: this.followUpDate,
       notes: this.notes,
-      interactions: this.interactions,
+      lead_interaction: this.interactions,
       created_at: this.createdAt,
       updated_at: this.updatedAt,
     }
   }
+  static fromDatabaseFormat(dbData: any): LeadModel {
+    return new LeadModel(
+      dbData.id,
+      dbData.id_number,
+      dbData.name,
+      dbData.phone,
+      dbData.email,
+      dbData.business_type,
+      dbData.interested_in,
+      dbData.source,
+      dbData.status,
+      dbData.contact_date,
+      dbData.follow_up_date,
+      dbData.notes,
+      dbData.lead_interaction,
+      dbData.created_at,
+      dbData.updated_at
+    );
+  }
+
+  static fromDatabaseFormatArray(dbDataArray: any[]): LeadModel[] {
+    return dbDataArray.map(dbData => LeadModel.fromDatabaseFormat(dbData));
+  }
+
 }

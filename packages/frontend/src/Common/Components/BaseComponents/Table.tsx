@@ -88,11 +88,12 @@ export const Table = <T extends Record<string, any>>({
           {data.map((row, rowIdx) => (
             <tr key={rowIdx} className="hover:bg-gray-50">
               {columns.map((col, colIdx) => (
-                <td key={colIdx}>{row[col.accessor]}</td>
+                <td key={colIdx} className="border px-4 py-2">{row[col.accessor]}</td>
                 // {/* //ניגש לכל מה שכתוב בעמודות לדוג אם ACCESOR=NAME אז מדפיס לי ROW[NAME] */}
               ))}
 
               <td className="border px-4 py-2 flex gap-2 justify-center">
+                {typeof renderActions === "function" && renderActions(row)}
                 <Button
                   variant="secondary"
                   size="sm"
@@ -109,7 +110,7 @@ export const Table = <T extends Record<string, any>>({
                 >
                   Delete
                 </Button>
-                {typeof renderActions === "function" && renderActions(row)}
+
 
               </td>
             </tr>

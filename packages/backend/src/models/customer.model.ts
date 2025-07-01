@@ -1,8 +1,9 @@
 
-import type{ Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethodType, WorkspaceType } from "shared-types";
+import { UUID } from "node:crypto";
+import type { Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethodType, WorkspaceType } from "shared-types";
 
-export class CustomerModel implements Customer   {
-  id?: ID; //PK
+export class CustomerModel implements Customer {
+  id?: UUID; //PK
   name: string;
   phone: string;
   email: string;
@@ -17,11 +18,11 @@ export class CustomerModel implements Customer   {
   billingStartDate?: string;
   notes?: string;
   invoiceName?: string;
-  contractDocuments?: FileReference[];
+  // contractDocuments?: FileReference[];
   //paymentMethods: PaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
-  paymentMethodsType: PaymentMethodType;    
-  periods: CustomerPeriod[];
-  contracts: Contract[];  // One customer can have several contracts. 1:N
+  // paymentMethodsType: PaymentMethodType;
+  periods?: CustomerPeriod[];
+  // contracts: Contract[];  // One customer can have several contracts. 1:N
   createdAt: DateISO;
   updatedAt: DateISO;
 
@@ -38,18 +39,18 @@ export class CustomerModel implements Customer   {
     workspaceCount: number,
     createdAt: DateISO,
     updatedAt: DateISO,
-    paymentMethodsType: PaymentMethodType,
+    // paymentMethodsType: PaymentMethodType,
     currentWorkspaceType?: WorkspaceType,
     contractSignDate?: string,
     contractStartDate?: string,
     billingStartDate?: string,
     notes?: string,
     invoiceName?: string,
-    contractDocuments?: FileReference[],
-    //paymentMethods: PaymentMethod[] = [],
-    periods: CustomerPeriod[] = [],
-    contracts: Contract[] = []
+    // contractDocuments?: FileReference[],
+    periods?: CustomerPeriod[] | undefined,
+    // contracts: Contract[] = []
   ) {
+    // this.id = id || undefined;
     this.name = name;
     this.phone = phone;
     this.email = email;
@@ -64,16 +65,16 @@ export class CustomerModel implements Customer   {
     this.billingStartDate = billingStartDate;
     this.notes = notes;
     this.invoiceName = invoiceName;
-    this.contractDocuments = contractDocuments;
+    // this.contractDocuments = contractDocuments;
     this.paymentMethods = paymentMethods;
-    this.paymentMethodsType = paymentMethodsType;
+    // this.paymentMethodsType = paymentMethodsType;
     this.periods = periods;
-    this.contracts = contracts;
+    // this.contracts = contracts;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
   paymentMethods: CustomerPaymentMethod[];
-  
+
 
   toDatabaseFormat() {
     return {
@@ -91,13 +92,67 @@ export class CustomerModel implements Customer   {
       billing_start_date: this.billingStartDate,
       notes: this.notes,
       invoice_name: this.invoiceName,
-      contract_documents: this.contractDocuments,
-     // paymentMethods: this.paymentMethods,
-      payment_methods_type: this.paymentMethodsType,
-      periods: this.periods,
-      contracts: this.contracts,
+      // contract_documents: this.contractDocuments,
+      // paymentMethods: this.paymentMethods,
+      // payment_methods_type: this.paymentMethodsType,
+      // periods: this.periods,
+      // contracts: this.contracts,
       created_at: this.createdAt,
       updated_at: this.updatedAt
     };
   }
+  static fromDatabaseFormat(dbData: any): CustomerModel {
+    return new CustomerModel(
+      dbData.id,
+      dbData.name,
+      dbData.phone,
+      dbData.email,
+      dbData.paymentMethods,
+      dbData.id_number,
+      dbData.business_name,
+      dbData.business_type,
+      dbData.status,
+      dbData.workspace_count,
+      dbData.created_at,
+      dbData.updated_at,
+      dbData.payment_methods_type,
+      dbData.current_workspace_type,
+      dbData.contract_sign_date,
+      dbData.contract_start_date,
+      dbData.billing_start_date,
+      dbData.notes,
+      dbData.invoice_name,
+      //dbData.contract_documents,
+      // dbData.periods,
+      // dbData.contracts,
+
+    );
+  }
+  static fromDatabaseFormatArray(dbDataArray: any[]): CustomerModel[] {
+    return dbDataArray.map(dbData => CustomerModel.fromDatabaseFormat(dbData));
+  }
+
+  static partialToDatabaseFormat(data: Partial<CustomerModel>) {
+    const dbObj: any = {};
+    if (data.name !== undefined) dbObj.name = data.name;
+    if (data.email !== undefined) dbObj.email = data.email;
+    if (data.phone !== undefined) dbObj.phone = data.phone;
+    if (data.idNumber !== undefined) dbObj.id_number = data.idNumber;
+    if (data.businessName !== undefined) dbObj.business_name = data.businessName;
+    if (data.businessType !== undefined) dbObj.business_type = data.businessType;
+    if (data.status !== undefined) dbObj.status = data.status;
+    if (data.currentWorkspaceType !== undefined) dbObj.current_workspace_type = data.currentWorkspaceType;
+    if (data.workspaceCount !== undefined) dbObj.workspace_count = data.workspaceCount;
+    if (data.contractSignDate !== undefined) dbObj.contract_sign_date = data.contractSignDate;
+    if (data.contractStartDate !== undefined) dbObj.contract_start_date = data.contractStartDate;
+    if (data.billingStartDate !== undefined) dbObj.billing_start_date = data.billingStartDate;
+    if (data.notes !== undefined) dbObj.notes = data.notes;
+    if (data.invoiceName !== undefined) dbObj.invoice_name = data.invoiceName;
+    // if (data.paymentMethodsType !== undefined) dbObj.payment_methods_type = data.paymentMethodsType;
+    if (data.createdAt !== undefined) dbObj.created_at = data.createdAt;
+    if (data.updatedAt !== undefined) dbObj.updated_at = data.updatedAt;
+    // הוסיפי כאן שדות נוספים במידת הצורך
+    return dbObj;
+  }
+
 }

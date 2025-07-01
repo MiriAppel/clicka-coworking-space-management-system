@@ -1,8 +1,7 @@
 import { useParams } from "react-router";
 import { useState } from "react";
-import type { Contract } from "shared-types";
-import { ContractStatus, WorkspaceType } from "shared-types";
-import { Button } from "../../../../Common/Components/BaseComponents/Button";
+import { Contract, ContractStatus, WorkspaceType } from "shared-types";
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
 
 export const ContractDetails = () => {
     //מקבלים את החוזה לפי מזהה הלקוח, אפשר לשנות לפי מזהה החוזה
