@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "private": true,
-  "scripts": {
-    "start:backend": "yarn workspace clicka-backend dev",
-    "start:frontend": "yarn workspace clicka-frontend start",
-    "build": "yarn workspaces run build"
-  },
+    "scripts": {
+      "start:backend": "yarn workspace clicka-backend dev",
+      "start:frontend": "yarn workspace clicka-frontend start",
+      "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
+    },
   "workspaces": [
     "packages/*"
   ],
@@ -16,14 +16,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/material": "^7.1.1",
-    "react-router-dom": "^7.6.2"
-  },
-  "devDependencies": {
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.24",
-    "tailwindcss": "^3.4.17"
+
+    "@supabase/supabase-js": "^2.50.0",
+    "express": "^5.1.0",
+    "ts-node": "^10.9.2",
+    "yarn": "^1.22.22"
+
   }
 }

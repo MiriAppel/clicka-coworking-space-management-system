@@ -15,7 +15,7 @@ export interface BaseComponentProps {
 export interface TableColumn<T> {
   header: string;//הכותרת של העמודות של הטבלה 
   accessor: keyof T;// כל מה שיש בתוך הטבלה וזה מסוג גנרי כדי שנוכל להכניס מה שרוצים מכל טיפוס שהוא
-   render?: (value: any, row: T) => React.ReactNode;
+  render?: (value: any, row: T) => React.ReactNode;
 }
 
 export interface TableProps<T> extends BaseComponentProps {
@@ -23,6 +23,7 @@ export interface TableProps<T> extends BaseComponentProps {
   data: T[];//ARR עם כל מה שיש בתוך הטבלה 
   onUpdate?: (row: T) => void;  //פונקציה לעידכון 
   onDelete?: (row: T) => void; //פונקציה למחיקה 
+  renderActions?: (row: T) => React.ReactNode;
 }
 
 
