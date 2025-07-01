@@ -1,9 +1,9 @@
-import {  LoginResponse, User } from "shared-types";
+import { LoginResponse, User } from "shared-types";
 import { getTokens, getGoogleUserInfo } from './googleAuthService';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
 import { randomUUID } from 'crypto';
-import { UserService } from "./user-service";
+import { UserService } from "./user.service";
 
 
 export const generateJwtToken = (payload: { userId: string; email: string; googleId: string }): string => {
@@ -43,7 +43,11 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       updatedAt: new Date().toISOString(),
     }
     //need to check if the user have permission to login
-    // const checkUser=await UserService.loginByGoogleId(user.googleId)
+const userService=new UserService();
+    if (!user.googleId) {
+      throw new Error('Google ID is missing for the user');
+    }
+    const checkUser = await userService.loginByGoogleId(user.googleId);
     // if(checkUser===null){
     //   throw new Error('User not found or not authorized to login');
     // }
@@ -51,12 +55,12 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     const newSessionId = randomUUID();
     console.log('in exchange code and fetch user, newSessionId:', newSessionId);
 
-    await saveUserTokens(user.id, tokens.refresh_token || '', tokens.access_token, newSessionId);
+    await saveUserTokens(user.id ?? '', tokens.refresh_token ?? '', tokens.access_token, newSessionId);
 
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);
     const jwtToken = generateJwtToken({
-      userId: user.id,
+      userId: user.id || '',
       email: user.email,
       googleId: user.googleId!
     });
@@ -70,7 +74,7 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     };
 
   } catch (error) {
-    console.error('שגיאה בהחלפת קוד או בשליפת משתמש:', error);
-    throw new Error('ההתחברות עם Google נכשלה');
+    console.error('Error exchanging code or fetching user:', error);
+    throw new Error('Google login failed');
   }
 };

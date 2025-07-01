@@ -1,4 +1,4 @@
-import { Table, TableColumn } from '../../../../Common/Components/BaseComponents/Table'; 
+import { Table, TableColumn } from '../../../../Common/Components/BaseComponents/Table';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { User } from 'shared-types';
 import { useEffect, useState } from 'react';
@@ -7,12 +7,12 @@ import { AddUser } from './AddUser';
 import { useUserStore } from '../../../../Stores/CoreAndIntegration/userStore';
 
 export const UserTable = () => {
-  const { 
-    users, 
-    loading, 
-    error, 
-    getAllUsers, 
-    removeUser 
+  const {
+    users,
+    loading,
+    error,
+    getAllUsers,
+    removeUser
   } = useUserStore();
 
   const [showUpdateUser, setShowUpdateUser] = useState(false);
@@ -60,21 +60,18 @@ export const UserTable = () => {
     { header: "Last Name", accessor: "lastName" },
     { header: "Email", accessor: "email" },
     { header: "Role", accessor: "role" },
-    { 
-      header: "Active", 
+    {
+      header: "Active",
       accessor: "active",
-      // ✅ פונקציית render מותאמת אישית לעמודת הסטטוס
       render: (value: boolean) => (
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-          value 
-            ? 'bg-green-100 text-green-800 border border-green-200' 
-            : 'bg-red-100 text-red-800 border border-red-200'
-        }`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${value
+          ? 'bg-green-100 text-green-800 border border-green-200'
+          : 'bg-red-100 text-red-800 border border-red-200'
+          }`}>
           {value ? 'Active' : 'Inactive'}
         </span>
       )
-    },
-    // { header: "Status", accessor: "active" },
+    }
   ];
 
   if (loading) {
@@ -98,7 +95,7 @@ export const UserTable = () => {
   // אם מציגים טופס הוספה או עדכון
   if (showAddUser) {
     return (
-      <AddUser 
+      <AddUser
         onClose={handleCloseModals}
         onUserAdded={handleUserUpdated}
       />
@@ -107,7 +104,7 @@ export const UserTable = () => {
 
   if (showUpdateUser && selectedUser) {
     return (
-      <UpdateUser 
+      <UpdateUser
         user={selectedUser}
         onClose={handleCloseModals}
         onUserUpdated={handleUserUpdated}
@@ -120,8 +117,8 @@ export const UserTable = () => {
       {/* כותרת וכפתור הוספה */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Users Management</h2>
-        <Button 
-          variant="primary" 
+        <Button
+          variant="primary"
           onClick={handleAddUser}
           className="flex items-center gap-2"
         >
@@ -148,17 +145,6 @@ export const UserTable = () => {
         dir="rtl"
         onUpdate={handleUpdate}
         onDelete={handleDelete}
-        // renderActions={(user) => (
-        //   <div className="flex gap-2">
-        //     <span className={`px-2 py-1 rounded text-xs ${
-        //       user.active 
-        //         ? 'bg-green-100 text-green-800' 
-        //         : 'bg-red-100 text-red-800'
-        //     }`}>
-        //       {user.active ? 'Active' : 'Inactive'}
-        //     </span>
-        //   </div>
-        // )}
       />
     </div>
   );

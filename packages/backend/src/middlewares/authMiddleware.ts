@@ -1,7 +1,7 @@
 // middlewares/authMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { UserService } from '../services/user-service';
+import { UserService } from '../services/user.service';
 import { User } from "shared-types";
 import { UserTokenService } from '../services/userTokenService';
 
@@ -25,7 +25,7 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
     const userTokenService = new UserTokenService();
     if (await userTokenService.checkIfExpiredAccessToken(payload.userId))
       throw new Error('TokenExpiredError');
-    const user: User = result.json();
+    const user: User = result;
     (req as any).user = { payload, user, sessionId };// Store the user object in the request object for further use;
 
     //------------------------------------------------------------
