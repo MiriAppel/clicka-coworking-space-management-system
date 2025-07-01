@@ -1,222 +1,158 @@
-import React, { useState, useEffect } from "react";
-import { FaBell, FaBellSlash, FaEdit, FaTrash } from "react-icons/fa";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useEffect, useState } from "react";
+import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
+import { Lead } from "shared-types";
+import { LeadInteractionDetails } from "./leadInteractionDetails";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  InteractionType?: string;
-  upload?: File | null;
-  Dates?: string[];
-  reminder?: boolean;
-}
+type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
+type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 
-const getLocalUsers = () => {
-  const data = localStorage.getItem("interactions");
-  return data ? JSON.parse(data) : [];
-};
+export const LeadInteractions = () => {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [alertCriterion, setAlertCriterion] = useState<AlertCriterion>("noRecentInteraction");
 
-export const LeadInteraction = () => {
-  const [users, setUsers] = useState<User[]>(getLocalUsers());
-  const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [formData, setFormData] = useState<User>({
-    id: 0,
-    name: "",
-    email: "",
-    InteractionType: "",
-    upload: null,
-    Dates: [],
-    reminder: false,
-  });
+  const {
+    leads,
+    fetchLeads,
+    handleDeleteLead,
+  } = useLeadsStore();
 
   useEffect(() => {
-    localStorage.setItem("interactions", JSON.stringify(users));
-  }, [users]);
+    fetchLeads();
+  }, [fetchLeads]);
 
-  const handleAddOrUpdate = () => {
-    if (!formData.name || !formData.email) return;
-    if (selectedUser) {
-      setUsers((prev) =>
-        prev.map((u) => (u.id === selectedUser.id ? formData : u))
-      );
-    } else {
-      setUsers((prev) => [...prev, { ...formData, id: Date.now() }]);
+  const deleteLead = (id: string) => {
+    handleDeleteLead(id);
+    if (selectedId === id) setSelectedId(null);
+  };
+
+  const hasRecentInteraction = (lead: Lead, days: number = 100): boolean => {
+    const now = new Date();
+    const recentThreshold = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    return lead.interactions?.some((interaction) => {
+      const interactionDate = new Date(interaction.updatedAt || interaction.createdAt || interaction.date);
+      return interactionDate >= recentThreshold;
+    }) || false;
+  };
+
+  const isAlert = (lead: Lead): boolean => {
+    switch (alertCriterion) {
+      case "noRecentInteraction":
+        return !hasRecentInteraction(lead, 100);
+      case "statusIsNew":
+        return lead.status?.toLowerCase() === "new";
+      case "oldLead":
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+        return new Date(lead.createdAt || 0) < sixMonthsAgo;
+      default:
+        return false;
     }
-    resetForm();
   };
 
-  const resetForm = () => {
-    setFormData({
-      id: 0,
-      name: "",
-      email: "",
-      InteractionType: "",
-      upload: null,
-      Dates: [],
-      reminder: false,
-    });
-    setSelectedUser(null);
+  const getSortValue = (lead: Lead): string | number | Date => {
+    switch (sortField) {
+      case "name":
+        return lead.name?.toLowerCase() || "";
+      case "status":
+        return lead.status?.toLowerCase() || "";
+      case "createdAt":
+        return new Date(lead.createdAt || 0);
+      case "updatedAt":
+        return new Date(lead.updatedAt || 0);
+      case "lastInteraction":
+        const dates = lead.interactions?.map(i => new Date(i.updatedAt || i.createdAt)) || [];
+        return dates.length > 0 ? Math.max(...dates.map(d => d.getTime())) : 0;
+      default:
+        return "";
+    }
   };
 
-  const handleDelete = (id: number) => {
-    setUsers(users.filter((u) => u.id !== id));
-  };
+  const sortedLeads = [...leads].sort((a, b) => {
+    const aVal = getSortValue(a);
+    const bVal = getSortValue(b);
 
-  const handleEdit = (user: User) => {
-    setSelectedUser(user);
-    setFormData(user);
-  };
-
-  const toggleReminder = (id: number) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, reminder: !u.reminder } : u))
-    );
-  };
-
-  const filteredUsers = users.filter((u) => {
-    const matchName = u.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchType = typeFilter === "All" || u.InteractionType === typeFilter;
-    return matchName && matchType;
+    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+    return 0;
   });
 
-  const chartData = Object.entries(
-    users
-      .flatMap((u) => u.Dates || [])
-      .reduce((acc, date) => {
-        acc[date] = (acc[date] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>)
-  ).map(([date, count]) => ({ date, count }));
-
   return (
-    <div dir="rtl" style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h2>ניהול אינטראקציות</h2>
+    <div className="p-6">
+      <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
 
-      {/* טופס */}
-      <div style={{ marginBottom: "2rem" }}>
-        <input
-          placeholder="שם"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-        />
-        <input
-          placeholder="אימייל"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-        />
-        <select
-          value={formData.InteractionType}
-          onChange={(e) =>
-            setFormData({ ...formData, InteractionType: e.target.value })
-          }
+      <div className="flex flex-wrap justify-center gap-4 mb-6">
+        {/* תפריט מיון */}
+        <div className="relative flex flex-col items-start">
+          <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
+          <select
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value as SortField)}
+            className="appearance-none border border-gray-300 rounded-xl bg-white px-4 py-2 pr-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          >
+            <option value="name">שם</option>
+            <option value="status">סטטוס</option>
+            <option value="createdAt">תאריך יצירה</option>
+            <option value="updatedAt">תאריך עדכון</option>
+            <option value="lastInteraction">אינטראקציה אחרונה</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">▼</div>
+        </div>
+
+        {/* כפתור שינוי כיוון מיון */}
+        <div className="flex flex-col items-start">
+          <label className="mb-1 text-sm font-medium text-gray-700">כיוון מיון:</label>
+          <button
+            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl shadow transition"
+          >
+            {sortOrder === "asc" ? "⬆️ עולה" : "⬇️ יורד"}
+            <span className="hidden sm:inline">
+              ({sortOrder === "asc" ? "מהקטן לגדול" : "מהגדול לקטן"})
+            </span>
+          </button>
+        </div>
+
+        {/* תפריט בחירת קריטריון התרעה */}
+        <div className="relative flex flex-col items-start">
+          <label className="mb-1 text-sm font-medium text-gray-700">קריטריון התרעה:</label>
+          <select
+            value={alertCriterion}
+            onChange={(e) => setAlertCriterion(e.target.value as AlertCriterion)}
+            className="appearance-none border border-gray-300 rounded-xl bg-white px-4 py-2 pr-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          >
+            <option value="noRecentInteraction">אין אינטראקציה אחרונה</option>
+            <option value="statusIsNew">סטטוס חדש</option>
+            <option value="oldLead">ליד ישן (לפני 6 חודשים)</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">▼</div>
+        </div>
+      </div>
+
+      {sortedLeads.map((lead) => (
+        <div
+          key={lead.id}
+          className={`border rounded-lg p-4 mb-2 cursor-pointer transition
+            ${selectedId === lead.id
+              ? "bg-blue-100 border-blue-300"
+              : isAlert(lead)
+                ? "border-red-500 bg-red-50"
+                : "hover:bg-gray-50"
+            }`}
+          onClick={() => setSelectedId(selectedId === lead.id ? null : lead.id!)}
         >
-          <option value="">בחר סוג</option>
-          <option value="Email">אימייל</option>
-          <option value="Call">שיחה</option>
-          <option value="Meeting">פגישה</option>
-        </select>
-        <input
-          type="date"
-          onChange={(e) =>
-            setFormData({ ...formData, Dates: [e.target.value] })
-          }
-          value={formData.Dates?.[0] || ""}
-        />
-        <input
-          type="file"
-          onChange={(e) =>
-            setFormData({ ...formData, upload: e.target.files?.[0] || null })
-          }
-        />
-        <label>
-          <input
-            type="checkbox"
-            checked={formData.reminder}
-            onChange={(e) =>
-              setFormData({ ...formData, reminder: e.target.checked })
-            }
-          />
-          תזכורת
-        </label>
-        <button onClick={handleAddOrUpdate}>
-          {selectedUser ? "עדכן" : "הוסף"}
-        </button>
-        {selectedUser && <button onClick={resetForm}>ביטול</button>}
-      </div>
-
-      {/* חיפוש וסינון */}
-      <div style={{ marginBottom: "1rem" }}>
-        <input
-          placeholder="חיפוש לפי שם..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select onChange={(e) => setTypeFilter(e.target.value)}>
-          <option value="All">הכל</option>
-          <option value="Email">אימייל</option>
-          <option value="Call">שיחה</option>
-          <option value="Meeting">פגישה</option>
-        </select>
-      </div>
-
-      {/* טבלה */}
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th>שם</th>
-            <th>אימייל</th>
-            <th>סוג</th>
-            <th>תאריך</th>
-            <th>קובץ</th>
-            <th>תזכורת</th>
-            <th>פעולות</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((user) => (
-            <tr key={user.id}>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.InteractionType}</td>
-              <td>{user.Dates?.[0]}</td>
-              <td>{user.upload?.name || "-"}</td>
-              <td>
-                <button onClick={() => toggleReminder(user.id)}>
-                  {user.reminder ? (
-                    <FaBell color="orange" />
-                  ) : (
-                    <FaBellSlash color="gray" />
-                  )}
-                </button>
-              </td>
-              <td>
-                <button onClick={() => handleEdit(user)}>
-                  <FaEdit />
-                </button>
-                <button onClick={() => handleDelete(user.id)}>
-                  <FaTrash color="red" />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* גרף */}
-      <h3 style={{ marginTop: "2rem" }}>גרף אינטראקציות לפי תאריך</h3>
-      <div style={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer>
-          <BarChart data={chartData}>
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="font-semibold text-lg">{lead.name}</div>
+              <div className="text-sm text-gray-600">סטטוס: {lead.status}</div>
+            </div>
+          </div>
+          {selectedId === lead.id && (
+            <LeadInteractionDetails lead={lead} onDelete={() => deleteLead(lead.id!)} />
+          )}
+        </div>
+      ))}
     </div>
   );
 };

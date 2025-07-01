@@ -5,14 +5,13 @@ import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
-import { LeadHomePage } from "./Leads/leadHomePage";
-import { LeadInteraction } from "./Interactions/leadIntersection";
-import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
+import { LeadHomePage } from "./Leads/leadHomePage";import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { CustomerInteraction } from "./Interactions/customerInteraction";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
 import { CustomersList } from "./Customers/customersList"
+import { LeadInteractions } from "./Interactions/leadIntersection";
 
 export const LeadAndCustomerRouting = () => {
     return (
@@ -31,7 +30,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="leads" element={<LeadHomePage />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
-            <Route path="leads/intersections" element={<LeadInteraction />} />
+            <Route path="leads/interactions" element={<LeadInteractions />} />
         </Routes>
     );
 };
