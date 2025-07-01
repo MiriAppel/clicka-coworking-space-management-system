@@ -7,6 +7,7 @@ import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
+import expenseRouter from './routes/expense.route';
 
 
 
@@ -24,6 +25,8 @@ app.use(urlencoded({ extended: true }));
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
+app.use('/api/expenses', expenseRouter);
+
 // app.use('/api/leadInteraction', routerCstomer);
 
 

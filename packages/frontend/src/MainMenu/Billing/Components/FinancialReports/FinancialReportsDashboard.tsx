@@ -1,149 +1,227 @@
-import React, { useState } from 'react'; // ייבוא React וניהול סטייט
-import { useForm, FormProvider } from 'react-hook-form'; // ניהול טפסים
-import { InputField } from '../../../../Common/Components/BaseComponents/Input'; // שדה טקסט מהקומפוננטות שלך
-import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // שדה בחירה מהקומפוננטות שלך
-import { Button } from '../../../../Common/Components/BaseComponents/Button'; // כפתור מהקומפוננטות שלך
-import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1'; // ה־Zustand Store
-import { ReportType, ReportParameters } from 'shared-types'; // טיפוסים משותפים
-import { ReportChart } from '../../../../Common/Components/BaseComponents/Chart'; // גרף
-import { Table } from '../../../../Common/Components/BaseComponents/Table'; // טבלה
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Form } from '../../../../Common/Components/BaseComponents/Form';
+import { InputField } from '../../../../Common/Components/BaseComponents/Input';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
+import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1';
+import { ReportType, ReportParameters } from 'shared-types';
+import { ReportChart } from '../../../../Common/Components/BaseComponents/Chart';
+import { Table } from '../../../../Common/Components/BaseComponents/Table';
 
-// אפשרויות סוגי דוחות
+// סוגי דוחות
 const reportTypes = [
-  { label: 'Revenue', value: 'REVENUE' },
-  { label: 'Expenses', value: 'EXPENSES' },
+  { label: 'הכנסות', value: 'REVENUE' },
+  { label: 'הוצאות', value: 'EXPENSES' },
 ];
 
-// אפשרויות groupBy
+// קיבוץ
 const groupByOptions = [
   { label: 'חודשי', value: 'month' },
   { label: 'רבעוני', value: 'quarter' },
   { label: 'שנתי', value: 'year' },
 ];
 
-/**
- * קומפוננטה ראשית להצגת דוחות פיננסיים
- */
-export const FinancialReportsDashboard: React.FC = () => {
-  const methods = useForm<ReportParameters>(); // יצירת instance של react-hook-form
-  const { fetchReport, reportData, loading, error } = useFinancialReportsStore(); // חיבור ל־Zustand
-  const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE); // אחסון סוג הדוח שנבחר
+// קטגוריות הוצאה
+const expenseCategories = [
+  { label: 'שכירות', value: 'RENT' },
+  { label: 'חשבונות', value: 'UTILITIES' },
+  { label: 'ניקיון', value: 'CLEANING' },
+  { label: 'משכורות', value: 'SALARIES' },
+  { label: 'שיווק', value: 'MARKETING' },
+  { label: 'אחר', value: 'OTHER' },
+];
 
-  // טיפול בשליחת הטופס
+// ספקים
+const suppliers = [
+  { label: 'ספק A', value: 'SUPPLIER_A' },
+  { label: 'ספק B', value: 'SUPPLIER_B' },
+  { label: 'ספק C', value: 'SUPPLIER_C' },
+];
+
+// סכמה עבור הטופס
+const ReportFormSchema = z.object({
+  from: z.string().min(1, "יש להזין תאריך התחלה"),
+  to: z.string().min(1, "יש להזין תאריך סיום"),
+  dateRange: z.object({
+    startDate: z.string(),
+    endDate: z.string(),
+  }).required(),
+});
+
+export const FinancialReportsDashboard: React.FC = () => {
+  const methods = useForm<ReportParameters>();
+  const { fetchReport, reportData, loading, error } = useFinancialReportsStore();
+
+  const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE);
+  const [selectedGroupBy, setSelectedGroupBy] = useState<'month' | 'quarter' | 'year'>('month');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedSupplier, setSelectedSupplier] = useState<string>('');
+  const [selectedChartType, setSelectedChartType] = useState<'bar' | 'pie' | 'line'>('bar'); // הוספתי את 'line' כאופציה
+
   const onSubmit = async (data: ReportParameters) => {
-    await fetchReport(selectedType, data); // קריאה ל-API
+    const finalParams: ReportParameters = {
+      ...data,
+      groupBy: selectedType === 'REVENUE' ? selectedGroupBy : undefined,
+      categories: selectedType === 'EXPENSES' ? selectedCategories : undefined,
+      // supplier: selectedType === 'EXPENSES' && selectedSupplier ? selectedSupplier : undefined,
+    };
+    await fetchReport(selectedType, finalParams);
   };
 
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-4">
-        {/* בחירת סוג דוח */}
-        <SelectField
-          name="type"
-          label="סוג דוח"
-          options={reportTypes}
-          required
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedType(e.target.value as ReportType)}  // הוספת פונקציית onChange
-        />
+    <Form<ReportParameters>
+      label="טופס דוחות פיננסיים"
+      schema={ReportFormSchema}
+      onSubmit={onSubmit}
+      methods={methods}
+    >
+      {/* סוג דוח */}
+      <div>
+        <label>סוג דוח</label>
+        <select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value as ReportType)}
+          className="w-full px-2 py-1 border rounded"
+        >
+          <option value="">בחר סוג דוח</option>
+          {reportTypes.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        {/* טווח תאריכים */}
-        <InputField name="from" label="מתאריך (YYYY-MM-DD)" required />
-        <InputField name="to" label="עד תאריך (YYYY-MM-DD)" required />
+      {/* טווח תאריכים */}
+      <InputField name="from" label="מתאריך (YYYY-MM-DD)" required />
+      <InputField name="to" label="עד תאריך (YYYY-MM-DD)" required />
 
-        {/* קיבוץ לפי */}
-        <SelectField
-          name="groupBy"
-          label="קיבוץ לפי"
-          options={groupByOptions}
-          required
-        />
+      {/* פילטרים דינמיים */}
+      {selectedType === 'REVENUE' && (
+        <div>
+          <label>קיבוץ לפי</label>
+          <select
+            value={selectedGroupBy}
+            onChange={(e) => setSelectedGroupBy(e.target.value as 'month' | 'quarter' | 'year')}
+            className="w-full px-2 py-1 border rounded"
+          >
+            {groupByOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
-        {/* כפתור שליחה */}
-        <Button type="submit" disabled={loading}>
-          {loading ? 'טוען...' : 'צור דוח'}
-        </Button>
-      </form>
-
-      {/* הצגת שגיאות */}
-      {error && <p className="text-red-500">אירעה שגיאה: {error.message}</p>}
-
-      {/* הצגת הדוח */}
-      {reportData && (
+      {selectedType === 'EXPENSES' && (
         <>
-          {/* הצגת דוח הכנסות */}
-          {selectedType === 'REVENUE' && reportData?.revenueData && (
-  <ReportChart
-    type="bar"
-    data={reportData.revenueData.breakdown.map(item => ({
-      label: item.date,  // תאריך
-      value: item.totalRevenue,  // סכום כולל
-    }))}
-    title="דוח הכנסות"
-  />
-)}
+          {/* קטגוריות */}
+          <div>
+            <label>קטגוריות הוצאה</label>
+            <select
+              multiple
+              value={selectedCategories}
+              onChange={(e) =>
+                setSelectedCategories(Array.from(e.target.selectedOptions, (opt) => opt.value))
+              }
+              className="w-full px-2 py-1 border rounded"
+            >
+              {expenseCategories.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-
-          {/* הצגת דוח הוצאות */}
-       {selectedType === 'EXPENSES' && reportData?.expenseData && (
-  <ReportChart
-    type="bar"
-    data={reportData.expenseData.monthlyTrend.map(item => ({
-      label: item.month,  // חודש
-      value: item.totalExpenses,  // סכום כולל
-    }))}
-    title="דוח הוצאות"
-  />
-)}
-
-
-          {/* טבלה */}
-<Table
-  columns={[
-    { header: 'תאריך', accessor: 'date' },  // אם זה דוח הכנסות השתמש ב-'date', אם זה דוח הוצאות השתמש ב-'month'
-    { header: 'סכום כולל', accessor: 'totalRevenue' },  // עבור דוח הכנסות השתמש ב-'totalRevenue', עבור הוצאות השתמש ב-'totalExpenses'
-  ]}
-  data={
-    selectedType === 'REVENUE'
-      ? reportData.revenueData.breakdown.map(item => ({
-          date: item.date,  // עבור הכנסות, השתמש ב-'date'
-          totalRevenue: item.totalRevenue,  // סכום מתוך breakdown
-          membershipRevenue: item.membershipRevenue,
-          meetingRoomRevenue: item.meetingRoomRevenue,
-          loungeRevenue: item.loungeRevenue,
-        }))
-      : selectedType === 'EXPENSES'
-      ? reportData.expenseData.monthlyTrend.map(item => ({
-          date: item.month,  // עבור הוצאות, השתמש ב-'month'
-          totalRevenue: item.totalExpenses,  // השתמש ב-'totalExpenses' במקום ב-'totalRevenue'
-          membershipRevenue: 0,  // אין צורך בהכנסות עבור הוצאות, השתמש ב-0
-          meetingRoomRevenue: 0,  // אין צורך בהכנסות עבור הוצאות, השתמש ב-0
-          loungeRevenue: 0,  // אין צורך בהכנסות עבור הוצאות, השתמש ב-0
-        }))
-    //   : selectedType === 'PROFIT_LOSS'
-    //   ? reportData.profitLossData.map(item => ({
-    //       date: item.date,  // אם יש שדה תאריך עבור Profit_Loss
-    //       totalRevenue: item.totalRevenue,  // אם יש שדה הכנסות עבור Profit_Loss
-    //       totalExpenses: item.totalExpenses, // אם יש שדה הוצאות עבור Profit_Loss
-    //       profitLoss: item.profitLoss, // אם יש שדה רווח/הפסד
-    //     }))
-    //   : selectedType === 'CASH_FLOW'
-    //   ? reportData.cashFlowData.map(item => ({
-    //       date: item.date,  // אם יש שדה תאריך עבור Cash_Flow
-    //       cashInflow: item.cashInflow, // אם יש שדה תזרים מזומנים נכנס
-    //       cashOutflow: item.cashOutflow, // אם יש שדה תזרים מזומנים יוצא
-    //     }))
-    //   : selectedType === 'CUSTOMER_AGING'
-    //   ? reportData.customerAgingData.map(item => ({
-    //       date: item.date, // אם יש שדה תאריך עבור Customer_Aging
-    //       totalAmount: item.totalAmount, // סכום או מידע אחר
-    //     }))
-      : []
-  }
-/>
-
-
+          {/* ספקים */}
+          <div>
+            <label>ספק</label>
+            <select
+              value={selectedSupplier}
+              onChange={(e) => setSelectedSupplier(e.target.value)}
+              className="w-full px-2 py-1 border rounded"
+            >
+              <option value="">בחר ספק</option>
+              {suppliers.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </>
       )}
-    </FormProvider>
+
+      {/* בחירת סוג גרף */}
+      <div>
+        <label>בחר סוג גרף</label>
+        <select
+          value={selectedChartType}
+          onChange={(e) => setSelectedChartType(e.target.value as 'bar' | 'pie' | 'line')}
+          className="w-full px-2 py-1 border rounded"
+        >
+          <option value="bar">גרף עמודות</option>
+          <option value="pie">גרף עוגה</option>
+          <option value="line">גרף קו</option>
+        </select>
+      </div>
+
+      {/* כפתור */}
+      <Button type="submit" disabled={loading}>
+        {loading ? 'טוען...' : 'צור דוח'}
+      </Button>
+
+      {/* תוצאה */}
+      {error && <p className="text-red-600">{error.message}</p>}
+
+      {reportData && (
+        <>
+          {selectedType === 'REVENUE' && reportData.revenueData && (
+            <ReportChart
+              type={selectedChartType} // שינוי סוג הגרף כאן
+              data={reportData.revenueData.breakdown.map((item) => ({
+                label: item.date,
+                value: item.totalRevenue,
+              }))}
+              title="דוח הכנסות"
+            />
+          )}
+
+          {selectedType === 'EXPENSES' && reportData.expenseData && (
+            <ReportChart
+              type={selectedChartType} // שינוי סוג הגרף כאן
+              data={reportData.expenseData.monthlyTrend.map((item) => ({
+                label: item.month,
+                value: item.totalExpenses,
+              }))}
+              title="דוח הוצאות"
+            />
+          )}
+
+          <Table
+            columns={[
+              { header: 'תאריך', accessor: 'date' },
+              { header: 'סכום כולל', accessor: 'totalRevenue' },
+            ]}
+            data={
+              selectedType === 'REVENUE'
+                ? reportData.revenueData.breakdown.map((item) => ({
+                    date: item.date,
+                    totalRevenue: item.totalRevenue,
+                  }))
+                : selectedType === 'EXPENSES'
+                ? reportData.expenseData.monthlyTrend.map((item) => ({
+                    date: item.month,
+                    totalRevenue: item.totalExpenses,
+                  }))
+                : []
+            }
+          />
+        </>
+      )}
+    </Form>
   );
 };

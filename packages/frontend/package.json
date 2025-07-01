@@ -5,10 +5,12 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@hookform/resolvers": "^5.1.1",
+    "@hookform/resolvers": "^2.9.11",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.1",
+    "@react-oauth/google": "^0.12.2",
     "@mui/styled-engine-sc": "^7.1.1",
+    "@types/jspdf": "^2.0.0",
     "@mui/x-data-grid": "^8.5.1",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -17,6 +19,8 @@
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.126",
     "@types/react-dom": "^19.1.5",
+    "axios": "^1.9.0",
+    "cookie-parser": "^1.4.7",
     "any": "^1.0.0",
     "for": "^0.0.1-dev.0",
     "html2canvas": "^1.4.1",
@@ -30,6 +34,7 @@
     "react-i18next": "^15.5.3",
     "react-icons": "4",
     "react-router-dom": "^7.6.2",
+    "zustand": "^5.0.5",
     "react-scripts": "5.0.1",
     "recharts": "^3.0.0",
     "shared-types": "*",
@@ -57,10 +62,16 @@
       "not dead",
       "not op_mini all"
     ],
+    
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {
+    "@types/xlsx": "^0.0.35"
+  },
+  "proxy": "http://localhost:3001"
 }
+ 

@@ -1,35 +1,38 @@
-import { Request, Response } from 'express'; // ייבוא סוגים ל-Request ו-Response מ-Express
-import { generateRevenueData, generateExpenseData } from '../services/reportGenerators.service'; // ייבוא הפונקציות ליצירת הדוחות מה-Service
-import { ReportType, ReportParameters } from 'shared-types'; // ייבוא סוגי טיפוסים מוגדרים מראש מה-shared-types שלך
+import { Request, Response, NextFunction } from 'express';
+import { generateRevenueData, generateExpenseData } from '../services/reportGenerators.service';
+import { ReportType, ReportParameters } from 'shared-types';
 
 /**
  * Controller כללי שמקבל קריאה לדוח לפי סוג
  * @param req - בקשת ה-HTTP (כוללת type ו-parameters)
  * @param res - תגובת השרת ללקוח
  */
-export async function handleGenerateReport(req: Request, res: Response) {
+export const handleGenerateReport = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    const { type } = req.params; // חילוץ סוג הדוח מה-URL (REVENUE / EXPENSES)
-    const parameters = req.body as ReportParameters; // חילוץ הפרמטרים מה-body לפי מבנה ReportParameters
+    const { type } = req.params;
+    const parameters = req.body as ReportParameters;
 
     let reportData;
 
-    // בדיקה איזה סוג דוח להפעיל
     switch (type as ReportType) {
       case 'REVENUE':
-        reportData = await generateRevenueData(parameters); // הפעלת דוח הכנסות
+        reportData = await generateRevenueData(parameters);
         break;
       case 'EXPENSES':
-        reportData = await generateExpenseData(parameters); // הפעלת דוח הוצאות
+        reportData = await generateExpenseData(parameters);
         break;
       default:
-        return res.status(400).json({ error: 'Unsupported report type' }); // טיפול במקרה שסוג הדוח לא נתמך
+        res.status(400).json({ error: 'Unsupported report type' });
+        return;
     }
 
-    res.json(reportData); // החזרת תוצאת הדוח ללקוח בפורמט JSON
-
+    res.json(reportData);
   } catch (error) {
-    console.error('Error generating report:', error); // הדפסת שגיאה ללוג השרת
-    res.status(500).json({ error: 'Failed to generate report' }); // החזרת שגיאה כללית ללקוח
+    console.error('Error generating report:', error);
+    next(error);
   }
-}
+};

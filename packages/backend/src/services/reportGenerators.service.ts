@@ -1,7 +1,7 @@
 import { ReportParameters, ReportData } from 'shared-types'; // ייבוא טיפוסים מתואמים ל־shared-types שלך
 import { getExpenses } from './expense.services'; // ייבוא הפונקציה הקיימת לשאיבת הוצאות
 import { getRevenues } from './revenue.service'; // ייבוא הפונקציה החדשה שתיצור – לשאיבת הכנסות
-import { groupByPeriod } from '../utils/groupingUtils'; // פונקציה לעיבוד GroupBy לפי תקופה
+import { groupByPeriod } from '../utils/groupingUtils.service'; // פונקציה לעיבוד GroupBy לפי תקופה
 
 /**
  * יצירת דוח הוצאות (Expense Report)
