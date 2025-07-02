@@ -1,0 +1,33 @@
+{
+  "name": "clicka-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+    "scripts": {
+      "start:backend": "yarn workspace clicka-backend dev",
+      "start:frontend": "yarn workspace clicka-frontend start",
+      "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
+    },
+  "workspaces": [
+    "packages/*"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+
+    "@supabase/supabase-js": "^2.50.0",
+    "express": "^5.1.0",
+    "ts-node": "^10.9.2",
+    "yarn": "^1.22.22"
+
+  
+  },
+  "resolutions": {
+  "@types/express": "^4.17.23",
+  "@types/express-serve-static-core": "^4.19.6"
+
+  }
+}
+
