@@ -10,12 +10,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": [],
+    "types": ["node", "express"],
     "paths": {
       "@types/*": ["../../types/*"]
     }
   },
   "include": ["src/**/*", "../../types/**/*", "../types"],
-
   "exclude": ["node_modules", "**/*.test.ts"]
 }

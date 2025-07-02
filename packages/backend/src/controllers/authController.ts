@@ -56,7 +56,6 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
       res.status(401).json({ error: 'not authenticated' });
       return;
     }
-    //dcfb36c0-60f3-4be1-b56f-37a373e6315d	
     const newJwt = await tokenService.refreshUserToken(sessionToken, sessionId);
     tokenService.setAuthCookie(res, newJwt, sessionId);
     res.status(200).json({ message: 'Token refreshed successfully' });

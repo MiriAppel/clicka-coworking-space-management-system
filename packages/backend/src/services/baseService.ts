@@ -1,128 +1,145 @@
-import type{ ID } from "shared-types";
+import type { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 
 
-export class baseService <T> {
+export class baseService<T> {
+  // בשביל שם המחלקה
+  constructor(private tableName: string) { }
 
-    // בשביל שם המחלקה
-    constructor(private tableName: string) {}
+  getById = async (id: ID): Promise<T> => {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select("*")
+      .eq("id", id)
+      .single();
 
-
-    getById = async (id: ID): Promise <T> => {
-
-        const { data, error } = await supabase
-            .from(this.tableName)
-            .select('*')
-            .eq('id', id)
-            .single()
-
-        if (error) {
-            console.error("שגיאה בשליפת נתונים:", error);
-            throw error;
-        }   
-
-        if (!data) {
-            throw new Error(`לא נמצא רשומה עם מזהה ${id}`);
-        }
-
-        return data;
-
+    if (!data) {
+      throw new Error(`לא נמצא רשומה עם מזהה ${id}`);
     }
 
-    getByFilters = async (filters: Partial<T>): Promise<T[]> => {
-
-        let query = supabase
-            .from(this.tableName)
-            .select('*');
-
-        Object.entries(filters).forEach(([key, value]) => {
-
-            if (typeof value === 'string') {
-                query = query.ilike(key, `%${value}%`); // חיפוש חלקי 
-            } else {
-                query = query.eq(key, value); // חיפוש מדויק
-            }
-        });
-
-        const { data, error } = await query;
-
-        if (error) {
-            console.error("שגיאה בשליפת נתונים עם פילטרים:", error);
-            throw error;
-        }
-
-        return data ?? [];
-    }   
-
-
-
-    getAll = async (): Promise <T[]> => {
-        
-        const { data, error } = await supabase
-            .from(this.tableName)
-            .select('*')
-
-        if (error) {
-            console.error("שגיאה בשליפת נתונים:", error);
-            throw error;
-        }               
-
-        if (!data || data.length === 0) {
-            throw new Error(`לא נמצאו נתונים`);
-        }
-
-        return data;           
+    if (error) {
+      console.error("שגיאה בשליפת נתונים:", error);
+      throw error;
     }
 
-    patch = async (dataToUpdate: T, id: ID): Promise <T> => {
+    return data;
+  };
 
-        const { data, error } = await supabase
-            .from(this.tableName)
-            .update(dataToUpdate)
-            .eq('id', id)
-            .select()
+  getByFilters = async (filters: { q?: string; page?: number; limit?: number;}): Promise<T[]> => {
+    const { q, page, limit } = filters;
 
-        if (error) {
-            console.error("שגיאה בעדכון הנתונים:", error);
-            throw error;
-        }
+    let query = supabase.from(this.tableName).select("*");
 
-        if (!data || data.length === 0) 
-            throw new Error("לא התקבלה תשובה מהשרת אחרי העדכון");        
-
-        return data[0];
+    if (q) {
+      const searchValue = `%${q}%`;
+      query = query.or(
+        `name.ilike.${searchValue},email.ilike.${searchValue},phone.ilike.${searchValue},id_number.ilike.${searchValue}`
+      );
+    }
+    if (page && limit) {
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+      query = query.range(from, to);
     }
 
-    post = async (dataToAdd: T): Promise <T> => {
+    const { data, error } = await query;
 
-        const { data, error } = await supabase
-            .from(this.tableName)
-            .insert([dataToAdd])
-            .select() 
-
-        if (error) {
-            console.error("שגיאה בהוספת הנתונים:", error);
-            throw error;
-        }
-
-        if (!data || data.length === 0) 
-            throw new Error("לא התקבלה תשובה מהשרת אחרי ההוספה");
-        
-        return data[0]; // מחזיר את מה שנוצר
+    if (error) {
+      console.error("Error fetching filtered data:", error);
+      throw error;
     }
 
-    delete = async (id: ID): Promise <void> => {
+    return data ?? [];
+  };
 
-        const { data, error } = await supabase
-            .from(this.tableName)
-            .delete()
-            .eq('id', id)
+  getAll = async (): Promise<T[]> => {
+    console.log("🧾 טבלה:", this.tableName);
 
-        if (error) {
-            console.error("שגיאה במחיקת הנתונים:", error);
-            throw error;
-        }   
-        
+    const { data, error } = await supabase.from(this.tableName).select("*");
+
+    if (!data || data.length === 0) {
+      console.log(` אין נתונים בטבלה ${this.tableName}`);
+      return []; // תחזירי מערך ריק במקום לזרוק שגיאה
     }
 
+    if (error) {
+      console.error("שגיאה בשליפת נתונים:", error);
+      throw error;
+    }
+
+    return data;
+  };
+
+  patch = async (dataToUpdate: Partial<T>, id: ID): Promise<T> => {
+    
+    let dataForInsert = dataToUpdate;
+    if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
+      try{
+      dataForInsert = (dataToUpdate as any).toDatabaseFormat();
+      console.log(dataForInsert);
+
+      }catch (error){
+        console.error("שגיאה בהמרה", error)
+      }
+    }
+
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .update(dataForInsert)
+      .eq("id", id)
+      .select();
+
+    if (error) {
+      console.error("שגיאה בעדכון הנתונים:", error);
+      throw error;
+    }
+
+    if (!data || data.length === 0)
+      throw new Error("לא התקבלה תשובה מהשרת אחרי העדכון");
+
+    return data[0];
+  };
+
+  post = async (dataToAdd: T): Promise<T> => {
+    console.log("come to function");
+
+    let dataForInsert = dataToAdd;
+    console.log("tableName:", this.tableName);
+
+    if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
+      dataForInsert = (dataToAdd as any).toDatabaseFormat();
+      console.log(dataForInsert);
+    }
+
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .insert([dataForInsert])
+      .select();
+
+    console.log("added");
+    console.log(data);
+
+    if (error) {
+      console.log("enter to log", error);
+
+      console.error("שגיאה בהוספת הנתונים:", error);
+      throw error;
+    }
+    if (!data) throw new Error("לא התקבלה תשובה מהשרת אחרי ההוספה");
+    console.log(data);
+
+    return data[0]; // מחזיר את מה שנוצר
+  };
+
+  delete = async (id: ID): Promise<void> => {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error("שגיאה במחיקת הנתונים:", error);
+      throw error;
+    }
+  };
 }

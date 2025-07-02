@@ -3,8 +3,11 @@ import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import { Button } from './Common/Components/BaseComponents/Button';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
-import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
+// import { Button } from './Common/Components/BaseComponents/Button';
+import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
+import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
+
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -73,6 +76,11 @@ function App() {
       <Routes>
       </Routes>
       <AuthenticationScreen />
+      <div className='menu' style={{ backgroundColor: 'black' }}>
+
+      </div>
+      <Accesibility></Accesibility>
+        <AuthenticationScreen />
     </div>
     </AuthProvider>
     
@@ -80,3 +88,4 @@ function App() {
 }
 
 export default App;
+
