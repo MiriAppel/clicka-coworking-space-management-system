@@ -3,7 +3,8 @@ import React from "react";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
-import { AddLeadInteractionRequest } from "shared-types";
+import { AddLeadInteractionRequest, Lead } from "shared-types";
+import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 
 
 export const interactionSchema = z.object({
@@ -15,7 +16,7 @@ export const interactionSchema = z.object({
 export type InteractionFormData = z.infer<typeof interactionSchema>;
 
 interface InteractionFormProps {
-  onSubmit: (leadId: string, interaction: AddLeadInteractionRequest) => Promise<any>;
+  onSubmit: (leadId: string, lead: Lead) => Promise<any>;
   onCancel: () => void;
 }
 
@@ -23,13 +24,16 @@ export const InteractionForm: React.FC<InteractionFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
+    const {
+    selectedLead
+  } = useLeadsStore();
   return (
     <Form<InteractionFormData>
       label="הוספת אינטראקציה"
       schema={interactionSchema}
       onSubmit={(data) => {
-        const leadId = (data as any).leadId || ""; 
-        return onSubmit(leadId, data as unknown as AddLeadInteractionRequest);
+        const leadId = selectedLead?.id; 
+        return onSubmit(selectedLead?.id!, {...selectedLead,idNumber:selectedLead?.idNumber, interactions:[...selectedLead?.interactions || [], data]} as Lead);
       }}
     >
       <SelectField
