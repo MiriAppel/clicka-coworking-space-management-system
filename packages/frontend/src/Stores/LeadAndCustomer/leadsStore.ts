@@ -4,26 +4,30 @@ import { create } from "zustand";
 
 interface LeadsState {
     leads: Lead[];
-    selectedLead?: Lead;
+    selectedLead: Lead | null;
     loading: boolean;
     error?: string;
+    showGraphForId: string | null;
+
+
 
     fetchLeads: () => Promise<void>;
-    handleSelectLead: (leadId: string) => void;
+    handleSelectLead: (leadId: string | null) => void;
     handleDeleteLead: (leadId: string) => Promise<void>;
     handleCreateLead: (lead: Lead) => Promise<Lead>;
     handleUpdateLead: (leadId: string, lead: Lead) => Promise<Lead>;
     resetSelectedLead: () => void;
     fetchLeadDetails: (leadId: string) => Promise<Lead>;
+    setShowGraphForId: (id: string | null) => void;
 
 }
 
 export const useLeadsStore = create<LeadsState>((set) => ({
     leads: [],
-    selectedLead: undefined,
+    selectedLead: null,
     loading: false,
     error: undefined,
-
+    showGraphForId: null,
     fetchLeads: async () => {
         set({ loading: true, error: undefined });
         try {
@@ -38,7 +42,11 @@ export const useLeadsStore = create<LeadsState>((set) => ({
         }
     },
 
-    handleSelectLead: (leadId: UUIDTypes) => {
+    handleSelectLead: (leadId: UUIDTypes | null) => {
+        if(leadId === null) {
+            set({ selectedLead: null });
+            return;
+        }
         set((state) => ({
             selectedLead: state.leads.find(lead => lead.id === leadId)
         }));
@@ -65,5 +73,8 @@ export const useLeadsStore = create<LeadsState>((set) => ({
     fetchLeadDetails: async (leadId: string) => {
         // Fetch lead details logic here
         return {} as Lead; // Return the fetched lead details
+    },
+    setShowGraphForId: (id: string | null) => {
+        set({ showGraphForId: id });
     }
 }));
