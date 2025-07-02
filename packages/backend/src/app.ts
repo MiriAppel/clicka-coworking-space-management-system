@@ -11,6 +11,7 @@ import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
+import router from './routes';
 
 // Create Express app
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/auth',routerAuth);
+app.use('/api', router);
 // app.use('/api/leadInteraction', routerCstomer);
 
 
