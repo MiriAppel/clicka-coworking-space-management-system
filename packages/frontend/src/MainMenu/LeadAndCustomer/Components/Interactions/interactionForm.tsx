@@ -16,7 +16,7 @@ export const interactionSchema = z.object({
 export type InteractionFormData = z.infer<typeof interactionSchema>;
 
 interface InteractionFormProps {
-  onSubmit: (leadId: string, lead: Lead) => Promise<any>;
+  onSubmit: (lead: Lead) => Promise<any>;
   onCancel: () => void;
 }
 
@@ -25,7 +25,8 @@ export const InteractionForm: React.FC<InteractionFormProps> = ({
   onCancel,
 }) => {
     const {
-    selectedLead
+    selectedLead,
+    handleSelectLead
   } = useLeadsStore();
   return (
     <Form<InteractionFormData>
@@ -33,14 +34,16 @@ export const InteractionForm: React.FC<InteractionFormProps> = ({
       schema={interactionSchema}
       onSubmit={(data) => {
         const leadId = selectedLead?.id; 
-        return onSubmit(selectedLead?.id!, {...selectedLead,idNumber:selectedLead?.idNumber, interactions:[...selectedLead?.interactions || [], data]} as Lead);
+        const temp = {...selectedLead, interactions: [...(selectedLead?.interactions || []), {...data,userEmail:selectedLead?.email}] } as Lead;
+        handleSelectLead(temp.id!);
+        return onSubmit(temp);
       }}
     >
       <SelectField
         name="type"
         label="סוג אינטראקציה"
         options={[
-          { label: "שיחה", value: "call" },
+          { label: "שיחה", value: "phone" },
           { label: "אימייל", value: "email" },
           { label: "פגישה", value: "meeting" },
         ]}

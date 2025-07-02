@@ -91,18 +91,23 @@ export class leadService extends baseService <LeadModel> {
     
   }
 
-  addInteraction = async (leadId: string, data: { type: string; date: string; notes: string }) => {
-  const { error } = await supabase
-    .from("interactions")
+  addInteraction = async (leadId: string, interaction: { type: string; date: string; notes: string; userEmail: string }) => {
+    console.log(leadId, interaction);
+
+    const { data, error } = await supabase
+    .from("lead_interaction")
     .insert([
       {
         lead_id: leadId,
-        type: data.type,
-        date: data.date,
-        notes: data.notes,
+        type: interaction.type.toUpperCase(),
+        date: interaction.date,
+        notes: interaction.notes,
+        user_email: interaction.userEmail,
+        user_id: leadId
       },
     ]);
-
-  if (error) throw new Error("בעיה בהוספת אינטראקציה: " + error.message);
+    if(data)
+      return data;
+    if (error) console.log(error);;
 };
 };

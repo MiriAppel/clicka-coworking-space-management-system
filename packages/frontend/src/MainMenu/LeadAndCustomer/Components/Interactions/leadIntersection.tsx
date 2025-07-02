@@ -21,6 +21,8 @@ export const LeadInteractions = () => {
 
   useEffect(() => {
     fetchLeads();
+    console.log(leads);
+    
   }, [fetchLeads]);
 
   const deleteLead = (id: string) => {
