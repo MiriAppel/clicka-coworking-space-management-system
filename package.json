@@ -19,6 +19,8 @@
     "@supabase/supabase-js": "^2.50.0",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
+    "fullcalendar": "^6.1.18",
+    "fullreact": "^1.0.0",
     "googleapis": "^150.0.1",
     "mailcomposer": "^4.0.2",
     "multer": "^2.0.1",
