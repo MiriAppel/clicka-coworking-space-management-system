@@ -17,7 +17,7 @@ root.render(
        <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID!}> 
     <BrowserRouter>
     {/* <App /> */}
-          {Routing()}
+          {<Routing />}
 
     </BrowserRouter>
        </GoogleOAuthProvider>

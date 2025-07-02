@@ -1,8 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Expense, ExpenseCategory, ExpenseStatus, Vendor, DocumentType } from 'shared-types';
-
+import { Expense, ExpenseCategory, ExpenseStatus, Vendor} from 'shared-types';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { Table } from '../../../../Common/Components/BaseComponents/Table';
 import VendorDocuments from './VendorDocuments';

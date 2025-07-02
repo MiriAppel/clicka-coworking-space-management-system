@@ -1,58 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import App from './App';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 import PaymentForm from './MainMenu/Workspace/Components/invoice-generation-engine/PaymentForm';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import VendorSummary from './MainMenu/Billing/Components/Vendor-management/VendorSummary';
-// import { Vendor, VendorCategory } from 'shared-types';
+import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
-import { Route, Routes } from "react-router-dom"
-import App from "./App"
-import { WorkspaceMap } from "./MainMenu/Workspace/Components/workspaceMaps"
-import { LeadAndCustomerRouting } from "./MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting"
-import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
-const mockVendors: Vendor[] = [
-  {
-    id: '1',
-    name: 'ספק א',
-    category: VendorCategory.Equipment,
-    phone: '050-1234567',
-    email: 'a@example.com',
-    address: 'רחוב הדוגמה 1',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    name: 'ספק ב',
-    category: VendorCategory.Services,
-    phone: '052-7654321',
-    email: 'b@example.com',
-    address: 'רחוב הדוגמה 2',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
+import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 
 export const Routing = () => {
-  const [vendors, setVendors] = useState<Vendor[]>(mockVendors);
+  // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
+  const [vendors, setVendors] = useState<Vendor[]>([]);
 
+  // משתנה שמייצג האם הנתונים עוד בטעינה
+  const [loading, setLoading] = useState(true);
+
+  // useEffect - רץ פעם אחת לאחר טעינת הקומפוננטה
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        // קריאה לפונקציה שמביאה את רשימת הספקים מהשרת (API)
+        const data = await getAllVendors(); 
+        setVendors(data); // שומר את הנתונים ב-state
+      } catch (err) {
+        console.error("שגיאה בשליפת ספקים:", err); // הדפסת שגיאה אם השליפה נכשלה
+      } finally {
+        setLoading(false); // מסמן שהטעינה הסתיימה (בין אם הצליחה או נכשלה)
+      }
+    };
+
+    fetchVendors(); // מפעיל את הפונקציה
+  }, []); // [] אומר שה־useEffect ירוץ רק בפעם הראשונה
+
+  // אם עדיין טוען – מציג הודעת טעינה למשתמש
+  if (loading) return <div>טוען נתונים...</div>;
+
+  // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
   return (
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
-      <Route path="workspaceMap" element={<WorkspaceMap />} />
-      <Route path="payment" element={<PaymentForm />} />
       <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+      <Route path="payment" element={<PaymentForm />} />
       <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
       <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
       <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
       <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
-                  <Route path="/" element={<App />} />
-                  <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-                  <Route path="workspaceMap" element={< WorkspaceMap />} />
-                  <Route path="users" element={< UserTable />} />
-      
-      
     </Routes>
   );
 };

@@ -18,13 +18,7 @@ export const Button: React.FC<ButtonProps> = ({
   type = "button", 
   ...props
 }) => {
-<<<<<<< HEAD
-  const theme = useTheme();
-  console.log(theme);
-
-=======
   const {theme} = useTheme();
->>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
 //  const focusRingColor = theme.colors.semantic.info; //מגדיר את הצבע למתי שנעבור על הכפתורים בעזרת המקלדת יעשה לנו את הצבע הדרוש 
   const effectiveDir = dir || theme.direction; // או שלוקח את הכיוון שמבקשים או שלוקח מהTHEME את הכיוון של ברירת מחדל
   const color = theme.colors[variant];// אותו דבר כמו הכיוון
