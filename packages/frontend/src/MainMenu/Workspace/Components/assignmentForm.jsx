@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useAssignmentStore } from "../../../stores/assignmentStore";
 
 export const AssignmentForm = ({
   initialValues = {},
-  customers,
-  workspaces,
+  customers = [],
   onSubmit,
 }) => {
+  const { 
+    spaces, 
+    loading, 
+    error, 
+    getAllSpaces, 
+    createAssignment,
+    clearError 
+  } = useAssignmentStore();
+
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       ...initialValues,
@@ -19,25 +28,51 @@ export const AssignmentForm = ({
     },
   });
 
+  // טעינת הספייסים בעת טעינת הקומפוננטה
+  useEffect(() => {
+    getAllSpaces();
+    return () => clearError(); // ניקוי שגיאות בעת יציאה
+  }, [getAllSpaces, clearError]);
+
+  const handleFormSubmit = async (data) => {
+    try {
+      if (onSubmit) {
+        await onSubmit(data);
+      } else {
+        await createAssignment(data);
+      }
+      reset();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
+  };
+
+  if (loading) {
+    return <div className="p-4 text-center">טוען...</div>;
+  }
+
   return (
     <form
-      onSubmit={handleSubmit((data) => {
-        onSubmit(data);
-        reset();
-      })}
+      onSubmit={handleSubmit(handleFormSubmit)}
       className="p-4 bg-white rounded shadow max-w-md mx-auto"
     >
       <h2 className="text-lg font-bold mb-4">הקצאת חלל עבודה</h2>
+
+      {error && (
+        <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+          שגיאה: {error}
+        </div>
+      )}
 
       <label className="block mb-2">
         חלל עבודה:
         <select
           {...register("workspaceId", { required: true })}
           className="block w-full mt-1 border rounded"
-          disabled={!!initialValues.workspaceId}
+          disabled={!!initialValues.workspaceId || loading}
         >
           <option value="">בחר חלל</option>
-          {workspaces.map((w) => (
+          {spaces.map((w) => (
             <option key={w.id} value={w.id}>
               {w.name}
             </option>
@@ -109,9 +144,10 @@ export const AssignmentForm = ({
 
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
+        disabled={loading}
+        className="bg-blue-600 text-white px-4 py-2 rounded mt-4 disabled:opacity-50"
       >
-        שמור
+        {loading ? 'שומר...' : 'שמור'}
       </button>
     </form>
   );
