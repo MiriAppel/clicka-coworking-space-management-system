@@ -2,6 +2,10 @@ import React from "react";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
 import { Button } from "./Button";
+<<<<<<< HEAD
+=======
+import { Pencil, Trash } from "lucide-react"; 
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
 
 
 export interface BaseComponentProps {
@@ -14,6 +18,7 @@ export interface BaseComponentProps {
 export interface TableColumn<T> {
   header: string;//הכותרת של העמודות של הטבלה 
   accessor: keyof T;// כל מה שיש בתוך הטבלה וזה מסוג גנרי כדי שנוכל להכניס מה שרוצים מכל טיפוס שהוא
+  render?: (value: any, row: T) => React.ReactNode;
 }
 
 export interface TableProps<T> extends BaseComponentProps {
@@ -22,6 +27,10 @@ export interface TableProps<T> extends BaseComponentProps {
   onUpdate?: (row: T) => void;  //פונקציה לעידכון 
   onDelete?: (row: T) => void; //פונקציה למחיקה 
   renderActions?: (row: T) => React.ReactNode; // הוסף שורה זו
+<<<<<<< HEAD
+=======
+
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
 }
 
 
@@ -31,17 +40,27 @@ export const Table = <T extends Record<string, any>>({
   className,
   dir,
   "data-testid": testId,
+<<<<<<< HEAD
   onUpdate,
   onDelete,
   renderActions
+=======
+   onUpdate,
+   onDelete,
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
 }: TableProps<T>) => {
-  const theme = useTheme();
+ const {theme} = useTheme();
   const effectiveDir = dir || theme.direction;
 
   return (
     <div dir={effectiveDir} data-testid={testId} className={clsx("overflow-x-auto", className)} role="region"               // <-- Agregado para accesibilidad: define una región del documento.
+<<<<<<< HEAD
       aria-label="Table data" >
       {/* //בודק את הכיוון את הבדיקות ואת הרספונסיביות  */}
+=======
+  aria-label="Table data" >  
+    {/* //בודק את הכיוון את הבדיקות ואת הרספונסיביות  */}
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
       <table
         className={clsx(
           "min-w-full table-auto border border-gray-300 rounded text-sm",
@@ -56,6 +75,7 @@ export const Table = <T extends Record<string, any>>({
       >
         <thead className="bg-gray-100">
           <tr>
+<<<<<<< HEAD
             {/* //col=כל עמודה idx=האינדקס של כל עמודה  */}
             {columns.map((col, idx) => (
               // הוא משתמש בMAP כדי שנוכל לגשת לכל אלמנט עם האינדקסים אנחנו יודעים איפה הם נמצאים 
@@ -82,11 +102,41 @@ export const Table = <T extends Record<string, any>>({
               {/* //כותרת לעמודת הכפתורים */}
             </th>
           </tr>
+=======
+  {/* //col=כל עמודה idx=האינדקס של כל עמודה  */}
+  {columns.map((col, idx) => (
+    // הוא משתמש בMAP כדי שנוכל לגשת לכל אלמנט עם האינדקסים אנחנו יודעים איפה הם נמצאים 
+    <th
+      key={idx}
+      scope="col" //מגדיר את זה בראש הטבלה 
+      className={clsx(
+        "border px-4 py-2 font-semibold",
+        idx > 1 ? "hidden md:table-cell" : ""
+      )}
+    >
+      {/* //מגדירים לכל אאינדקסים KEY מיוחד כדי שנדע על איזה אלמנט אנחנו מדברים  */}
+      {col.header}
+      {/* //כל COL.HEADER זה TH אחד  */}
+    </th>
+  ))}
+
+  {/* //כאן מוסיפים עמודת פעולה חדשה */}
+  <th
+    scope="col" //כותרת לעמודת הפעולות
+    className="border px-4 py-2 font-semibold text-center"
+  >
+    Actions
+    {/* //כותרת לעמודת הכפתורים */}
+  </th>
+</tr>
+
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
 
         </thead>
         <tbody>
           {data.map((row, rowIdx) => (
             <tr key={rowIdx} className="hover:bg-gray-50">
+<<<<<<< HEAD
               {columns.map((col, colIdx) => (
                 <td key={colIdx} className="border px-4 py-2">{row[col.accessor]}</td>
                 // {/* //ניגש לכל מה שכתוב בעמודות לדוג אם ACCESOR=NAME אז מדפיס לי ROW[NAME] */}
@@ -114,6 +164,41 @@ export const Table = <T extends Record<string, any>>({
 
               </td>
             </tr>
+=======
+            {columns.map((col, colIdx) => (
+            <td key={colIdx} className="border px-4 py-2">
+                  {col.render
+                    ? col.render(row[col.accessor], row)
+                    : String(row[col.accessor] ?? '')
+                  }
+                </td>
+    // {/* //ניגש לכל מה שכתוב בעמודות לדוג אם ACCESOR=NAME אז מדפיס לי ROW[NAME] */}
+  ))}
+
+  <td className="border px-4 py-2 flex gap-2 justify-center">
+    <Button
+      variant="secondary"
+      size="sm"
+      className="hover:scale-105 hover:brightness-110 transition"
+       onClick={() => onUpdate && onUpdate(row)}
+      aria-label="Update"
+    title="Update"
+  >
+    <Pencil size={16} />
+    </Button>
+    <Button
+      variant="accent"
+      size="sm"
+      className="hover:scale-105 hover:brightness-125 transition"
+      onClick={() => onDelete && onDelete(row)}
+     aria-label="Delete"
+    title="Delete"
+  >
+    <Trash size={16} />
+    </Button>
+  </td>
+</tr>
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
           ))}
         </tbody>
       </table>

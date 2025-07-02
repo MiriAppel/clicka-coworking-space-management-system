@@ -32,7 +32,11 @@ export const NumberInputField: React.FC<NumberInputFieldProps> = ({
   max,
   step,
 }) => {
+<<<<<<< HEAD
   const theme = useTheme();
+=======
+  const {theme} = useTheme();
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
   const {
     register,
     formState: { errors },
@@ -56,7 +60,11 @@ export const NumberInputField: React.FC<NumberInputFieldProps> = ({
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <input
+<<<<<<< HEAD
         {...register(name, { valueAsNumber: true })}
+=======
+        {...register(name)}
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
         disabled={disabled}
         aria-required={required}
         aria-invalid={!!error}

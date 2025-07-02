@@ -27,7 +27,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   value,
   onChange,
 }) => {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const {
     register,
     formState: { errors },
@@ -79,6 +79,12 @@ export const SelectField: React.FC<SelectFieldProps> = ({
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
+<<<<<<< HEAD
+=======
+          //יש לי מערך של OPTIONS הוא בנוי בצורה שיש לו LABEL וVALUE עובר עם בMAP כל אלאמט קוראים לא OPT
+          //אחכ שומר את זה בVALUE ובKEY כדי שיהיה מיוחד כל אלד ואחד 
+          // <option value="male">Hombre</option> לדוגמא 
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
         ))}
       </select>
 

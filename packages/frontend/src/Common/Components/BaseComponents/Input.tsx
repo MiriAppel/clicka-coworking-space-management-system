@@ -34,7 +34,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   // multiple,
 }) => {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const {
     register, //ה מה שמקשר את הINPUT ונותן את האפשרות לעשות ולידציות, לבדוק שינויים, מכניס את זה לתוך הסובמיט 
     formState: { errors }, //מגדיר את כל השדיעות לדוג אם יש לי שגיעה בשם אז יעשה לי ERROR.NAME.MESSAGE ויזרוק את השגיעה 

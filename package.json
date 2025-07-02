@@ -1,34 +1,67 @@
 {
-  "name": "clicka-project",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "clicka-frontend",
+  "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "start:backend": "yarn workspace clicka-backend dev",
-    "start:frontend": "yarn workspace clicka-frontend start",
-    "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@supabase/supabase-js": "^2.50.0",
-    "express": "^5.1.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@hookform/resolvers": "^3.3.4",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
+    "@mui/styled-engine-sc": "^7.1.1",
+    "@mui/x-data-grid": "^8.5.1",
+    "@react-oauth/google": "^0.12.2",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/jspdf": "^2.0.0",
+    "@types/node": "^16.18.126",
+    "@types/react-dom": "^19.1.5",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-hook-form": "^7.52.1",
+    "react-i18next": "^15.5.3",
+    "react-icons": "4",
     "react-router-dom": "^7.6.2",
-    "ts-node": "^10.9.2",
-    "yarn": "^1.22.22"
+    "react-scripts": "5.0.1",
+    "recharts": "^3.0.0",
+    "shared-types": "*",
+    "styled-components": "^6.1.18",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.67",
+    "zustand": "^5.0.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "devDependencies": {
-    "@types/papaparse": "^5.3.16",
-    "@types/uuid": "^10.0.0",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.21",
-    "tailwindcss": "^3.3.3"
-  }
+    "@types/xlsx": "^0.0.35"
+  },
+  "proxy": "http://localhost:3001"
 }

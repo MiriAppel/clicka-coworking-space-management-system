@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import App from './App';  // אם App ישמש רק כרכיב בית, או ניתן להפריד
-import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
-import { Billing } from './MainMenu/Billing/Components/billing';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 import PaymentForm from './MainMenu/Workspace/Components/invoice-generation-engine/PaymentForm';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import VendorSummary from './MainMenu/Billing/Components/Vendor-management/VendorSummary';
-import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
-import { Vendor, VendorCategory } from 'shared-types';
+// import { Vendor, VendorCategory } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
-
+import { Route, Routes } from "react-router-dom"
+import App from "./App"
+import { WorkspaceMap } from "./MainMenu/Workspace/Components/workspaceMaps"
+import { LeadAndCustomerRouting } from "./MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting"
+import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 const mockVendors: Vendor[] = [
   {
     id: '1',
@@ -42,13 +41,18 @@ export const Routing = () => {
       <Route path="/" element={<App />} />
       <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
       <Route path="workspaceMap" element={<WorkspaceMap />} />
-      <Route path="billing" element={<Billing />} />
       <Route path="payment" element={<PaymentForm />} />
       <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
       <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
       <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
       <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
       <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+                  <Route path="/" element={<App />} />
+                  <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+                  <Route path="workspaceMap" element={< WorkspaceMap />} />
+                  <Route path="users" element={< UserTable />} />
+      
+      
     </Routes>
   );
 };

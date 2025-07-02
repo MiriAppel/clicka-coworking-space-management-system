@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Button } from './Common/Components/BaseComponents/Button';
-import { LeadInteraction } from './MainMenu/LeadAndCustomer/Components/Interactions/leadIntersection';
+import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
+import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
+import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
+import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
+
 import PaymentForm from './MainMenu/Workspace/Components/invoice-generation-engine/PaymentForm';
 
 function App() {
@@ -32,6 +36,7 @@ function App() {
   }, []);
 
   return (
+    <AuthProvider>
     <div className="App">
       
       <header className="App-header">
@@ -67,14 +72,27 @@ function App() {
         >
           Billing
         </Button>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => navigate('/users')}
+          className="border border-black hover:border-white bg-black text-white"
+        >
+          users
+        </Button>
+        <Accesibility></Accesibility>
       </div>
-      <LeadInteraction></LeadInteraction>
+      <SearchCustomer></SearchCustomer>
       {/* 👇 נתיבים */}
       <Routes>
         <Route path="/leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-       
+        {/* <Route path="./users" element={<UserTable/>} /> */}
+
       </Routes>
+      <AuthenticationScreen />
     </div>
+    </AuthProvider>
+    
   );
 }
 

@@ -25,7 +25,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
   "data-testid": testId,
   //הגדרת הקומפוננטה ושימוש בPROPS 
 }) => {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const {
     register,
     formState: { errors },

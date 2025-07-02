@@ -22,6 +22,10 @@ export interface BaseComponentProps {
   children?: React.ReactNode;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
 export interface FormComponentProps<T extends FieldValues>
   extends BaseComponentProps {
   label?: string;
@@ -45,10 +49,16 @@ export function Form<T extends FieldValues>({
   children,
   methods: externalMethods,
 }: FormComponentProps<T>) {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const { t } = useTranslation();
   //שימוש לתירגום עם I18NEXT לפי הנדרש 
+<<<<<<< HEAD
   const effectiveDir = dir || theme.direction;
+=======
+
+  const effectiveDir = dir || theme.direction;
+  
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
   const internalMethods = useForm<T>({
     ...(schema ? { resolver: zodResolver(schema) } : {}),
     mode: "onSubmit",

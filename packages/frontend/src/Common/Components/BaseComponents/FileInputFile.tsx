@@ -11,7 +11,10 @@ interface FileInputFieldProps {
   className?: string;
   "data-testid"?: string;
   multiple?: boolean; //אפשרות להוספת הרבה קבצים 
+<<<<<<< HEAD
   
+=======
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
 }
 
 export const FileInputField: React.FC<FileInputFieldProps> = ({
@@ -24,7 +27,11 @@ export const FileInputField: React.FC<FileInputFieldProps> = ({
   "data-testid": testId,
   multiple = false,
 }) => {
+<<<<<<< HEAD
   const theme = useTheme();
+=======
+  const {theme} = useTheme();
+>>>>>>> 919d92aaabed27bd771b5f844ca0b8744eb98c03
   const {
     control, 
     //משתנה שמשתמשים בו כדי להביא את הCONTROLLER של REACT-HOOK 
