@@ -12,6 +12,8 @@ import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
 import { CustomersList } from "./Customers/customersList"
 import { LeadInteractions } from "./Interactions/leadIntersection";
+import { InteractionForm } from "./Interactions/interactionForm";
+import { addInteraction } from "./Interactions/leadInteractionDetails";
 
 export const LeadAndCustomerRouting = () => {
     return (
@@ -31,6 +33,7 @@ export const LeadAndCustomerRouting = () => {
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/interactions" element={<LeadInteractions />} />
+            <Route path="leads/interactions/:leadId/addInteraction" element={<InteractionForm onSubmit={addInteraction} onCancel={() => {}} />} />
         </Routes>
     );
 };
