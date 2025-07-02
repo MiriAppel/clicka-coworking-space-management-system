@@ -7,7 +7,7 @@ import { ReportData, ReportParameters, ReportType, ExpenseCategory } from 'share
  */
 export async function fetchReportData(type: ReportType, parameters: ReportParameters): Promise<ReportData> {
   const API_BASE = process.env.REACT_APP_API_URL;
-
+ 
   try {
     const response = await fetch(`/reports/${type}`, {
       method: 'POST',

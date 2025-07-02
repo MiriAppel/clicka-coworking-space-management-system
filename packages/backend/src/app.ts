@@ -35,7 +35,7 @@ app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
-app.use('/api/expenses', expenseRouter);
+app.use('api/expenses', expenseRouter);
 
 // app.use('/api/leadInteraction', routerCstomer);
 

@@ -6,7 +6,7 @@ import { Table } from '../../../../Common/Components/BaseComponents/Table';
 import type {
   DateRangeFilter,
   RevenueReportData,
-  ExpenseReportData,
+  ExpenseReportData, 
   ReportData
 } from 'shared-types';
 import { ReportType } from 'shared-types';

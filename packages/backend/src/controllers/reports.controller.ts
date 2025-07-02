@@ -7,11 +7,7 @@ import { ReportType, ReportParameters } from 'shared-types';
  * @param req - בקשת ה-HTTP (כוללת type ו-parameters)
  * @param res - תגובת השרת ללקוח
  */
-export const handleGenerateReport = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const handleGenerateReport = async (req: Request,res: Response,next: NextFunction): Promise<void> => {
   try {
     const { type } = req.params;
     const parameters = req.body as ReportParameters;

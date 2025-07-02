@@ -12,13 +12,7 @@ const supabaseAnonKey = process.env.SUPABASE_KEY || '';  // מפתח השירו�
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // הגדרת מחלקת ExpenseService - אחראית על פעולות במסד הנתונים הקשורות להוצאות
-export const ExpenseService ={
-
-    /**
-     * יצירת הוצאה חדשה במסד הנתונים
-     * @param expenseData - הנתונים של ההוצאה (מה-body של הבקשה)
-     * @returns ההוצאה שנוצרה או null במקרה של כישלון
-     */
+export class ExpenseService {
     async createExpense(expenseData: CreateExpenseRequest) {
         const { data, error } = await supabase
             .from('expenses')              // שם הטבלה ב-Supabase
@@ -32,13 +26,19 @@ export const ExpenseService ={
         }
 
         return data;  // החזרת ההוצאה שנוצרה בהצלחה
-    },
+    }
 
-    /**
-     * שליפת רשימת הוצאות עם אפשרות לסינון
-     * @param filters - אובייקט עם קריטריוני סינון (קטגוריה, סטטוס, תאריכים וכו')
-     * @returns מערך הוצאות או null במקרה של כישלון
-     */
+     async getExpenses1() {
+        let query = supabase
+            .from('expenses')        // עבודה מול טבלת ההוצאות
+            .select('*');  
+        const { data, error } = await query;  // הרצת השאילתה מול המסד
+        if (error) {
+            console.error('Error fetching expenses:', error);  // הדפסת השגיאה
+            return null;
+        }
+        return data;
+    }
     async getExpenses(filters: GetExpensesRequest) {
         let query = supabase
             .from('expenses')        // עבודה מול טבלת ההוצאות
@@ -80,13 +80,8 @@ export const ExpenseService ={
         }
 
         return data;  // החזרת תוצאות
-    },
+    }
 
-    /**
-     * שליפת הוצאה בודדת לפי מזהה (ID)
-     * @param id - מזהה ההוצאה
-     * @returns ההוצאה או null אם לא נמצאה
-     */
     async getExpenseById(id: string) {
         const { data, error } = await supabase
             .from('expenses')        // עבודה מול טבלת ההוצאות
@@ -100,14 +95,7 @@ export const ExpenseService ={
         }
 
         return data;
-    },
-
-    /**
-     * עדכון הוצאה קיימת לפי מזהה
-     * @param id - מזהה ההוצאה
-     * @param updateData - נתוני העדכון
-     * @returns ההוצאה המעודכנת או null במקרה של כישלון
-     */
+    }
     async updateExpense(id: string, updateData: UpdateExpenseRequest) {
         const { data, error } = await supabase
             .from('expenses')            // טבלת ההוצאות
@@ -122,14 +110,7 @@ export const ExpenseService ={
         }
 
         return data;
-    },
-
-    /**
-     * סימון הוצאה כבתשלום (Mark as Paid)
-     * @param id - מזהה ההוצאה
-     * @param paidData - פרטי התשלום (תאריך, אמצעי תשלום וכו')
-     * @returns ההוצאה המעודכנת או null במקרה של כישלון
-     */
+    }
     async markExpenseAsPaid(id: string, paidData: MarkExpenseAsPaidRequest) {
         const { data, error } = await supabase
             .from('expenses')              // טבלת ההוצאות
@@ -150,13 +131,7 @@ export const ExpenseService ={
         }
 
         return data;
-    },
-
-    /**
-     * מחיקת הוצאה מהמסד לפי מזהה
-     * @param id - מזהה ההוצאה
-     * @returns true אם הצליח, false אם נכשל
-     */
+    }
     async deleteExpense(id: string) {
         const { error } = await supabase
             .from('expenses')     // טבלת ההוצאות
