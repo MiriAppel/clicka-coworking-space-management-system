@@ -1,20 +1,91 @@
+// import React, { useState } from "react";
+// import { Button } from "../../../../Common/Components/BaseComponents/Button";
+// import { useNavigate } from "react-router-dom";
+// import { LeadStatus, LeadSource, Lead, AddLeadInteractionRequest } from "shared-types";
+// import { InteractionForm } from "./interactionForm";
 import React, { useState } from "react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useNavigate } from "react-router-dom";
-import { LeadStatus, LeadSource, Lead } from "shared-types";
+import { LeadStatus, LeadSource, Lead, AddLeadInteractionRequest } from "shared-types";
+import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 
+export const addInteraction = async (leadId: string, interaction: AddLeadInteractionRequest) => {
+    // Call API to add interaction
+    try {
+        const response = await fetch(`/api/leads?id=${leadId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(interaction),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to add interaction");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error adding interaction:", error);
+        throw error;
+    }
+}
+// // קומפוננטת בן – נפתחת בלחיצה
+// export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelete: () => void }) => {
+//     const [showInteractionForm, setShowInteractionForm] = useState(false);
+
+
+//     return (
+//         <div className="bg-blue-50 mt-2 p-4 rounded-lg border border-blue-200">
+//             <div className="text-sm text-gray-700 mb-2">
+//                 <div>טלפון: {lead.phone}</div>
+//                 <div>אימייל: {lead.email}</div>
+//                 <div>ת"ז: {lead.idNumber}</div>
+//                 <div>תאריך יצירה: {new Date(lead.createdAt).toLocaleDateString()}</div>
+//             </div>
+//             <div className="flex gap-2">
+//                 <Button
+//                     variant="accent"
+//                     size="sm"
+//                     onClick={() => alert("עדכון בעתיד")}
+//                 >
+//                     עדכון
+//                 </Button>
+//                 <Button
+//                     variant="accent"
+//                     size="sm"
+//                     onClick={() => setShowInteractionForm(true)}
+//                 >
+//                     להוספת אינטרקציה
+//                 </Button>
+//             </div>
+//             <div className="mt-4">
+//           <InteractionForm
+//             onSubmit={async (_leadId, interaction) => {
+//               await addInteraction(lead.id!, interaction);
+//               setShowInteractionForm(false);
+//               // אפשר להוסיף כאן רענון נתונים או הודעה למשתמש
+//             }}
+//             onCancel={() => setShowInteractionForm(false)}
+//           />
+//         </div>
+//         </div>
+//     );
+// };
 // קומפוננטת בן – נפתחת בלחיצה
-export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelete: () => void }) => {
-  
+export const LeadInteractionDetails = () => {
   const navigate = useNavigate();
-
+  const {
+      selectedLead,
+      handleDeleteLead
+    } = useLeadsStore();
   return (
     <div className="bg-blue-50 mt-2 p-4 rounded-lg border border-blue-200">
       <div className="text-sm text-gray-700 mb-2">
 <div>
-  {lead.interactions.length > 0 && <div>אינטראקציות של המתעניין: </div>}
+  {selectedLead!.interactions?.length > 0 && <div>אינטראקציות של המתעניין: </div>}
   <div>
-    {lead.interactions.map((interaction, index) => (
+    {selectedLead!.interactions?.map((interaction, index) => (
       <div key={index}>
         <p>סוג אינטראקציה: {interaction.type}</p>
         <p>אימייל משתמש: {interaction.userEmail}</p>
@@ -23,9 +94,6 @@ export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelet
     ))}
   </div>
 </div>
-
-
-
         {/* <div>ת"ז: {lead.idNumber}</div> */}
         {/* <div>תאריך יצירה: {new Date(lead.createdAt).toLocaleDateString()}</div> */}
       </div>
@@ -35,7 +103,7 @@ export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelet
           size="sm"
           onClick={() =>
             navigate("interestedCustomerRegistration", {
-              state: { data: lead },
+              state: { data: selectedLead },
             })
           }
         >
@@ -44,14 +112,14 @@ export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelet
         <Button
           variant="accent"
           size="sm"
-          onClick={() => alert("עדכון בעתיד")}
+          onClick={() => navigate(`${selectedLead!.id}/addInteraction`)}
         >
           הוספת אינטראקציה
         </Button>
         <Button
           variant="accent"
           size="sm"
-          onClick={onDelete}
+          onClick={() => handleDeleteLead(selectedLead!.id!)}
         >
           מחיקה
         </Button>
@@ -59,3 +127,12 @@ export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelet
     </div>
   );
 };
+
+
+
+
+
+
+
+
+
