@@ -20,4 +20,5 @@ routerLead.get('/reminders/open', controllerLead.getLeadsToRemind);
 
 routerLead.get('/filter/customers', controllerLead.getLeadsByFilter);
 
+routerLead.post('/:id/addInteraction', controllerLead.addInteractionToLead);
 export default routerLead;

@@ -81,6 +81,17 @@ export const patchLead = async (req: Request, res: Response) => {
   }
 };
 
+export const addInteractionToLead = async (req: Request, res: Response) => {
+  const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
+  const interactionData = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
+
+  try {
+    const updatedLead = await serviceLead.addInteraction(id, interactionData);
+    res.status(200).json(updatedLead);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding interaction to lead", error });
+  }
+}
 export const postLeadFromCSV = async (req: Request, res: Response) => {
   const csvData: string = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
   try {
@@ -100,7 +111,6 @@ export const getLeadsToRemind = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching leads to remind", error });
   }
 };
-
 export const getLeadsByFilter = async (req: Request, res: Response) => {
   const filters = req.query;
   try {
