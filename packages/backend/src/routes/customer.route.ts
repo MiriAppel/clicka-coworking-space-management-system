@@ -5,6 +5,7 @@ import * as contractController from '../controllers/contract.controller'
 const routerCstomer = express.Router();
 
 // (GET)
+routerCstomer.get('/by-page', customerController.getCustomersByPage);
 
 routerCstomer.get('/', customerController.getAllCustomers); 
 
@@ -19,7 +20,7 @@ routerCstomer.get('/id/:id', customerController.getCustomerById);
 routerCstomer.get('/filter', customerController.getCustomersByFilter);
 
 //(POST)
-routerCstomer.post('/exit-notice', customerController.postExitNotice); 
+routerCstomer.post('/:id/exit-notice', customerController.postExitNotice); 
 
 routerCstomer.post('/post-customer', customerController.postCustomer); 
 

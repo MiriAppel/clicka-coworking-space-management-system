@@ -1,16 +1,20 @@
 import { Request, Response } from 'express';
-
 import { customerService } from '../services/customer.service';
+import { CreateCustomerRequest, ID, PaymentMethodType, ContractStatus } from 'shared-types';
+import { contractService } from '../services/contract.service';
 
 
 const serviceCustomer = new customerService();
+const serviceContract = new contractService();
+
 
 export const getAllCustomers = async (req: Request, res: Response) => {
-
     try {
-        const customers = await serviceCustomer.getAll()
+        // const customers = await serviceCustomer.getAll()
+        const customers = await serviceCustomer.getAllCustomers()
+
         res.status(200).json(customers);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching customers', error });
     }
@@ -18,10 +22,49 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 
 export const postCustomer = async (req: Request, res: Response) => {
     try {
-        const customers = await serviceCustomer.convertLeadToCustomer(req.body)
-        res.status(200).json(customers);
-    } 
-    catch (error) {
+
+        const newCustomer: CreateCustomerRequest = req.body
+
+        // console.log("in controller");
+        // console.log(newCustomer);  
+
+        const customer = await serviceCustomer.createCustomer(newCustomer);
+        console.log("in controller");
+        console.log(customer);
+
+        //כשהחוזה יהיה מוכן בסכמה להוסיף את זה
+        // const newContract: ContractModel = {
+        //     customerId: customer.id!, // FK.  כל חוזה שייך ללקוח אחד בלבד. אבל ללקוח יכולים להיות כמה חוזים לאורך זמן – למשל, הוא חתם שוב אחרי שנה, או שינה תנאים.
+        //     version: 1,
+        //     status: ContractStatus.DRAFT,
+        //     documents: newCustomer.contractDocuments || [],
+        //     createdAt: new Date().toISOString(),
+        //     updatedAt: new Date().toISOString(),
+        //     toDatabaseFormat() {
+        //         return {
+        //             customer_id: this.customerId,
+        //             version: this.version,
+        //             status: this.status,
+        //             sign_date: this.signDate,
+        //             start_date: this.startDate,
+        //             end_date: this.endDate,
+        //             terms: this.terms,
+        //             documents: this.documents,
+        //             signed_by: this.signedBy,
+        //             witnessed_by: this.witnessedBy,
+        //             created_at: this.createdAt,
+        //             updated_at: this.updatedAt
+        //         };
+        //     }
+        // }
+
+        // const contract = await serviceContract.post(newContract)
+
+        // console.log("in controller");
+        // console.log(contract);
+
+        res.status(200).json(customer);
+    } catch (error) {
         res.status(500).json({ message: 'Error fetching customers', error });
     }
 }
@@ -35,7 +78,7 @@ export const getCustomerById = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'Customer not found' });
         }
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching customer', error });
     }
@@ -51,7 +94,7 @@ export const getCustomersByFilter = async (req: Request, res: Response) => {
         } else {
             res.status(404).json({ message: 'No customers found' });
         }
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error filtering customers', error });
     }
@@ -63,7 +106,7 @@ export const getAllCustomerStatus = async (req: Request, res: Response) => {
     try {
         const statuses = await serviceCustomer.getAllCustomerStatus();
         res.status(200).json(statuses);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching all statuses', error });
     }
@@ -85,7 +128,7 @@ export const getCustomersToNotify = async (req: Request, res: Response) => {
     try {
         const customers = await serviceCustomer.getCustomersToNotify(id);
         res.status(200).json(customers);
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error fetching customers to notify', error });
     }
@@ -99,7 +142,7 @@ export const postExitNotice = async (req: Request, res: Response) => {
     try {
         await serviceCustomer.postExitNotice(exitNotice, id);
         res.status(200).json({ message: 'Exit notice posted' });
-    } 
+    }
     catch (error) {
         res.status(500).json({ message: 'Error posting exit notice', error });
     }
@@ -107,18 +150,42 @@ export const postExitNotice = async (req: Request, res: Response) => {
 
 // לקבל מספר לקוחות לפי גודל העמוד
 export const getCustomersByPage = async (req: Request, res: Response) => {
-    // קבלת page ו-pageSize מתוך שאילתת ה-URL (query parameters)
-    const page = parseInt(req.query.page as string) || 1;
-    const pageSize = parseInt(req.query.pageSize as string) || 50;
 
-    try {
-        const paginatedCustomers = await serviceCustomer.getCustomersByPage(page, pageSize);
-        res.status(200).json(paginatedCustomers);
-    } catch (error) {
-        console.error('Error in getCustomersByPage controller:', error);
-        res.status(500).json({ message: 'Error fetching paginated customers', error});
+  const filters = req.params; // הנח שהפרמטרים מגיעים מה-params של הבקשה
+  console.log("Filters received:", filters);
+
+  try {
+    const pageNum = Math.max(1, Number(filters.page) || 1);
+    const limitNum = Math.max(1, Number(filters.limit) || 50);
+    const filtersForService = {
+      page: pageNum,
+      limit: limitNum,
+    };
+
+    console.log("Filters passed to service:", filtersForService);
+
+    const leads = await serviceCustomer.getCustomersByPage(filtersForService);
+
+    if (leads.length > 0) {
+      res.status(200).json(leads);
+    } else {
+      res.status(404).json({ message: "No customers found" });
     }
-}
+  } catch (error: any) {
+    console.error("❌ Error in getCustomersByPage controller:");
+    if (error instanceof Error) {
+      console.error("🔴 Message:", error.message);
+      console.error("🟠 Stack:", error.stack);
+    } else {
+      console.error("🟡 Raw error object:", error);
+    }
+
+    res
+      .status(500)
+      .json({ message: "Server error", error: error?.message || error });
+  }
+  console.log("getCustomersByPage completed");
+};
 
 // עדכון מלא/חלקי של לקוח
 export const patchCustomer = async (req: Request, res: Response) => {
@@ -126,12 +193,13 @@ export const patchCustomer = async (req: Request, res: Response) => {
     const updateData = req.body; // נתוני העדכון החלקיים
 
     try {
-        await serviceCustomer.patch(updateData, id)
+        // await serviceCustomer.patch(updateData, id)
+        await serviceCustomer.updateCustomer(updateData, id)
         res.status(200).json({ message: 'Customer updated successfully (PATCH)' });
-    } 
+    }
     catch (error) {
         console.error('Error in patchCustomer controller:', error);
-        res.status(500).json({ message: 'Error patching customer', error});
+        res.status(500).json({ message: 'Error patching customer', error });
     }
 }
 
