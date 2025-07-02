@@ -11,6 +11,10 @@ import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
+import routerMap from './routes/workspaceMap.route';
+import routerLayout from './routes/mapLayout.route';
+import routerCalendarSync from './routes/googleCalendarBookingIntegration.route';
+import router from './routes';
 
 // Create Express app
 const app = express();
@@ -35,6 +39,10 @@ app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);
+app.use('/api/map',routerMap);
+app.use('/api/layout',routerLayout);
+app.use('/api/calendar-sync',routerCalendarSync)
+app.use('/api',router)
 
 
 // Health check endpoint

@@ -1,14 +1,15 @@
 import { Request, Response } from 'express';
 import * as CalendarService from '../services/googleCalendarBookingIntegration.service ';
 
-import { SyncBookingsWithGoogleRequest } from '../models/calendarSync.model';
-import { CalendarSync, CalendarSyncStatus } from '../models/calendarSync.model';
+import { SyncBookingsWithGoogleRequest } from 'shared-types/booking';
+import { CalendarSync, CalendarSyncStatus } from 'shared-types/calendarSync';
 import type{ ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
 
 export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
     try {
         const calendarId: string = req.params.calendarId;
-        const events = await CalendarService.getGoogleCalendarEvents(calendarId);
+        const token: string = req.params.token;
+        const events = await CalendarService.getGoogleCalendarEvents(calendarId,token);
         res.status(200).json(events);
     } catch (error) {
         console.error('Error fetching Google Calendar events:', error);
@@ -24,6 +25,27 @@ export const createCalendarSync = async (req: Request, res: Response) => {
         console.error('Error creating calendar sync:', error);
         res.status(500).json({ message: 'Failed to create calendar sync', error: error });
     }
+}
+export async function getAllCalendarSync(req: Request, res: Response) {
+  try {
+    const result = await CalendarService.gatAllCalendarSync()
+    res.json(result)
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message })
+  }
+}
+export async function getCalendarSyncById(req: Request, res: Response) {
+const syncId = req.params.id;
+    const result = await CalendarService.getCalendarSyncById(syncId)
+   if(result){
+    res.status(200).json(result)
+   }
+   else{
+    res.status(404).json({ error: 'Map not found' })
+   }
+
+   
+  
 }
 export const createCalendarEvent = async (req: Request, res: Response) => {
     try {
