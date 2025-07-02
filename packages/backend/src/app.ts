@@ -3,20 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
-import cookieParser from 'cookie-parser'; 
 import router from './routes'; 
-
-import  routerAuth  from './routes/auth';
-import { Request, Response } from 'express';
-import userRouter from './routes/user.route';
 import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import expenseRouter from './routes/expense.route';
-
-
-
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
