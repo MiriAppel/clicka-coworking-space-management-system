@@ -1,5 +1,5 @@
-import { ReportParameters, ReportData } from 'shared-types'; // ייבוא טיפוסים מתואמים ל־shared-types שלך
-import { getExpenses } from './expense.services'; // ייבוא הפונקציה הקיימת לשאיבת הוצאות
+import { ReportParameters, ReportData, ExpenseCategory } from 'shared-types'; // ייבוא טיפוסים מתואמים ל־shared-types שלך
+import { ExpenseService } from './expense.services'; // ייבוא הפונקציה הקיימת לשאיבת הוצאות
 import { getRevenues } from './revenue.service'; // ייבוא הפונקציה החדשה שתיצור – לשאיבת הכנסות
 import { groupByPeriod } from '../utils/groupingUtils.service'; // פונקציה לעיבוד GroupBy לפי תקופה
 
@@ -8,9 +8,34 @@ import { groupByPeriod } from '../utils/groupingUtils.service'; // פונקצי�
  * @param parameters - פרמטרים שנבחרו (תאריך, קטגוריות וכו')
  * @returns ReportData - תוצאת הדוח לאחר עיבוד
  */
+// const expenseService = new ExpenseService(); // יצירת מופע של ExpenseService
+// export async function generateExpenseData(parameters: ReportParameters): Promise<ReportData> {
+//   // 1. שליפת ההוצאות מתוך ה־ExpenseService
+//   const expenses = await ExpenseService.getExpenses(parameters);
+
+//   // 2. קיבוץ הנתונים לפי תקופת הזמן שהמשתמש בחר (month / quarter / year)
+//   const groupedData = groupByPeriod(expenses, parameters.groupBy, 'date', 'amount');
+
+//   // 3. המרה לפורמט אחיד של ReportData
+//   return {
+//     title: 'Expense Report',
+//     data: groupedData,
+//   };
+// }
 export async function generateExpenseData(parameters: ReportParameters): Promise<ReportData> {
-  // 1. שליפת ההוצאות מתוך ה־expenseService
-  const expenses = await getExpenses(parameters);
+  const expenseCategories = parameters.categories as ExpenseCategory[] | undefined;
+  // 1. שליפת ההוצאות מתוך ה־ExpenseService
+  const expenses = await ExpenseService.getExpenses({
+    dateFrom: parameters.dateRange?.startDate,
+    dateTo: parameters.dateRange?.endDate,
+    category: expenseCategories,
+    // אם יש שדות נוספים שתומכים בהם, תוסיף כאן
+  });
+
+  if (!expenses) {
+    // טיפול במקרה שאין נתונים או שגיאה
+    return [];
+  }
 
   // 2. קיבוץ הנתונים לפי תקופת הזמן שהמשתמש בחר (month / quarter / year)
   const groupedData = groupByPeriod(expenses, parameters.groupBy, 'date', 'amount');
@@ -21,6 +46,7 @@ export async function generateExpenseData(parameters: ReportParameters): Promise
     data: groupedData,
   };
 }
+
 
 /**
  * יצירת דוח הכנסות (Revenue Report)

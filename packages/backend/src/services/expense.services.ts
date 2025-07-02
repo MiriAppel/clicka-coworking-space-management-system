@@ -12,7 +12,7 @@ const supabaseAnonKey = process.env.SUPABASE_KEY || '';  // מפתח השירו�
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // הגדרת מחלקת ExpenseService - אחראית על פעולות במסד הנתונים הקשורות להוצאות
-export class ExpenseService {
+export const ExpenseService ={
 
     /**
      * יצירת הוצאה חדשה במסד הנתונים
@@ -32,7 +32,7 @@ export class ExpenseService {
         }
 
         return data;  // החזרת ההוצאה שנוצרה בהצלחה
-    }
+    },
 
     /**
      * שליפת רשימת הוצאות עם אפשרות לסינון
@@ -80,7 +80,7 @@ export class ExpenseService {
         }
 
         return data;  // החזרת תוצאות
-    }
+    },
 
     /**
      * שליפת הוצאה בודדת לפי מזהה (ID)
@@ -100,7 +100,7 @@ export class ExpenseService {
         }
 
         return data;
-    }
+    },
 
     /**
      * עדכון הוצאה קיימת לפי מזהה
@@ -122,7 +122,7 @@ export class ExpenseService {
         }
 
         return data;
-    }
+    },
 
     /**
      * סימון הוצאה כבתשלום (Mark as Paid)
@@ -150,7 +150,7 @@ export class ExpenseService {
         }
 
         return data;
-    }
+    },
 
     /**
      * מחיקת הוצאה מהמסד לפי מזהה

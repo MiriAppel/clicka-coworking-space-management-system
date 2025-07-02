@@ -72,13 +72,36 @@ export class ExpenseModel implements Expense {
   }
   vendorId: string;
   vendorName: string;
-  dueDate?: string | undefined; 
+  dueDate?: string | undefined;
   paidDate?: string | undefined;
   paymentMethod?: ExpensePaymentMethod | undefined;
   invoiceNumber?: string | undefined;
   invoiceFile?: FileReference | undefined;
   receiptFile?: FileReference | undefined;
   success: any;
-  
-
+  toDatabaseFormat() {
+return {
+id: this.id,
+vendor_id: this.vendor_id,
+vendor_name: this.vendor_name,
+category: this.category,
+description: this.description,
+amount: this.amount,
+tax: this.tax,
+date: this.date,
+due_date: this.due_date,
+paid_date: this.paid_date,
+status: this.status,
+payment_method: this.payment_method,
+reference: this.reference,
+invoice_number: this.invoice_number,
+invoice_file: this.invoice_file,
+receipt_file: this.receipt_file,
+notes: this.notes,
+approved_by: this.approved_by,
+approved_at: this.approvedAt,
+created_at: this.createdAt,
+updated_at: this.updatedAt,
+};
+}
 }

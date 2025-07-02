@@ -11,7 +11,7 @@ export enum UserRole {
 
 // User model
 export interface User {
-  id: ID;
+  id?: ID;
   email: string;
   firstName: string;
   lastName: string;
@@ -34,7 +34,10 @@ export interface LoginRequest {
 export interface LoginResponse {
   user: User;
   token: string;
+  sessionId?: string;
   expiresAt: DateISO;
+  cookie?: string; // Optional cookie for session management
+  googleAccessToken?: string;
 }
 
 // Register user request

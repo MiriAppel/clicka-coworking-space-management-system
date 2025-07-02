@@ -5,7 +5,7 @@ import { Router } from "express";
 import { ExpenseController } from "../controllers/expense.controller";
 
 // יצירת מופע (אובייקט) של ExpenseController לצורך שימוש בפונקציות שבו
-const expenseController = new ExpenseController();
+// const expenseController = new ExpenseController();
 
 // יצירת מופע Router חדש - דרכו נגדיר את כל נתיבי ה-expenses
 const expenseRouter = Router();
@@ -16,10 +16,7 @@ const expenseRouter = Router();
  * Route: /createExpense
  * גוף הבקשה (req.body) צריך להכיל את כל פרטי ההוצאה החדשה
  */
-expenseRouter.post(
-    "/createExpense",
-    expenseController.createExpense.bind(expenseController)
-);
+expenseRouter.post("/createExpense",ExpenseController.createExpense);
 
 /** 
  * שליפת כל ההוצאות הקיימות
@@ -27,10 +24,7 @@ expenseRouter.post(
  * Route: /getAllExpenses
  * אפשר להעביר פרמטרים ב-query לצורך סינון (כגון: קטגוריה, סטטוס, תאריכים וכדומה)
  */
-expenseRouter.get(
-    "/getAllExpenses",
-    expenseController.getAllExpenses.bind(expenseController)
-);
+expenseRouter.get("/getAllExpenses",ExpenseController.getAllExpenses);
 
 /** 
  * שליפת הוצאה לפי מזהה (ID)
@@ -38,10 +32,7 @@ expenseRouter.get(
  * Route: /getExpenseById/:id
  * הפרמטר :id יגיע מכתובת ה-URL
  */
-expenseRouter.get(
-    "/getExpenseById/:id",
-    expenseController.getExpenseById.bind(expenseController)
-);
+expenseRouter.get("/getExpenseById/:id",ExpenseController.getExpenseById);
 
 /** 
  * עדכון הוצאה לפי מזהה
@@ -49,10 +40,7 @@ expenseRouter.get(
  * Route: /updateExpense/:id
  * גוף הבקשה (req.body) יכיל את השדות לעדכון
  */
-expenseRouter.put(
-    "/updateExpense/:id",
-    expenseController.updateExpense.bind(expenseController)
-);
+expenseRouter.put("/updateExpense/:id",ExpenseController.updateExpense);
 
 /** 
  * סימון הוצאה כבתשלום (mark as paid)
@@ -60,20 +48,14 @@ expenseRouter.put(
  * Route: /markExpenseAsPaid/:id
  * גוף הבקשה יכיל את פרטי התשלום (תאריך, אמצעי תשלום, רפרנס)
  */
-expenseRouter.put(
-    "/markExpenseAsPaid/:id",
-    expenseController.markExpenseAsPaid.bind(expenseController)
-);
+expenseRouter.put("/markExpenseAsPaid/:id",ExpenseController.markExpenseAsPaid);
 
 /** 
  * מחיקת הוצאה לפי מזהה
  * Method: DELETE
  * Route: /deleteExpense/:id
  */
-expenseRouter.delete(
-    "/deleteExpense/:id",
-    expenseController.deleteExpense.bind(expenseController)
-);
+expenseRouter.delete("/deleteExpense/:id",ExpenseController.deleteExpense);
 
 // ייצוא ה-router לשימוש ב-app הראשי (main app)
 export default expenseRouter;

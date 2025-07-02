@@ -1,24 +1,34 @@
-import { ReportParameters, Revenue } from 'shared-types'; // ייבוא טיפוסים מה־shared-types
-import { getReservationRevenue } from './reservationService'; // ייבוא פונקציה קיימת שמחשבת הכנסות מהזמנות
-import { getPaymentsRevenue } from './payments.service'; // ייבוא פונקציה קיימת שמחשבת הכנסות מתשלומים
+import { ReportParameters, Payment, ID, DateISO } from 'shared-types';
+import { PaymentService } from './payments.service';
 
 /**
- * איסוף כל ההכנסות ממקורות שונים לפי פרמטרים
- * @param parameters - פרמטרים לסינון (תאריך, לקוח, סוג חלל וכו')
- * @returns מערך הכנסות אחיד
+ * מחזיר רשימת הכנסות (Payments) לפי פרמטרים של דוח
+ * @param parameters פרמטרים לסינון הדוח
+ * @returns מערך תשלומים
  */
-export async function getRevenues(parameters: ReportParameters): Promise<Revenue[]> {
-  const revenues: Revenue[] = [];
+export async function getRevenues(parameters: ReportParameters): Promise<Payment[]> {
+  const paymentService = new PaymentService();
+  const payments: Payment[] = [];
 
-  // 1. שליפת הכנסות מהזמנות (Reservations)
-  const reservationRevenues = await getReservationRevenue(parameters);
-  revenues.push(...reservationRevenues);
+  
 
-  // 2. שליפת הכנסות מתשלומים (Payments)
-  const paymentRevenues = await getPaymentsRevenue(parameters);
-  revenues.push(...paymentRevenues);
+  // סינון לפי טווח תאריכים
+  const from = new Date(parameters.dateRange.startDate as DateISO);
+  const to = new Date(parameters.dateRange.endDate as DateISO);
 
-  // 3. אפשר להוסיף כאן מקורות הכנסה נוספים בעתיד...
-
-  return revenues; // 4. החזרת כל ההכנסות כמערך אחד אחיד
+  const filtered = payments.filter((payment) => {
+    const paymentDate = new Date(payment.date);
+    return paymentDate >= from && paymentDate <= to;
+  });
+// עבור כל לקוח ברשימת ה-customerIds (אם קיימת)
+  if (parameters.customerIds && parameters.customerIds.length > 0) {
+    for (const customerId of parameters.customerIds) {
+      const customerPayments = await paymentService.getPaymentHistory(customerId);
+      payments.push(...customerPayments);
+    }
+  } else {
+    console.warn('getRevenues: No customerIds provided. Returning empty result.');
+    return [];
+  }
+  return filtered;
 }
