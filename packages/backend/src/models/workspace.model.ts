@@ -1,10 +1,11 @@
 import { ID } from "shared-types";
 import { WorkspaceType } from "shared-types";
-import { Space, SpaceStatus } from "shared-types";
+import { Space, SpaceStatus } from "shared-types/workspace";
 
 
 export class WorkspaceModel implements Space {
   id?: ID;
+  workspaceMapId?: ID; // אם יש צורך בשדה ייחודי נוסף
   name: string;
   description?: string;
   type: WorkspaceType;
@@ -24,6 +25,7 @@ export class WorkspaceModel implements Space {
 
   constructor(params: {
     id: string;
+    workspaceMapId?: ID; // אם יש צורך בשדה ייחודי נוסף
     name: string;
     type: WorkspaceType;
     status: SpaceStatus;
@@ -39,6 +41,7 @@ export class WorkspaceModel implements Space {
     currentCustomerName?: string;
   }) {
     this.id = params.id|| undefined;
+    this.workspaceMapId = params.workspaceMapId || undefined; // אם יש צורך בשדה ייחודי נוסף
     this.name = params.name;
     this.type = params.type;
     this.status = params.status;
@@ -56,6 +59,7 @@ export class WorkspaceModel implements Space {
 
   toDatabaseFormat() {
     return {
+      workspace_map_id: this.workspaceMapId,
       name: this.name,
       type: this.type,
       status: this.status,
@@ -71,4 +75,26 @@ export class WorkspaceModel implements Space {
       current_customer_name: this.currentCustomerName,
     };
   }
+       static fromDatabaseFormat(dbData: any): WorkspaceModel { {
+        return new WorkspaceModel({
+            id: dbData.id,
+            name: dbData.name,
+            type: dbData.type,
+            status: dbData.status,
+            positionX: dbData.position_x,
+            positionY: dbData.position_y,
+            width: dbData.width,
+            height: dbData.height,
+            createdAt: dbData.created_at,
+            updatedAt: dbData.updated_at,
+            description: dbData.description || undefined,
+            room: dbData.room || undefined,
+            currentCustomerId: dbData.current_customer_id || undefined,
+            currentCustomerName: dbData.current_customer_name || undefined
+        });
+    }
+    }
+    static fromDatabaseFormatArray(dbDataArray: any[] ): WorkspaceModel[] {
+        return dbDataArray.map(dbData => WorkspaceModel.fromDatabaseFormat(dbData));
+    }
 }

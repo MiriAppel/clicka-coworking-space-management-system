@@ -8,9 +8,11 @@ import translationRouter from './routes/translation.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import bookRouter from './routes/booking.route';
+import workspaceRouter from './routes/workspace.route';
 import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
+import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/WorkspaceMapRoute'
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
@@ -32,6 +34,9 @@ app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
 app.use('/api/space', spaceRouter);
 app.use('/api/map',routerMap);
+
+app.use('/api/workspace', workspaceRouter);
+app.use('/api/occupancy', occupancyrouter);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 // app.use('/api/leadInteraction', routerCstomer);

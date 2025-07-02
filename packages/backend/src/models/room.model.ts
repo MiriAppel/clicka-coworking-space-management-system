@@ -2,7 +2,7 @@ import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from 'shared-types/b
 import { ID, DateISO } from 'shared-types/core';
 
 export class RoomModel implements Room{
-  id: ID;
+  id?: ID;
   name: string;
   description?: string;
   type: RoomType;

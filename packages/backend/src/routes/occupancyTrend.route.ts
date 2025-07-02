@@ -1,19 +1,21 @@
 import  express  from "express";
 import * as OccupancyTrendControllers from '../controllers/occupancyTrend.controllers';
 
-const router=express.Router();
-router.get('/:id/report',OccupancyTrendControllers.getSnapshotReport);
-router.get('/client/:customerId/calculate', OccupancyTrendControllers.calculateClientOccupancySnapshot);
-router.post('/dontsent', OccupancyTrendControllers.sendOccupancyAlert);
-router.post('/capacity',OccupancyTrendControllers.checkAndTriggerAlert);
-router.post('/rate',OccupancyTrendControllers.calculateOccupancyRate);
-router.post('/client/:customerId/integrate', OccupancyTrendControllers.integraionCustomer);
-router.put('/:id', OccupancyTrendControllers.updateTrend);
-router.put('/:id/archive',OccupancyTrendControllers.archiveOldTrend);
-router.get('/:id/export', OccupancyTrendControllers.exportOccupancyTrendToCSV);
+const occupancyrouter=express.Router();
+occupancyrouter.get('/report/:id', OccupancyTrendControllers.getSnapshotReport);
+occupancyrouter.get('/client/:customerId/calculate', OccupancyTrendControllers.calculateClientOccupancySnapshot);
+occupancyrouter.post('/dontsent', OccupancyTrendControllers.sendOccupancyAlert);
+occupancyrouter.post('/capacity',OccupancyTrendControllers.checkAndTriggerAlert);
+occupancyrouter.post('/rate',OccupancyTrendControllers.calculateOccupancyRate);
+occupancyrouter.post('/client/:customerId/integrate', OccupancyTrendControllers.integraionCustomer);
+occupancyrouter.put('/updateTrend/:id', OccupancyTrendControllers.updateTrend);
+occupancyrouter.put('/:id/archive',OccupancyTrendControllers.archiveOldTrend);
+occupancyrouter.get('/getAllTrends', OccupancyTrendControllers.getAllTrends);
+occupancyrouter.get('/:id/export', OccupancyTrendControllers.exportOccupancyTrendToCSV);
+occupancyrouter.post('/createTrend', OccupancyTrendControllers.createTrend);
+occupancyrouter.delete('/deleteTrend/:id', OccupancyTrendControllers.deleteTrend);
+occupancyrouter.get('/getTrendById/:id', OccupancyTrendControllers.getTrendById);
 
-
-
-export default router;
+export default occupancyrouter;
 
 
