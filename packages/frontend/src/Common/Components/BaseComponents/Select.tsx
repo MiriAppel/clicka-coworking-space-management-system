@@ -24,7 +24,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   className,
   "data-testid": testId,
 }) => {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const {
     register,
     formState: { errors },
