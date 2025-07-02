@@ -3,10 +3,6 @@ import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
 
-function getNestedError(obj: any, path: string) {
-  return path.split('.').reduce((o, k) => (o ? o[k] : undefined), obj);
-}
-
 interface InputFieldProps {
   name: string; 
   label: string;
@@ -34,14 +30,14 @@ export const InputField: React.FC<InputFieldProps> = ({
   placeholder,
   // multiple,
 }) => {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const {
     register, //ה מה שמקשר את הINPUT ונותן את האפשרות לעשות ולידציות, לבדוק שינויים, מכניס את זה לתוך הסובמיט 
     formState: { errors }, //מגדיר את כל השדיעות לדוג אם יש לי שגיעה בשם אז יעשה לי ERROR.NAME.MESSAGE ויזרוק את השגיעה 
     // זה השימוש של REACT-HOOK כדי שאני לא יצטרך להעביר את כל הPROPS בצורה ידיני מביא לי אותם ככה 
   } = useFormContext();
 
-  const error = getNestedError(errors, name)?.message as string | undefined;
+  const error = errors[name]?.message as string | undefined;
   const effectiveDir = dir || theme.direction;
 
   return (
