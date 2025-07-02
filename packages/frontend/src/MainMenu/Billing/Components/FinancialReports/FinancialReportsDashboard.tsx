@@ -6,7 +6,7 @@ import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1';
 import { ReportType, ReportParameters } from 'shared-types';
-import { ReportChart } from '../../../../Common/Components/BaseComponents/Chart';
+import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph';
 import { Table } from '../../../../Common/Components/BaseComponents/Table';
 
 // סוגי דוחות
@@ -180,7 +180,7 @@ export const FinancialReportsDashboard: React.FC = () => {
       {reportData && (
         <>
           {selectedType === 'REVENUE' && reportData.revenueData && (
-            <ReportChart
+            <ChartDisplay
               type={selectedChartType} // שינוי סוג הגרף כאן
               data={reportData.revenueData.breakdown.map((item) => ({
                 label: item.date,
@@ -191,7 +191,7 @@ export const FinancialReportsDashboard: React.FC = () => {
           )}
 
           {selectedType === 'EXPENSES' && reportData.expenseData && (
-            <ReportChart
+            <ChartDisplay
               type={selectedChartType} // שינוי סוג הגרף כאן
               data={reportData.expenseData.monthlyTrend.map((item) => ({
                 label: item.month,

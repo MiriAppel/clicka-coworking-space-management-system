@@ -1,7 +1,7 @@
 // קומפוננטה גנרית להצגת דוחות לפי סוג (REVENUE, EXPENSES, PROFIT_LOSS, וכו')
 import React, { useEffect, useState } from 'react';
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReportsStore';
-import { ReportChart } from '../../../../Common/Components/BaseComponents/Chart';
+import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph';
 import { Table } from '../../../../Common/Components/BaseComponents/Table';
 import type {
   DateRangeFilter,
@@ -151,7 +151,7 @@ export const DynamicReportView: React.FC<DynamicReportViewProps> = ({ type, titl
 
       {/* גרף */}
       {chartData.length > 0 && (
-        <ReportChart title={title} type={chartType} data={chartData} />
+        <ChartDisplay title={title} type={chartType} data={chartData} />
       )}
 
       {/* טבלה */}

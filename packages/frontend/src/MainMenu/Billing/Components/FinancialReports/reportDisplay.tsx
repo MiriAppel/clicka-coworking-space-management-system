@@ -2,7 +2,7 @@
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReportsStore';
 
 // ייבוא קומפוננטת התרשים החוזרת (עם כפתורי ייצוא, תמיכה ב-RTL וכו')
-import { ReportChart } from '../../../../Common/Components/BaseComponents/Chart';
+import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph';
 
 // ייבוא טיפוס ENUM של סוגי הדוחות
 import{ ReportType } from 'shared-types';
@@ -74,7 +74,7 @@ const ReportDisplay = () => {
   return (
     <div style={{ marginTop: '2rem' }}>
        {/* קומפוננטת הגרף עם כותרת, סוג גרף והנתונים */}
-      <ReportChart
+      <ChartDisplay
         title={`דוח: ${type}`}   // כותרת גרף – סוג הדוח
         type={chartType}         // סוג התרשים (עמודות/קו/עוגה)
         data={chartData}         // הנתונים המותאמים לגרף

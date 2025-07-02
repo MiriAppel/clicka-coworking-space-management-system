@@ -1,7 +1,7 @@
 // קומפוננטת דו"ח הכנסות עם תיעוד מפורט על כל שורה
 import React, { useEffect, useState } from 'react'; // ייבוא React ו־hooks
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReportsStore'; // שימוש ב־Zustand store לדוחות פיננסיים
-import { ReportChart } from '../../../../Common/Components/BaseComponents/Chart'; // קומפוננטת גרף כללית
+import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph'; // קומפוננטת גרף כללית
 import type { DateRangeFilter, RevenueReportResponse } from 'shared-types'; // טיפוסים רלוונטיים
 
 const RevenueReportView: React.FC = () => {
@@ -83,7 +83,7 @@ const RevenueReportView: React.FC = () => {
 
       {/* הצגת גרף אם יש נתונים */}
       {chartData.length > 0 && (
-        <ReportChart
+        <ChartDisplay
           title="הכנסות לפי חודש" // כותרת הגרף
           type="line"              // סוג הגרף: קו
           data={chartData}         // מערך הנתונים להצגה
