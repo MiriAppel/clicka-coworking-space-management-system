@@ -1,9 +1,10 @@
 
+import { UUID } from "node:crypto";
 import type{ ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } from "shared-types";
 
 export class LeadModel implements Lead {
   
-  id?: ID; // PK
+  id?: UUID; // PK
   idNumber: ID; // FK
   name: string;
   phone: string;
@@ -36,7 +37,7 @@ export class LeadModel implements Lead {
     createdAt: string,
     updatedAt: string
   ) {
-    this.id = id;
+    // this.id = id;
     this.idNumber = idNumber;
     this.name = name;
     this.phone = phone;

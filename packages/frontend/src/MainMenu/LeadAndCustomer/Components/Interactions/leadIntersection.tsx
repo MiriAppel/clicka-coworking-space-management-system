@@ -140,7 +140,9 @@ export const LeadInteractions = () => {
                 ? "border-red-500 bg-red-50"
                 : "hover:bg-gray-50"
             }`}
-          onClick={() => setSelectedId(selectedId === lead.id ? null : lead.id!)}
+          onClick={() => {setSelectedId(selectedId === lead.id ? null : lead.id!)
+             {console.log(lead.id, selectedId)}}
+          }
         >
           <div className="flex justify-between items-center">
             <div>
@@ -148,8 +150,12 @@ export const LeadInteractions = () => {
               <div className="text-sm text-gray-600">סטטוס: {lead.status}</div>
             </div>
           </div>
+           
           {selectedId === lead.id && (
+         
+            
             <LeadInteractionDetails lead={lead} onDelete={() => deleteLead(lead.id!)} />
+            
           )}
         </div>
       ))}

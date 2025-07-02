@@ -5,15 +5,29 @@ import { LeadStatus, LeadSource, Lead } from "shared-types";
 
 // קומפוננטת בן – נפתחת בלחיצה
 export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelete: () => void }) => {
+  
   const navigate = useNavigate();
 
   return (
     <div className="bg-blue-50 mt-2 p-4 rounded-lg border border-blue-200">
       <div className="text-sm text-gray-700 mb-2">
-        <div>טלפון: {lead.phone}</div>
-        <div>אימייל: {lead.email}</div>
-        <div>ת"ז: {lead.idNumber}</div>
-        <div>תאריך יצירה: {new Date(lead.createdAt).toLocaleDateString()}</div>
+<div>
+  {lead.interactions.length > 0 && <div>אינטראקציות של המתעניין: </div>}
+  <div>
+    {lead.interactions.map((interaction, index) => (
+      <div key={index}>
+        <p>סוג אינטראקציה: {interaction.type}</p>
+        <p>אימייל משתמש: {interaction.userEmail}</p>
+        <p>תאריך עדכון: {new Date(interaction.updatedAt).toLocaleDateString()}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+
+
+        {/* <div>ת"ז: {lead.idNumber}</div> */}
+        {/* <div>תאריך יצירה: {new Date(lead.createdAt).toLocaleDateString()}</div> */}
       </div>
       <div className="flex gap-2">
         <Button
@@ -32,7 +46,7 @@ export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelet
           size="sm"
           onClick={() => alert("עדכון בעתיד")}
         >
-          עדכון
+          הוספת אינטראקציה
         </Button>
         <Button
           variant="accent"
