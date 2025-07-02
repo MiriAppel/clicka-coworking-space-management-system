@@ -25,7 +25,7 @@ export const addInteraction = async (lead:Lead) => {
             throw new Error("Failed to add interaction");
         }
 
-        return await response.json();
+        return await response;
     } catch (error) {
         console.error("Error adding interaction:", error);
         throw error;
