@@ -66,7 +66,7 @@ export const CustomerDetails = () => {
         ],
         createdAt: new Date().toISOString() as any,
         updatedAt: new Date().toISOString() as any,
-    })
+    });
 
     const editCustomer = () => {
         

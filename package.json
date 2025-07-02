@@ -8,11 +8,6 @@
     "start:frontend": "yarn workspace clicka-frontend start",
     "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
   },
-  "scripts": {
-    "start:backend": "yarn workspace clicka-backend dev",
-    "start:frontend": "yarn workspace clicka-frontend start",
-    "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
-  },
   "workspaces": [
     "packages/*"
   ],
@@ -25,6 +20,12 @@
     "@supabase/supabase-js": "^2.50.2",
     "express": "^5.1.0",
     "react-hook-form": "^7.58.1",
+    "fs": "^0.0.1-security",
+    "googleapis": "^150.0.1",
+    "mailcomposer": "^4.0.2",
+    "multer": "^2.0.1",
+    "nodemailer": "^7.0.3",
+    "path": "^0.12.7",
     "ts-node": "^10.9.2",
     "zod": "^3.25.67",
     "lucide-react": "^0.525.0",

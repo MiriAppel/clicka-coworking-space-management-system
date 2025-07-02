@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../Common/Components/BaseComponents/Button';
-import '../Css/leadAndCustomer.css'
+// import '../Css/leadAndCustomer.css'
 
 //!!אין צורך בעמוד הזה
 

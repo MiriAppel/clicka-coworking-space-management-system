@@ -163,13 +163,15 @@ import { deleteCustomer } from "../../Service/LeadAndCustomersService";
 import { Stack, TextField } from "@mui/material";
 import axios from "axios";
 import debounce from "lodash/debounce";
+import { Pencil, Trash } from "lucide-react"; 
+
 
 interface ValuesToTable {
   id: string;
   name: string;
   phone: string;
   email: string;
-  status: React.ReactElement;
+  status: CustomerStatus;
   businessName: string;
   businessType: string;
 }
@@ -316,18 +318,19 @@ export const CustomersList = () => {
       businessName: customer.businessName || "לא זמין",
       businessType: customer.businessType || "לא זמין",
       // המרת הסטטוס לאלמנט ריאקט עם כפתור עדכון
-      status: (
-        <div className="flex justify-between">
-          {statusLabels[customer.status]}
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => navigate(`updateStatus/${customer.id}`)}
-          >
-            עדכון
-          </Button>
-        </div>
-      ),
+      // status: (
+      //   <div className="flex justify-between">
+      //     {statusLabels[customer.status]}
+      //     <Button
+      //       variant="secondary"
+      //       size="sm"
+      //       onClick={() => navigate(`updateStatus/${customer.id}`)}
+      //     >
+      //       עדכון
+      //     </Button>
+      //   </div>
+      // ),
+      status: customer.status
     }));
   };
 
@@ -335,7 +338,22 @@ export const CustomersList = () => {
     { header: "שם", accessor: "name" },
     { header: "פלאפון", accessor: "phone" },
     { header: "מייל", accessor: "email" },
-    { header: "סטטוס", accessor: "status" },
+     {
+    header: "סטטוס",
+    accessor: "status",
+    render: (value, row) => (
+      <div className="flex justify-between items-center">
+        {statusLabels[row.status as CustomerStatus] || row.status}
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => navigate(`updateStatus/${row.id}`)}
+        >
+          <Pencil size={10} />
+        </Button>
+      </div>
+    ),
+  },
     { header: "שם העסק", accessor: "businessName" },
     { header: "סוג עסק", accessor: "businessType" },
   ];
