@@ -9,15 +9,17 @@ import { useNavigate } from "react-router-dom";
 import { LeadStatus, LeadSource, Lead, AddLeadInteractionRequest } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 
-export const addInteraction = async (leadId: string, interaction: AddLeadInteractionRequest) => {
+export const addInteraction = async (leadId: string, lead: Lead) => {
     // Call API to add interaction
     try {
-        const response = await fetch(`/api/leads?id=${leadId}`, {
+        console.log();
+        
+        const response = await fetch(`http://localhost:3001/api/leads/${leadId}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(interaction),
+            body: JSON.stringify(lead),
         });
 
         if (!response.ok) {

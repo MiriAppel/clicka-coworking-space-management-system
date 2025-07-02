@@ -68,8 +68,11 @@ export const getSourcesLeadById = async (req: Request, res: Response) => {
 // עדכון ליד
 export const patchLead = async (req: Request, res: Response) => {
   const leadData = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
-
+  console.log(leadData);
+  
   const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
+  console.log(id);
+  
   try {
     const updatedLead = await serviceLead.patch(leadData, id);
     res.status(200).json(updatedLead);
