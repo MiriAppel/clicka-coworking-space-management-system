@@ -164,7 +164,7 @@ import { Stack, TextField } from "@mui/material";
 import axios from "axios";
 import debounce from "lodash/debounce";
 import { Pencil, Trash } from "lucide-react";
-// import { supabase } from "../../../../Services/supabaseClient";
+import { supabase } from "../../../../Services/supabaseClient";
 
 
 
@@ -296,13 +296,13 @@ export const CustomersList = () => {
   }, [hasMore, isSearching]);
 
   // useEffect(() => {
-  //   fetchCustomers();
+  //   // fetchCustomers();
   //   // האזנה לשינויים בטבלת customers
   //   const channel = supabase
   //     .channel('public:customer')
   //     .on(
   //       'postgres_changes',
-  //       { event: '*', schema: 'public', table: 'customers' },
+  //       { event: '*', schema: 'public', table: 'customer' },
   //       (payload) => {
   //         // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
   //         fetchCustomers();
