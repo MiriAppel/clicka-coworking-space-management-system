@@ -3,9 +3,6 @@ dotenv.config();
 console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
 console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
 
-// dotenv.config(); 
-// console.log('SUPABASE_URL at supabaseClient:', process.env.SUPABASE_URL);
-
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
 });

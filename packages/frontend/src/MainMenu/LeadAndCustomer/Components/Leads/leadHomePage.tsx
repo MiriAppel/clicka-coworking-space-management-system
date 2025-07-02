@@ -161,8 +161,9 @@ export const LeadsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // שליפה ראשונית מהשרת
-  useEffect(() => {
-    console.log("Fetching initial leads...");
+
+  const fetchLeads = async () => {
+        console.log("Fetching initial leads...");
 
     axios
       .get("http://localhost:3001/api/leads/by-page", {
@@ -196,6 +197,43 @@ export const LeadsPage = () => {
 
         console.error("Error fetching leads:", error);
       });
+  }
+  useEffect(() => {
+    fetchLeads();
+    // console.log("Fetching initial leads...");
+
+    // axios
+    //   .get("http://localhost:3001/api/leads/by-page", {
+    //     params: { page, limit: 50 },
+    //   })
+    //   .then((response) => {
+    //     if (response.data.length < 50) {
+    //       setHasMore(false); // אין יותר נתונים
+    //     }
+    //     // עדכון הלידים שצריכים להופיע בדף
+    //     setLeads((prev) => {
+    //       const ids = new Set(prev.map((l) => l.id));
+    //       const uniqueNew = response.data.filter(
+    //         (lead: Lead) => !ids.has(lead.id)
+    //       );
+    //       return [...prev, ...uniqueNew];
+    //     });
+
+    //     // עדכון המאגר הכללי של הלידים
+    //     setAllLeads((prev) => {
+    //       const ids = new Set(prev.map((l) => l.id));
+    //       const uniqueNew = response.data.filter(
+    //         // מסנן לידים שלא קיימים כבר במאגר הכללי
+    //         (lead: Lead) => !ids.has(lead.id)
+    //       );
+    //       return [...prev, ...uniqueNew];
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.log("error in leadHomePage.tsx useEffect:", error);
+
+    //     console.error("Error fetching leads:", error);
+    //   });
   }, [page]);
 
   useEffect(() => {
@@ -261,7 +299,7 @@ export const LeadsPage = () => {
     try {
       await deleteLead(id);
       //לראות איך לעדכן את הנתונים או שיעבוד הרפרוש או לרפרש שוב
-      // fetchCustomers();
+      fetchLeads();
       alert("מתעניין נמחק בהצלחה");
     } catch (error) {
       console.error("שגיאה במחיקת מתעניין:", error);

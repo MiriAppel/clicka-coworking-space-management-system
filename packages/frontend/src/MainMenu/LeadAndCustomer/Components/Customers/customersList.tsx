@@ -163,7 +163,9 @@ import { deleteCustomer } from "../../Service/LeadAndCustomersService";
 import { Stack, TextField } from "@mui/material";
 import axios from "axios";
 import debounce from "lodash/debounce";
-import { Pencil, Trash } from "lucide-react"; 
+import { Pencil, Trash } from "lucide-react";
+// import { supabase } from "../../../../Services/supabaseClient";
+
 
 
 interface ValuesToTable {
@@ -206,8 +208,7 @@ export const CustomersList = () => {
   //       setIsLoading(false);
   //     }
   //   };
-
-  useEffect(() => {
+  const fetchCustomers = async () => {
     axios
       .get("http://localhost:3001/api/customers/by-page", {
         params: { page, limit: 50 },
@@ -241,7 +242,42 @@ export const CustomersList = () => {
         console.error("Error fetching leads:", error);
       })
       .finally(() => setIsLoading(false));
+  }
+  useEffect(() => {
+    // axios
+    //   .get("http://localhost:3001/api/customers/by-page", {
+    //     params: { page, limit: 50 },
+    //   })
+    //   .then((response) => {
+    //     if (response.data.length < 50) {
+    //       setHasMore(false);
+    //       // אין יותר נתונים
+    //     }
+    //     setCustomers((prev) => {
+    //       const ids = new Set(prev.map((l) => l.id));
+    //       const uniqueNew = response.data.filter(
+    //         (customer: Customer) => !ids.has(customer.id)
+    //       );
+    //       return [...prev, ...uniqueNew];
+    //     });
+    //     // עדכון המאגר הכללי של הלקוחות
+    //     setAllCustomers((prev) => {
+    //       const ids = new Set(prev.map((l) => l.id));
+    //       const uniqueNew = response.data.filter(
+    //         // מסנן לידים שלא קיימים כבר במאגר הכללי
+    //         (customer: Customer) => !ids.has(customer.id)
+    //       );
+    //       return [...prev, ...uniqueNew];
+    //     });
+    //   })
 
+    //   .catch((error) => {
+    //     console.log("error in customerList page", error);
+
+    //     console.error("Error fetching leads:", error);
+    //   })
+    //   .finally(() => setIsLoading(false));
+    fetchCustomers()
 
   }, [page]);
 
@@ -259,6 +295,26 @@ export const CustomersList = () => {
     return () => observer.disconnect();
   }, [hasMore, isSearching]);
 
+  // useEffect(() => {
+  //   fetchCustomers();
+  //   // האזנה לשינויים בטבלת customers
+  //   const channel = supabase
+  //     .channel('public:customer')
+  //     .on(
+  //       'postgres_changes',
+  //       { event: '*', schema: 'public', table: 'customers' },
+  //       (payload) => {
+  //         // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
+  //         fetchCustomers();
+  //       }
+  //     )
+  //     .subscribe();
+
+  //   // ניקוי מאזין כשיוצאים מהקומפוננטה
+  //   return () => {
+  //     supabase.removeChannel(channel);
+  //   };
+  // }, []);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -317,19 +373,6 @@ export const CustomersList = () => {
       email: customer.email,
       businessName: customer.businessName || "לא זמין",
       businessType: customer.businessType || "לא זמין",
-      // המרת הסטטוס לאלמנט ריאקט עם כפתור עדכון
-      // status: (
-      //   <div className="flex justify-between">
-      //     {statusLabels[customer.status]}
-      //     <Button
-      //       variant="secondary"
-      //       size="sm"
-      //       onClick={() => navigate(`updateStatus/${customer.id}`)}
-      //     >
-      //       עדכון
-      //     </Button>
-      //   </div>
-      // ),
       status: customer.status
     }));
   };
@@ -338,22 +381,22 @@ export const CustomersList = () => {
     { header: "שם", accessor: "name" },
     { header: "פלאפון", accessor: "phone" },
     { header: "מייל", accessor: "email" },
-     {
-    header: "סטטוס",
-    accessor: "status",
-    render: (value, row) => (
-      <div className="flex justify-between items-center">
-        {statusLabels[row.status as CustomerStatus] || row.status}
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => navigate(`updateStatus/${row.id}`)}
-        >
-          <Pencil size={10} />
-        </Button>
-      </div>
-    ),
-  },
+    {
+      header: "סטטוס",
+      accessor: "status",
+      render: (value, row) => (
+        <div className="flex justify-between items-center">
+          {statusLabels[row.status as CustomerStatus] || row.status}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate(`updateStatus/${row.id}`)}
+          >
+            <Pencil size={10} />
+          </Button>
+        </div>
+      ),
+    },
     { header: "שם העסק", accessor: "businessName" },
     { header: "סוג עסק", accessor: "businessType" },
   ];
