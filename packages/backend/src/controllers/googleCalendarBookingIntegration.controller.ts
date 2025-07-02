@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import * as CalendarService from '../services/googleCalendarBookingIntegration.service ';
 
-import { SyncBookingsWithGoogleRequest } from '../models/calendarSync.model';
-import { CalendarSync, CalendarSyncStatus } from '../models/calendarSync.model';
+import { SyncBookingsWithGoogleRequest } from 'shared-types/calendarSync';
+import { CalendarSync, CalendarSyncStatus } from 'shared-types/calendarSync';
 import type{ ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
 
 export const getGoogleCalendarEvents = async (req: Request, res: Response) => {

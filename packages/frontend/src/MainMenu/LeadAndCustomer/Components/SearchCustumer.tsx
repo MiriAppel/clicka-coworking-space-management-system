@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { create } from "zustand";
-import type { Person, Customer } from "shared-types";
-import { CustomerStatus, WorkspaceType } from "shared-types";
+import type { Person, Customer } from "./shared-types";
+import { CustomerStatus, WorkspaceType } from "./shared-types";
 
 interface StoreState {
     query: string;

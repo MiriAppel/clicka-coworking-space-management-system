@@ -15,7 +15,7 @@
       "@types/*": ["../../types/*"]
     }
   },
-  "include": ["src/**/*", "../../types/**/*", "../types"],
+  "include": ["src/**/*", "../../types/**/*", "../types", "../shared-types/book.ts", "../shared-types/mapCoordinates.ts", "../shared-types/src/mapLayout.ts", "../frontend/occupancy.ts"],
 
   "exclude": ["node_modules", "**/*.test.ts"]
 }

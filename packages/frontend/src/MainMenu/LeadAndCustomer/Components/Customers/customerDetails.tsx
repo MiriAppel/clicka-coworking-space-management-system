@@ -2,7 +2,7 @@ import { useParams } from "react-router";
 import { NavLink, Outlet, Link } from "react-router";
 import { useState } from "react";
 import '../../Css/customerDetails.css';
-import { CustomerStatus, WorkspaceType, PaymentMethodType, ExitReason , Customer } from "shared-types";
+import { CustomerStatus, WorkspaceType, PaymentMethodType, ExitReason , Customer } from "./shared-types";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 
 //לא צריך את העמוד הזה!!!!

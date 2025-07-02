@@ -1,12 +1,13 @@
 import express from 'express'
 import * as workspaceMapController from '../controllers/workspaceMap.controller'
 
-const router = express.Router()
-router.get('/', workspaceMapController.getAllWorkspacesMap)
-router.get('/:id', workspaceMapController.getWorkspaceMapById)
-router.post('/', workspaceMapController.createWorkspaceMap)
-router.put('/:id', workspaceMapController.updateWorkspaceMap)
-router.delete('/:id', workspaceMapController.deleteWorkspaceMap)
-router.post('/filter', workspaceMapController.filterMap)
+const routerMap = express.Router()
+routerMap.get('/all', workspaceMapController.getAllWorkspacesMap.bind(workspaceMapController))
+routerMap.get('/get/:id', workspaceMapController.getWorkspaceMapById.bind(workspaceMapController))
+routerMap.get('/by-name/:name', workspaceMapController.getWorkspaceMapByName.bind(workspaceMapController))
+routerMap.post('/post-map', workspaceMapController.createWorkspaceMap.bind(workspaceMapController))
+routerMap.put('/update/:id', workspaceMapController.updateWorkspaceMap.bind(workspaceMapController))
+routerMap.delete('/delete/:id', workspaceMapController.deleteWorkspaceMap.bind(workspaceMapController))
 
-export default router
+
+export default routerMap

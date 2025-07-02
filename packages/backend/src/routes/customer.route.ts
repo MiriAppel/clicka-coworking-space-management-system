@@ -1,32 +1,32 @@
-import express from 'express';
-import * as customerController from '../controllers/customer.controller'; 
-import * as contractController from '../controllers/contract.controller'
+// import express from 'express';
+// import * as customerController from '../controllers/customer.controller'; 
+// import * as contractController from '../controllers/contract.controller'
 
-const routerCstomer = express.Router();
+// const routerCstomer = express.Router();
 
-// (GET)
+// // (GET)
 
-routerCstomer.get('/', customerController.getAllCustomers); 
+// routerCstomer.get('/', customerController.getAllCustomers); 
 
-routerCstomer.get('/page', customerController.getCustomersByPage); 
+// routerCstomer.get('/page', customerController.getCustomersByPage); 
 
-routerCstomer.get('/status/all', customerController.getAllCustomerStatus);
+// routerCstomer.get('/status/all', customerController.getAllCustomerStatus);
 
-routerCstomer.get('/notify/:id', customerController.getCustomersToNotify); 
+// routerCstomer.get('/notify/:id', customerController.getCustomersToNotify); 
 
-routerCstomer.get('/id/:id', customerController.getCustomerById); 
+// routerCstomer.get('/id/:id', customerController.getCustomerById); 
 
-routerCstomer.get('/filter', customerController.getCustomersByFilter);
+// routerCstomer.get('/filter', customerController.getCustomersByFilter);
 
-//(POST)
-routerCstomer.post('/exit-notice', customerController.postExitNotice); 
+// //(POST)
+// routerCstomer.post('/exit-notice', customerController.postExitNotice); 
 
-routerCstomer.post('/post-customer', customerController.postCustomer); 
+// routerCstomer.post('/post-customer', customerController.postCustomer); 
 
-//PATCH/PUT)
-routerCstomer.patch('/:id', customerController.patchCustomer); 
+// //PATCH/PUT)
+// routerCstomer.patch('/:id', customerController.patchCustomer); 
 
-routerCstomer.delete('/:id', customerController.deleteCustomer);
+// routerCstomer.delete('/:id', customerController.deleteCustomer);
 
-export default routerCstomer;
+// export default routerCstomer;
 

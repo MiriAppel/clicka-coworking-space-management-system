@@ -3,5 +3,5 @@ import { ComponentProps } from '../Service/componentProps';
 
 
 const defaultTheme: ComponentProps = {
-   
+    
 }
