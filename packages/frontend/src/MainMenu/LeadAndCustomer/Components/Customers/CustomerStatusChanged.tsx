@@ -15,7 +15,7 @@ import {
   getCustomerById,
   patchCustomer,
   recordExitNotice,
-} from '../../Service/LeadAndCustomersService';
+} from '../../service/LeadAndCustomersService';
 
 // interface Props {
 //   open: boolean;

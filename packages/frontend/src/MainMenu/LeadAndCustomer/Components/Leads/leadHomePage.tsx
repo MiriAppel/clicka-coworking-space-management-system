@@ -26,7 +26,7 @@ import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { SearchLeads } from "./SearchLeads";
-import { deleteLead } from "../../Service/LeadAndCustomersService";
+import { deleteLead } from "../../service/LeadAndCustomersService";
 
 
 interface ValuesToTable {

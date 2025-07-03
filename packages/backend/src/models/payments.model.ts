@@ -1,6 +1,7 @@
 import type{ DateISO, FileReference, ID, Payment, PaymentMethodType } from "shared-types";
 
 export class PaymentModel implements Payment{
+ 
      id: ID;
      customer_id: ID;
      customer_name: string;
@@ -44,5 +45,21 @@ export class PaymentModel implements Payment{
         this.updatedAt=updatedAt;
 
     }
+     toDatabaseFormat(): Payment {
+        return {
+            id: this.id,
+            customer_id: this.customer_id,
+            customer_name: this.customer_name,
+            invoice_id: this.invoice_id,
+            invoice_number: this.invoice_number,
+            amount: this.amount,
+            method: this.method,
+            transaction_reference: this.transaction_reference,
+            date: this.date,
+            notes: this.notes,
+            receipt_file: this.receipt_file,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,};
+    }   
 
 }

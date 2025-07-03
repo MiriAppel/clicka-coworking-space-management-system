@@ -162,7 +162,7 @@ export class customerService extends baseService<CustomerModel> {
 
   //מחזיר את כל הלקוחות רק של העמוד הראשון
   getCustomersByPage = async (filters: {
-      page?: number;
+      page?: string ;
       limit?: number;
     }): Promise<CustomerModel[]> => {
       console.log("Service getCustomersByPage called with:", filters);
@@ -182,7 +182,7 @@ export class customerService extends baseService<CustomerModel> {
       const { data, error } = await supabase
         .from("customer")
         .select("*")
-        .order("name", { ascending: true }) // מיון לפי שם
+        .order("created_at", { ascending: false })
         .range(from, to);
   
       console.log("Supabase data:", data);
