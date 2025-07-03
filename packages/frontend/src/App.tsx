@@ -5,7 +5,7 @@ import { Button } from './Common/Components/BaseComponents/Button';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
-import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+//import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 
 
