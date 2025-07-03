@@ -32,6 +32,7 @@
     "papaparse": "^5.5.3",
     "pg": "^8.16.0",
     "shared-types": "*",
+    "undici": "^7.10.0",
     "uuid": "^11.1.0",
     "yarn": "^1.22.22",
     "zustand": "^5.0.5"

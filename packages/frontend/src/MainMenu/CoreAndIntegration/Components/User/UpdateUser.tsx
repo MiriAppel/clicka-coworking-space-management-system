@@ -9,6 +9,7 @@ import { useUserStore } from '../../../../Stores/CoreAndIntegration/userStore';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 const schema = z.object({
     email: z.string().email("Invalid Email").nonempty("EMAIL is required"),
@@ -60,11 +61,9 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
             const result = await updateUser(user.id as string, updatedUser);
 
             if (result) {
-                alert("User updated successfully!");
+                showAlert("", "המשתמש עודכן בהצלחה", "success");
                 onUserUpdated?.();
                 onClose?.();
-            } else {
-                alert("Failed to update user - no response from server");
             }
         } catch (error) {
             console.error("Error details:", {
@@ -72,7 +71,7 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
                 stack: error instanceof Error ? error.stack : undefined,
                 fullError: error
             });
-            alert(`Failed to update user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            showAlert("שגיאה", "עדכון המשתמש נכשלה. נסה שוב", "error");
         } finally {
             setIsSubmitting(false);
         }
