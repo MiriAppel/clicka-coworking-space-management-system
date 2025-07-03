@@ -27,6 +27,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { SearchLeads } from "./SearchLeads";
 import { deleteLead } from "../../Service/LeadAndCustomersService";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 
 interface ValuesToTable {
@@ -131,20 +132,20 @@ export const LeadHomePage = ({ leads, onDelete }: LeadsListProps) => {
   //עד פה
 
   return (
-      <Table<ValuesToTable>
-        data={valuesToTable}
-        columns={Columns}
-        onDelete={(val) => onDelete(val.id)}
-        renderActions={(row) => (
-          <Button
-            onClick={() => navigate("interestedCustomerRegistration", { state: { data: leads.find(lead => lead.id == row.id) } })}
-            variant="primary"
-            size="sm"
-          >
-            לטופס רישום ללקוח
-          </Button>
-        )}
-      />
+    <Table<ValuesToTable>
+      data={valuesToTable}
+      columns={Columns}
+      onDelete={(val) => onDelete(val.id)}
+      renderActions={(row) => (
+        <Button
+          onClick={() => navigate("interestedCustomerRegistration", { state: { data: leads.find(lead => lead.id == row.id) } })}
+          variant="primary"
+          size="sm"
+        >
+          לטופס רישום ללקוח
+        </Button>
+      )}
+    />
   );
 };
 
@@ -157,12 +158,12 @@ export const LeadsPage = () => {
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  
+
 
   // שליפה ראשונית מהשרת
 
   const fetchLeads = async () => {
-        console.log("Fetching initial leads...");
+    console.log("Fetching initial leads...");
 
     axios
       .get("http://localhost:3001/api/leads/by-page", {
@@ -195,7 +196,8 @@ export const LeadsPage = () => {
         console.log("error in leadHomePage.tsx useEffect:", error);
 
         console.error("Error fetching leads:", error);
-      });
+      })
+      .finally(() => setIsLoading(false));
   }
   useEffect(() => {
     fetchLeads();
@@ -288,51 +290,57 @@ export const LeadsPage = () => {
     }
   };
 
-  // const handleDeleteLeads = (id: string) => {
-  //   setLeads((prev) => prev.filter((l) => l.id !== id));
-  //   setAllLeads((prev) => prev.filter((l) => l.id !== id)); // גם מהמאגר הכללי
-  // };
   const navigate = useNavigate();
 
   const deleteCurrentLead = async (id: string) => {
     try {
       await deleteLead(id);
-      //לראות איך לעדכן את הנתונים או שיעבוד הרפרוש או לרפרש שוב
-      fetchLeads();
-      alert("מתעניין נמחק בהצלחה");
+      //לראות איך לעדכן את הנתונים אוטומטי
+      setLeads((prev) => prev.filter(customer => customer.id !== id));
+      setAllLeads((prev) => prev.filter(customer => customer.id !== id));
+      showAlert("מחיקה", "מתעניין נמחק בהצלחה", "success");
     } catch (error) {
       console.error("שגיאה במחיקת מתעניין:", error);
-      alert("מחיקה נכשלה");
+      showAlert("שגיאה", `מחיקת המתעניין נכשלה\n${error}`, "error");
     }
   };
 
 
   return (
-    <div style={{ direction: "rtl", padding: "20px" }}>
-      <h2 className="text-3xl font-bold text-center text-blue-600 my-4">מתעניינים</h2>
-      <Button
-        variant="primary"
-        size="sm"
-        onClick={() => navigate("intersections")}
-      >
-        אינטראקציות של מתעניינים
-      </Button>
-      <Button
-        onClick={() => navigate("interestedCustomerRegistration")}
-        variant="primary"
-        size="sm"
-      >
-        הוספת מתעניין חדש
-      </Button>
-      <br />
-      <br />
-      <SearchLeads
-        term={searchTerm}
-        setTerm={setSearchTerm}
-        onSearch={handleSearch}
-      />
-      <LeadHomePage leads={leads} onDelete={deleteCurrentLead} />
-      <div ref={loaderRef} style={{ height: "1px" }} />
-    </div>
+    <>
+      {isLoading ? (
+        <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
+          טוען...
+        </h2>
+      ) : (
+        <div style={{ direction: "rtl", padding: "20px" }}>
+          <h2 className="text-3xl font-bold text-center text-blue-600 my-4">מתעניינים</h2>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate("intersections")}
+          >
+            אינטראקציות של מתעניינים
+          </Button>
+          <Button
+            onClick={() => navigate("interestedCustomerRegistration")}
+            variant="primary"
+            size="sm"
+          >
+            הוספת מתעניין חדש
+          </Button>
+          <br />
+          <br />
+          <SearchLeads
+            term={searchTerm}
+            setTerm={setSearchTerm}
+            onSearch={handleSearch}
+          />
+          <br />
+          <LeadHomePage leads={leads} onDelete={deleteCurrentLead} />
+          <div ref={loaderRef} style={{ height: "1px" }} />
+        </div>
+      )}
+    </>
   );
 };

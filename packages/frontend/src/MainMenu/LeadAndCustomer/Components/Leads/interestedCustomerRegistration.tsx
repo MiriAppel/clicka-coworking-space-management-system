@@ -11,6 +11,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
 import { createCustomer, deleteLead } from "../../Service/LeadAndCustomersService"
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+
+//לראות איך לעשות שיראו את השגיאה עצמה לדוגמא תז כפול
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
@@ -64,7 +67,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
     // המידע שאני מקבלת מהדף הקודם - או לעשות קריאת שרת שמקבלת מתעניין בודד לפי מזהה
     const lead: Lead = location.state?.data;
 
-    const [showForm, setShowForm] = useState<boolean>(true);
+    // const [showForm, setShowForm] = useState<boolean>(true);
 
     const [currentStep, setCurrentStep] = useState<number>(0);
 
@@ -213,77 +216,75 @@ export const InterestedCustomerRegistration: React.FC = () => {
         console.log(customerRequest);
 
         await createCustomer(customerRequest)
-            .then(() => {
-                setShowForm(false);
-                console.log("successfully create customer");
+            .then(async () => {
+                // setShowForm(false);
+
+                await deleteLead(lead.id!)
+                    .then(() => {
+                        showAlert("מחיקה", "המתעניין נוסף ללקוחות בהצלחה", "success");
+                        navigate(-1);
+                    }).catch((error) => {
+                        showAlert("שגיאה", `מחיקת המתעניין נכשלה\n${error}`, "error");
+                    })
 
             }).catch((error: Error) => {
-                console.error("Error create customer:", error);
+                showAlert("שגיאה", `שגיאה ביצירת לקוח:\n${error}`, "error");
             });
-
-            //מחיקת המתעניין
-        try {
-            await deleteLead(lead.id!);
-        } catch (error) {
-            console.error("שגיאה במחיקת מתעניין:", error);
-            alert("מחיקה נכשלה");
-        }
-
     }
 
 
     return <div className='interestedCustomerRegistration'>
         {/* כל עוד הטופס לא תקין רואים אותו ולאחר שליחה רואים את הדיב שבסוף */}
-        {showForm ?
-            <div>
-                <h1 className="text-3xl font-bold text-center text-blue-600 my-4">רישום מתעניין ללקוח</h1>
-                <h4 className="text-lg text-center text-gray-600 my-2">מלא את הפרטים החסרים</h4>
-                <Form
-                    label={steps[currentStep].title}
-                    schema={schema}
-                    onSubmit={onSubmit}
-                    methods={methods}
-                    className="mx-auto mt-10"
+        {/* {showForm ? */}
+        <div>
+            <h1 className="text-3xl font-bold text-center text-blue-600 my-4">רישום מתעניין ללקוח</h1>
+            <h4 className="text-lg text-center text-gray-600 my-2">מלא את הפרטים החסרים</h4>
+            <Form
+                label={steps[currentStep].title}
+                schema={schema}
+                onSubmit={onSubmit}
+                methods={methods}
+                className="mx-auto mt-10"
+            >
+                <div
+                    key={currentStep}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4 col-span-2"
                 >
-                    <div
-                        key={currentStep}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4 col-span-2"
-                    >
-                        {steps[currentStep].content}
+                    {steps[currentStep].content}
 
-                        <div className="col-span-2 flex justify-between">
-                            {/* צד ימין: כפתור הקודם או ריק */}
-                            {currentStep > 0 ? (
-                                <Button onClick={prevStep} variant="primary" size="sm">
-                                    הקודם
-                                </Button>
-                            ) : (
-                                <span /> // אלמנט ריק כדי לדחוף את הבא לשמאל
-                            )}
+                    <div className="col-span-2 flex justify-between">
+                        {/* צד ימין: כפתור הקודם או ריק */}
+                        {currentStep > 0 ? (
+                            <Button onClick={prevStep} variant="primary" size="sm">
+                                הקודם
+                            </Button>
+                        ) : (
+                            <span /> // אלמנט ריק כדי לדחוף את הבא לשמאל
+                        )}
 
-                            {/* צד שמאל: הבא או שלח */}
-                            {currentStep < steps.length - 1 ? (
-                                <Button onClick={nextStep} variant="primary" size="sm">
-                                    הבא
-                                </Button>
-                            ) : (
-                                <Button
-                                    variant="primary"
-                                    size="sm"
-                                    type="submit"
-                                >
-                                    שלח
-                                </Button>
-                            )}
-                        </div>
+                        {/* צד שמאל: הבא או שלח */}
+                        {currentStep < steps.length - 1 ? (
+                            <Button onClick={nextStep} variant="primary" size="sm">
+                                הבא
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                type="submit"
+                            >
+                                שלח
+                            </Button>
+                        )}
                     </div>
-                </Form>
-            </div>
-            :
+                </div>
+            </Form>
+        </div>
+        {/* :
             <div className="text-center my-4">
                 <h2 className="text-2xl font-semibold text-gray-700 mb-2">הלקוח נרשם בהצלחה!</h2>
                 <Button onClick={() => navigate(`/leadAndCustomer/customers`)} variant="primary" size="sm">למעבר לרשימת הלקוחות</Button>
-            </div>}
+            </div>} */}
     </div>
 
 

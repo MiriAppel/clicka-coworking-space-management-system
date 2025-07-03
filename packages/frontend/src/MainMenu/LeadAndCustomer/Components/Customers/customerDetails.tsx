@@ -15,60 +15,60 @@ export const CustomerDetails = () => {
     //דוגמא ללקוח בודד
     // כאן יהיה קריאת שרת לקבלת לקוח בודד עפי מזהה לקוח או שיקבלו אותו ישירות מהקומפוננטה של כל הלקוחות 
     // ויכנס למשתנה זה 
-    const [customer, setCustomer] = useState<Customer>({
-        id: customerId || "", //האם זה מבטא את מזהה הלקוח או המזהה של הDB 
-        name: "John Doe",
-        phone: "0555555555",
-        email: "exapmle@gmail.com",
-        idNumber: customerId || "", // האם זה מזהה הלקוח
-        businessName: "Example Business",
-        businessType: "Retail",
-        status: CustomerStatus.ACTIVE,
-        currentWorkspaceType: WorkspaceType.DESK_IN_ROOM,
-        workspaceCount: 1,
-        contractSignDate: new Date().toISOString() as any,
-        contractStartDate: new Date().toISOString() as any,
-        billingStartDate: new Date().toISOString() as any,
-        notes: "This is a sample customer note.",
-        invoiceName: "Example Invoice",
-        contractDocuments: [{
-            id: "",
-            name: "Contract Document",
-            path: "/documents/contract.pdf",
-            mimeType: "application/pdf",
-            size: 102400, // 100 KB;
-            url: "https://example.com/documents/contract.pdf",
-            googleDriveId: "12345",
-            createdAt: new Date().toISOString() as any,
-            updatedAt: new Date().toISOString() as any,
-        }],
-        paymentMethods: [{
-            id: "",
-            customerId: customerId || "",
-            creditCardLast4: "1234",
-            creditCardExpiry: "12/25",
-            creditCardHolderIdNumber: "123456789",
-            creditCardHolderPhone: "0555555555",
-            isActive: true,
-            createdAt: new Date().toISOString() as any,
-            updatedAt: new Date().toISOString() as any,
-        }],
-        periods: [{
-            id: "",
-            customerId: customerId || "",
-            entryDate: new Date().toISOString() as any,
-            exitDate: new Date().toISOString() as any,
-            exitNoticeDate: new Date().toISOString() as any,
-            exitReason: ExitReason.BUSINESS_CLOSED,
-            exitReasonDetails: "Business closed due to financial issues.",
-            createdAt: new Date().toISOString() as any,
-            updatedAt: new Date().toISOString() as any,
-        }
-        ],
-        createdAt: new Date().toISOString() as any,
-        updatedAt: new Date().toISOString() as any,
-        // paymentMethodsType: PaymentMethodType.CREDIT_CARD,
-    });
+    // const [customer, setCustomer] = useState<Customer>({
+    //     id: customerId || "", //האם זה מבטא את מזהה הלקוח או המזהה של הDB 
+    //     name: "John Doe",
+    //     phone: "0555555555",
+    //     email: "exapmle@gmail.com",
+    //     idNumber: customerId || "", // האם זה מזהה הלקוח
+    //     businessName: "Example Business",
+    //     businessType: "Retail",
+    //     status: CustomerStatus.ACTIVE,
+    //     currentWorkspaceType: WorkspaceType.DESK_IN_ROOM,
+    //     workspaceCount: 1,
+    //     contractSignDate: new Date().toISOString() as any,
+    //     contractStartDate: new Date().toISOString() as any,
+    //     billingStartDate: new Date().toISOString() as any,
+    //     notes: "This is a sample customer note.",
+    //     invoiceName: "Example Invoice",
+    //     contractDocuments: [{
+    //         id: "",
+    //         name: "Contract Document",
+    //         path: "/documents/contract.pdf",
+    //         mimeType: "application/pdf",
+    //         size: 102400, // 100 KB;
+    //         url: "https://example.com/documents/contract.pdf",
+    //         googleDriveId: "12345",
+    //         createdAt: new Date().toISOString() as any,
+    //         updatedAt: new Date().toISOString() as any,
+    //     }],
+    //     paymentMethods: [{
+    //         id: "",
+    //         customerId: customerId || "",
+    //         creditCardLast4: "1234",
+    //         creditCardExpiry: "12/25",
+    //         creditCardHolderIdNumber: "123456789",
+    //         creditCardHolderPhone: "0555555555",
+    //         isActive: true,
+    //         createdAt: new Date().toISOString() as any,
+    //         updatedAt: new Date().toISOString() as any,
+    //     }],
+    //     periods: [{
+    //         id: "",
+    //         customerId: customerId || "",
+    //         entryDate: new Date().toISOString() as any,
+    //         exitDate: new Date().toISOString() as any,
+    //         exitNoticeDate: new Date().toISOString() as any,
+    //         exitReason: ExitReason.BUSINESS_CLOSED,
+    //         exitReasonDetails: "Business closed due to financial issues.",
+    //         createdAt: new Date().toISOString() as any,
+    //         updatedAt: new Date().toISOString() as any,
+    //     }
+    //     ],
+    //     createdAt: new Date().toISOString() as any,
+    //     updatedAt: new Date().toISOString() as any,
+    //     // paymentMethodsType: PaymentMethodType.CREDIT_CARD,
+    // });
 
     const editCustomer = () => {
         
@@ -85,7 +85,7 @@ export const CustomerDetails = () => {
                 <Link to="dashboard" className="text-blue-500 hover:underline">ללוח הבקרה של הלקוח</Link><br />
                 <Link to="contract" className="text-blue-500 hover:underline">לחוזה הלקוח</Link>
 
-                <p><strong>שם:</strong> {customer.name}</p>
+                {/* <p><strong>שם:</strong> {customer.name}</p>
                 <p><strong>טלפון:</strong> {customer.phone}</p>
                 <p><strong>אימייל:</strong> {customer.email}</p>
                 <p><strong>מספר תעודת זהות:</strong> {customer.idNumber}</p>
@@ -112,7 +112,7 @@ export const CustomerDetails = () => {
                         <p><strong>מספר כרטיס אשראי (4 ספרות אחרונות):</strong> {method.creditCardLast4}</p>
                         <p><strong>תאריך תפוגה:</strong> {method.creditCardExpiry}</p>
                     </div>
-                ))}
+                ))} */}
 
                 <h3 className="mt-4 text-lg font-semibold">תקופות</h3>
                 {/* {customer.periods!.map(period => (
