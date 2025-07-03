@@ -165,6 +165,7 @@ import axios from "axios";
 import debounce from "lodash/debounce";
 import { Pencil, Trash } from "lucide-react";
 import { supabase } from "../../../../Services/supabaseClient";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 
 
@@ -403,12 +404,13 @@ export const CustomersList = () => {
 
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
     try {
-      await deleteCustomer(val.id);
-
-      alert("לקוח נמחק בהצלחה");
+      await deleteCustomer(val.id)
+      // await fetchCustomers();
+      setCustomers((prev) => prev.filter(customer => customer.id !== val.id));
+      setAllCustomers((prev) => prev.filter(customer => customer.id !== val.id));
+      showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
     } catch (error) {
-      console.error("שגיאה במחיקת לקוח:", error);
-      alert("מחיקה נכשלה");
+      showAlert("שגיאה", `מחיקת לקוח נכשלה\n${error}`, "error");
     }
   };
 

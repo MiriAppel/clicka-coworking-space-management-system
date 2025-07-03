@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { patchCustomer } from "../../Service/LeadAndCustomersService"
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 const schema = z.object({
     name: z.string().optional(),
@@ -53,13 +54,12 @@ export const UpdateCustomer: React.FC = () => {
 
         await patchCustomer(customer.id!, updateCustomer)
             .then(() => {
-                // setShowForm(false);
-                alert("לקוח עודכן בהצלחה!");
+                showAlert("עדכון", "לקוח עודכן בהצלחה", "success");
                 navigate(-1);
             })
             .catch((error: Error) => {
-                alert(`עדכון לקוח נכשל\n${error}`);
                 console.error("Error update customer:", error);
+                showAlert("שגיאה", `עדכון לקוח נכשל\n${error}`, "error");
             });
 
     }
