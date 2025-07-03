@@ -9,8 +9,6 @@ interface LeadsState {
     error?: string;
     showGraphForId: string | null;
 
-
-
     fetchLeads: () => Promise<void>;
     handleSelectLead: (leadId: string | null) => void;
     handleDeleteLead: (leadId: string) => Promise<void>;
@@ -68,7 +66,9 @@ export const useLeadsStore = create<LeadsState>((set) => ({
     },
 
     resetSelectedLead: () => {
-        set({ selectedLead: undefined });
+        set({ selectedLead: null });
+        
+        
     },
 
     fetchLeadDetails: async (leadId: string) => {

@@ -4,7 +4,7 @@ import Papa, { parse } from 'papaparse';
 import { ID, LeadSource, UpdateLeadRequest } from "shared-types";
 import { supabase } from '../db/supabaseClient'
 
-export class leadService extends baseService <LeadModel> {
+export class leadService extends baseService<LeadModel> {
 
 
   constructor() {
@@ -12,10 +12,10 @@ export class leadService extends baseService <LeadModel> {
 
   }
 
-    getAllLeads = async (): Promise<LeadModel[] | null> => {
-        const leads = await this.getAll();
-        return LeadModel.fromDatabaseFormatArray(leads) // המרה לסוג UserModel
-    }
+  getAllLeads = async (): Promise<LeadModel[] | null> => {
+    const leads = await this.getAll();
+    return LeadModel.fromDatabaseFormatArray(leads) // המרה לסוג UserModel
+  }
 
   getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
 
@@ -37,7 +37,7 @@ export class leadService extends baseService <LeadModel> {
 
   };
 
-  addLeadFromCSV = async (csvData: string): Promise <void> => {
+  addLeadFromCSV = async (csvData: string): Promise<void> => {
 
     // const parsedData = parse(csvData, { header: true }).data as UpdateLeadRequestModel[];
     const parsedData = parse(csvData, { header: true }).data as UpdateLeadRequest[];
@@ -55,12 +55,12 @@ export class leadService extends baseService <LeadModel> {
       }
     }
   }
-  
+
   checkIfFullLead(lead: UpdateLeadRequest): boolean {
-    return !!(lead && lead.name && lead.email && lead.businessType && lead.phone && lead.interestedIn); 
+    return !!(lead && lead.name && lead.email && lead.businessType && lead.phone && lead.interestedIn);
   }
 
-  convertCsvToLeads = (csvData: string): Promise <LeadModel[]> => {
+  convertCsvToLeads = (csvData: string): Promise<LeadModel[]> => {
     return new Promise((resolve, reject) => {
       Papa.parse<LeadModel>(csvData, {
         header: true,
@@ -76,89 +76,64 @@ export class leadService extends baseService <LeadModel> {
   }
 
   getOpenReminders = async (): Promise<LeadModel[]> => {
-      // אמור לשלוף לידים עם תזכורות פתוחות
-      // להחזיר מערך של לידים עם תזכורות פתוחות
+    // אמור לשלוף לידים עם תזכורות פתוחות
+    // להחזיר מערך של לידים עם תזכורות פתוחות
     return [];
   }
 
   checkIfLeadBecomesCustomer = async (leadId: ID): Promise<boolean> => {
-    
+
     const lead = await this.getById(leadId);
 
     if (lead.status === 'CONVERTED')
       return true;
     return false;
-    
+
   }
 
-<<<<<<< HEAD
   addInteraction = async (leadId: string, interaction: { type: string; date: string; notes: string; userEmail: string }) => {
     console.log(leadId, interaction);
 
     const { data, error } = await supabase
-    .from("lead_interaction")
-    .insert([
-      {
-        lead_id: leadId,
-        type: interaction.type.toUpperCase(),
-        date: interaction.date,
-        notes: interaction.notes,
-        user_email: interaction.userEmail,
-        user_id: leadId
-      },
-    ]);
-    if(data)
+      .from("lead_interaction")
+      .insert([
+        {
+          lead_id: leadId,
+          type: interaction.type.toUpperCase(),
+          date: interaction.date,
+          notes: interaction.notes,
+          user_email: interaction.userEmail,
+          user_id: leadId
+        },
+      ]);
+    if (data)
       return data;
     if (error) console.log(error);;
-=======
-//******* */
-
-// deleteInteraction = async (leadId: string, interactionId: string): Promise<void> => {
-//   console.log("dfghgfd");
-  
-//   try {
-//     // שליחה של בקשה למחוק אינטראקציה מתוך המערך
-//     const { data, error } = await supabase
-//       .from('leads')
-//       .update({
-//         interactions: supabase
-//           .rpc('array_remove', { interactions: 'interactions', value: interactionId })  // RPC למימוש של array_remove
-//       })
-//       .eq('id', leadId);
-
-//     if (error) {
-//       throw new Error("Failed to delete interaction: " + error.message);
-//     }
-//     console.log(data); // יוכל להדפיס את התוצאה של העדכון
-//   } catch (error) {
-//     console.error("Error deleting interaction:", error);
-//     throw new Error("Failed to delete interaction");
-//   }
-// };
-
-
-deleteInteraction = async (leadId: string, interactionId: string): Promise<void> => {
-  try {
-    // שליחה של בקשה למחוק אינטראקציה מתוך המערך
-    const { data, error } = await supabase
-      .from('lead_interaction')
-      .delete()
-      .eq('id', interactionId)
-      .eq('lead_id',leadId);
-
-    if (error) {
-      console.log(error+'--------------------------');
-      
-    }
-    // console.log(data); // יוכל להדפיס את התוצאה של העדכון
-  } catch (error) {
-    console.error("Error deleting interaction:", error);
-    throw new Error("Failed to delete interaction");
   }
->>>>>>> 735abc834eda972baa89b19a78d2e4a243cdace8
-};
 
 
 
+  deleteInteraction = async (leadId: string, interactionId: string): Promise<void> => {
+    try {
+      // שליחה של בקשה למחוק אינטראקציה מתוך המערך
+      const { data, error } = await supabase
+        .from('lead_interaction')
+        .delete()
+        .eq('id', interactionId)
+        .eq('lead_id', leadId);
 
-};
+      if (error) {
+        console.log(error + '--------------------------');
+
+      }
+      // console.log(data); // יוכל להדפיס את התוצאה של העדכון
+    } catch (error) {
+      console.error("Error deleting interaction:", error);
+      throw new Error("Failed to delete interaction");
+    }
+  };
+
+}
+
+
+

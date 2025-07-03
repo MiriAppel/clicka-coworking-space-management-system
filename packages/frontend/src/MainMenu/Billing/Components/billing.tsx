@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@mui/material";
-import '../Css/billing.css'
 
 export const Billing = () => {
 

@@ -30,7 +30,8 @@ export const addInteraction = async (lead: Lead) => {
 export const LeadInteractionDetails = () => {
   const [showGraph, setShowGraph] = useState(false);
   const navigate = useNavigate();
-  const { selectedLead, handleDeleteLead } = useLeadsStore();
+  const selectedLead = useLeadsStore(state => state.selectedLead);
+  const {  handleDeleteLead , handleSelectLead , resetSelectedLead} = useLeadsStore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingInteraction, setEditingInteraction] = useState<any>(null);
 
@@ -212,9 +213,11 @@ export const LeadInteractionDetails = () => {
         <Button
           variant="accent"
           size="sm"
-          onClick={() => handleDeleteLead(selectedLead!.id!)}
+          onClick={async() => {await resetSelectedLead();
+            console.log(selectedLead);
+          }}
         >
-          מחיקה
+          סגור
         </Button>
       </div>
     </div>
