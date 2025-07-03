@@ -5,51 +5,46 @@ import { SelectField } from "../../../../Common/Components/BaseComponents/Select
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { AddLeadInteractionRequest, Lead } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
-
-
 export const interactionSchema = z.object({
   type: z.enum(["call", "email", "meeting"], { required_error: "חובה לבחור סוג" }),
   notes: z.string().min(1, "יש להזין הערות"),
   date: z.string().refine(val => !isNaN(Date.parse(val)), "תאריך לא תקין"),
 });
-
 export type InteractionFormData = z.infer<typeof interactionSchema>;
-
 interface InteractionFormProps {
-  onSubmit: (leadId: string, lead: Lead) => Promise<any>;
+  onSubmit: (lead: Lead) => Promise<any>;
   onCancel: () => void;
 }
-
 export const InteractionForm: React.FC<InteractionFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
     const {
-    selectedLead
+    selectedLead,
+    handleSelectLead
   } = useLeadsStore();
   return (
     <Form<InteractionFormData>
       label="הוספת אינטראקציה"
       schema={interactionSchema}
       onSubmit={(data) => {
-        const leadId = selectedLead?.id; 
-        return onSubmit(selectedLead?.id!, {...selectedLead,idNumber:selectedLead?.idNumber, interactions:[...selectedLead?.interactions || [], data]} as Lead);
+        const leadId = selectedLead?.id;
+        const temp = {...selectedLead, interactions: [...(selectedLead?.interactions || []), {...data,userEmail:selectedLead?.email}] } as Lead;
+        handleSelectLead(temp.id!);
+        return onSubmit(temp);
       }}
     >
       <SelectField
         name="type"
         label="סוג אינטראקציה"
         options={[
-          { label: "שיחה", value: "call" },
+          { label: "שיחה", value: "phone" },
           { label: "אימייל", value: "email" },
           { label: "פגישה", value: "meeting" },
         ]}
       />
-
       <InputField name="date" label="תאריך" type="date" />
-
       <InputField name="notes" label="הערות"  />
-
       <div className="col-span-full flex justify-end gap-2 mt-4">
         <button
           type="button"

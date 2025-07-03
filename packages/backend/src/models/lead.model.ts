@@ -21,7 +21,7 @@ export class LeadModel implements Lead {
   notes?: string | undefined;
 
     constructor( 
-    id: ID,
+    id: UUID,
     idNumber: ID,
     name: string,
     phone: string,
@@ -37,7 +37,7 @@ export class LeadModel implements Lead {
     createdAt: string,
     updatedAt: string
   ) {
-    // this.id = id;
+    this.id = id;
     this.idNumber = idNumber;
     this.name = name;
     this.phone = phone;
@@ -93,7 +93,8 @@ export class LeadModel implements Lead {
   }
 
   static fromDatabaseFormatArray(dbDataArray: any[]): LeadModel[] {
-    return dbDataArray.map(dbData => LeadModel.fromDatabaseFormat(dbData));
+    return dbDataArray.map(dbData => {let lead = LeadModel.fromDatabaseFormat(dbData); console.log(lead.id+'-------------------------------');return lead
+    });
   }
 
 }

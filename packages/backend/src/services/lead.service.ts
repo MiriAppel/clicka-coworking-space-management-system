@@ -90,4 +90,54 @@ export class leadService extends baseService <LeadModel> {
     return false;
     
   }
+
+//******* */
+
+// deleteInteraction = async (leadId: string, interactionId: string): Promise<void> => {
+//   console.log("dfghgfd");
+  
+//   try {
+//     // שליחה של בקשה למחוק אינטראקציה מתוך המערך
+//     const { data, error } = await supabase
+//       .from('leads')
+//       .update({
+//         interactions: supabase
+//           .rpc('array_remove', { interactions: 'interactions', value: interactionId })  // RPC למימוש של array_remove
+//       })
+//       .eq('id', leadId);
+
+//     if (error) {
+//       throw new Error("Failed to delete interaction: " + error.message);
+//     }
+//     console.log(data); // יוכל להדפיס את התוצאה של העדכון
+//   } catch (error) {
+//     console.error("Error deleting interaction:", error);
+//     throw new Error("Failed to delete interaction");
+//   }
+// };
+
+
+deleteInteraction = async (leadId: string, interactionId: string): Promise<void> => {
+  try {
+    // שליחה של בקשה למחוק אינטראקציה מתוך המערך
+    const { data, error } = await supabase
+      .from('lead_interaction')
+      .delete()
+      .eq('id', interactionId)
+      .eq('lead_id',leadId);
+
+    if (error) {
+      console.log(error+'--------------------------');
+      
+    }
+    // console.log(data); // יוכל להדפיס את התוצאה של העדכון
+  } catch (error) {
+    console.error("Error deleting interaction:", error);
+    throw new Error("Failed to delete interaction");
+  }
+};
+
+
+
+
 };

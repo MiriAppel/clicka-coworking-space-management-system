@@ -5,7 +5,7 @@ import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
-import { LeadHomePage } from "./Leads/leadHomePage";import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
+import { LeadHomePage } from "./Leads/leadHomePage"; import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { CustomerInteraction } from "./Interactions/customerInteraction";
 import { UpdateCustomer } from "./Customers/updateCustomer";
@@ -14,8 +14,12 @@ import { CustomersList } from "./Customers/customersList"
 import { LeadInteractions } from "./Interactions/leadIntersection";
 import { InteractionForm } from "./Interactions/interactionForm";
 import { addInteraction } from "./Interactions/leadInteractionDetails";
-
+import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
+import { Lead } from "shared-types";
 export const LeadAndCustomerRouting = () => {
+    const {
+        selectedLead
+    } = useLeadsStore();
     return (
         <Routes>
             <Route path="/" element={<LeadAndCustomer />} />
@@ -26,14 +30,15 @@ export const LeadAndCustomerRouting = () => {
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
             <Route path="customers/intersections" element={<CustomerInteraction />} />
-            <Route path="contractManagement" element={<ContractManagement />}/>
+            <Route path="contractManagement" element={<ContractManagement />} />
             <Route path="contractManagement/:customerId" element={<ContractDetails />} />
             <Route path="contractManagement/new" element={<AddContract />} />
             <Route path="leads" element={<LeadHomePage />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
+            <Route path="leads/interactions/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/interactions" element={<LeadInteractions />} />
-            <Route path="leads/interactions/:leadId/addInteraction" element={<InteractionForm onSubmit={addInteraction} onCancel={() => {}} />} />
+            <Route path="leads/interactions/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => addInteraction(lead)} onCancel={() => { }} />} />
         </Routes>
     );
 };
