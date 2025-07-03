@@ -1,5 +1,5 @@
-// import express from 'express';
-// import * as customerController from '../controllers/customer.controller'; 
+import express from 'express';
+import * as customerController from '../controllers/customer.controller'; 
 // import * as contractController from '../controllers/contract.controller'
 
 // const routerCstomer = express.Router();
