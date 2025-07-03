@@ -40,7 +40,7 @@ export const UpdateCustomer: React.FC = () => {
     // המידע שאני מקבלת מהדף הקודם - או לעשות קריאת שרת שמקבלת לקוח בודד לפי מזהה
     const customer: Customer = location.state?.data;
 
-    const [showForm, setShowForm] = useState<boolean>(true);
+    // const [showForm, setShowForm] = useState<boolean>(true);
 
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
@@ -53,11 +53,12 @@ export const UpdateCustomer: React.FC = () => {
 
         await patchCustomer(customer.id!, updateCustomer)
             .then(() => {
-                setShowForm(false);
-                console.log("Customer update successfully");
+                // setShowForm(false);
+                alert("לקוח עודכן בהצלחה!");
+                navigate(-1);
             })
             .catch((error: Error) => {
-                alert("Failed to update customer. Please try again.");
+                alert(`עדכון לקוח נכשל\n${error}`);
                 console.error("Error update customer:", error);
             });
 
@@ -72,7 +73,7 @@ export const UpdateCustomer: React.FC = () => {
 
     return <div className='interestedCustomerRegistration'>
         {/* כל עוד הטופס לא תקין רואים אותו ולאחר שליחה רואים את הדיב שבסוף */}
-        {showForm ?
+        {/* {showForm ? */}
             <div>
                 <h1 className="text-3xl font-bold text-center text-blue-600 my-4">עדכון פרטי לקוח</h1>
                 <h4 className="text-lg text-center text-gray-600 my-2">ערוך את הפרטים הרצוים</h4>
@@ -102,11 +103,11 @@ export const UpdateCustomer: React.FC = () => {
                     </div>
                 </Form>
             </div >
-            :
+            {/* :
             <div className="text-center my-4">
                 <h2 className="text-2xl font-semibold text-gray-700 mb-2">הלקוח עודכן בהצלחה!</h2>
                 <Button onClick={() => navigate(`/leadAndCustomer/customers`)} variant="primary" size="sm">לחזרה לעמוד הלקוחות</Button>
-            </div>}
+            </div>} */}
     </div >
 
 

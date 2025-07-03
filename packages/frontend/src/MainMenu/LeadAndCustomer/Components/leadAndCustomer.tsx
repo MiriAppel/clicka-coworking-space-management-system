@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../../Common/Components/BaseComponents/Button';
-import '../Css/leadAndCustomer.css'
+// import '../Css/leadAndCustomer.css'
 
-// יש לנו מצגת עם פירוט של כל העמודים יותר מפורט מה צריך להיות
+//!!אין צורך בעמוד הזה
 
 export const LeadAndCustomer = () => {
 

@@ -13,7 +13,6 @@ import {
     UpdateCustomerRequest,
 } from "shared-types";
 import { supabase } from '../db/supabaseClient'
-import { error } from "node:console";
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
 
 export class customerService extends baseService<CustomerModel> {
@@ -37,16 +36,12 @@ export class customerService extends baseService<CustomerModel> {
         return [];
     };
 
-    // המרת ליד ללקוח
-    convertLeadToCustomer = async (
+    createCustomer = async (
         newCustomer: CreateCustomerRequest,
-        // paymentMethodsType: PaymentMethodType,
     ): Promise<CustomerModel> => {
         console.log("in servise");
         console.log(newCustomer);
 
-
-        // המרה של ליד ללקוח
         const customerData: CustomerModel = {
             name: newCustomer.name,
             email: newCustomer.email,
@@ -103,6 +98,7 @@ export class customerService extends baseService<CustomerModel> {
     };
 
     updateCustomer = async (dataToUpdate: Partial<CustomerModel>, id: ID) => {
+        dataToUpdate.updatedAt = new Date().toISOString(),
         this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id)
     }
 
@@ -115,7 +111,7 @@ export class customerService extends baseService<CustomerModel> {
             status: CustomerStatus.PENDING,
         };
 
-        await this.patch(updateStatus as CustomerModel, id);
+        await this.updateCustomer(updateStatus as CustomerModel, id);
 
         const customerLeave: CustomerModel | null = await this.getById(id);
 
@@ -163,88 +159,92 @@ export class customerService extends baseService<CustomerModel> {
         // קשור לקבוצת billing
     };
 
-    //מחזיר את כל הלקוחות רק של העמוד הראשון
-    getCustomersByPage = async (
-        page: number = 1,
-        pageSize: number = 50
-    ): Promise<PaginatedResponse<CustomerModel>> => {
-        const from = (page - 1) * pageSize;
-        const to = from + pageSize - 1;
 
-        const { data, error, count } = await supabase
-            .from("customer")
-            .select("*", { count: "exact" }) // count: 'exact' סופר את כל התוצאות
-            .range(from, to)
-            .order("created_at", { ascending: false }); // ממיין
-
-        if (error) {
-            console.error("Error fetching customers by page:", error);
-            throw new Error("Failed to fetch paginated customers");
-        }
-
-        const totalPages = count ? Math.ceil(count / pageSize) : 1;
-
-        return {
-            data: data as CustomerModel[],
-            meta: {
-                currentPage: page,
-                totalPages,
-                pageSize,
-                totalCount: count ?? 0,
-                hasNext: page < totalPages,
-                hasPrevious: page > 1,
-            },
-        };
+  //מחזיר את כל הלקוחות רק של העמוד הראשון
+  getCustomersByPage = async (filters: {
+      page?: number;
+      limit?: number;
+    }): Promise<CustomerModel[]> => {
+      console.log("Service getCustomersByPage called with:", filters);
+  
+      const { page, limit } = filters;
+  
+      const pageNum = Number(filters.page);
+      const limitNum = Number(filters.limit);
+  
+      if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
+        throw new Error("Invalid filters provided for pagination");
+      }
+  
+      const from = (pageNum - 1) * limitNum;
+      const to = from + limitNum - 1;
+  
+      const { data, error } = await supabase
+        .from("customer")
+        .select("*")
+        .order("name", { ascending: true }) // מיון לפי שם
+        .range(from, to);
+  
+      console.log("Supabase data:", data);
+      console.log("Supabase error:", error);
+  
+      if (error) {
+        console.error("❌ Supabase error:", error.message || error);
+        return Promise.reject(
+          new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+        );
+      }
+  
+        const customers = data || [];
+      return CustomerModel.fromDatabaseFormatArray(customers)
     };
-}
-
+  }
 const serviceCustomer = new customerService();
 
 // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
 // export const exportCustomersToFileByFilter = async (
-//     filter: Partial<CustomerModel>
+//   filter: Partial<CustomerModel>
 // ): Promise<Buffer | null> => {
-//     const customerToExport = await serviceCustomer.getByFilters(filter);
+// const customerToExport = await serviceCustomer.getByFilters(filter);
 
-//     if (!customerToExport || customerToExport.length === 0) {
-//         return null;
-//     }
+// if (!customerToExport || customerToExport.length === 0) {
+//   return null;
+// }
 
-//     // פונקציה מהספריה csv-writer
-//     const csvStringifier = createObjectCsvStringifier({
-//         header: [
-//             { id: "id", title: "ID" },
-//             { id: "name", title: "Name" },
-//             { id: "idNumber", title: "ID Number" },
-//             { id: "businessName", title: "Business Name" },
-//             { id: "businessType", title: "Business Type" },
-//             { id: "currentWorkspaceType", title: "Current Workspace Type" },
-//             { id: "workspaceCount", title: "Workspace Count" },
-//             { id: "contractSignDate", title: "Contract Sign Date" },
-//             { id: "billingStartDate", title: "Billing Start Date" },
-//             { id: "invoiceName", title: "InvoiceName" },
-//             { id: "contractDocuments", title: "Contract Documents" },
-//             { id: "paymentMethodsType", title: "Payment Methods Type" },
-//             { id: "notes", title: "Notes" },
-//             { id: "updatedAt", title: "Updated At" },
-//             { id: "contracts", title: "Contracts" },
-//             { id: "phone", title: "Phone" },
-//             { id: "status", title: "Status" },
-//             { id: "createdAt", title: "Created At" },
-//         ],
-//     });
+//   // פונקציה מהספריה csv-writer
+//   const csvStringifier = createObjectCsvStringifier({
+//     header: [
+//       { id: "id", title: "ID" },
+//       { id: "name", title: "Name" },
+//       { id: "idNumber", title: "ID Number" },
+//       { id: "businessName", title: "Business Name" },
+//       { id: "businessType", title: "Business Type" },
+//       { id: "currentWorkspaceType", title: "Current Workspace Type" },
+//       { id: "workspaceCount", title: "Workspace Count" },
+//       { id: "contractSignDate", title: "Contract Sign Date" },
+//       { id: "billingStartDate", title: "Billing Start Date" },
+//       { id: "invoiceName", title: "InvoiceName" },
+//       { id: "contractDocuments", title: "Contract Documents" },
+//       { id: "paymentMethodsType", title: "Payment Methods Type" },
+//       { id: "notes", title: "Notes" },
+//       { id: "updatedAt", title: "Updated At" },
+//       { id: "contracts", title: "Contracts" },
+//       { id: "phone", title: "Phone" },
+//       { id: "status", title: "Status" },
+//       { id: "createdAt", title: "Created At" },
+//     ],
+//   });
 
-//     const csvHeader = csvStringifier.getHeaderString();
-//     const csvBody = csvStringifier.stringifyRecords(customerToExport);
-//     const csvFull = csvHeader + csvBody;
+//   const csvHeader = csvStringifier.getHeaderString();
+//   // const csvBody = csvStringifier.stringifyRecords(customerToExport);
+  // const csvFull = csvHeader + csvBody;
 
-//     return Buffer.from(csvFull, "utf-8");
+  // return Buffer.from(csvFull, "utf-8");
 // };
 
 // לשאול את שולמית
 
 // export const getStatusChanges = async (id:ID): Promise<CustomerStatus[] | null> => {
-
 //     const customer: GetCustomersRequest | null = await getCustomerById(id);
 
 //     if (customer && customer.status) {

@@ -5,9 +5,9 @@ import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
-import { LeadHomePage } from "./Leads/leadHomePage"; import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
+import { LeadHomePage, LeadsPage } from "./Leads/leadHomePage";
+import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
-import { CustomerInteraction } from "./Interactions/customerInteraction";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
 import { CustomersList } from "./Customers/customersList"
@@ -29,16 +29,14 @@ export const LeadAndCustomerRouting = () => {
             <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
-            <Route path="customers/intersections" element={<CustomerInteraction />} />
-            <Route path="contractManagement" element={<ContractManagement />} />
-            <Route path="contractManagement/:customerId" element={<ContractDetails />} />
-            <Route path="contractManagement/new" element={<AddContract />} />
-            <Route path="leads" element={<LeadHomePage />} />
+            {/* <Route path="customers/intersections" element={<CustomerInteraction />} /> */}
+            <Route path="contracts" element={<ContractManagement />}/>
+            <Route path="contracts/:customerId" element={<ContractDetails />} />
+            <Route path="contracts/new" element={<AddContract />} />
+            <Route path="leads" element={<LeadsPage />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
-            <Route path="leads/interactions/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
-            <Route path="leads/interactions" element={<LeadInteractions />} />
-            <Route path="leads/interactions/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => addInteraction(lead)} onCancel={() => { }} />} />
+            <Route path="leads/intersections" element={<LeadInteractions />} />
         </Routes>
     );
 };

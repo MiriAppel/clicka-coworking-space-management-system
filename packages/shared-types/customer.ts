@@ -1,6 +1,5 @@
 // customer-types.d.ts
 
-import { Person } from './person';
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
@@ -151,6 +150,7 @@ export interface CreateCustomerRequest {
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;
   };
+    paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
 

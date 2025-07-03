@@ -8,7 +8,7 @@ import {
   UseFormReturn,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ZodType, ZodTypeAny } from "zod";
+import { ZodType } from "zod";
 //מייבים את ZOD כדי שנוכל להשתמש בולידציות בהמשך הקוד 
 import { useTheme } from "../themeConfig";
 import { useTranslation } from "react-i18next";
@@ -22,13 +22,14 @@ export interface BaseComponentProps {
   children?: React.ReactNode;
 }
 
+
 export interface FormComponentProps<T extends FieldValues>
   extends BaseComponentProps {
   label?: string;
   error?: string;
   required?: boolean;
   disabled?: boolean;
-  schema?: ZodType<T, any, any> | ZodTypeAny; //סכמה לולידציות של FORM 
+  schema?: ZodType<T>; //סכמה לולידציות של FORM 
   onSubmit: SubmitHandler<T>;//פונקציה להפעלה בשליחת הטופס 
   methods?: UseFormReturn<T>;
 }
@@ -45,10 +46,12 @@ export function Form<T extends FieldValues>({
   children,
   methods: externalMethods,
 }: FormComponentProps<T>) {
-  const theme = useTheme();
+  const {theme} = useTheme();
   const { t } = useTranslation();
   //שימוש לתירגום עם I18NEXT לפי הנדרש 
+
   const effectiveDir = dir || theme.direction;
+  
   const internalMethods = useForm<T>({
     ...(schema ? { resolver: zodResolver(schema) } : {}),
     mode: "onSubmit",

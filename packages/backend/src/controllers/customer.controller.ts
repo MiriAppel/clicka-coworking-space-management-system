@@ -1,10 +1,7 @@
 import { Request, Response } from 'express';
 import { customerService } from '../services/customer.service';
 import { CreateCustomerRequest, ID, PaymentMethodType, ContractStatus } from 'shared-types';
-import { CustomerModel } from '../models/customer.model';
 import { contractService } from '../services/contract.service';
-import { ContractModel } from '../models/contract.model';
-import { date } from 'zod';
 
 
 const serviceCustomer = new customerService();
@@ -31,7 +28,7 @@ export const postCustomer = async (req: Request, res: Response) => {
         // console.log("in controller");
         // console.log(newCustomer);  
 
-        const customer = await serviceCustomer.convertLeadToCustomer(newCustomer);
+        const customer = await serviceCustomer.createCustomer(newCustomer);
         console.log("in controller");
         console.log(customer);
 
@@ -153,19 +150,42 @@ export const postExitNotice = async (req: Request, res: Response) => {
 
 // לקבל מספר לקוחות לפי גודל העמוד
 export const getCustomersByPage = async (req: Request, res: Response) => {
-    // קבלת page ו-pageSize מתוך שאילתת ה-URL (query parameters)
-    const page = parseInt(req.query.page as string) || 1;
-    const pageSize = parseInt(req.query.pageSize as string) || 50;
 
-    try {
-        const paginatedCustomers = await serviceCustomer.getCustomersByPage(page, pageSize);
-        res.status(200).json(paginatedCustomers);
-    } catch (error) {
-        console.error('Error in getCustomersByPage controller:', error);
-        res.status(500).json({ message: 'Error fetching paginated customers', error });
+  const filters = req.params; // הנח שהפרמטרים מגיעים מה-params של הבקשה
+  console.log("Filters received:", filters);
+
+  try {
+    const pageNum = Math.max(1, Number(filters.page) || 1);
+    const limitNum = Math.max(1, Number(filters.limit) || 50);
+    const filtersForService = {
+      page: pageNum,
+      limit: limitNum,
+    };
+
+    console.log("Filters passed to service:", filtersForService);
+
+    const leads = await serviceCustomer.getCustomersByPage(filtersForService);
+
+    if (leads.length > 0) {
+      res.status(200).json(leads);
+    } else {
+      res.status(404).json({ message: "No customers found" });
     }
-}
+  } catch (error: any) {
+    console.error("❌ Error in getCustomersByPage controller:");
+    if (error instanceof Error) {
+      console.error("🔴 Message:", error.message);
+      console.error("🟠 Stack:", error.stack);
+    } else {
+      console.error("🟡 Raw error object:", error);
+    }
 
+    res
+      .status(500)
+      .json({ message: "Server error", error: error?.message || error });
+  }
+  console.log("getCustomersByPage completed");
+};
 
 // עדכון מלא/חלקי של לקוח
 export const patchCustomer = async (req: Request, res: Response) => {

@@ -1,12 +1,13 @@
 import type { ID } from "shared-types";
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_KEY || ''; // שימי לב לשם המדויק
-
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseKey = process.env.SUPABASE_KEY || ""; // שימי לב לשם המדויק
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error("חסרים ערכים ל־SUPABASE_URL או SUPABASE_SERVICE_KEY בקובץ הסביבה");
+  console.error(
+    "חסרים ערכים ל־SUPABASE_URL או SUPABASE_SERVICE_KEY בקובץ הסביבה"
+  );
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -36,7 +37,9 @@ export class baseService<T> {
 
   getByFilters = async (filters: { q?: string; page?: number; limit?: number; }): Promise<T[]> => {
     const { q, page, limit } = filters;
+
     let query = supabase.from(this.tableName).select("*");
+
     if (q) {
       const searchValue = `%${q}%`;
       query = query.or(
@@ -48,14 +51,16 @@ export class baseService<T> {
       const to = from + limit - 1;
       query = query.range(from, to);
     }
+
     const { data, error } = await query;
+
     if (error) {
       console.error("Error fetching filtered data:", error);
       throw error;
     }
+
     return data ?? [];
   };
-
 
   getAll = async (): Promise<T[]> => {
     console.log("🧾 טבלה:", this.tableName);
@@ -67,7 +72,7 @@ export class baseService<T> {
     console.log(data);
     
     if (!data || data.length === 0) {
-      console.log(`🔍 אין נתונים בטבלה ${this.tableName}`);
+      console.log(` אין נתונים בטבלה ${this.tableName}`);
       return []; // תחזירי מערך ריק במקום לזרוק שגיאה
     }
 

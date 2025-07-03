@@ -26,7 +26,8 @@ import {
 const schema = z
   .object({
     status: z.nativeEnum(CustomerStatus),
-    effectiveDate: z.string().min(1, 'חובה לבחור תאריך'),
+    //התאריך מתעדכן אוטומטית לתאריך של היום
+    // effectiveDate: z.string().min(1, 'חובה לבחור תאריך'),
     notifyCustomer: z.boolean(),
     reason: z.string().optional(),
     exitNoticeDate: z.string().optional(),
@@ -35,14 +36,15 @@ const schema = z
     exitReasonDetails: z.string().optional(),
   })
   .superRefine((data, ctx) => {
+    //התאריך מתעדכן אוטומטית לתאריך של היום
     if (data.status === CustomerStatus.NOTICE_GIVEN) {
-      if (!data.exitNoticeDate) {
-        ctx.addIssue({
-          path: ['exitNoticeDate'],
-          code: z.ZodIssueCode.custom,
-          message: 'יש להזין תאריך הודעת עזיבה',
-        });
-      }
+      // if (!data.exitNoticeDate) {
+      //   ctx.addIssue({
+      //     path: ['exitNoticeDate'],
+      //     code: z.ZodIssueCode.custom,
+      //     message: 'יש להזין תאריך הודעת עזיבה',
+      //   });
+      // }
       if (!data.plannedExitDate) {
         ctx.addIssue({
           path: ['plannedExitDate'],
@@ -92,7 +94,7 @@ export const CustomerStatusChanged: React.FC = () => {
     defaultValues: {
       status: CustomerStatus.ACTIVE,
       notifyCustomer: false,
-      effectiveDate: '',
+      // effectiveDate: '',
       reason: '',
       exitNoticeDate: '',
       plannedExitDate: '',
@@ -109,7 +111,7 @@ export const CustomerStatusChanged: React.FC = () => {
 
       return {
         status: customer.status,
-        effectiveDate: customer.billingStartDate ?? '',
+        // effectiveDate: customer.billingStartDate ?? '',
         notifyCustomer: false,
         reason: '',
         exitNoticeDate: latestPeriod?.exitNoticeDate ?? '',
@@ -173,7 +175,7 @@ export const CustomerStatusChanged: React.FC = () => {
           required
         />
 
-        <InputField name="effectiveDate" label="תאריך שינוי" type="date" required />
+        {/* <InputField name="effectiveDate" label="תאריך שינוי" type="date" required /> */}
         <InputField name="reason" label="סיבת שינוי" />
         <CheckboxField name="notifyCustomer" label="שלח התראה ללקוח" />
 
