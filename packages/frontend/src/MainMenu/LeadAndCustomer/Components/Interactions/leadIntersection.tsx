@@ -2,17 +2,14 @@ import { useEffect, useState } from "react";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { LeadInteractionDetails } from "./leadInteractionDetails";
-
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
-
 export const LeadInteractions = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showGraph, setShowGraph] = useState(false); // כאן נוספה השליטה בגרף
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [alertCriterion, setAlertCriterion] = useState<AlertCriterion>("noRecentInteraction");
-
   const {
     leads,
     selectedLead,
@@ -20,16 +17,13 @@ export const LeadInteractions = () => {
     handleDeleteLead,
     handleSelectLead
   } = useLeadsStore();
-
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
-
   const deleteLead = (id: string) => {
     handleDeleteLead(id);
     if (selectedId === id) setSelectedId(null);
   };
-
   const isAlert = (lead: Lead): boolean => {
     switch (alertCriterion) {
       case "noRecentInteraction":
@@ -47,7 +41,6 @@ export const LeadInteractions = () => {
         return false;
     }
   };
-
   const getSortValue = (lead: Lead): string | number | Date => {
     switch (sortField) {
       case "name": return lead.name?.toLowerCase() || "";
@@ -60,7 +53,6 @@ export const LeadInteractions = () => {
       default: return "";
     }
   };
-
   const sortedLeads = [...leads].sort((a, b) => {
     const aVal = getSortValue(a);
     const bVal = getSortValue(b);
@@ -68,7 +60,6 @@ export const LeadInteractions = () => {
     if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
-
   return (
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
@@ -126,30 +117,32 @@ export const LeadInteractions = () => {
               : isAlert(lead)
                 ? "border-red-500 bg-red-50"
                 : "hover:bg-gray-50"
-              }`}
-            onClick={() => {
-              if (selectedId === lead.id) {
-                setShowGraph((prev) => !prev); // החלף בין גרף לפרטים
-              } else {
-                setSelectedId(lead.id!); // בחר ליד חדש
-                setShowGraph(false);    // תמיד מתחיל בפרטים
-              }
-              handleSelectLead(lead.id!);
-            }}
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="font-semibold text-lg">{lead.name}</div>
-                <div className="text-sm text-gray-600">סטטוס: {lead.status}</div>
-              </div>
+          }`}
+          onClick={() => {
+            if (selectedId === lead.id) {
+              setShowGraph((prev) => !prev); // החלף בין גרף לפרטים
+            } else {
+              setSelectedId(lead.id!); // בחר ליד חדש
+              setShowGraph(false);    // תמיד מתחיל בפרטים
+            }
+            handleSelectLead(lead.id!);
+          }}
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="font-semibold text-lg">{lead.name}</div>
+              <div className="text-sm text-gray-600">סטטוס: {lead.status}</div>
             </div>
 
             {selectedLead && selectedId === lead.id && (
               <LeadInteractionDetails />
             )}
           </div>
-        ))
-      }
-    </div >
+          {selectedLead && selectedId === lead.id && (
+            <LeadInteractionDetails/>
+          )}
+        </div>
+      ))}
+    </div>
   );
 };

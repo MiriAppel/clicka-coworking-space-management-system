@@ -15,7 +15,11 @@ import { LeadInteractions } from "./Interactions/leadIntersection";
 import { InteractionForm } from "./Interactions/interactionForm";
 import { addInteraction } from "./Interactions/leadInteractionDetails";
 import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
+<<<<<<< HEAD
 
+=======
+import { Lead } from "shared-types";
+>>>>>>> 735abc834eda972baa89b19a78d2e4a243cdace8
 export const LeadAndCustomerRouting = () => {
     const {
         selectedLead
@@ -37,9 +41,14 @@ export const LeadAndCustomerRouting = () => {
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/interactions/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
+<<<<<<< HEAD
 
             <Route path="leads/interactions" element={<LeadInteractions />} />
             <Route path="leads/interactions/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead) => addInteraction(lead)} onCancel={() => { }} />} />
+=======
+            <Route path="leads/interactions" element={<LeadInteractions />} />
+            <Route path="leads/interactions/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => addInteraction(lead)} onCancel={() => { }} />} />
+>>>>>>> 735abc834eda972baa89b19a78d2e4a243cdace8
         </Routes>
     );
 };

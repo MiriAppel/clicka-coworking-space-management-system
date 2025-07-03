@@ -1,20 +1,15 @@
-// import React, { useState } from "react";
-// import { Button } from "../../../../Common/Components/BaseComponents/Button";
-// import { useNavigate } from "react-router-dom";
-// import { LeadStatus, LeadSource, Lead, AddLeadInteractionRequest } from "shared-types";
-// import { InteractionForm } from "./interactionForm";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { FaTrash, FaPen } from "react-icons/fa"; // ייבוא האייקונים
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useNavigate } from "react-router-dom";
-import { LeadStatus, LeadSource, Lead, AddLeadInteractionRequest } from "shared-types";
+import { Lead } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { set } from "react-hook-form";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
+// פונקציה להוספת אינטראקציה
 export const addInteraction = async (lead: Lead) => {
   try {
-    console.log();
-
     const response = await fetch(`http://localhost:3001/api/leads/${lead.id}/addInteraction`, {
       method: "POST",
       headers: {
@@ -22,149 +17,208 @@ export const addInteraction = async (lead: Lead) => {
       },
       body: JSON.stringify(lead.interactions[lead.interactions.length - 1]),
     });
-
     if (!response.ok) {
       throw new Error("Failed to add interaction");
     }
-
     return await response;
   } catch (error) {
     console.error("Error adding interaction:", error);
     throw error;
   }
-}
-// // קומפוננטת בן – נפתחת בלחיצה
-// export const LeadInteractionDetails = ({ lead, onDelete }: { lead: Lead, onDelete: () => void }) => {
-//     const [showInteractionForm, setShowInteractionForm] = useState(false);
-
-
-//     return (
-//         <div className="bg-blue-50 mt-2 p-4 rounded-lg border border-blue-200">
-//             <div className="text-sm text-gray-700 mb-2">
-//                 <div>טלפון: {lead.phone}</div>
-//                 <div>אימייל: {lead.email}</div>
-//                 <div>ת"ז: {lead.idNumber}</div>
-//                 <div>תאריך יצירה: {new Date(lead.createdAt).toLocaleDateString()}</div>
-//             </div>
-//             <div className="flex gap-2">
-//                 <Button
-//                     variant="accent"
-//                     size="sm"
-//                     onClick={() => alert("עדכון בעתיד")}
-//                 >
-//                     עדכון
-//                 </Button>
-//                 <Button
-//                     variant="accent"
-//                     size="sm"
-//                     onClick={() => setShowInteractionForm(true)}
-//                 >
-//                     להוספת אינטרקציה
-//                 </Button>
-//             </div>
-//             <div className="mt-4">
-//           <InteractionForm
-//             onSubmit={async (_leadId, interaction) => {
-//               await addInteraction(lead.id!, interaction);
-//               setShowInteractionForm(false);
-//               // אפשר להוסיף כאן רענון נתונים או הודעה למשתמש
-//             }}
-//             onCancel={() => setShowInteractionForm(false)}
-//           />
-//         </div>
-//         </div>
-//     );
-// };
-// קומפוננטת בן – נפתחת בלחיצה
+};
 
 export const LeadInteractionDetails = () => {
   const [showGraph, setShowGraph] = useState(false);
   const navigate = useNavigate();
-  const { selectedLead, handleSelectLead } = useLeadsStore();
+  const { selectedLead, handleDeleteLead } = useLeadsStore();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingInteraction, setEditingInteraction] = useState<any>(null);
 
-  // אם מתחלף ליד - נאתחל את התצוגה לגרף=false
-  useEffect(() => {
-    setShowGraph(false);
-  }, [selectedLead?.id]);
+  // סוגי אינטראקציה
+  const interactionTypes = ["Call", "Email", "Meeting", "Other"];
 
-  if (!selectedLead) return null;
+  // פונקציה לעריכת אינטראקציה
+  const editInteraction = (interactionId: string) => {
+    const interactionToEdit = selectedLead?.interactions.find(
+      (interaction) => interaction.id === interactionId
+    );
+    if (interactionToEdit) {
+      setEditingInteraction(interactionToEdit);
+      setIsEditModalOpen(true); // פותחים את הפופאפ
+    }
+  };
+
+  // פונקציה לשליחת עדכון האינטראקציה
+  const handleSaveInteraction = async () => {
+    if (editingInteraction && selectedLead?.id) {
+      try {
+        const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${editingInteraction.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editingInteraction),
+        });
+
+        if (response.ok) {
+          console.log("Interaction updated successfully");
+          setIsEditModalOpen(false); // סגירת הפופאפ
+          // עדכון הסטייט או רענון המידע
+        } else {
+          throw new Error("Failed to update interaction");
+        }
+      } catch (error) {
+        console.error("Error updating interaction:", error);
+      }
+    }
+  };
+
+  // פונקציה למחיקת אינטראקציה
+  const deleteInteraction = async (interactionId: string) => {
+    if (!selectedLead?.id) {
+      console.error("Selected lead is not defined");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${interactionId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        console.log("Interaction deleted successfully");
+        // עדכון הסטייט או רענון המידע
+      } else {
+        throw new Error("Failed to delete interaction");
+      }
+    } catch (error) {
+      console.error("Error deleting interaction:", error);
+    }
+  };
 
   return (
     <div className="bg-blue-50 mt-2 p-4 rounded-lg border border-blue-200">
-      {!showGraph ? (
-        <>
-          <div className="text-sm text-gray-700 mb-2">
-            {selectedLead.interactions?.length > 0 && <div>אינטראקציות של המתעניין:</div>}
-            {selectedLead.interactions?.map((interaction, index) => (
-              <div key={index}>
-                <p>סוג אינטראקציה: {interaction.type}</p>
+      <div className="text-sm text-gray-700 mb-2">
+        <div>
+          {selectedLead && selectedLead.interactions?.length > 0 ? (
+            <div>
+              <p className="font-semibold">
+                ל{selectedLead.name} יש {selectedLead.interactions.length} אינטראקציות
+              </p>
+            </div>
+          ) : (
+            <p>ל{selectedLead?.name} אין אינטראקציות</p>
+          )}
+
+          <div className="flex flex-wrap gap-4 mt-4">
+            {selectedLead?.interactions?.map((interaction) => (
+              <div key={interaction.id} className="p-4 border rounded-lg shadow-md bg-white w-64">
+                <p className="font-semibold">סוג אינטראקציה: {interaction.type}</p>
                 <p>אימייל משתמש: {interaction.userEmail}</p>
                 <p>תאריך עדכון: {new Date(interaction.updatedAt).toLocaleDateString()}</p>
+
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={() => interaction.id && deleteInteraction(interaction.id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FaTrash />
+                  </button>
+                  <button
+                    onClick={() => interaction.id && editInteraction(interaction.id)}
+                    className="text-yellow-500 hover:text-yellow-700"
+                  >
+                    <FaPen />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
+        </div>
+      </div>
 
-          <div className="flex gap-2">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() =>
-                navigate("interestedCustomerRegistration", {
-                  state: { data: selectedLead },
-                })
-              }
+      {/* פופאפ לעריכת אינטראקציה */}
+      {isEditModalOpen && editingInteraction && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-4 rounded-lg w-1/3">
+            <h2 className="text-xl font-semibold mb-4">עריכת אינטראקציה</h2>
+            
+            {/* שדה סוג אינטראקציה */}
+            <label className="block mb-2">סוג אינטראקציה:</label>
+            <select
+              value={editingInteraction.type}
+              onChange={(e) => setEditingInteraction({ ...editingInteraction, type: e.target.value })}
+              className="mb-4 p-2 border w-full"
             >
-              לטופס רישום ללקוח
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => navigate(`${selectedLead.id}/addInteraction`)}
-            >
-              הוספת אינטראקציה
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setShowGraph(true)}
-            >
-              הצגה בגרף
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => handleSelectLead(null)}
+              {interactionTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+
+            {/* שדה אימייל משתמש */}
+            <label className="block mb-2">אימייל משתמש:</label>
+            <input
+              type="email"
+              value={editingInteraction.userEmail}
+              onChange={(e) => setEditingInteraction({ ...editingInteraction, userEmail: e.target.value })}
+              className="mb-4 p-2 border w-full"
+            />
+
+            {/* שדה תאריך */}
+            <label className="block mb-2">תאריך:</label>
+            <input
+              type="date"
+              value={editingInteraction.updatedAt?.split('T')[0]} // המרת התאריך לפורמט הנכון
+              onChange={(e) => setEditingInteraction({ ...editingInteraction, updatedAt: e.target.value })}
+              className="mb-4 p-2 border w-full"
+            />
+
+            {/* כפתור שמירה */}
+            <button onClick={handleSaveInteraction} className="bg-blue-500 text-white p-2 rounded-lg">
+              שמור
+            </button>
+            {/* כפתור סגירה */}
+            <button
+              onClick={() => setIsEditModalOpen(false)}
+              className="bg-gray-500 text-white p-2 rounded-lg ml-2"
             >
               סגור
-            </Button>
+            </button>
           </div>
-        </>
-      ) : (
-        <>
-          <div className="flex justify-end mb-2">
-            <Button variant="secondary" size="sm" onClick={() => setShowGraph(false)}>
-              ← חזור לפרטים
-            </Button>
-          </div>
-          <h3 className="text-lg font-bold mb-2">גרף אינטראקציות לפי תאריך</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart
-              data={selectedLead.interactions.map((i) => ({
-                date: new Date(i.date).toLocaleDateString(),
-                type: i.type,
-                count: 1,
-              }))}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="count" name="כמות אינטראקציות" stroke="#8884d8" />
-            </LineChart>
-          </ResponsiveContainer>
-        </>
+        </div>
       )}
+
+      <div className="flex gap-2 mt-6">
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() =>
+            navigate("interestedCustomerRegistration", {
+              state: { data: selectedLead },
+            })
+          }
+        >
+          לטופס רישום ללקוח
+        </Button>
+        <Button
+          variant="accent"
+          size="sm"
+          onClick={() => navigate(`${selectedLead!.id}/addInteraction`)}
+        >
+          הוספת אינטראקציה
+        </Button>
+        <Button
+          variant="accent"
+          size="sm"
+          onClick={() => handleDeleteLead(selectedLead!.id!)}
+        >
+          מחיקה
+        </Button>
+      </div>
     </div>
   );
 };
+
+export default LeadInteractionDetails;

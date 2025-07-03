@@ -37,6 +37,7 @@ export const useLeadsStore = create<LeadsState>((set) => ({
             }
             const data: Lead[] = await response.json();
             set({ leads: data, loading: false });
+            
         } catch (error: any) {
             set({ error: error.message || "שגיאה בטעינת הלידים", loading: false });
         }

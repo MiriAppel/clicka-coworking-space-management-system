@@ -17,14 +17,11 @@ export const interactionSchema = z.object({
   notes: z.string().min(1, "יש להזין הערות"),
   date: z.string().refine(val => !isNaN(Date.parse(val)), "תאריך לא תקין"),
 });
-
 export type InteractionFormData = z.infer<typeof interactionSchema>;
-
 interface InteractionFormProps {
   onSubmit: (lead: Lead) => Promise<any>;
   onCancel: () => void;
 }
-
 export const InteractionForm: React.FC<InteractionFormProps> = ({
   onSubmit,
   onCancel,
@@ -81,12 +78,11 @@ export const InteractionForm: React.FC<InteractionFormProps> = ({
         name="type"
         label="סוג אינטראקציה"
         options={[
-          { label: "שיחה", value: "call" },
+          { label: "שיחה", value: "phone" },
           { label: "אימייל", value: "email" },
           { label: "פגישה", value: "meeting" },
         ]}
       />
-
       <InputField name="date" label="תאריך" type="date" />
       <InputField name="notes" label="הערות" />
 
