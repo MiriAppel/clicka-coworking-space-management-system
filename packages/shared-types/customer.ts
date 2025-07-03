@@ -1,27 +1,26 @@
 // customer-types.d.ts
 
-import { Person } from './person';
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
 export enum TimelineEventType {
-    LEAD_CREATED = 'LEAD_CREATED',
-    INTERACTION = 'INTERACTION',
-    CONVERSION = 'CONVERSION',
-    CONTRACT_SIGNED = 'CONTRACT_SIGNED',
-    WORKSPACE_ASSIGNED = 'WORKSPACE_ASSIGNED',
-    PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
-    STATUS_CHANGE = 'STATUS_CHANGE',
-    NOTE_ADDED = 'NOTE_ADDED'
+  LEAD_CREATED = 'LEAD_CREATED',
+  INTERACTION = 'INTERACTION',
+  CONVERSION = 'CONVERSION',
+  CONTRACT_SIGNED = 'CONTRACT_SIGNED',
+  WORKSPACE_ASSIGNED = 'WORKSPACE_ASSIGNED',
+  PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
+  STATUS_CHANGE = 'STATUS_CHANGE',
+  NOTE_ADDED = 'NOTE_ADDED'
 }
 
 export enum ContractStatus {
-    DRAFT = 'DRAFT',
-    PENDING_SIGNATURE = 'PENDING_SIGNATURE',
-    SIGNED = 'SIGNED',
-    ACTIVE = 'ACTIVE',
-    EXPIRED = 'EXPIRED',
-    TERMINATED = 'TERMINATED'
+  DRAFT = 'DRAFT',
+  PENDING_SIGNATURE = 'PENDING_SIGNATURE',
+  SIGNED = 'SIGNED',
+  ACTIVE = 'ACTIVE',
+  EXPIRED = 'EXPIRED',
+  TERMINATED = 'TERMINATED'
 }
 
 // Workspace type enum
@@ -54,7 +53,7 @@ export enum ExitReason {
 
 // Customer entry-exit period
 export interface CustomerPeriod {
-  id: ID;
+  id?: ID;
   customerId: ID;
   entryDate: DateISO;
   exitDate?: DateISO;
@@ -76,25 +75,25 @@ export interface ContractTerms {
 }
 
 export interface Contract {
-    id: ID;
-    customerId: ID;
-    version: number;
-    status: ContractStatus;
-    signDate?: DateISO;
-    startDate?: DateISO;
-    endDate?: DateISO;
-    terms?: ContractTerms;
-    documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
-    signedBy?: string;
-    witnessedBy?: string;
-    createdAt: DateISO;
-    updatedAt: DateISO;
+  id?: ID;
+  customerId: ID;
+  version: number;
+  status: ContractStatus;
+  signDate?: DateISO;
+  startDate?: DateISO;
+  endDate?: DateISO;
+  terms?: ContractTerms;
+  documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
+  signedBy?: string;
+  witnessedBy?: string;
+  createdAt: DateISO;
+  updatedAt: DateISO;
 }
 
 
 // Payment method
 export interface CustomerPaymentMethod {
-  id: ID;
+  id?: ID;
   customerId: ID;
   creditCardLast4?: string;
   creditCardExpiry?: string;
@@ -106,7 +105,11 @@ export interface CustomerPaymentMethod {
 }
 
 // Customer model
-export interface Customer extends Person{
+export interface Customer {
+  id?: ID;
+  name: string;
+  phone: string;
+  email: string;
   idNumber: string;
   businessName: string;
   businessType: string;
@@ -120,18 +123,19 @@ export interface Customer extends Person{
   invoiceName?: string;
   contractDocuments?: FileReference[];
   paymentMethods: CustomerPaymentMethod[];
-  paymentMethodsType: PaymentMethodType;
-  periods: CustomerPeriod[];
+  periods?: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
 }
 
 // Create customer request
+
 export interface CreateCustomerRequest {
   name: string;
   phone: string;
   email: string;
   idNumber: string;
+  businessName: string;
   businessType: string;
   workspaceType: WorkspaceType;
   workspaceCount: number;
@@ -139,14 +143,17 @@ export interface CreateCustomerRequest {
   contractStartDate: DateISO;
   billingStartDate: DateISO;
   notes?: string;
+  invoiceName?: string;
   paymentMethod?: {
     creditCardLast4?: string;
     creditCardExpiry?: string;
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;
   };
+    paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
+
 
 // Update customer request
 export interface UpdateCustomerRequest {
@@ -228,6 +235,16 @@ export interface ConvertLeadToCustomerRequest {
   paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
+
+
+export interface StatusChangeRequest {
+  newStatus: CustomerStatus;
+  effectiveDate: DateISO;
+  reason?: string;
+  notes?: string;
+  notifyCustomer: boolean;
+}
+
 
 // export interface SavedSearch {
 //     id: ID;

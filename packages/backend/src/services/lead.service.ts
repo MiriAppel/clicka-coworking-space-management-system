@@ -1,81 +1,130 @@
-import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
 import { LeadModel } from "../models/lead.model";
-import { parse } from 'papaparse';
-import { LeadSource } from "shared-types";
-import type{ ID, UpdateLeadRequest } from "shared-types";
+import Papa, { parse } from "papaparse";
+import { ID, LeadSource, UpdateLeadRequest } from "shared-types";
+import { supabase } from "../db/supabaseClient";
 
-
-export class leadService extends baseService <LeadModel> {
-
-
+export class leadService extends baseService<LeadModel> {
   constructor() {
-    super("LeadModel")
-
+    super("leads");
   }
 
-  getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
+    getAllLeads = async (): Promise<LeadModel[] | null> => {
+        const leads = await this.getAll();
+        return LeadModel.fromDatabaseFormatArray(leads) // המרה לסוג UserModel
+    }
 
+  getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
     const { data, error } = await supabase
-      .from('leads')
-      .select('source')
-      .eq('id', id)
+      .from("leads")
+      .select("source")
+      .eq("id", id)
       .single();
 
     if (error) {
-      console.error('Error fetching sources for lead by ID:', error);
-      throw new Error('Failed to fetch sources for lead by ID');
+      console.error("Error fetching sources for lead by ID:", error);
+      throw new Error("Failed to fetch sources for lead by ID");
     }
     if (!data) {
       console.warn(`No lead found with ID: ${id}`);
       return [];
     }
     return [data.source] as LeadSource[]; // הנחה שהשדה נקרא 'source'
-
   };
 
-  addLeadFromCSV = async (csvData: string): Promise <void> => {
-
+  addLeadFromCSV = async (csvData: string): Promise<void> => {
     // const parsedData = parse(csvData, { header: true }).data as UpdateLeadRequestModel[];
-    const parsedData = parse(csvData, { header: true }).data as UpdateLeadRequest[];
+    const parsedData = parse(csvData, { header: true })
+      .data as UpdateLeadRequest[];
     for (const lead of parsedData) {
       const isFullLead = this.checkIfFullLead(lead);
 
       if (!isFullLead) {
-        console.warn('Incomplete lead data:', lead);
+        console.warn("Incomplete lead data:", lead);
         continue; // דלג על ליד לא מלא
       }
-      const { error } = await supabase.from('leads').insert(lead);
+      const { error } = await supabase.from("leads").insert(lead);
       if (error) {
-        console.error('Error adding lead:', error);
-        throw new Error('Failed to add lead');
+        console.error("Error adding lead:", error);
+        throw new Error("Failed to add lead");
       }
     }
-  }
-  
+  };
+
   checkIfFullLead(lead: UpdateLeadRequest): boolean {
-    return !!(lead && lead.name && lead.email && lead.businessType && lead.phone && lead.interestedIn); 
+    return !!(
+      lead &&
+      lead.name &&
+      lead.email &&
+      lead.businessType &&
+      lead.phone &&
+      lead.interestedIn
+    );
   }
 
-  convertCsvToLeads = (csvData: string): Promise <LeadModel[]> => {
-      // אמור להמיר קובץ CSV למערך של לידים
-      // עיבוד קובץ CSV והמרתו למערך של לידים
-      return Promise.resolve([]);
-  }
+  convertCsvToLeads = (csvData: string): Promise<LeadModel[]> => {
+    return new Promise((resolve, reject) => {
+      Papa.parse<LeadModel>(csvData, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          resolve(results.data);
+        },
+        error: (err: any) => {
+          reject(err);
+        },
+      });
+    });
+  };
 
   getOpenReminders = async (): Promise<LeadModel[]> => {
-      // אמור לשלוף לידים עם תזכורות פתוחות
-      // להחזיר מערך של לידים עם תזכורות פתוחות
+    // אמור לשלוף לידים עם תזכורות פתוחות
+    // להחזיר מערך של לידים עם תזכורות פתוחות
     return [];
-  }
+  };
 
   checkIfLeadBecomesCustomer = async (leadId: ID): Promise<boolean> => {
-    
     const lead = await this.getById(leadId);
 
-    if (lead.status === 'CONVERTED')
-      return true;
+    if (lead.status === "CONVERTED") return true;
     return false;
-    
-  }
-};
+  };
+
+  getLeadsByPage = async (filters: {
+    page?: number;
+    limit?: number;
+  }): Promise<LeadModel[]> => {
+    console.log("Service getLeadsByPage called with:", filters);
+
+    const { page, limit } = filters;
+
+    const pageNum = Number(filters.page);
+    const limitNum = Number(filters.limit);
+
+    if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
+      throw new Error("Invalid filters provided for pagination");
+    }
+
+    const from = (pageNum - 1) * limitNum;
+    const to = from + limitNum - 1;
+
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .order("name", { ascending: false })
+      .range(from, to);
+
+    console.log("Supabase data:", data);
+    console.log("Supabase error:", error);
+
+    if (error) {
+      console.error("❌ Supabase error:", error.message || error);
+      return Promise.reject(
+        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+      );
+    }
+
+    const leads =  data || [];
+    return LeadModel.fromDatabaseFormatArray(leads)
+  };
+}

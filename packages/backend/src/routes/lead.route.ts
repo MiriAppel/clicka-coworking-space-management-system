@@ -3,6 +3,11 @@ import * as controllerLead from '../controllers/lead.controller';
 
 const routerLead = express.Router();
 
+routerLead.get('/by-page', controllerLead.getLeadsByPage);
+
+
+routerLead.get('/filter', controllerLead.getLeadsByFilter);
+
 routerLead.get('/', controllerLead.getAllLeads);
 
 routerLead.get('/:id', controllerLead.getLeadById);
@@ -18,6 +23,9 @@ routerLead.post('/upload/csv', controllerLead.postLeadFromCSV);
 
 routerLead.get('/reminders/open', controllerLead.getLeadsToRemind);
 
-routerLead.get('/filter/customers', controllerLead.getLeadsByFilter);
+
+
+routerLead.delete('/:id', controllerLead.deleteLead);
+
 
 export default routerLead;

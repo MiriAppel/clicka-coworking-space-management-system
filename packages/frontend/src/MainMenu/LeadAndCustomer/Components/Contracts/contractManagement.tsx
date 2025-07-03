@@ -7,6 +7,7 @@ import { Table, TableColumn } from "../../../../Common/Components/BaseComponents
 
 //צריך לבדוק אם לעשות מכאן את העריכה או מהפרטי חוזה ואם בכלל לעשות פרטי חוזה
 
+
 interface ValuesToTable {
     id: ID
     customerId: ID; //  מזהה הלקוח בעל החוזה -כדאי להחליף לשם שלו
@@ -58,7 +59,7 @@ export const ContractManagement = () => {
     ]);
 
     const valuesToTable: ValuesToTable[] = contracts.map(contract => ({
-        id: contract.id,
+        id: contract.id!,
         customerId: contract.customerId,
         status: contract.status,
         //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
@@ -87,7 +88,7 @@ export const ContractManagement = () => {
 
             {/* כאן יהיה טבלה של כל החוזים עם הפרטים (אם זה מדי הרבה פרטים ולא יפה לעשות הכל כאן אפשר לנתב לעמוד של פרטי חוזה בודד) */}
 
-            <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteContract}/>
+            {/* <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteContract}/> */}
 
         </div>
 
