@@ -7,13 +7,15 @@ import { ReportType, ReportParameters } from 'shared-types';
  * @param req - בקשת ה-HTTP (כוללת type ו-parameters)
  * @param res - תגובת השרת ללקוח
  */
-export const handleGenerateReport = async (req: Request,res: Response,next: NextFunction): Promise<void> => {
+export class ReportController {
+  // אין צורך במופע של ה-controller, הפונקציה handleGenerateReport תטפל בבקשות ישירות
+
+ handleGenerateReport = async (req: Request,res: Response,next: NextFunction): Promise<void> => {
   try {
     const { type } = req.params;
     const parameters = req.body as ReportParameters;
-
+    console.log('Generating report of type:', type, 'with parameters:', parameters);
     let reportData;
-
     switch (type as ReportType) {
       case 'REVENUE':
         reportData = await generateRevenueData(parameters);
@@ -31,4 +33,5 @@ export const handleGenerateReport = async (req: Request,res: Response,next: Next
     console.error('Error generating report:', error);
     next(error);
   }
-};
+}
+}

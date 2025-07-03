@@ -114,7 +114,7 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
   fetchExpenses: async () => {
     set({ loading: true });
     try {
-      const response = await fetch(`${API_BASE_URL}/api/expenses/getAllExpenses`);
+      const response = await fetch(`${API_BASE_URL}/api/expenses/getAll`);
       if (!response.ok) throw new Error('Failed to fetch expenses');
       const data = await response.json();
       set({ expenses: data, loading: false, error: undefined });

@@ -2,11 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 import { Translation } from 'shared-types';
 import { translateText } from '../utils/translate';
 import { supportedLanguages } from 'shared-types';
-import dotenv from 'dotenv';
 import { TranslationModel } from '../models/TranslationRecord';
 import { supabase } from '../db/supabaseClient';
 
-dotenv.config();
 
 
 

@@ -3,68 +3,6 @@ import { ExpenseService } from './expense.services'; // ייבוא הפונקצ�
 import { getRevenues } from './revenue.service'; // ייבוא הפונקציה החדשה שתיצור – לשאיבת הכנסות
 import { groupByPeriod } from '../utils/groupingUtils.service'; // פונקציה לעיבוד GroupBy לפי תקופה
 
-export const mockExpensesReportData: Promise<ReportData> = Promise.resolve({
-  revenueData: {
-    totalRevenue: 0,
-    membershipRevenue: 0,
-    meetingRoomRevenue: 0,
-    loungeRevenue: 0,
-    otherRevenue: 0,
-    breakdown: [
-      {
-        date: '2025-06-01T00:00:00.000Z',
-        totalRevenue: 0,
-        membershipRevenue: 0,
-        meetingRoomRevenue: 0,
-        loungeRevenue: 0,
-      },
-    ],
-  },
-  expenseData: {
-    totalExpenses: 650,
-    expensesByCategory: [
-      {
-        category: ExpenseCategory.RENT,
-        amount: 400,
-        percentage: 61.5,
-      },
-      {
-        category: ExpenseCategory.UTILITIES,
-        amount: 150,
-        percentage: 23.1,
-      },
-      {
-        category: ExpenseCategory.CLEANING,
-        amount: 100,
-        percentage: 15.4,
-      },
-    ],
-    monthlyTrend: [
-      {
-        month: '2025-06',
-        totalExpenses: 650,
-        topCategories: [
-          {
-            category: ExpenseCategory.RENT,
-            amount: 400,
-          },
-          {
-            category: ExpenseCategory.UTILITIES,
-            amount: 150,
-          },
-          {
-            category: ExpenseCategory.CLEANING,
-            amount: 100,
-          },
-        ],
-      },
-    ],
-  },
-});
-
-
-
-
 /**
  * יצירת דוח הוצאות (Expense Report)
  * @param parameters - פרמטרים שנבחרו (תאריך, קטגוריות וכו')
@@ -85,7 +23,7 @@ export const mockExpensesReportData: Promise<ReportData> = Promise.resolve({
 //   };
 // }
 
-export async function generateExpenseData(parameters: ReportParameters): Promise<ReportData> {
+export async function generateExpenseData(parameters: ReportParameters): Promise<ReportData|null> {
  const expenseService=new ExpenseService(); // יצירת מופע של ExpenseService
   const expenseCategories = parameters.categories as ExpenseCategory[] | undefined;
   // 1. שליפת ההוצאות מתוך ה־ExpenseService
@@ -93,14 +31,14 @@ export async function generateExpenseData(parameters: ReportParameters): Promise
     dateFrom: parameters.dateRange?.startDate,
     dateTo: parameters.dateRange?.endDate,
     category: expenseCategories,
+    vendorId: parameters.customerIds?.at(0), // אם יש לך פרמטר של ספקים
     // אם יש שדות נוספים שתומכים בהם, תוסיף כאן
   });
 
   if (!expenses) {
     // טיפול במקרה שאין נתונים או שגיאה
-    return mockExpensesReportData;
+    return null;
   }
-
   // 2. קיבוץ הנתונים לפי תקופת הזמן שהמשתמש בחר (month / quarter / year)
   const groupedData = groupByPeriod(expenses, parameters.groupBy, 'date', 'amount');
 const expenseData = {

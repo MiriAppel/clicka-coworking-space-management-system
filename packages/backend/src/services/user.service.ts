@@ -1,9 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { UserModel } from '../models/user.model'; // נניח שהמודל User נמצא באותו תיק
 import { logUserActivity } from '../utils/logger';
-import dotenv from 'dotenv';
-//טוען את משתני הסביבה מהקובץ .env
-dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseAnonKey = process.env.SUPABASE_KEY || '';

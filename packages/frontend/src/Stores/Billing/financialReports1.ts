@@ -18,7 +18,6 @@ export const useFinancialReportsStore = create<FinancialReportsState>((set) => (
    */
   fetchReport: async (type, parameters) => {
     set({ loading: true, error: undefined });
-
     try {
       const data = await fetchReportData(type, parameters);
       set({ reportData: data }); // שמירת התוצאה (מערך) ב־store
