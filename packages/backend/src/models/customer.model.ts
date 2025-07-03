@@ -1,8 +1,9 @@
 
+import { UUID } from "node:crypto";
 import type { Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethodType, WorkspaceType } from "shared-types";
 
 export class CustomerModel implements Customer {
-  id?: ID; //PK
+  id?: UUID; //PK
   name: string;
   phone: string;
   email: string;
@@ -19,7 +20,7 @@ export class CustomerModel implements Customer {
   invoiceName?: string;
   // contractDocuments?: FileReference[];
   //paymentMethods: PaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
-  paymentMethodsType: PaymentMethodType;
+  // paymentMethodsType: PaymentMethodType;
   periods?: CustomerPeriod[];
   // contracts: Contract[];  // One customer can have several contracts. 1:N
   createdAt: DateISO;
@@ -38,7 +39,7 @@ export class CustomerModel implements Customer {
     workspaceCount: number,
     createdAt: DateISO,
     updatedAt: DateISO,
-    paymentMethodsType: PaymentMethodType,
+    // paymentMethodsType: PaymentMethodType,
     currentWorkspaceType?: WorkspaceType,
     contractSignDate?: string,
     contractStartDate?: string,
@@ -49,7 +50,7 @@ export class CustomerModel implements Customer {
     periods?: CustomerPeriod[] | undefined,
     // contracts: Contract[] = []
   ) {
-    this.id = id || undefined;
+    // this.id = id || undefined;
     this.name = name;
     this.phone = phone;
     this.email = email;
@@ -66,7 +67,7 @@ export class CustomerModel implements Customer {
     this.invoiceName = invoiceName;
     // this.contractDocuments = contractDocuments;
     this.paymentMethods = paymentMethods;
-    this.paymentMethodsType = paymentMethodsType;
+    // this.paymentMethodsType = paymentMethodsType;
     this.periods = periods;
     // this.contracts = contracts;
     this.createdAt = createdAt;
@@ -93,7 +94,7 @@ export class CustomerModel implements Customer {
       invoice_name: this.invoiceName,
       // contract_documents: this.contractDocuments,
       // paymentMethods: this.paymentMethods,
-      payment_methods_type: this.paymentMethodsType,
+      // payment_methods_type: this.paymentMethodsType,
       // periods: this.periods,
       // contracts: this.contracts,
       created_at: this.createdAt,
@@ -147,7 +148,7 @@ export class CustomerModel implements Customer {
     if (data.billingStartDate !== undefined) dbObj.billing_start_date = data.billingStartDate;
     if (data.notes !== undefined) dbObj.notes = data.notes;
     if (data.invoiceName !== undefined) dbObj.invoice_name = data.invoiceName;
-    if (data.paymentMethodsType !== undefined) dbObj.payment_methods_type = data.paymentMethodsType;
+    // if (data.paymentMethodsType !== undefined) dbObj.payment_methods_type = data.paymentMethodsType;
     if (data.createdAt !== undefined) dbObj.created_at = data.createdAt;
     if (data.updatedAt !== undefined) dbObj.updated_at = data.updatedAt;
     // הוסיפי כאן שדות נוספים במידת הצורך

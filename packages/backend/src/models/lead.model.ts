@@ -66,7 +66,7 @@ export class LeadModel implements Lead {
       contact_date: this.contactDate,
       follow_up_date: this.followUpDate,
       notes: this.notes,
-      interactions: this.interactions,
+      lead_interaction: this.interactions,
       created_at: this.createdAt,
       updated_at: this.updatedAt,
     }
@@ -85,7 +85,7 @@ export class LeadModel implements Lead {
       dbData.contact_date,
       dbData.follow_up_date,
       dbData.notes,
-      dbData.interactions,
+      dbData.lead_interaction,
       dbData.created_at,
       dbData.updated_at
     );

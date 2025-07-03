@@ -131,8 +131,6 @@ export const LeadHomePage = ({ leads, onDelete }: LeadsListProps) => {
   //עד פה
 
   return (
-    <div className="p-6">
-
       <Table<ValuesToTable>
         data={valuesToTable}
         columns={Columns}
@@ -147,7 +145,6 @@ export const LeadHomePage = ({ leads, onDelete }: LeadsListProps) => {
           </Button>
         )}
       />
-    </div>
   );
 };
 
@@ -159,6 +156,8 @@ export const LeadsPage = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  
 
   // שליפה ראשונית מהשרת
 

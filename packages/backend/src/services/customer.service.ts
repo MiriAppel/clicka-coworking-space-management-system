@@ -57,7 +57,7 @@ export class customerService extends baseService<CustomerModel> {
             billingStartDate: newCustomer.billingStartDate,
             notes: newCustomer.notes,
             invoiceName: newCustomer.invoiceName,
-            paymentMethodsType: newCustomer.paymentMethodType,
+            // paymentMethodsType: newCustomer.,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             paymentMethods: [],
@@ -77,7 +77,7 @@ export class customerService extends baseService<CustomerModel> {
                     billing_start_date: this.billingStartDate,
                     notes: this.notes,
                     invoice_name: this.invoiceName,
-                    payment_methods_type: this.paymentMethodsType,
+                    // payment_methods_type: this.paymentMethodsType,
                     created_at: this.createdAt,
                     updated_at: this.updatedAt,
                 };

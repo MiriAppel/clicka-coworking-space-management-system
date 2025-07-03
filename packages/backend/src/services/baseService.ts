@@ -35,7 +35,7 @@ export class baseService<T> {
     return data;
   };
 
-  getByFilters = async (filters: { q?: string; page?: number; limit?: number;}): Promise<T[]> => {
+  getByFilters = async (filters: { q?: string; page?: number; limit?: number; }): Promise<T[]> => {
     const { q, page, limit } = filters;
 
     let query = supabase.from(this.tableName).select("*");
@@ -65,8 +65,12 @@ export class baseService<T> {
   getAll = async (): Promise<T[]> => {
     console.log("🧾 טבלה:", this.tableName);
 
-    const { data, error } = await supabase.from(this.tableName).select("*");
+    const { data, error } = await supabase
+    .from(this.tableName)
+    .select("*, lead_interaction(*)")
 
+    console.log(data);
+    
     if (!data || data.length === 0) {
       console.log(` אין נתונים בטבלה ${this.tableName}`);
       return []; // תחזירי מערך ריק במקום לזרוק שגיאה
@@ -81,14 +85,14 @@ export class baseService<T> {
   };
 
   patch = async (dataToUpdate: Partial<T>, id: ID): Promise<T> => {
-    
+
     let dataForInsert = dataToUpdate;
     if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
-      try{
-      dataForInsert = (dataToUpdate as any).toDatabaseFormat();
-      console.log(dataForInsert);
+      try {
+        dataForInsert = (dataToUpdate as any).toDatabaseFormat();
+        console.log(dataForInsert);
 
-      }catch (error){
+      } catch (error) {
         console.error("שגיאה בהמרה", error)
       }
     }

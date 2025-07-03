@@ -6,15 +6,20 @@ import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
 import { LeadHomePage, LeadsPage } from "./Leads/leadHomePage";
-import { LeadIntersection } from "./Interactions/leadIntersection";
 import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
-// import { CustomerInteraction } from "./Interactions/";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
 import { CustomersList } from "./Customers/customersList"
+import { LeadInteractions } from "./Interactions/leadIntersection";
+import { InteractionForm } from "./Interactions/interactionForm";
+import { addInteraction } from "./Interactions/leadInteractionDetails";
+import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
 
 export const LeadAndCustomerRouting = () => {
+    const {
+        selectedLead
+    } = useLeadsStore();
     return (
         <Routes>
             <Route path="/" element={<LeadAndCustomer />} />
@@ -31,7 +36,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="leads" element={<LeadsPage />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
-            <Route path="leads/intersections" element={<LeadIntersection />} />
+            <Route path="leads/intersections" element={<LeadInteractions />} />
         </Routes>
     );
 };

@@ -1,8 +1,9 @@
 import { useParams } from "react-router";
 import { NavLink, Outlet, Link } from "react-router";
 import { useState } from "react";
-import '../../Css/customerDetails.css';
-import { CustomerStatus, WorkspaceType, PaymentMethodType, ExitReason , Customer } from "shared-types";
+// import '../../Css/customerDetails.css';
+import type{ Customer } from "shared-types";
+import { CustomerStatus, WorkspaceType, PaymentMethodType, ExitReason } from "shared-types";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 
 //לא צריך את העמוד הזה!!!!
@@ -66,6 +67,7 @@ export const CustomerDetails = () => {
         ],
         createdAt: new Date().toISOString() as any,
         updatedAt: new Date().toISOString() as any,
+        // paymentMethodsType: PaymentMethodType.CREDIT_CARD,
     });
 
     const editCustomer = () => {

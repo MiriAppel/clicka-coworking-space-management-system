@@ -7,7 +7,6 @@ import {
   UpdateCustomerRequest,
   CreateCustomerRequest,
   RecordExitNoticeRequest,
-  StatusChangeRequest,
 } from 'shared-types';
 import { axiosInstance } from '../../../Services/Axios';
 

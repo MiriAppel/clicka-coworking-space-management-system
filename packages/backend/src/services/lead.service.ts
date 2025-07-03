@@ -127,4 +127,24 @@ export class leadService extends baseService<LeadModel> {
     const leads =  data || [];
     return LeadModel.fromDatabaseFormatArray(leads)
   };
+
+  addInteraction = async (leadId: string, interaction: { type: string; date: string; notes: string; userEmail: string }) => {
+    console.log(leadId, interaction);
+
+    const { data, error } = await supabase
+    .from("lead_interaction")
+    .insert([
+      {
+        lead_id: leadId,
+        type: interaction.type.toUpperCase(),
+        date: interaction.date,
+        notes: interaction.notes,
+        user_email: interaction.userEmail,
+        user_id: leadId
+      },
+    ]);
+    if(data)
+      return data;
+    if (error) console.log(error);;
+};
 }

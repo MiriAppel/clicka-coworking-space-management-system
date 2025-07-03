@@ -1,40 +1,112 @@
-import { useParams } from "react-router";
-import React from "react";
-import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+import { useEffect, useState } from "react";
+import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
+import { Lead } from "shared-types";
+import { LeadInteractionDetails } from "./leadInteractionDetails";
 
-//אנטרקציות של המתעניין 
-//קודם input 
-//של חיפוש המזכירה תוכל לחפש למשל מי שהפעמוןשלו דולק וזה אומר שהוא צריך תזכורת 
-// בנוסף צריך שיהיה בחירת מרובים או בחירה של כולם כמו ריבוע כזה בצד שאפשר לבחור כמה  
-interface User { // לדוגמא של טבלה 
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  upload?: File | null;
-  InteractionType?: string;
-  Dates?: Date[];
-}
-const users: User[] = [
-  { id: 1, name: "Sara Cohen", email: "sara@example.com", role: "Admin" },
-  { id: 2, name: "David Levi", email: "david@example.com", role: "User" },
-  { id: 3, name: "Rina Azulay", email: "rina@example.com", role: "Manager" },
-];
-// 3. מגדיר את הCOLUMN
-const columns: TableColumn<User>[] = [
-  { header: "Name", accessor: "name" },
-  { header: "type", accessor: "InteractionType" },//--   זה צריך להיות עמודה של סוג מאיזה סוג תקשורת היתה לנו(טלפון מייל וכד')
-  { header: "Upload a file", accessor: "upload", },//עמודה של העלאת קובץ למתעניין 
-  // { header: "פעמון ", accessor: "תזכורת" },--עמודה שיהיה פעמון שיזהר אם צריך לקבוע משהו או להתקשר 
-  { header: "תאריכים שהיו לנו אנטרקציות", accessor: "Dates", },//צריך להיות שכל פעם רואים את התאריך הקרוב ביותר אבל אם לוחצים על חץ בצד זה מביא את שאר התאריכים
-];
+type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
+type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 
-//למטה צריך להיות גרף של תאריכים וכמות האינטרקציות בכל תאריך ושיוכלו ללחוץ על האינטרקציה ולראות עם מי היה האינטרקציה
-export const LeadIntersection = () => {
+export const LeadInteractions = () => {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showGraph, setShowGraph] = useState(false); // כאן נוספה השליטה בגרף
+  const [sortField, setSortField] = useState<SortField>("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [alertCriterion, setAlertCriterion] = useState<AlertCriterion>("noRecentInteraction");
+
+  const {
+    leads,
+    selectedLead,
+    fetchLeads,
+    handleDeleteLead,
+    handleSelectLead
+  } = useLeadsStore();
+
+  useEffect(() => {
+    fetchLeads();
+  }, [fetchLeads]);
+
+  const deleteLead = (id: string) => {
+    handleDeleteLead(id);
+    if (selectedId === id) setSelectedId(null);
+  };
+
+  const isAlert = (lead: Lead): boolean => {
+    switch (alertCriterion) {
+      case "noRecentInteraction":
+        const recentThreshold = new Date(Date.now() - 100 * 24 * 60 * 60 * 1000);
+        return !lead.interactions?.some((i) =>
+          new Date(i.updatedAt || i.createdAt || i.date) >= recentThreshold
+        );
+      case "statusIsNew":
+        return lead.status?.toLowerCase() === "new";
+      case "oldLead":
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+        return new Date(lead.createdAt || 0) < sixMonthsAgo;
+      default:
+        return false;
+    }
+  };
+
+  const getSortValue = (lead: Lead): string | number | Date => {
+    switch (sortField) {
+      case "name": return lead.name?.toLowerCase() || "";
+      case "status": return lead.status?.toLowerCase() || "";
+      case "createdAt": return new Date(lead.createdAt || 0);
+      case "updatedAt": return new Date(lead.updatedAt || 0);
+      case "lastInteraction":
+        const dates = lead.interactions?.map(i => new Date(i.updatedAt || i.createdAt)) || [];
+        return dates.length > 0 ? Math.max(...dates.map(d => d.getTime())) : 0;
+      default: return "";
+    }
+  };
+
+  const sortedLeads = [...leads].sort((a, b) => {
+    const aVal = getSortValue(a);
+    const bVal = getSortValue(b);
+    if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+    if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
   return (
-    <div>
-      <h1>LeadIntersection</h1>
-      <Table<User> data={users} columns={columns} dir="rtl" />
+    <div className="p-6">
+      <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
+
+      {/* תפריטים - השארתי בלי שינוי */}
+
+      {sortedLeads.map((lead) => (
+        <div
+          key={lead.id}
+          className={`border rounded-lg p-4 mb-2 cursor-pointer transition ${
+            selectedId === lead.id
+              ? "bg-blue-100 border-blue-300"
+              : isAlert(lead)
+                ? "border-red-500 bg-red-50"
+                : "hover:bg-gray-50"
+          }`}
+          onClick={() => {
+            if (selectedId === lead.id) {
+              setShowGraph((prev) => !prev); // החלף בין גרף לפרטים
+            } else {
+              setSelectedId(lead.id!); // בחר ליד חדש
+              setShowGraph(false);    // תמיד מתחיל בפרטים
+            }
+            handleSelectLead(lead.id!);
+          }}
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="font-semibold text-lg">{lead.name}</div>
+              <div className="text-sm text-gray-600">סטטוס: {lead.status}</div>
+            </div>
+          </div>
+
+          {selectedLead && selectedId === lead.id && (
+            <LeadInteractionDetails/>
+          )}
+        </div>
+      ))}
     </div>
   );
 }
