@@ -7,13 +7,13 @@ import { axiosInstance } from '../../../../service/Axios';
 
 export const LoginWithGoogle = () => {
     // const setUser = useAuthStore((state) => state.setUser);
-    const {setUser, setSessionId}=useAuthStore();
+    const { setUser, setSessionId } = useAuthStore();
     const login = useGoogleLogin({
         flow: 'auth-code',
         onSuccess: async (codeResponse) => {
             try {
                 console.log('Code received from Google:', codeResponse);
-                
+
                 const response = await axiosInstance.post<LoginResponse>(
                     '/api/auth/google',
                     { code: codeResponse.code },
@@ -38,7 +38,7 @@ export const LoginWithGoogle = () => {
     });
 
     return (
-        <button onClick= {() => login()}> Google התחבר עם </button>
+        <button onClick={() => login()}> Google התחבר עם </button>
     );
 };
 

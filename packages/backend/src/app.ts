@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
 import express, { NextFunction } from 'express';
-import translationRouter from './routes/translation.route';
+// import translationRouter from './routes/translation.route';
 // import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
@@ -47,7 +47,7 @@ app.use('/api/auth',routerAuth);
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-app.use('/translations', translationRouter);
+// app.use('/translations', translationRouter);
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);

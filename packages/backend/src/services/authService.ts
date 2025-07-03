@@ -41,12 +41,13 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       //need to check if the user in the system but doesnt have googleId yet
       try {
         checkUser = await userService.getUserByEmail(userInfo.email);
-        if(checkUser==null)
-          throw new Error("checkUser not found")
+        if(checkUser==null){
+           throw new Error("User not found")
+        }
         await userService.updateGoogleIdUser(checkUser.id ?? userInfo.id,userInfo.id);
 
-      } catch (error) {
-        throw new Error('User not found or not authorized to login');
+      } catch (error:any) {
+        throw error;
       }
       throw new Error('User not found or not authorized to login');
     }
@@ -79,13 +80,13 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       user,
       token: jwtToken,
       sessionId: newSessionId,
-      googleAccessToken: tokens.access_token,
+      // googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
 
-  } catch (error) {
-    console.error('שגיאה בהחלפת קוד או בשליפת משתמש:', error);
-    throw new Error('ההתחברות עם Google נכשלה');
+  } catch (error:any) {
+    console.error('error in exchange code and fetch user', error);
+    throw error;
   }
 };

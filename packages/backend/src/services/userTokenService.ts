@@ -149,7 +149,7 @@ export class UserTokenService {
     async getAccessTokenByUserId(userId: string): Promise<string | null> {
         if (await this.checkIfExpiredAccessToken(userId)) {
             //if access token is expired, we need to refresh it
-            const refreshToken: string =decrypt(await this.getRefreshTokenByUserId(userId));
+            const refreshToken=await this.getRefreshTokenByUserId(userId)
             const data = await refreshAccessToken(refreshToken)
             this.updateTokens(userId, encrypt(data.access_token));
             return data.access_token;
@@ -171,7 +171,7 @@ export class UserTokenService {
             .select('refresh_token')
             .eq('user_id', userId)
             .single();
-        if (error) {
+        if (error || !data) {
             console.error('Error fetching user tokens:', error);
         }
         return decrypt(data?.refresh_token);

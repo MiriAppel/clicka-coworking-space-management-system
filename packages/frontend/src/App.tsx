@@ -75,7 +75,6 @@ function App() {
       {/* 👇 נתיבים */}
       <Routes>
       </Routes>
-      <AuthenticationScreen />
       <div className='menu' style={{ backgroundColor: 'black' }}>
 
       </div>
