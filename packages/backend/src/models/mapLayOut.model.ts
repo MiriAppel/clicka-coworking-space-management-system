@@ -1,4 +1,4 @@
-import { MapLayout } from "shared-types/src/mapLayout";
+import { MapLayout } from "shared-types/mapLayout";
 
 export class MapLayoutModel implements MapLayout {
   id?: string;

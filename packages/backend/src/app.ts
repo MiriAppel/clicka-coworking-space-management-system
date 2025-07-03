@@ -16,13 +16,8 @@ import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
-import routerMap from './routes/WorkspaceMapRoute'
-import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
-
-
-
-
+import routerMap from './routes/WorkspaceMapRoute';
+import userRouter from './routes/user.route';
 
 // Create Express app
 const app = express();
@@ -98,6 +93,4 @@ const swaggerOptions = {
   ],
 };
 
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 export default app;
