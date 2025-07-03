@@ -23,6 +23,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     };
     res.status(200).json(response);
   } catch (error: any) {
+    console.log('in auth controller catch ',error)
     if ((error as any).message === 'User not found or not authorized to login') {
       res.status(HttpStatusCode.Forbidden).json({ error: 'User not found or not authorized to login' });
     } else if (error.message === 'User not found') {

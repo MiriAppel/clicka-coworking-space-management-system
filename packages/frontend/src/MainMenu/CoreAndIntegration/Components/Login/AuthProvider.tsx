@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         if (axios.isAxiosError(err) && err.response?.status === 409) {
           console.warn("Session ID mismatch - logging out.");
+          alert("you logged in in another device -please log in again")
           clearUser();
         }
 
@@ -69,6 +70,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         } catch (err: any) {
           if (axios.isAxiosError(err) && err.response?.status === 409) {
             console.warn("Session ID mismatch - logging out.");
+             alert("you logged in in another device -logging out")
             clearUser();
           }
           console.error("Failed session check", err);

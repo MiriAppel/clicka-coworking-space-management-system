@@ -28,7 +28,14 @@ export const LoginWithGoogle = () => {
                 setUser(response.data.user);
                 setSessionId(response.data.sessionId!)
                 // Optionally, you can handle the token and expiration here
-            } catch (error) {
+            } catch (error:any) {
+                 if (axios.isAxiosError(error) && error.response?.status === 401){
+                    alert('You are not authorized to access this resource.');
+                    return;
+                 }
+                 if(axios.isAxiosError(error)){
+                    alert(error.message)
+                 }
                 console.error('Error sending code to server:', error);
             }
         },
