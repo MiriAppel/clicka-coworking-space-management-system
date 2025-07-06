@@ -10,7 +10,6 @@ export enum DocumentType {
   AGREEMENT = 'AGREEMENT',
   REPORT = 'REPORT'
 }
-
 // Interface
 export interface DocumentTemplate {
   id?: ID;
@@ -24,7 +23,6 @@ export interface DocumentTemplate {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
-
 // Interface למסמכים שנוצרו
 export interface GeneratedDocument {
   id?: ID;

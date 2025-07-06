@@ -43,6 +43,12 @@ export interface UpdateDocumentTemplateRequest {
 }
 
 export class DocumentService {
+  createDocumentTemplate(newDocuments: DocumentTemplateModel, customer_id: string) {
+    throw new Error('Method not implemented.');
+  }
+  static updateTemplate(id: string, updatedTemplate: any) {
+    throw new Error('Method not implemented.');
+  }
   // יצירת תבנית מסמך חדשה
   async createTemplate(data: DocumentTemplateModel, customer_id: ID): Promise<DocumentTemplateModel> {
     try {
@@ -103,23 +109,26 @@ export class DocumentService {
     }
   }
 
-  // עדכון תבנית
-  // async updateTemplate(id: ID, data: UpdateDocumentTemplateRequest): Promise<DocumentTemplateModel> {
-  //   try {
-  //     // אם מעדכנים לתבנית ברירת מחדל, נבטל את האחרות
-  //     if (data.isDefault && data.type) {
-  //       await this.unsetDefaultTemplates(data.type);
-  //     }
+ // עדכון תבנית
+  async updateTemplate(id: ID, data: UpdateDocumentTemplateRequest): Promise<DocumentTemplateModel> {
+    try {
+      // אם מעדכנים לתבנית ברירת מחדל, נבטל את האחרות
+      if (data.isDefault && data.type) {
+        await this.unsetDefaultTemplates(data.type);
+      }
 
-  //     const updatedTemplate = await updateDocumentTemplate(id, data);
-  //     if (!updatedTemplate) {
-  //       throw new Error('תבנית המסמך לא נמצאה לעדכון');
-  //     }
-  //     return updatedTemplate;
-  //   } catch (error) {
-  //     throw new Error(`שגיאה בעדכון תבנית מסמך: ${error}`);
-  //   }
-  // }
+      const updatedTemplate = await updateDocumentTemplate(id, data);
+      if (!updatedTemplate) {
+        throw new Error('תבנית המסמך לא נמצאה לעדכון');
+      }
+      return updatedTemplate;
+    } catch (error) {
+      throw new Error(`שגיאה בעדכון תבנית מסמך: ${error}`);
+    }
+  }
+  unsetDefaultTemplates(type: DocumentType) {
+    throw new Error('Method not implemented.');
+  }
 
   // מחיקת תבנית
   async deleteTemplate(id: ID): Promise<void> {

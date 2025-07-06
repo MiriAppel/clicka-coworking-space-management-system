@@ -44,7 +44,8 @@ export const getActiveDocumentTemplates = async (): Promise<DocumentTemplateMode
     return data || [];
 };
 
-export const createDocumentTemplate = async (templateData:DocumentTemplateModel,customer_id:ID): Promise<DocumentTemplateModel> => {
+export const createDocumentTemplate = async (templateData:DocumentTemplateModel,
+    customer_id:ID): Promise<DocumentTemplateModel> => {
 
     const now = new Date().toISOString();
     // יצירת אובייקט פשוט ללא המודל
@@ -59,17 +60,12 @@ export const createDocumentTemplate = async (templateData:DocumentTemplateModel,
         created_at: now,
         updated_at: now
     };
-
-    console.log('🔍 Inserting to DB:', templateToInsert);
-
     const { data, error } = await supabase
         .from('document_template')
         .insert([templateToInsert])
         .select()
         .single();
-        console.log('🔍 Inserted data:', data);
     if (error) {
-        console.error('❌ DB Error:', error);
         throw new Error(`Database error: ${error.message}`);
     }
     
@@ -121,9 +117,7 @@ export const getDocumentTemplatesByType = async (type: DocumentType): Promise<Do
         .from('document_template')
         .select('*')
         .eq('type', type)
-        // .order('updated_at', { ascending: false })
         ;
-
     if (error) throw new Error(`Database error: ${error.message}`);
     return data || [];
 };

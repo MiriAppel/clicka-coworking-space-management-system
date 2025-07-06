@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
  import { DocumentService, CreateDocumentTemplateRequest, UpdateDocumentTemplateRequest } from '../services/document.service';
-import { DocumentType } from '../models/document.model';
+import { DocumentTemplateModel, DocumentType } from '../models/document.model';
 import { ID } from 'shared-types';
 //import { ID } from '../../../../types/core';
 
@@ -12,25 +12,41 @@ export class DocumentController {
   }
 
   // יצירת תבנית מסמך חדשה
-  createTemplate = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const templateData: CreateDocumentTemplateRequest = req.body;
-      const template = await this.documentService.createTemplate(templateData);
+  // createTemplate = async (req: Request, res: Response): Promise<void> => {
+  //   try {
+  //     const templateData: CreateDocumentTemplateRequest = req.body;
+  //     const template = await this.documentService.createTemplate(templateData);
       
-      res.status(201).json({
-        success: true,
-        message: 'תבנית המסמך נוצרה בהצלחה',
-        data: template
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error instanceof Error ? error.message : 'שגיאה ביצירת תבנית מסמך',
-        data: null
-      });
-    }
-  };
+  //     res.status(201).json({
+  //       success: true,
+  //       message: 'תבנית המסמך נוצרה בהצלחה',
+  //       data: template
+  //     });
+  //   } catch (error) {
+  //     res.status(400).json({
+  //       success: false,
+  //       message: error instanceof Error ? error.message : 'שגיאה ביצירת תבנית מסמך',
+  //       data: null
+  //     });
+  //   }
+  // };
+ createTemplate = async (req: Request, res: Response) => {
+    try {
+        const {
+            newDocuments,
+            customer_id
+        }: {
+            newDocuments: DocumentTemplateModel,
+            customer_id: ID
+        } = req.body;
+        const newTemplate =  await this.documentService.createDocumentTemplate(newDocuments, customer_id);
+        res.status(201).json(newTemplate);
 
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        res.status(500).json({ error: 'Failed to create template', details: errorMessage });
+    }
+};
   // שליפת תבנית לפי מזהה
   getTemplateById = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -119,28 +135,20 @@ export class DocumentController {
     }
   };
 
-  // עדכון תבנית
-  updateTemplate = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { id } = req.params;
-      const updateData: UpdateDocumentTemplateRequest = req.body;
-      
-      const updatedTemplate = await this.documentService.updateTemplate(id as ID, updateData);
-      
-      res.status(200).json({
-        success: true,
-        message: 'תבנית המסמך עודכנה בהצלחה',
-        data: updatedTemplate
-      });
-    } catch (error) {
-      res.status(400).json({
-        success: false,
-        message: error instanceof Error ? error.message : 'שגיאה בעדכון תבנית מסמך',
-        data: null
-      });
-    }
+  //  * עדכון תבנית - PUT /api/documents/templates/:id
+   
+    updateTemplate = async (req: Request, res: Response) => {
+      try {
+          const { id } = req.params;
+          const updatedTemplate = req.body;
+  
+          await DocumentService.updateTemplate(id, updatedTemplate);
+          res.sendStatus(204);
+      } catch (error) {
+          res.status(500).json({ error: 'Failed to update template' });
+      }
   };
-
+  
   // מחיקת תבנית
   deleteTemplate = async (req: Request, res: Response): Promise<void> => {
     try {
