@@ -78,8 +78,8 @@ export const Accesibility = () => {
    <Button
   className="bg-gray-100 rounded p-2 hover:bg-gray-200 transition flex items-center justify-center"
   onClick={toggleHighContrast}
-  title={theme.isHighContrast ? "Desactivar alto contraste" : "Activar alto contraste"}
-  aria-label={theme.isHighContrast ? "Desactivar alto contraste" : "Activar alto contraste"}
+  title={theme.isHighContrast ? "Disable high contrast" : "Active high contrast"}
+  aria-label={theme.isHighContrast ? "Disable high contrast" : "Active high contrast"}
 > Hight Contrast
   <Eclipse size={20} />
 </Button>
@@ -88,8 +88,8 @@ export const Accesibility = () => {
    <Button
   className="bg-gray-100 rounded p-2 hover:bg-gray-200 transition flex items-center justify-center"
   onClick={toggleKeyboardNavigation}
-  title={theme.isKeyboardNavigation ? "Desactivar navegación por teclado" : "Activar navegación por teclado"}
-  aria-label={theme.isKeyboardNavigation ? "Desactivar navegación por teclado" : "Activar navegación por teclado"}
+  title={theme.isKeyboardNavigation ? "Disable keyboard navigation" : "Enable keyboard navigation"}
+  aria-label={theme.isKeyboardNavigation ? "Disable keyboard navigation" : "Enable keyboard navigation"}
 > Keyboard Navigation
   <Keyboard size={20} />
 </Button>
@@ -97,8 +97,8 @@ export const Accesibility = () => {
    <Button
   className="bg-gray-100 rounded p-2 hover:bg-gray-200 transition flex items-center justify-center"
   onClick={() => setLanguage("he")}
-  title="Cambiar a Hebreo"
-  aria-label="Cambiar a Hebreo"
+  title="Change to Hebrew"
+  aria-label="Change to Hebrew"
 > Change to Hebrew 
   <Languages size={20} />
 </Button>
@@ -106,8 +106,8 @@ export const Accesibility = () => {
     <Button
   className="bg-gray-100 rounded p-2 hover:bg-gray-200 transition flex items-center justify-center"
   onClick={() => setLanguage("en")}
-  title="Cambiar a Inglés"
-  aria-label="Cambiar a Inglés"
+  title="Change to English"
+  aria-label="Change to English"
 > Change to English 
   <Globe size={20} />
  </Button>
@@ -115,8 +115,8 @@ export const Accesibility = () => {
     <Button
   className="bg-red-500 text-white rounded p-2 hover:bg-red-600 transition mt-2 flex items-center justify-center"
   onClick={() => setIsOpen(false)}
-  title="Cerrar"
-  aria-label="Cerrar"
+  title="Close"
+  aria-label="Close"
 > Close 
   <X size={20} />
 </Button>
