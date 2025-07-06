@@ -14,12 +14,18 @@ const mockVendors: Vendor[] = [
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
   },
+    {
+    id: 'v2',
+    name: '  נספרסו בע"מ',
+    createdAt: '2024-01-01',
+    updatedAt: '2024-01-01',
+  },
 ];
 
 export const TestExpensePage = () => {
   return (
     <div>
-      <h2>טופס הוספת הוצאה</h2>
+     
       <CreateExpenseForm vendors={mockVendors} />
     </div>
   );

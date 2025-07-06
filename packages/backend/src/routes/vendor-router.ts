@@ -1,9 +1,9 @@
-
+// vendor-router.ts
 import { Router } from "express";
 import { VendorController } from "../controllers/vendor.controller";
 import { UserRole } from "shared-types";
 // import { VendorController } from "../controllers/vendor-controller";
-import { authorizeUser } from "../middleware/authorizeUser-middleware";
+import { authorizeUser } from "../middlewares/authorizeUserMiddleware";
 // import { UserRole } from "../../../../types/auth";
 const vendorController = new VendorController();
 const vendorRouter = Router();

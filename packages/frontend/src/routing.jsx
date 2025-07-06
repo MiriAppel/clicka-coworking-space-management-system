@@ -1,8 +1,9 @@
 import { Route, Routes } from "react-router-dom"
 import App from "./App"
-import { WorkspaceMap } from "./MainMenu/Workspace/Components/workspaceMaps"
+// import { WorkspaceMap } from "./MainMenu/Workspace/Components/workspaceMap"
+// import { Billing } from "./MainMenu/Billing/Components/billing"
 import { LeadAndCustomerRouting } from "./MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting"
-import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
+ import { TestExpensePage } from "./MainMenu/Billing/pages/TestExpensePage";
 
 
 export const routing = () => {
@@ -10,9 +11,11 @@ export const routing = () => {
         <Routes>
             <Route path="/" element={<App />} />
             <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-            <Route path="workspaceMap" element={< WorkspaceMap />} />
-            <Route path="users" element={< UserTable />} />
+            {/* <Route path="workspaceMap" element={< WorkspaceMap />} /> */}
+            {/* <Route path="billing" element={< Billing />} /> */}
+            <Route path="expense-form" element={<TestExpensePage />} />
 
+            <Route path="expense-from" ></Route>
         </Routes>
     </>
 }

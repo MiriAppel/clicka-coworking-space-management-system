@@ -1,55 +1,48 @@
-import type{ ID } from "shared-types";
-
+// vendor-service.ts
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+import { VendorModel } from '../models/vendor.model';
+// import { VendorModel } from '../models/Vendor';
+dotenv.config();
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 export class VendorService {
-  getVendorSummary(vendorId: ID) {
-    // שליפת כל ההוצאות המשויכות לספק
-    // חישוב סכום כולל של כל ההוצאות  
-    // ספירת מספר ההוצאות
-    // שליפת תאריך ההוצאה האחרונה (אם קיימת)
-    // חישוב סכום הוצאה ממוצע
-    // ניתוח היסטוריית תשלומים:
-    // כמה תשלומים בוצעו בזמן
-    // כמה תשלומים בוצעו באיחור
-    // חישוב מספר ימי תשלום ממוצעים
+    async createVendor(vendor: VendorModel): Promise<VendorModel | null> {
+  try {
+    const { data, error } = await supabase
+      .from('vendor')
+      .insert([vendor.toDatabaseFormat()])
+      .select()
+      .single();
+    if (error) {
+      console.error(':x: Supabase Insert Error:', error);
+      return null;
+    }
+    return data as VendorModel;
+  } catch (err) {
+    console.error(':x: Unexpected Error in createVendor:', err);
+    return null;
   }
-
-  // saveVendorProfile(input: VendorFormInput, isUpdate: boolean): Vendor {
-  //   // אם מדובר בעדכון, נשתמש במזהה קיים, אחרת נייצר חדש
-  //   // יצירת אובייקט ספק לפי הנתונים שהוזנו
-  //   // החזרת אובייקט מוכן לשמירה במסד הנתונים
-  // }
-
-  getVendorPaymentHistory(vendorId: ID) {
-    return {
-      onTimePayments: 0,
-      latePayments: 0,
-      averagePaymentDays: 0,
-    };
+}
+    async getAllVendors(): Promise<VendorModel[] | null> {
+  const { data, error } = await supabase.from('vendor').select('*');
+  if (error) {
+    console.error(':x: Supabase Select Error:', error);
+    return null;
   }
-    // שליפת כל ההוצאות והתשלומים של הספק מהמסד
-    // שמירת משתנים לספירת תשלומים בזמן ומאחרים וסיכום ימי תשלום
-    // מעבר על כל התשלומים כדי להעריך מתי בוצעו ביחס למועד התשלום
-      // מציאת ההוצאה המתאימה לתשלום (בהנחה ש-payment.expenseId קיים)
-      // חישוב הפרש הימים בין תאריך התשלום לתאריך המועד האחרון לתשלום
-        // תשלום בזמן או מוקדם
-        // תשלום מאוחר
-    // חישוב ממוצע ימי תשלום (סכום הימים חלקי מספר התשלומים)
-    // החזרת הסיכום
-  }
-
-  // filterVendors(
-  //   vendors: Vendor[],
-  //   filters: {
-  //     name?: string;
-  //     category?: VendorCategory;
-  //     status?: VendorStatus;
-  //     taxId?: string;
-  //   }
-  // ): Vendor[] {
-  //   // סינון לפי שם (חלקי, לא רגיש לאותיות גדולות/קטנות)
-  //   // סינון לפי קטגוריה
-  //   // סינון לפי סטטוס (פעיל, מושעה, לא פעיל)
-  //   // סינון לפי תעודת זהות/ח.פ (taxId)
-  //   // נחזיר true רק אם כל התנאים מתקיימים
-  // }
-// }
+  return data as VendorModel[];
+}
+    async getVendorById(id: string): Promise<VendorModel | null> {
+        const { data, error } = await supabase.from('vendors').select('*').eq('id', id).single();
+        if (error) return null;
+        return data as VendorModel;
+    }
+    async updateVendor(id: string, vendor: VendorModel): Promise<VendorModel | null> {
+        const { data, error } = await supabase.from('vendors').update([vendor.toDatabaseFormat()]).eq('id', id).select().single();
+        if (error) return null;
+        return data as VendorModel;
+    }
+    async deleteVendor(id: string): Promise<boolean> {
+        const { error } = await supabase.from('vendors').delete().eq('id', id);
+        return !error;
+    }
+}
