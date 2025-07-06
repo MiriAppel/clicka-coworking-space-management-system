@@ -1,0 +1,237 @@
+/* Container עיקרי */Add commentMore actions
+.booking-calendar-container {
+    background: #E0E0E0;
+    min-height: 100vh;
+    padding: 24px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Header */
+.calendar-header {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+    border-left: 4px solid #007BFF;
+    border-top: 1px solid #E0E0E0;
+}
+
+.calendar-title {
+    color: #007BFF;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.calendar-subtitle {
+    color: #007BFF;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* Calendar Container */
+.calendar-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #E0E0E0;
+}
+
+/* Day Headers */
+.fc .fc-col-header-cell {
+    background: #F8F9FA !important;
+    color: #007BFF !important;
+    font-weight: 600 !important;
+    padding: 16px 12px !important;
+    border: none !important;
+    font-size: 14px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Today Header */
+.fc .fc-col-header-cell.fc-day-today {
+    background: #007BFF !important;
+    color: #fff !important;
+}
+
+/* Time Labels */
+.fc .fc-timegrid-slot-label {
+    background: #fff !important;
+    color: #007BFF !important;
+    font-weight: 500 !important;
+    border-right: 3px solid #a5d8ff !important;
+    border-bottom: 1px solid #E0E0E0 !important;
+    padding: 12px 16px !important;
+    font-size: 13px !important;
+    font-family: 'SF Mono', Monaco, monospace !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Time Labels of today */
+.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot-label {
+    background: #a5d8ff !important;
+    color: #007BFF !important;
+}
+
+/* Time Labels Hover */
+.fc .fc-timegrid-slot-label:hover {
+    background: #a5d8ff !important;
+    color: #007BFF !important;
+}
+
+/* Buttons */
+.fc .fc-button-primary {
+    background: #007BFF !important;
+    border: 1px solid #007BFF !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+    text-transform: none !important;
+    letter-spacing: 0.25px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(0,123,255,0.2) !important;
+}
+
+.fc .fc-button-primary:hover {
+    background: #a5d8ff !important;
+    color: #007BFF !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
+}
+
+.fc .fc-button-primary:focus {
+    box-shadow: 0 0 0 3px #a5d8ff !important;
+    outline: none !important;
+}
+
+/* Calendar Title */
+.fc .fc-toolbar-title {
+    color: #007BFF !important;
+    font-weight: 700 !important;
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+}
+
+/* Today Highlight */
+.fc .fc-day-today {
+    background: #a5d8ff !important;
+    border: 2px solid #007BFF !important;
+}
+
+.fc .fc-timegrid-col.fc-day-today {
+    background: #E0E0E0 !important;
+    border-left: 3px solid #007BFF !important;
+    border-right: 3px solid #007BFF !important;
+}
+
+.fc .fc-day-today .fc-daygrid-day-number {
+    background: #007BFF !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
+}
+
+/* Events */
+.fc .fc-event {
+    background: #a5d8ff !important;
+    color: #007BFF !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+    box-shadow: 0 2px 4px rgba(0,123,255,0.3) !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    height: 100% !important;
+    min-height: 100% !important;
+}
+
+.fc .fc-event:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(0,123,255,0.4) !important;
+    background: #007BFF !important;
+    color: #fff !important;
+}
+
+/* Selection Highlight */
+.fc .fc-highlight {
+    background: #a5d8ff !important;
+    border: 2px dashed #007BFF !important;
+    border-radius: 4px !important;
+}
+
+/* Grid Styling */
+.fc .fc-scrollgrid {
+    border: 1px solid #E0E0E0 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+}
+
+.fc .fc-scrollgrid td, 
+.fc .fc-scrollgrid th {
+    border-color: #E0E0E0 !important;
+}
+
+/* Time Slots */
+.fc .fc-timegrid-slot {
+    height: 60px !important;
+    min-height: 60px !important;
+    border-bottom: 1px solid #fff !important;
+}
+
+.fc .fc-timegrid-slot-major {
+    height: 60px !important;
+    min-height: 60px !important;
+    border-bottom: 1px solid #E0E0E0 !important;
+}
+
+.fc .fc-timegrid-slot-minor {
+    height: 60px !important;
+    min-height: 60px !important;
+}
+
+/* Hover Effects */
+.fc .fc-timegrid-col:hover {
+    background: #a5d8ff !important;
+    transition: background-color 0.2s ease !important;
+}
+
+/* Focus States */
+.fc .fc-button-primary:focus {
+    outline: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .booking-calendar-container {
+        padding: 16px;
+    }
+    .calendar-header {
+        padding: 24px;
+    }
+    .calendar-title {
+        font-size: 24px;
+    }
+    .calendar-wrapper {
+        padding: 16px;
+    }
+    .fc .fc-col-header-cell {
+        padding: 12px 8px !important;
+        font-size: 12px !important;
+    }
+}

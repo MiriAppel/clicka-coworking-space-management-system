@@ -7,7 +7,6 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
-
 // ייבוא קריאת ערכת עיצוב (theme) מתוך hook פנימי
 import { useTheme } from '../themeConfig';
 

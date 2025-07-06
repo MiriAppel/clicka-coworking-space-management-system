@@ -8,8 +8,6 @@ import { ReportType, ReportParameters } from 'shared-types';
  * @param res - תגובת השרת ללקוח
  */
 export class ReportController {
-  // אין צורך במופע של ה-controller, הפונקציה handleGenerateReport תטפל בבקשות ישירות
-
  handleGenerateReport = async (req: Request,res: Response,next: NextFunction): Promise<void> => {
   try {
     const { type } = req.params;
@@ -27,7 +25,6 @@ export class ReportController {
         res.status(400).json({ error: 'Unsupported report type' });
         return;
     }
-
     res.json(reportData);
   } catch (error) {
     console.error('Error generating report:', error);

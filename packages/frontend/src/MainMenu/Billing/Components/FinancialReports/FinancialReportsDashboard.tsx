@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +10,7 @@ import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types';
 import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph';
 import { Table } from '../../../../Common/Components/BaseComponents/Table';
 import axios from 'axios';
+import { ExportButtons } from '../../../../Common/Components/BaseComponents/exportButtons';
 
 type ExtendedReportParameters = ReportParameters & {
   vendorId?: string;
@@ -52,26 +53,29 @@ export const FinancialReportsDashboard: React.FC = () => {
   const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE);
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'pie' | 'line'>('bar');
   const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]);
+  const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
+  const exportContentRef = useRef<HTMLDivElement>(null);
 
-  // שליפת לקוחות עבור דוחות הכנסות
   useEffect(() => {
-    async function fetchCustomers() {
+    async function fetchEntities() {
       try {
-        const response = await axios.get('http://localhost:3001/api/customers', {
-          withCredentials: true,
-        });
-        setCustomers(response.data || []);
+        const [customerRes, vendorRes] = await Promise.all([
+          axios.get('http://localhost:3001/api/customers', { withCredentials: true }),
+          axios.get('http://localhost:3001/api/vendors', { withCredentials: true }),
+        ]);
+        setCustomers(customerRes.data || []);
+        setVendors(vendorRes.data || []);
       } catch (err) {
-        console.error('שגיאה בטעינת לקוחות:', err);
+        console.error('שגיאה בטעינת נתונים:', err);
       }
     }
-    fetchCustomers();
+    fetchEntities();
   }, []);
 
   const onSubmit = async (data: ExtendedReportParameters) => {
     const transformed: ExtendedReportParameters = {
       ...data,
-      vendorId: data.customerIds?.[0], // נדרש רק לדוחות הוצאות
+      vendorId: selectedType === 'EXPENSES' ? data.customerIds?.[0] : undefined,
     };
 
     await fetchReport(selectedType, transformed);
@@ -140,6 +144,21 @@ export const FinancialReportsDashboard: React.FC = () => {
       {selectedType === 'EXPENSES' && (
         <>
           <div>
+            <label>ספק</label>
+            <select
+              {...methods.register('customerIds')}
+              multiple
+              className="w-full px-2 py-1 border rounded"
+            >
+              {vendors.map((vendor) => (
+                <option key={vendor.id} value={vendor.id}>
+                  {vendor.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
             <label>קטגוריות הוצאה</label>
             <select
               multiple
@@ -174,37 +193,58 @@ export const FinancialReportsDashboard: React.FC = () => {
       </Button>
 
       {error && <p className="text-red-600">{error.message}</p>}
-
       {reportData && (
         <>
-          {selectedType === 'REVENUE' && reportData.revenueData && (
-            <ChartDisplay
-              type={selectedChartType}
-              data={reportData.revenueData.breakdown.map((item) => ({
-                label: item.date,
-                value: item.totalRevenue,
-              }))}
-              title="דוח הכנסות"
-            />
-          )}
+          <div ref={exportContentRef}>
+            {selectedType === 'REVENUE' && reportData.revenueData && (
+              <ChartDisplay
+                type={selectedChartType}
+                data={reportData.revenueData.breakdown.map((item) => ({
+                  label: item.date,
+                  value: item.totalRevenue,
+                }))}
+                title="דוח הכנסות"
+              />
+            )}
 
-          {selectedType === 'EXPENSES' && reportData.expenseData && (
-            <ChartDisplay
-              type={selectedChartType}
-              data={reportData.expenseData.monthlyTrend.map((item) => ({
-                label: item.month,
-                value: item.totalExpenses,
-              }))}
-              title="דוח הוצאות"
-            />
-          )}
+            {selectedType === 'EXPENSES' && reportData.expenseData && (
+              <ChartDisplay
+                type={selectedChartType}
+                data={reportData.expenseData.monthlyTrend.map((item) => ({
+                  label: item.month,
+                  value: item.totalExpenses,
+                }))}
+                title="דוח הוצאות"
+              />
+            )}
+          </div>
 
-          <Table
-            columns={[
-              { header: 'תאריך', accessor: 'date' },
-              { header: 'סכום כולל', accessor: 'totalRevenue' },
-            ]}
-            data={
+          <div ref={exportContentRef}>
+            <Table
+              columns={[
+                { header: 'תאריך', accessor: 'date' },
+                { header: 'סכום כולל', accessor: 'totalRevenue' },
+              ]}
+              data={
+                selectedType === 'REVENUE'
+                  ? reportData.revenueData.breakdown.map((item) => ({
+                      date: item.date,
+                      totalRevenue: item.totalRevenue,
+                    }))
+                  : selectedType === 'EXPENSES'
+                  ? reportData.expenseData.monthlyTrend.map((item) => ({
+                      date: item.month,
+                      totalRevenue: item.totalExpenses,
+                    }))
+                  : []
+              }
+            />
+          </div>
+
+          <ExportButtons
+            title={selectedType === 'REVENUE' ? 'דוח הכנסות' : 'דוח הוצאות'}
+            refContent={exportContentRef}
+            exportData={
               selectedType === 'REVENUE'
                 ? reportData.revenueData.breakdown.map((item) => ({
                     date: item.date,
