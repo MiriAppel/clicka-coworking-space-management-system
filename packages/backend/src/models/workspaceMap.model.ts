@@ -1,18 +1,16 @@
-import { WorkspaceMap} from 'shared-types/workspaceMap';
-import {MapLayout} from 'shared-types/mapLayout'
-import { RoomModel } from './room.model';
-import type{ DateISO, ID } from "shared-types/core";
-// import{SpaceModel}from '../../../shared-types/src/workspaceMap'
+import { WorkspaceMap } from 'shared-types/workspaceMap';
+import type{ DateISO, ID, SpaceStatus, WorkspaceType } from "shared-types";
+
 
 export class WorkspaceMapModel implements WorkspaceMap {
   id?: ID;
   name: string;
   lastUpdated: DateISO;
-  // workspaces: SpaceModel[],
-  constructor(id: ID,name: string, layout: MapLayout,  lastUpdated: DateISO) {
-    this.id = id;
-    this.name = name;
-    this.lastUpdated = lastUpdated;
+
+  constructor(params:{id: ID,name: string, lastUpdated: DateISO}) {
+    this.id = params.id || undefined;
+    this.name = params.name;
+    this.lastUpdated = params.lastUpdated;
   }
 
   toDatabaseFormat() {
@@ -21,5 +19,15 @@ export class WorkspaceMapModel implements WorkspaceMap {
       last_updated: this.lastUpdated,
     };
   }
+  static fromDatabaseFormat(data: any):WorkspaceMapModel {
+    return new WorkspaceMapModel({
+      id: data.id,
+     name:data.name,
+     lastUpdated:data.last_updated
+    });
+  }
+   static fromDatabaseFormatArray(dbDataArray: any[] ): WorkspaceMapModel[] {
+        return dbDataArray.map(dbData => WorkspaceMapModel.fromDatabaseFormat(dbData));
+    }
 
 }

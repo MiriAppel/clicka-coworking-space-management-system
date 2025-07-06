@@ -1,19 +1,25 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useAssignmentStore } from "../../../stores/assignmentStore";
+import { useAssignmentStore } from "../../../Stores/Workspace/assigmentStore";
 
-export const AssignmentForm = ({
+interface AssignmentFormProps {
+  initialValues?: any;
+  customers?: { id: string; name: string }[];
+  onSubmit?: (data: any) => Promise<void>;
+}
+
+export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   initialValues = {},
   customers = [],
   onSubmit,
 }) => {
-  const { 
-    spaces, 
-    loading, 
-    error, 
-    getAllSpaces, 
+  const {
+    spaces,
+    loading,
+    error,
+    getAllSpaces,
     createAssignment,
-    clearError 
+    clearError,
   } = useAssignmentStore();
 
   const { register, handleSubmit, reset } = useForm({
@@ -28,13 +34,12 @@ export const AssignmentForm = ({
     },
   });
 
-  // טעינת הספייסים בעת טעינת הקומפוננטה
   useEffect(() => {
     getAllSpaces();
-    return () => clearError(); // ניקוי שגיאות בעת יציאה
+    return () => clearError();
   }, [getAllSpaces, clearError]);
 
-  const handleFormSubmit = async (data) => {
+  const handleFormSubmit = async (data: any) => {
     try {
       if (onSubmit) {
         await onSubmit(data);
@@ -43,7 +48,7 @@ export const AssignmentForm = ({
       }
       reset();
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -72,7 +77,7 @@ export const AssignmentForm = ({
           disabled={!!initialValues.workspaceId || loading}
         >
           <option value="">בחר חלל</option>
-          {spaces.map((w) => (
+          {spaces.map((w: any) => (
             <option key={w.id} value={w.id}>
               {w.name}
             </option>
@@ -147,7 +152,7 @@ export const AssignmentForm = ({
         disabled={loading}
         className="bg-blue-600 text-white px-4 py-2 rounded mt-4 disabled:opacity-50"
       >
-        {loading ? 'שומר...' : 'שמור'}
+        {loading ? "שומר..." : "שמור"}
       </button>
     </form>
   );

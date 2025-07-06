@@ -182,8 +182,8 @@ export const WorkspaceMap = () => {
     // שורה רביעית - שירותים
     {
       id: "space-011",
-      name: "מטבחון",
-      description: "מטבחון עם מקרר ומיקרוגל",
+      name: "meeting room",
+      description: "חדר פגישות עם מסך גדול",
       type: "OPEN_SPACE" as WorkspaceType,
       status: SpaceStatus.AVAILABLE,
       room: "קומה 1",
@@ -492,8 +492,7 @@ export const WorkspaceMap = () => {
                   e.stopPropagation();
                 }}
                 //הקצאה
-                onClick={() => { if (w.status === SpaceStatus.AVAILABLE) {navigate('') } else if (w.status === SpaceStatus.INACTIVE) navigate('')}}
-              >
+onClick={() => { if (w.status === SpaceStatus.AVAILABLE){if(w.type === WorkspaceType.OPEN_SPACE){navigate('/bookingCalendar')} else {navigate('/assignmentForm')}} }}              >
                 {currentId !== w.id ? <div>{w.name} {w.type}</div> : <div>{detailsTodisplay()}</div>}
               </div>
             })}

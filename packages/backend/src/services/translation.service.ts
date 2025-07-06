@@ -13,7 +13,7 @@ const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseAnonKey = process.env.SUPABASE_SERVICE_KEY || '';
 console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
 console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+//const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // בדיקת תקינות שפה
 function isLanguage(value: string): value is string {
