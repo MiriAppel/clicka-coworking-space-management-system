@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 import * as tokenService from '../services/tokenService';
 import { LoginResponse } from "shared-types";
-
 import { HttpStatusCode } from 'axios';
 
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {

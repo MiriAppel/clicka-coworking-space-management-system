@@ -1,27 +1,35 @@
-import type{ DateISO, FileReference, ID, PaymentMethod, PaymentTerms, Vendor, VendorCategory, VendorStatus } from "shared-types";
-
+import { v4 as uuidv4 } from "uuid";
+import type {
+  DateISO,
+  FileReference,
+  ID,
+  PaymentMethod,
+  PaymentTerms,
+  Vendor,
+  VendorCategory,
+  VendorStatus,
+} from "shared-types";
 
 export class VendorModel implements Vendor {
   id: ID;
   name: string;
-  contact_name?: string;
+  contactName?: string;
   phone?: string;
   email?: string;
   address?: string;
   website?: string;
-  tax_id?: string;
-  //הוספת enum סוג התשלום שהספק דורש
-  payment_terms?: PaymentTerms;
-  preferred_payment_method?: PaymentMethod;
+  taxId?: string;
+  paymentTerms?: PaymentTerms;
+  preferredPaymentMethod?: PaymentMethod;
   category?: VendorCategory;
   status?: VendorStatus;
   notes?: string;
-  documents?: FileReference[];
+  // documents?: FileReference[];
   createdAt: DateISO;
   updatedAt: DateISO;
 
   constructor(params: {
-    id: ID;
+    id?: ID;
     name: string;
     createdAt: DateISO;
     updatedAt: DateISO;
@@ -38,42 +46,41 @@ export class VendorModel implements Vendor {
     notes?: string;
     documents?: FileReference[];
   }) {
-    this.id = params.id;
+    this.id = params.id ?? uuidv4(); // אם אין id - נייצר UUID חדש
     this.name = params.name;
-    this.contact_name = params.contact_name;
+    this.contactName = params.contact_name;
     this.phone = params.phone;
     this.email = params.email;
     this.address = params.address;
     this.website = params.website;
-    this.tax_id = params.tax_id;
-    this.payment_terms = params.payment_terms;
-    this.preferred_payment_method = params.preferred_payment_method;
+    this.taxId = params.tax_id;
+    this.paymentTerms = params.payment_terms;
+    this.preferredPaymentMethod = params.preferred_payment_method;
     this.category = params.category;
     this.status = params.status;
     this.notes = params.notes;
-    this.documents = params.documents;
+    // this.documents = params.documents;
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
   }
 
   toDatabaseFormat() {
     return {
-      id: this.id,
       name: this.name,
-      contact_name: this.contact_name,
+      contact_name: this.contactName,
       phone: this.phone,
       email: this.email,
       address: this.address,
       website: this.website,
-      tax_id: this.tax_id,
-      payment_terms: this.payment_terms,
-      preferred_payment_method: this.preferred_payment_method,
+      tax_id: this.taxId,
+      payment_terms: this.paymentTerms,
+      preferred_payment_method: this.preferredPaymentMethod,
       category: this.category,
       status: this.status,
       notes: this.notes,
-      documents: this.documents,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
+      // documents: this.documents,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt,
     };
   }
 }

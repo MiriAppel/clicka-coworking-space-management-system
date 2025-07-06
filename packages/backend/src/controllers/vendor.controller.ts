@@ -1,80 +1,45 @@
-import type{ Vendor } from 'shared-types';
-import { VendorService } from '../services/vendor.servic';
-import { Request, Response } from 'express';
+// import { VendorService } from "../services/vendor-service";
+// import { VendorModel } from "../models/Vendor";
+import { Request, Response } from "express";
+import { VendorModel } from "../models/vendor.model";
+import { VendorService } from "../services/vendor.servic";
 
-export class Vendor_controller {
-  private service = new VendorService();
+export class VendorController {
+    vendorService = new VendorService();
 
-  getSummary(req: Request, res: Response) {
-    const vendorId = req.params.vendorId;
-    const summary = this.service.getVendorSummary(vendorId);
-    res.status(200).json(summary);
-  }
+    async create(req: Request, res: Response) {
+        const data = req.body;
+        const vendor = new VendorModel(data);
+        const result = await this.vendorService.createVendor(vendor);
+        if (result) res.status(201).json(result);
+        else res.status(500).json({ error: "Failed to create vendor" });
+    }
 
-  saveVendor(req: Request, res: Response) {
-    const input = req.body;
-    const isUpdate = Boolean(input.id);
-    // const vendor = this.service.saveVendorProfile(input, isUpdate);
-    // // saveVendorToDB(vendor); // או קריאה לפונקציה אחרת
-    // res.status(200).json(vendor);
-  }
+    async getAll(req: Request, res: Response) {
+        const result = await this.vendorService.getAllVendors();
+        if (result) res.status(200).json(result);
+        else res.status(500).json({ error: "Failed to fetch vendors" });
+    }
 
-  getPaymentStats(req: Request, res: Response) {
-    const vendorId = req.params.vendorId;
-    const stats = this.service.getVendorPaymentHistory(vendorId);
-    res.json(stats);
-  }
+    async getById(req: Request, res: Response) {
+        const id = req.params.id;
+        const result = await this.vendorService.getVendorById(id);
+        if (result) res.status(200).json(result);
+        else res.status(404).json({ error: "Vendor not found" });
+    }
 
-  filterVendors(req: Request, res: Response) {
-    const filters = req.query;
-    const allVendors = getAllVendorsFromDB(); // פונקציה חיצונית שמחזירה את כל הספקים
-    // const filtered = this.service.filterVendors(allVendors, filters);
-    // res.json(filtered);
-  }
-  create(req: Request, res: Response) {
-    const data = req.body;
-    // this.service.create(data)
-      // .then(vendor => res.status(201).json(vendor))
-      // .catch(err => res.status(500).json({ error: err.message }));
-  }
+    async update(req: Request, res: Response) {
+        const id = req.params.id;
+        const updatedVendor = new VendorModel(req.body);
+        const result = await this.vendorService.updateVendor(id, updatedVendor);
+        if (result) res.status(200).json(result);
+        else res.status(500).json({ error: "Failed to update vendor" });
+    }
 
-  getAll(req: Request, res: Response) {
-    // this.service.findAll()
-    //   .then(vendors => res.json(vendors))
-    //   .catch(err => res.status(500).json({ error: err.message }));
-  }
-
-  getById(req: Request, res: Response) {
-    const id = req.params.id;
-    // this.service.findOne(id)
-    //   .then(vendor => {
-    //     if (!vendor) return res.status(404).json({ message: 'Vendor not found' });
-    //     res.json(vendor);
-    //   })
-    //   .catch(err => res.status(500).json({ error: err.message }));
-  }
-
-  update(req: Request, res: Response) {
-    const id = req.params.id;
-    const data = req.body;
-    // this.service.update(id, data)
-    //   .then(vendor => res.json(vendor))
-    //   .catch(err => res.status(500).json({ error: err.message }));
-  }
-
-  delete(req: Request, res: Response) {
-    const id = req.params.id;
-    // this.service.delete(id)
-    //   .then(() => res.status(204).send())
-    //   .catch(err => res.status(500).json({ error: err.message }));
-  }
+    async delete(req: Request, res: Response) {
+        const id = req.params.id;
+        const result = await this.vendorService.deleteVendor(id);
+        if (result) res.status(200).send();
+        else res.status(500).json({ error: "Failed to delete vendor" });
+    }
 }
-
-function saveVendorToDB(vendor: Vendor) {
-  throw new Error('Function not implemented.');
-}
-
-function getAllVendorsFromDB() {
-  throw new Error('Function not implemented.');
-}
-

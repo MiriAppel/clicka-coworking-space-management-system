@@ -1,7 +1,6 @@
-import React from "react";
 import { useFormContext } from "react-hook-form";
-import clsx from "clsx";
 import { useTheme } from "../themeConfig";
+import clsx from "clsx";
 
 interface SelectFieldProps {
   name: string;
@@ -12,6 +11,8 @@ interface SelectFieldProps {
   dir?: "rtl" | "ltr";
   className?: string;
   "data-testid"?: string;
+  value?: string;  // להוסיף את הפרופס האלו
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({
@@ -23,6 +24,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   dir,
   className,
   "data-testid": testId,
+  value,
+  onChange,
 }) => {
   const {theme} = useTheme();
   const {
@@ -49,7 +52,9 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       </label>
 
       <select
-        {...register(name)}
+        {...(value !== undefined && onChange
+          ? { value, onChange }
+          : register(name))}
         disabled={disabled}
         aria-required={required}
         aria-invalid={!!error}

@@ -7,8 +7,7 @@ import { json, urlencoded } from 'express';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
-import dotenv from 'dotenv';
-dotenv.config();
+import vendorRouter from './routes/vendor-router';  // הנתיב לקובץ שלך
 
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
@@ -39,6 +38,8 @@ app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 // app.use('/api/translate', translationRouter);
+app.use('/vendor', vendorRouter);
+
 app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);
 
