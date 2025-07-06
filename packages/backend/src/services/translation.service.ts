@@ -4,16 +4,13 @@ import { translateText } from '../utils/translate';
 import { supportedLanguages } from 'shared-types';
 import dotenv from 'dotenv';
 import { TranslationModel } from '../models/TranslationRecord';
-import { supabase } from '../db/supabaseClient';
 
 dotenv.config();
 
 // יצירת לקוח Supabase
 const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_SERVICE_KEY || '';
-console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
-console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
-//const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseAnonKey = process.env.SUPABASE_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // בדיקת תקינות שפה
 function isLanguage(value: string): value is string {

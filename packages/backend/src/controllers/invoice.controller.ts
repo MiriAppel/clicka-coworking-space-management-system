@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { createManualInvoice, customizeInvoiceTemplate } from "../services/invoice.service";
 import type{ CreateInvoiceRequest } from "shared-types";
-//import { CustomerModel } from "../models/customer.model";
-//import { customerService } from "../services/customer.service";
+import { CustomerModel } from "../models/customer.model";
+import { customerService } from "../services/customer.service";
 //crud functions
 
 /**
