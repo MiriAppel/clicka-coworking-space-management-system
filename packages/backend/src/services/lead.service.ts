@@ -114,7 +114,7 @@ export class leadService extends baseService<LeadModel> {
       .order("name", { ascending: false })
       .range(from, to);
 
-    console.log("Supabase data:", data);
+    // console.log("Supabase data:", data);
     console.log("Supabase error:", error);
 
     if (error) {

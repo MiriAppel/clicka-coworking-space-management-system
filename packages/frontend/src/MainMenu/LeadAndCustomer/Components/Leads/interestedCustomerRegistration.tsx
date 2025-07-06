@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CreateCustomerRequest, WorkspaceType, Lead, PaymentMethodType } from "shared-types";
+import { CreateCustomerRequest, WorkspaceType, Lead, PaymentMethodType, LeadStatus } from "shared-types";
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
@@ -10,10 +10,11 @@ import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
-import { createCustomer, deleteLead } from "../../Service/LeadAndCustomersService"
+import { createCustomer, updateLead } from "../../Service/LeadAndCustomersService"
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 //לראות איך לעשות שיראו את השגיאה עצמה לדוגמא תז כפול
+//לסדר שיראו את השגיאות של המשורשר
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
@@ -47,12 +48,12 @@ const schema = z.object({
     notes: z.string().optional(), // אופציונלי
     invoiceName: z.string().optional(), // אופציונלי
     //לבדוק דחוף מה עם זה!!!!!!!
-    // paymentMethod: z.object({
-    //     creditCardLast4: z.string().optional().refine(val => !val || (/^\d{4}$/.test(val)), { message: "חובה להזין 4 ספרות בדיוק" }), // אופציונלי
-    //     creditCardExpiry: z.string().optional().refine(val => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }), // אופציונלי
-    //     creditCardHolderIdNumber: z.string().optional().refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // אופציונלי
-    //     creditCardHolderPhone: z.string().optional().refine(val => !val || /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }), // אופציונלי
-    // }).optional(), // אופציונלי
+    paymentMethod: z.object({
+        creditCardLast4: z.string().optional().refine(val => !val || (/^\d{4}$/.test(val)), { message: "חובה להזין 4 ספרות בדיוק" }), // אופציונלי
+        creditCardExpiry: z.string().optional().refine(val => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }), // אופציונלי
+        creditCardHolderIdNumber: z.string().optional().refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // אופציונלי
+        creditCardHolderPhone: z.string().optional().refine(val => !val || /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }), // אופציונלי
+    }).optional(), // אופציונלי
     paymentMethodType: z.nativeEnum(PaymentMethodType).refine(val => !!val, { message: "חובה" }),
     contractDocuments: z.array(z.any()).optional(),
 
@@ -67,14 +68,12 @@ export const InterestedCustomerRegistration: React.FC = () => {
     // המידע שאני מקבלת מהדף הקודם - או לעשות קריאת שרת שמקבלת מתעניין בודד לפי מזהה
     const lead: Lead = location.state?.data;
 
-    // const [showForm, setShowForm] = useState<boolean>(true);
-
     const [currentStep, setCurrentStep] = useState<number>(0);
 
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        // defaultValues: { ...lead, workspaceCount: 1, paymentMethod: { creditCardHolderPhone: lead.phone, creditCardHolderIdNumber: lead.idNumber } }
-        defaultValues: { ...lead, workspaceCount: 1 }
+        defaultValues: { ...lead, workspaceCount: 1, paymentMethod: { creditCardHolderPhone: lead.phone, creditCardHolderIdNumber: lead.idNumber }, notes: lead.notes || "" }
+        // defaultValues: { ...lead, workspaceCount: 1 }
 
     });
 
@@ -108,8 +107,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
     const stepFieldNames = [
         ["name", "phone", "email", "idNumber", "businessName", "businessType"] as const,
         ["workspaceType", "workspaceCount", "notes", "invoiceName"] as const,
-        // ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
-        ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType", "contractDocuments"] as const
+        ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType" , "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
+        // ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType", "contractDocuments"] as const
 
     ];
 
@@ -165,13 +164,13 @@ export const InterestedCustomerRegistration: React.FC = () => {
                         options={PaymentMethodTypeOptions}
                         required
                     />
-                    {/* <div className="col-span-2 mt-4 mb-2">
+                    <div className="col-span-2 mt-4 mb-2">
                         <h3 className="text-lg font-semibold text-gray-700 pb-1">פרטי אשראי</h3>
                     </div>
                     <InputField name="paymentMethod.creditCardLast4" label="4 ספרות אחרונות של כרטיס אשראי" />
                     <InputField name="paymentMethod.creditCardExpiry" label="תוקף כרטיס אשראי" />
                     <InputField name="paymentMethod.creditCardHolderIdNumber" label="תעודת זהות בעל הכרטיס" />
-                    <InputField name="paymentMethod.creditCardHolderPhone" label="טלפון בעל הכרטיס" /> */}
+                    <InputField name="paymentMethod.creditCardHolderPhone" label="טלפון בעל הכרטיס" />
                 </>
             )
         }
@@ -214,17 +213,17 @@ export const InterestedCustomerRegistration: React.FC = () => {
         JSON.stringify(data, null, 2);
         const customerRequest: CreateCustomerRequest = data;
         console.log(customerRequest);
+        customerRequest.paymentMethod = customerRequest.paymentMethodType == PaymentMethodType.CREDIT_CARD ? customerRequest.paymentMethod : undefined
 
         await createCustomer(customerRequest)
             .then(async () => {
-                // setShowForm(false);
 
-                await deleteLead(lead.id!)
+                await updateLead(lead.id!, {status: LeadStatus.CONVERTED})
                     .then(() => {
-                        showAlert("מחיקה", "המתעניין נוסף ללקוחות בהצלחה", "success");
+                        showAlert("", "המתעניין נוסף ללקוחות בהצלחה", "success");
                         navigate(-1);
                     }).catch((error) => {
-                        showAlert("שגיאה", `מחיקת המתעניין נכשלה\n${error}`, "error");
+                        showAlert("שגיאה", `שינוי סטטוס נכשל\n${error}`, "error");
                     })
 
             }).catch((error: Error) => {
@@ -234,8 +233,6 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
 
     return <div className='interestedCustomerRegistration'>
-        {/* כל עוד הטופס לא תקין רואים אותו ולאחר שליחה רואים את הדיב שבסוף */}
-        {/* {showForm ? */}
         <div>
             <h1 className="text-3xl font-bold text-center text-blue-600 my-4">רישום מתעניין ללקוח</h1>
             <h4 className="text-lg text-center text-gray-600 my-2">מלא את הפרטים החסרים</h4>
@@ -280,11 +277,6 @@ export const InterestedCustomerRegistration: React.FC = () => {
                 </div>
             </Form>
         </div>
-        {/* :
-            <div className="text-center my-4">
-                <h2 className="text-2xl font-semibold text-gray-700 mb-2">הלקוח נרשם בהצלחה!</h2>
-                <Button onClick={() => navigate(`/leadAndCustomer/customers`)} variant="primary" size="sm">למעבר לרשימת הלקוחות</Button>
-            </div>} */}
     </div>
 
 

@@ -2,6 +2,7 @@ import { CustomerModel } from "../models/customer.model";
 import { baseService } from "./baseService";
 import { serviceCustomerPeriod } from "./customerPeriod.service";
 import {
+    ContractStatus,
     CreateCustomerRequest,
     CustomerPeriod,
     CustomerStatus,
@@ -14,6 +15,9 @@ import {
 } from "shared-types";
 import { supabase } from '../db/supabaseClient'
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
+import { ContractModel } from "../models/contract.model";
+import { contractService } from '../services/contract.service';
+
 
 export class customerService extends baseService<CustomerModel> {
     constructor() {
@@ -42,6 +46,8 @@ export class customerService extends baseService<CustomerModel> {
         console.log("in servise");
         console.log(newCustomer);
 
+        //מה לעשות עם זה: paymentMethods!!
+
         const customerData: CustomerModel = {
             name: newCustomer.name,
             email: newCustomer.email,
@@ -57,7 +63,7 @@ export class customerService extends baseService<CustomerModel> {
             billingStartDate: newCustomer.billingStartDate,
             notes: newCustomer.notes,
             invoiceName: newCustomer.invoiceName,
-            // paymentMethodsType: newCustomer.,
+            paymentMethodType: newCustomer.paymentMethodType,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             paymentMethods: [],
@@ -77,7 +83,7 @@ export class customerService extends baseService<CustomerModel> {
                     billing_start_date: this.billingStartDate,
                     notes: this.notes,
                     invoice_name: this.invoiceName,
-                    // payment_methods_type: this.paymentMethodsType,
+                    payment_methods_type: this.paymentMethodType,
                     created_at: this.createdAt,
                     updated_at: this.updatedAt,
                 };
@@ -89,8 +95,45 @@ export class customerService extends baseService<CustomerModel> {
 
         console.log(customerData);
 
-        await this.post(customerData);
-        //יש להעביר את פרטי הלקוח והחוזה למערכת החיוב (של Team 4 - Billing) לצורך חישוב תמחור והכנת חיובים ראשוניים.
+       const customer =  await this.post(customerData);
+
+        const newContract: ContractModel = {
+            customerId: customer.id!, 
+            version: 1,
+            status: ContractStatus.DRAFT,
+            signDate: newCustomer.contractSignDate,
+            startDate: newCustomer.contractStartDate,
+            //   endDate?: string;
+            //   terms?: ContractTerms;
+            documents: newCustomer.contractDocuments || [],
+             //   signedBy?: string;
+            //   witnessedBy?: string;
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            toDatabaseFormat() {
+                return {
+                    customer_id: this.customerId,
+                    version: this.version,
+                    status: this.status,
+                    sign_date: this.signDate,
+                    start_date: this.startDate,
+                    end_date: this.endDate,
+                    terms: this.terms,
+                    documents: this.documents,
+                    signed_by: this.signedBy,
+                    witnessed_by: this.witnessedBy,
+                    created_at: this.createdAt,
+                    updated_at: this.updatedAt
+                };
+            }
+        }
+        const serviceContract = new contractService();
+
+        const contract = await serviceContract.post(newContract)
+
+        console.log("in service");
+        console.log(contract);
+
 
         // קריאה לשירותי התראות/מייל מתאימים לאחר המרה מוצלחת קשור לקבוצה 1
 
@@ -185,7 +228,7 @@ export class customerService extends baseService<CustomerModel> {
         .order("name", { ascending: true }) // מיון לפי שם
         .range(from, to);
   
-      console.log("Supabase data:", data);
+    //   console.log("Supabase data:", data);
       console.log("Supabase error:", error);
   
       if (error) {

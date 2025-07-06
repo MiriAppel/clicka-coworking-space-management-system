@@ -196,7 +196,7 @@ export const LeadInteractionDetails = () => {
           variant="primary"
           size="sm"
           onClick={() =>
-            navigate("interestedCustomerRegistration", {
+            navigate("/leadAndCustomer/leads/interestedCustomerRegistration", {
               state: { data: selectedLead },
             })
           }

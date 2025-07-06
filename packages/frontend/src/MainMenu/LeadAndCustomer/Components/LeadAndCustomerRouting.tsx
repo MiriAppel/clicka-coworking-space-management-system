@@ -5,7 +5,7 @@ import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
-import { LeadHomePage, LeadsPage } from "./Leads/leadHomePage";
+import { LeadsPage } from "./Leads/leadHomePage";
 import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { UpdateCustomer } from "./Customers/updateCustomer";
@@ -37,6 +37,7 @@ export const LeadAndCustomerRouting = () => {
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
+            <Route path="leads/interactions/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => addInteraction(lead)} onCancel={() => { }} />} />
         </Routes>
     );
 };
