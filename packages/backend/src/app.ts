@@ -1,15 +1,14 @@
-import express, { NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
+import express, { NextFunction } from 'express';
+// import translationRouter from './routes/translation.route';
 // import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import dotenv from 'dotenv';
-dotenv.config();
-
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
@@ -18,6 +17,7 @@ import router from './routes';
 
 // Create Express app
 const app = express();
+dotenv.config();
 
 
 // Apply middlewares
@@ -49,7 +49,19 @@ app.use('/api', router);
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-
+// app.use('/translations', translationRouter);
+// Error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
+  res.status(err.status || 500).json({
+    success: false,
+    error: {
+      code: err.code || 'INTERNAL_SERVER_ERROR',
+      message: err.message || 'An unexpected error occurred',
+      details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    }
+  });
+});
 // Placeholder for routes
 // TODO: Add routers for different resources
 // Error handling middleware
@@ -65,5 +77,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     }
   });
 });
+
 
 export default app;

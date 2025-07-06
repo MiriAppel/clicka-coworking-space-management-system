@@ -87,7 +87,10 @@ export class UserService {
                 .select('*')
                 .eq('email', email)
                 .single();
-
+            if (error || !data) {
+                console.error('Error fetching user by Google ID:', error || 'No user found');
+                return null;
+            }
             const user = UserModel.fromDatabaseFormat(data); // המרה לסוג UserModel
             // רישום פעילות המשתמש
             logUserActivity(user.id ? user.id : user.firstName, 'User fetched by email');
@@ -123,18 +126,17 @@ export class UserService {
 
 
     //  googleId פונקציה לקרוא משתמש לפי  
-    async loginByGoogleId(googleId: string): Promise<UserModel | null> {
+    async loginByGoogleId(googleId: string): Promise<UserModel | null> {        
         try {
             const { data, error } = await supabase
                 .from('users')
                 .select('*')
                 .eq('google_id', googleId)
                 .single();
-            
-        if (error || !data) {
-            console.warn(`No user found for Google ID: ${googleId}`);
-            return null;
-        }
+            if (error || !data) {
+                console.error('Error fetching user by Google ID:', error || 'No user found');
+                return null;
+            }
             const user = UserModel.fromDatabaseFormat(data); // המרה לסוג UserModel
            
             // רישום פעילות המשתמש

@@ -1,6 +1,5 @@
 import { Button } from "@mui/material"
 import { useNavigate } from 'react-router-dom';
-import '../Css/workspaceMaps.css'
 
 export const WorkspaceMap = () => {
 
