@@ -37,11 +37,13 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       throw new Error('Google ID is missing for the user');
     }
     let checkUser = await userService.loginByGoogleId(userInfo.id);
-    if (checkUser === null) {
+    if (checkUser == null) {
       //need to check if the user in the system but doesnt have googleId yet
       try {
         checkUser = await userService.getUserByEmail(userInfo.email);
         if(checkUser==null){
+          console.log('user not found by email:', userInfo.email);
+          
            throw new Error("User not found")
         }
         await userService.updateGoogleIdUser(checkUser.id ?? userInfo.id,userInfo.id);
@@ -49,7 +51,6 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       } catch (error:any) {
         throw error;
       }
-      throw new Error('User not found or not authorized to login');
     }
     const user: User = {
       id: checkUser.id,
