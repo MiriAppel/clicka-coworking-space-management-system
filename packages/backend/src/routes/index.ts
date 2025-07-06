@@ -4,13 +4,10 @@ import healthRouter from './health';
 import calendarRouter from './calendar-route';
 import driveRouter from './drive-route';
 import gmailRouter from './gmail-route';
-
 const router = Router();
-
-router.use('/health', healthRouter);     
-router.use('/drive', driveRouter);      
-router.use('/calendar', calendarRouter);  
-router.use('/gmail', gmailRouter);       
-router.use('/', authRouter);             
-
+router.use('/health', healthRouter);
+router.use('/drive', driveRouter);
+router.use('/calendar', calendarRouter);
+router.use('/gmail', gmailRouter);
+router.use('/', authRouter);
 export default router;

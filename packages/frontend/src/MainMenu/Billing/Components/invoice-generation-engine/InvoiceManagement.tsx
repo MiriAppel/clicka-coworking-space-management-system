@@ -14,7 +14,6 @@ const InvoiceManagement: React.FC = () => {
     updateInvoiceStatus,
     deleteInvoice
   } = useInvoiceStore();
-
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     customerId: '',
@@ -116,21 +115,18 @@ const invoiceData = {
             onChange={(e) => setFormData(prev => ({ ...prev, customerId: e.target.value }))}
             required
           />
-
           <input
             type="date"
             value={formData.issueDate}
             onChange={(e) => setFormData(prev => ({ ...prev, issueDate: e.target.value }))}
             required
           />
-
           <input
             type="date"
             value={formData.dueDate}
             onChange={(e) => setFormData(prev => ({ ...prev, dueDate: e.target.value }))}
             required
           />
-
           <h3>פריטים</h3>
           {formData.items.map((item, index) => (
             <div key={index}>
@@ -157,7 +153,6 @@ const invoiceData = {
                 onChange={(e) => updateItem(index, 'unitPrice', parseFloat(e.target.value))}
                 required
               />
-
               <select
                 value={item.type}
                 onChange={(e) => updateItem(index, 'type', e.target.value)}
@@ -176,7 +171,6 @@ const invoiceData = {
           <button type="button" onClick={() => setShowForm(false)}>ביטול</button>
         </form>
       )}
-
       {/* רשימת חשבוניות */}
       <table>
         <thead>
