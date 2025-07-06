@@ -2,14 +2,13 @@ import React, { useEffect } from "react";
 import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useInvoiceStore } from "../invoice-generation-engine/invoiceStore";
-import { usePaymentStore } from "../../../Workspace/Components/invoice-generation-engine/paymentStore";
 import { InvoiceStatus, PaymentMethodType } from "shared-types";
-
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
+import { usePaymentStore } from "./paymentStore";
 
 interface FormFields {
     amount: number;

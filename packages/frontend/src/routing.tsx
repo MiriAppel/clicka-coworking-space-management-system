@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
-import PaymentForm from './MainMenu/Workspace/Components/invoice-generation-engine/PaymentForm';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import VendorSummary from './MainMenu/Billing/Components/Vendor-management/VendorSummary';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
+import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
+import MainLayout from './layout/MainLayout';
+import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -22,7 +24,7 @@ export const Routing = () => {
     const fetchVendors = async () => {
       try {
         // קריאה לפונקציה שמביאה את רשימת הספקים מהשרת (API)
-        const data = await getAllVendors(); 
+        const data = await getAllVendors();
         setVendors(data); // שומר את הנתונים ב-state
       } catch (err) {
         console.error("שגיאה בשליפת ספקים:", err); // הדפסת שגיאה אם השליפה נכשלה
@@ -40,14 +42,18 @@ export const Routing = () => {
   // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
   return (
     <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
-      <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-      <Route path="payment" element={<PaymentForm />} />
-      <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<App />} />
+        <Route path="/" element={<App />} />
+        <Route path="/workspaceMap" element={<WorkspaceMap />} />
+        <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
+        <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        <Route path="payment" element={<PaymentForm />} />
+        <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+      </Route>
     </Routes>
   );
 };

@@ -23,3 +23,9 @@ export const updateVendor = async (id: string, data: Partial<Vendor>) => {
   const response = await axios.put(`${BASE_URL}/vendor/updateVendor/${id}`, data);
   return response.data;
 };
+// מחיקת ספק - במקום למחוק פיזית, מעדכנים את השדה active ל-false
+export const deleteVendor = async (id: string) => {
+  const response = await axios.delete(`${BASE_URL}/vendor/${id}`);
+  return response.data;
+};
+

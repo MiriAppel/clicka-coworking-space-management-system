@@ -5,13 +5,16 @@ import { baseService } from "./baseService";
 
 export class interactionService extends baseService<LeadInteractionModel> {
   constructor() {
-    super("LeadInteractionModel");
+    super("lead_interaction");
   }
 
   checkIfFullInteraction = async (leadData: LeadInteractionModel): Promise<boolean> => {
-    // אמור לבדוק אם הליד מלא
-    return false;
-      ; // להחזיר true או false בהתאם למצב הליד
+
+    if (leadData.id && leadData.leadId && leadData.updatedAt && leadData.userEmail && leadData.createdAt && leadData.type && leadData.userId && leadData.date)
+      return true;
+    else
+      return false;
+    
   };
   
 }
