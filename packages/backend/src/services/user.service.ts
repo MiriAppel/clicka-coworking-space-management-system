@@ -4,9 +4,14 @@ import { logUserActivity } from '../utils/logger';
 import dotenv from 'dotenv';
 import { UserRole } from 'shared-types';
 import { Response } from 'express';
-import { supabase } from '../db/supabaseClient';
 //טוען את משתני הסביבה מהקובץ .env
 dotenv.config();
+
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseAnonKey = process.env.SUPABASE_KEY || '';
+console.log(supabaseUrl, supabaseAnonKey);
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 
 export class UserService {
 

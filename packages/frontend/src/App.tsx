@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-import { Button } from './Common/Components/BaseComponents/Button';
-import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
-import { SearchCustomer } from './MainMenu/LeadAndCustomer/Components/SearchCustumer';
 // import { Button } from './Common/Components/BaseComponents/Button';
+import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 
@@ -43,42 +41,11 @@ function App() {
         <h2>Co-working Space Management System</h2>
       </header>
 
-      <div className="space-x-4">
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate('/leadAndCustomer')}
-          className="border border-black hover:border-white bg-black text-white"
-        >
-          Lead & Customer
-        </Button>
-
-        <Button
-          variant="primary"
-          size="lg"
-          onClick={() => navigate('/workspaceMap')}
-          className="border border-black hover:border-white bg-black text-white"
-        >
-          Workspace
-        </Button>
-
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate('/billing')}
-          className="border border-black hover:border-white bg-black text-white"
-        >
-          Billing
-        </Button>
-      </div>
-      <SearchCustomer></SearchCustomer>
-      {/* 👇 נתיבים */}
-      <Routes>
-      </Routes>
       <div className='menu' style={{ backgroundColor: 'black' }}>
 
       </div>
       <Accesibility></Accesibility>
+
         <AuthenticationScreen />
     </div>
     </AuthProvider>
@@ -87,4 +54,3 @@ function App() {
 }
 
 export default App;
-

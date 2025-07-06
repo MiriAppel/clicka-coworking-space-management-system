@@ -3,7 +3,7 @@ import axios from 'axios';
 import { googleAuthConfig } from '../../Config/googleAuth';
 import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/Auth/useAuthStore";
-import { axiosInstance } from '../../../../service/Axios';
+import { axiosInstance } from '../../../../Service/Axios';
 
 export const LoginWithGoogle = () => {
     // const setUser = useAuthStore((state) => state.setUser);

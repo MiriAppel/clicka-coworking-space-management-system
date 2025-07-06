@@ -1,7 +1,7 @@
 import { Children, ReactNode, useEffect } from "react";
 import { useAuthStore } from "../../../../Stores/Auth/useAuthStore";
 import axios from "axios";
-import { axiosInstance } from "../../../../service/Axios";
+import { axiosInstance } from "../../../../Service/Axios";
 
 interface AuthProviderProps {
   children: ReactNode;
