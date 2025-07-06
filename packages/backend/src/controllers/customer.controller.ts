@@ -84,25 +84,22 @@ export const getCustomerById = async (req: Request, res: Response) => {
   }
 };
 
-export const getCustomersByFilter = async (req: Request, res: Response) => {
+export const searchCustomersByText = async (req: Request, res: Response) => {
   try {
-    const filters = {
-      q: req.query.q as string,
-      page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 50,
-    };
+    const text = req.query.text as string;
 
-    const customers = await serviceCustomer.getByFilters(filters);
-    console.log(customers);
-
-    if (customers.length > 0) {
-      res.status(200).json(customers);
-    } else {
-      return res.status(200).json([]);
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
     }
+
+    console.log("מחפש לקוחות עם טקסט:", text);
+    const leads = await serviceCustomer.getCustomersByText(text);
+    console.log("לקוחות שמצאתי:", leads);
+
+    return res.json(leads);
   } catch (error) {
-    console.error("❌ Error filtering customers:", error);
-    res.status(500).json({ message: "Error filtering customers", error });
+    console.error("שגיאה בחיפוש לקוחות:", error);
+    return res.status(500).json({ error: "שגיאה בשרת." });
   }
 };
 
@@ -172,7 +169,8 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
 
     console.log("Filters passed to service:", filtersForService);
 
-    const customer = await serviceCustomer.getCustomersByPage(filtersForService);
+    const customer =
+      await serviceCustomer.getCustomersByPage(filtersForService);
 
     if (customer.length > 0) {
       res.status(200).json(customer);

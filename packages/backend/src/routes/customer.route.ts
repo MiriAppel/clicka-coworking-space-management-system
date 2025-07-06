@@ -17,7 +17,7 @@ routerCstomer.get('/notify/:id', customerController.getCustomersToNotify);
 
 routerCstomer.get('/id/:id', customerController.getCustomerById); 
 
-routerCstomer.get('/filter', customerController.getCustomersByFilter);
+routerCstomer.get("/search", customerController.searchCustomersByText);
 
 //(POST)
 routerCstomer.post('/:id/exit-notice', customerController.postExitNotice); 

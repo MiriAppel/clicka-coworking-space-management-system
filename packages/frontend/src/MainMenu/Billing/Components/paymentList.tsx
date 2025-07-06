@@ -10,6 +10,7 @@ import {
 import { NavLink } from "react-router";
 
 import { Stack, TextField } from "@mui/material";
+import { Button } from "../../../Common/Components/BaseComponents/Button";
 
 interface ValuesToTable {
   id: string;
@@ -32,65 +33,53 @@ export const PaymentList = () => {
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [payment, setPayment] = useState<Payment[]>([]);
-  const [getAllPayments, setAllPayments] = useState<Payment[]>([]);
+  const allPaymentsRef = useRef<Payment[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [term, setTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  //   const fetchCustomers = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       const data = await getAllCustomers();
-  //       setCustomers(data);
-  //     } catch (error) {
-  //       console.error("Error fetching customers:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:3001/api/payment/by-page", {
-        params: { page, limit: 50 },
-      })
-      .then((response) => {
-        if (response.data.length < 50) {
-          setHasMore(false);
-          // אין יותר נתונים
+  const fetchPayment = async (
+    page: number,
+    limit: number,
+    searchTerm = ""
+  ) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        "http://localhost:3001/api/payment/by-page",
+        {
+          params: { page, limit },
         }
-        setPayment((prev) => {
-          const ids = new Set(prev.map((l) => l.id));
-          const uniqueNew = response.data.filter(
-            (payment: Payment) => !ids.has(payment.id)
-          );
-          return [...prev, ...uniqueNew];
-        });
-        // עדכון המאגר הכללי של הלקוחות
-        setAllPayments((prev) => {
-          const ids = new Set(prev.map((l) => l.id));
-          const uniqueNew = response.data.filter(
-            // מסנן תשלומים שלא קיימים כבר במאגר הכללי
-            (payment: Payment) => !ids.has(payment.id)
-          );
-          return [...prev, ...uniqueNew];
-        });
-      })
+      );
 
-      .catch((error) => {
-        console.log("error in paymentList page", error);
+      const data: Payment[] = response.data;
 
-        console.error("Error fetching leads:", error);
-      })
-      .finally(() => setIsLoading(false));
+      // setHasMore(data.length === limit); // אם פחות מה-limit, אין עוד דפים
+
+      // תמיד להחליף את הסטייט בתוצאות הדף בלבד (לא להוסיף)
+      setPayment(data);
+      allPaymentsRef.current = data;
+    } catch (error) {
+      console.error("שגיאה ב-fetchPayment:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+useEffect(() => {
+    fetchPayment(page, 20, searchTerm).then(() => {
+      console.log(
+        "✅ אחרי fetchPayment - כמות לקוחות ב־allPayment:",
+        allPaymentsRef.current.length
+      );
+    });
   }, [page]);
 
   useEffect(() => {
-    if (!loaderRef.current || !hasMore || isSearching) return;
+    if (!loaderRef.current || isSearching) return;
 
-    // ברגע שהתשללומים עומדים להגמר זה עובר לעמוד הבא
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         setPage((prev) => prev + 1);
@@ -99,49 +88,72 @@ export const PaymentList = () => {
 
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [hasMore, isSearching]);
+  }, [isSearching]);
+
+
+  // useEffect(() => {
+  //   fetchCustomers();
+  //   // האזנה לשינויים בטבלת customers
+  //   const channel = supabase
+  //     .channel('public:customer')
+  //     .on(
+  //       'postgres_changes',
+  //       { event: '*', schema: 'public', table: 'customers' },
+  //       (payload) => {
+  //         // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
+  //         fetchCustomers();
+  //       }
+  //     )
+  //     .subscribe();
+
+  //   // ניקוי מאזין כשיוצאים מהקומפוננטה
+  //   return () => {
+  //     supabase.removeChannel(channel);
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    if (!loaderRef.current || isSearching) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prev) => prev + 1);
+      }
+    });
+    observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [isSearching]);
+
+  //   const handleDeleteCustomer = (id: string) => {
+  //     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
+  //     setAllCustomers((prev) => prev.filter((customer) => customer.id !== id)); // גם מהמאגר הכללי
+  //   };
 
   const handleSearch = (term: string) => {
-    setSearchTerm(term);
+  setTerm(term);
+  setSearchTerm(term);
 
-    if (!term || term.trim() === "") {
-      setIsSearching(false);
-      setPage(1); // זה יגרום ל-useEffect לטעון את הדף הראשון
-      setPayment([]); // מרוקן את הקיימים כדי שיטען מחדש
-      setHasMore(true);
-      return;
-    }
+  if (!term.trim()) {
+    // אם ריק, מחזירים לתצוגה רגילה
+    setIsSearching(false);
+    fetchPayment(page, 20, "");
+    return;
+  }
 
-    setIsSearching(true);
+  setIsSearching(true);
+  const lower = term.toLowerCase();
 
-    // סינון תומך באותיות קטנות וגדולות
-    // מחפש גם לפי שם, פלאפון ודוא"ל
-    // אם לא מצא תוצאות, שולח בקשה לשרת
-    const filtered = getAllPayments.filter(
-      (payment) =>
-        payment.id?.toLowerCase().includes(term.toLowerCase()) ||
-        payment.customer_name?.toLowerCase().includes(term.toLowerCase()) ||
-        payment.amount?.toString().includes(term) ||
-        payment.method?.toLowerCase().includes(term.toLowerCase()) ||
-        payment.invoice_number?.toLowerCase().includes(term.toLowerCase()) ||
-        payment.date?.toLowerCase().includes(term.toLowerCase())
-    );
+const filtered = allPaymentsRef.current.filter(
+  (c) =>
+    c.customer_name?.toLowerCase().includes(lower) ||
+    c.customer_id?.toLowerCase().includes(lower) ||
+    c.invoice_number?.toLowerCase().includes(lower) ||
+    c.amount?.toString().toLowerCase().includes(lower)
+);
 
-    if (filtered.length > 0) {
-      setPayment(filtered);
-    } else {
-      axios
-        .get("http://localhost:3001/api/payment/filter", {
-          params: { q: term, page: 1, limit: 50 },
-        })
-        .then((response) => {
-          setPayment(response.data);
-        })
-        .catch((error) => {
-          console.error("Error searching from server:", error);
-        });
-    }
-  };
+
+  setPayment(filtered);
+};
+
 
   //   const handleDeleteCustomer = (id: string) => {
   //     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
@@ -180,6 +192,14 @@ export const PaymentList = () => {
     debouncedSearch(value);
   };
 
+  function deleteCurrentPayment(row: ValuesToTable): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function editCustomer(row: ValuesToTable): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <>
       {isLoading ? (
@@ -202,37 +222,80 @@ export const PaymentList = () => {
               value={searchTerm}
               onChange={handleChange}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch(searchTerm);
+                if (
+                  (e.key === "Enter" && searchTerm.trim()) ||
+                  payment.length === 0 // אין תוצאות בדף הנוכחי
+                ) {
+                  console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
+
+                  axios
+                    .get("http://localhost:3001/api/payment/search", {
+                      params: { text: searchTerm },
+                    })
+                    .then((response) => {
+                      const data: Payment[] = response.data.map(
+                        (item: any) => ({
+                          ...item,
+                          invoiceNumber: item.invoice_number,
+                          customerName: item.customer_name,
+                        })
+                      );
+
+                      setPayment(data);
+                      allPaymentsRef.current = data;
+                      console.log("✅ תוצאות שהגיעו מהשרת:", data.length);
+                    })
+                    .catch((error) => {
+                      console.error("שגיאה בחיפוש מהשרת:", error);
+                    });
                 }
               }}
             />
           </Stack>
-
           <br />
-
           <Table<ValuesToTable>
             data={getValuseToTable()}
             columns={columns}
-            onDelete={() => {}}
-            onUpdate={() => {}}
+            onDelete={deleteCurrentPayment}
+            onUpdate={editCustomer}
             renderActions={(row) => (
               <>
                 <NavLink
-                  to={`/${row.id}/dashboard`}
+                  to={`:${row.id}/dashboard`}
                   className="text-blue-500 hover:underline ml-2"
                 >
                   לוח בקרה
                 </NavLink>
-                <NavLink
-                  to={`/${row.id}/contract`}
-                  className="text-blue-500 hover:underline ml-2"
-                >
-                  חוזה לקוח
-                </NavLink>
+              
               </>
             )}
-          />
+          />{" "}
+          <Button
+            variant="secondary"
+            disabled={page <= 1}
+            onClick={() => {
+              if (page > 1) {
+                const prevPage = page - 1;
+                setPage(prevPage);
+                fetchPayment(prevPage, 20, "");
+              }
+            }}
+          >
+            דף הקודם
+          </Button>
+          <Button
+            variant="secondary"
+            // disabled={!hasMore}
+            onClick={() => {
+              // if (hasMore) {
+              const nextPage = page + 1;
+              setPage(nextPage);
+              fetchPayment(nextPage, 20, "");
+              // }
+            }}
+          >
+            דף הבא
+          </Button>
 
           <div ref={loaderRef} className="h-4"></div>
         </div>

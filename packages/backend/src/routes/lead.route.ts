@@ -5,8 +5,7 @@ const routerLead = express.Router();
 
 routerLead.get('/by-page', controllerLead.getLeadsByPage);
 
-
-routerLead.get('/filter', controllerLead.getLeadsByFilter);
+routerLead.get("/search", controllerLead.searchLeadsByText);
 
 routerLead.get('/', controllerLead.getAllLeads);
 

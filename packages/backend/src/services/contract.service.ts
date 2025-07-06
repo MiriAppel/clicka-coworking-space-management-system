@@ -77,16 +77,36 @@ export class contractService extends baseService<ContractModel> {
     targetDate.setDate(today.getDate() + days);
 
     //קודם שולף את כל החוזים
-    const allContracts = await this.getByFilters({});
+    const allContracts = await this.getAll();
 
-    // ואז מסנן אותם לפי התאריך
-    return allContracts.filter(contract => {
+  //   // // ואז מסנן אותם לפי התאריך
+    return allContracts.filter((contract: ContractModel) => {
 
       if (!contract.endDate) return false;
       return new Date(contract.endDate) <= targetDate;
 
     });
 
+  };
+
+    getContractsByText = async (text: string): Promise<ContractModel[]> => {
+    const searchFields = ["customerId", "status"]; // כל השדות שאת רוצה לבדוק בהם
+  
+    const filters = searchFields
+      .map((field) => `${field}.ilike.%${text}%`)
+      .join(",");
+  
+    const { data, error } = await supabase
+      .from("contract")
+      .select("*")
+      .or(filters);
+  
+    if (error) {
+      console.error("שגיאה:", error);
+      return [];
+    }
+  
+    return data as ContractModel[];
   };
 
 

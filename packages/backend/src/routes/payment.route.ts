@@ -6,11 +6,14 @@ const routerPayment = express.Router();
 // (GET) קבלת כל התשלומים
 routerPayment.get('/', paymentController.getAllPayments);
 
+routerPayment.get('/by-page', paymentController.getPaymentByPage);
+
+
 // (GET) קבלת תשלום לפי מזהה
 routerPayment.get('/id/:id', paymentController.getPaymentById);
 
 // (GET) קבלת תשלומים לפי פילטרים
-routerPayment.get('/filter', paymentController.getPaymentByFilter);
+routerPayment.get("/search", paymentController.searchPaymentsByText);
 
 // (POST) יצירת תשלום חדש
 routerPayment.post('/post-customer', paymentController.createPayment);

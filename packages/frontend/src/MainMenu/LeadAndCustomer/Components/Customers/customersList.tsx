@@ -165,6 +165,7 @@ import axios from "axios";
 import debounce from "lodash/debounce";
 import { Pencil, Trash } from "lucide-react";
 import { set } from "lodash";
+import { text } from "body-parser";
 // import { supabase } from "../../../../Services/supabaseClient";
 
 interface ValuesToTable {
@@ -195,7 +196,7 @@ export const CustomersList = () => {
   const [term, setTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  // const [hasMore, setHasMore] = useState(true);
 
   //   const fetchCustomers = async () => {
   //     try {
@@ -214,6 +215,7 @@ export const CustomersList = () => {
     searchTerm = ""
   ) => {
     try {
+      setIsLoading(true);
       const response = await axios.get(
         "http://localhost:3001/api/customers/by-page",
         {
@@ -223,32 +225,23 @@ export const CustomersList = () => {
 
       const data: Customer[] = response.data;
 
-      if (data.length < limit) {
-        setHasMore(false);
-      }
+      // setHasMore(data.length === limit); // אם פחות מה-limit, אין עוד דפים
 
-      const isSearch = searchTerm !== "";
-
-      if (!isSearch && page > 1) {
-        // טעינה אינסופית רגילה – רק לדף חדש, נחליף במקום להוסיף
-        setCustomers(data);
-        allCustomersRef.current = data;
-      } else {
-        // חיפוש או טעינה ראשונה – נוסיף (או נחליף אם זה התחלה)
-        const ids = new Set(allCustomersRef.current.map((c) => c.id));
-        const uniqueNew = data.filter((c) => !ids.has(c.id));
-
-        setCustomers((prev) => [...prev, ...uniqueNew]);
-        allCustomersRef.current = [...allCustomersRef.current, ...uniqueNew];
-      }
-
-      console.log("📥 נוספו לקוחות:", data.length);
+      // תמיד להחליף את הסטייט בתוצאות הדף בלבד (לא להוסיף)
+      setCustomers(data);
+      allCustomersRef.current = data;
     } catch (error) {
       console.error("שגיאה ב-fetchCustomers:", error);
     } finally {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setIsSearching(false);
+      fetchCustomers(page, 20, "");
+    }
+  }, [searchTerm]);
 
   useEffect(() => {
     fetchCustomers(page, 20, searchTerm).then(() => {
@@ -260,7 +253,7 @@ export const CustomersList = () => {
   }, [page]);
 
   useEffect(() => {
-    if (!loaderRef.current || !hasMore || isSearching) return;
+    if (!loaderRef.current || isSearching) return;
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
@@ -270,7 +263,7 @@ export const CustomersList = () => {
 
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [hasMore, isSearching]);
+  }, [isSearching]);
 
   // useEffect(() => {
   //   fetchCustomers();
@@ -294,7 +287,7 @@ export const CustomersList = () => {
   // }, []);
 
   useEffect(() => {
-    if (!loaderRef.current || !hasMore || isSearching) return;
+    if (!loaderRef.current || isSearching) return;
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         setPage((prev) => prev + 1);
@@ -302,39 +295,43 @@ export const CustomersList = () => {
     });
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [hasMore, isSearching]);
+  }, [isSearching]);
 
   //   const handleDeleteCustomer = (id: string) => {
   //     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
   //     setAllCustomers((prev) => prev.filter((customer) => customer.id !== id)); // גם מהמאגר הכללי
   //   };
 
-  const handleSearch = (term: string) => {
-    console.log("🔍 חיפוש לקוחות בדף הנוכחי:", term);
-    setSearchTerm(term);
+  // הפונקציה שמטפלת בשינוי החיפוש
+ const handleSearch = (term: string) => {
+  setTerm(term);
+  setSearchTerm(term);
 
-    if (!term.trim()) {
-      setCustomers(allCustomersRef.current.slice((page - 1) * 20, page * 20));
-      setIsSearching(false);
-      return;
-    }
+  if (!term.trim()) {
+    // אם ריק, מחזירים לתצוגה רגילה
+    setIsSearching(false);
+    fetchCustomers(page, 20, "");
+    return;
+  }
 
-    setIsSearching(true);
-    const lower = term.toLowerCase();
+  setIsSearching(true);
+  const lower = term.toLowerCase();
 
-    const filtered = customers.filter(
-      (c) =>
-        c.name.toLowerCase().includes(lower) ||
-        c.phone.toLowerCase().includes(lower) ||
-        c.email.toLowerCase().includes(lower) ||
-        c.businessName?.toLowerCase().includes(lower) ||
-        c.businessType?.toLowerCase().includes(lower) ||
-        statusLabels[c.status].toLowerCase().includes(lower)
-    );
+  const filtered = allCustomersRef.current.filter(
+    (c) =>
+      c.name.toLowerCase().includes(lower) ||
+      c.phone.toLowerCase().includes(lower) ||
+      c.email.toLowerCase().includes(lower) ||
+      c.businessName?.toLowerCase().includes(lower) ||
+      c.businessType?.toLowerCase().includes(lower) ||
+      statusLabels[c.status].toLowerCase().includes(lower)
+  );
 
-    console.log("✅ תוצאות חיפוש בדף הנוכחי:", filtered.length);
-    setCustomers(filtered);
-  };
+  setCustomers(filtered);
+};
+
+
+
 
   const getValuseToTable = (): ValuesToTable[] => {
     return customers.map((customer) => ({
@@ -414,11 +411,6 @@ export const CustomersList = () => {
     }
   };
 
-  function clickOnNextPage(): void {
-    setPage((prev) => prev + 1);
-    console.log("🔄 דף חדש:", page + 1);
-  }
-
   return (
     <>
       {isLoading ? (
@@ -441,15 +433,14 @@ export const CustomersList = () => {
               onChange={handleChange}
               onKeyDown={(e) => {
                 if (
-                  e.key === "Enter" &&
-                  searchTerm.trim() &&
+                  (e.key === "Enter" && searchTerm.trim()) ||
                   customers.length === 0 // אין תוצאות בדף הנוכחי
                 ) {
                   console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
 
                   axios
-                    .get("http://localhost:3001/api/customers/filter", {
-                      params: { q: searchTerm, page: 1, limit: 50 },
+                    .get("http://localhost:3001/api/customers/search", {
+                      params: { text: searchTerm },
                     })
                     .then((response) => {
                       const data: Customer[] = response.data.map(
@@ -496,23 +487,29 @@ export const CustomersList = () => {
           />{" "}
           <Button
             variant="secondary"
+            disabled={page <= 1}
             onClick={() => {
-              const nextPage = page + 1;
-              setPage(nextPage);
-              fetchCustomers(nextPage, 20, ""); // קריאה מיידית
-            }}
-          >
-            דף הבא
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              const nextPage = page - 1;
-              setPage(nextPage);
-              fetchCustomers(nextPage, 20, ""); // קריאה מיידית
+              if (page > 1) {
+                const prevPage = page - 1;
+                setPage(prevPage);
+                fetchCustomers(prevPage, 20, "");
+              }
             }}
           >
             דף הקודם
+          </Button>
+          <Button
+            variant="secondary"
+            // disabled={!hasMore}
+            onClick={() => {
+              // if (hasMore) {
+              const nextPage = page + 1;
+              setPage(nextPage);
+              fetchCustomers(nextPage, 20, "");
+              // }
+            }}
+          >
+            דף הבא
           </Button>
           <div ref={loaderRef} className="h-4"></div>
         </div>

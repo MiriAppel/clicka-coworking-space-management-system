@@ -15,13 +15,31 @@ export class PaymentService extends baseService<PaymentModel> {
   // static recordPayment(body: any, id: any) {
   //   throw new Error('Method not implemented.');
   // }
+  getPaymentsByText = async (text: string): Promise<PaymentModel[]> => {
+  const searchFields = ["customerName", "customerId", "amount"]; // כל השדות שאת רוצה לבדוק בהם
 
-  getCustomersByPage = async (filters: {
+  const filters = searchFields
+    .map((field) => `${field}.ilike.%${text}%`)
+    .join(",");
+
+  const { data, error } = await supabase
+    .from("payment")
+    .select("*")
+    .or(filters);
+
+  if (error) {
+    console.error("שגיאה:", error);
+    return [];
+  }
+
+  return data as PaymentModel[];
+};
+
+  getPaymentByPage = async (filters: {
         page?: string ;
         limit?: number;
       }): Promise<PaymentModel[]> => {
-        console.log("Service getCustomersByPage called with:", filters);
-    
+        console.log("Fetching payments with filters:", filters);
         const { page, limit } = filters;
     
         const pageNum = Number(filters.page);
@@ -35,7 +53,7 @@ export class PaymentService extends baseService<PaymentModel> {
         const to = from + limitNum - 1;
     
         const { data, error } = await supabase
-          .from("customer")
+          .from("payment")
           .select("*")
           .order("created_at", { ascending: false })
           .range(from, to);
@@ -52,7 +70,7 @@ export class PaymentService extends baseService<PaymentModel> {
     
           const customers = data || [];
           PaymentModel
-        return PaymentModel.returnsDatabaseFormat(customers)
+        return PaymentModel.fromDatabaseFormatArray(customers)
       };
     }
 

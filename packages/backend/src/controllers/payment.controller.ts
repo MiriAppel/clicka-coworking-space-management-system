@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PaymentService } from "../services/payments.service";
 import type { ID, Payment } from "shared-types";
+import { PaymentModel } from "../models/payments.model";
 
 const servicePayment = new PaymentService();
 
@@ -27,7 +28,7 @@ export const getPaymentById = async (req: Request, res: Response) => {
 // יצירת תשלום חדש
 export const createPayment = async (req: Request, res: Response) => {
   try {
-    const newPayment: Payment = req.body;
+    const newPayment: PaymentModel = req.body;
     const payment = await servicePayment.post(newPayment);
     res.status(201).json(payment);
   } catch (error: any) {
@@ -56,14 +57,21 @@ export const deletePayment = async (req: Request, res: Response) => {
 };
 
 // סינון לפי שאילתא
-export const getPaymentByFilter = async (req: Request, res: Response) => {
+export const searchPaymentsByText = async (req: Request, res: Response) => {
   try {
-    const payments = await servicePayment.getByFilters(req.query);
-    res.status(200).json(payments);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    const text = req.query.text as string;
+
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
+    }
+
+    const leads = await servicePayment.getPaymentsByText(text);
+    return res.json(leads);
+  } catch (error) {
+    console.error("שגיאה בחיפוש תשלומים:", error);
+    return res.status(500).json({ error: "שגיאה בשרת." });
   }
-};
+}
 
 export const getPaymentByPage = async (req: Request, res: Response) => {
   const filters = req.query;
@@ -92,7 +100,7 @@ export const getPaymentByPage = async (req: Request, res: Response) => {
       return res.status(200).json([]); // החזרת מערך ריק אם אין לקוחות
     }
   } catch (error: any) {
-    console.error("❌ Error in getCustomersByPage controller:");
+    console.error("Error in getPaymentByPage:", error);
     if (error instanceof Error) {
       console.error("🔴 Message:", error.message);
       console.error("🟠 Stack:", error.stack);
@@ -104,5 +112,5 @@ export const getPaymentByPage = async (req: Request, res: Response) => {
       .status(500)
       .json({ message: "Server error", error: error?.message || error });
   }
-  console.log("getCustomersByPage completed");
+  console.log("getPaymentByPage completed");
 };
