@@ -9,7 +9,7 @@ import {
   RecordExitNoticeRequest,
   // StatusChangeRequest,
 } from 'shared-types';
-import { axiosInstance } from '../../../service/Axios';
+import { axiosInstance } from '../../../Service/Axios';
 
 
 // ---------- לידים ----------
