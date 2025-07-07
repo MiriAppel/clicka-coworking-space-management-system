@@ -154,7 +154,6 @@ export interface CreateCustomerRequest {
   contractDocuments?: FileReference[];
 }
 
-
 // Update customer request
 export interface UpdateCustomerRequest {
   name?: string;

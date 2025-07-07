@@ -7,6 +7,7 @@ import { json, urlencoded } from 'express';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
+import expenseRouter from './routes/expense.route';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -22,8 +23,8 @@ import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/WorkspaceMapRoute';
 import userRouter from './routes/user.route';
-import vendorRouter from './routes/vendor.router';
-import expenseRouter from './routes/expense.route';
+import routerReport from './routes/Reports.route';
+import vendorRouter from './routes/vendor.route';
 
 // Create Express app
 const app = express();
@@ -55,13 +56,15 @@ app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
-app.use('/expense', expenseRouter);
 app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
 // app.use('/api/translate', translationRouter);
 app.use('/api/auth',routerAuth);
+app.use('/api/expenses', expenseRouter);
+app.use('/api/reports', routerReport);
+
 // app.use('/api/leadInteraction', routerCstomer);
 
 
