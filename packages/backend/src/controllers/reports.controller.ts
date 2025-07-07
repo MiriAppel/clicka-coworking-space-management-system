@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { generateRevenueData, generateExpenseData } from '../services/reportGenerators.service';
+import { generateRevenueDataFromPayments, generateExpenseData } from '../services/reportGenerators.service';
 import { ReportType, ReportParameters } from 'shared-types';
 
 /**
@@ -16,7 +16,7 @@ export class ReportController {
     let reportData;
     switch (type as ReportType) {
       case 'REVENUE':
-        reportData = await generateRevenueData(parameters);
+        reportData = await generateRevenueDataFromPayments(parameters);
         break;
       case 'EXPENSES':
         reportData = await generateExpenseData(parameters);
