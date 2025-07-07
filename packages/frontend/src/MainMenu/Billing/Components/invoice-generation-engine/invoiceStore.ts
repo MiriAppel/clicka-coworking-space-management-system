@@ -32,9 +32,6 @@ interface InvoiceState {
   clearError: () => void;
 }
 
-  // ===== עזר =====
-  clearError: () => void;
-}
 export const useInvoiceStore = create<InvoiceState>()(
   devtools(
     persist(
@@ -54,9 +51,6 @@ export const useInvoiceStore = create<InvoiceState>()(
         //     set({ 
         //       error: 'Error fetching invoices', 
         //       loading: false 
-        //     set({
-        //       error: 'Error fetching invoices',
-        //       loading: false
         //     });
         //     console.error('Error fetching invoices:', error);
         //     throw error;
@@ -188,8 +182,6 @@ export const useInvoiceStore = create<InvoiceState>()(
           return invoices
             .filter(invoice => 
               invoice.status !== InvoiceStatus.PAID && 
-            .filter(invoice =>
-              invoice.status !== InvoiceStatus.PAID &&
               invoice.status !== InvoiceStatus.CANCELED
             )
             .reduce((total, invoice) => total + invoice.subtotal, 0);
@@ -208,7 +200,3 @@ export const useInvoiceStore = create<InvoiceState>()(
     { name: 'invoice-store' } // שם ב-DevTools
   )
 );
-
-
-
-

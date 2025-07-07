@@ -1,61 +1,156 @@
-// services/expense-service.ts
+
 import { createClient } from '@supabase/supabase-js';
-import { ExpenseModel } from '../models/expense.model';
 import dotenv from 'dotenv';
+import type { CreateExpenseRequest, UpdateExpenseRequest, GetExpensesRequest, MarkExpenseAsPaidRequest } from 'shared-types';
 dotenv.config();
-
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
-
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 export class ExpenseService {
-  async createExpense(expense: ExpenseModel): Promise<ExpenseModel | null> {
-    const { data, error } = await supabase
-      .from('expenses')
-      .insert([expense.toDatabaseFormat()])
-      .select()
-      .single();
-
-    if (error) return null;
-    return ExpenseModel.fromDatabaseFormat(data);
+  async createExpense(expenseData: CreateExpenseRequest) {
+    try {
+      const { data, error } = await supabase
+        .from('expense')
+        .insert([expenseData])
+        .select()
+        .single();
+      if (error) {
+        console.error('Error creating expense:', error);
+        return null;
+      }
+      return data;
+    } catch (err) {
+      console.error('Unexpected error in createExpense:', err);
+      return null;
+    }
   }
-
-  async getAllExpenses(): Promise<ExpenseModel[] | null> {
-    const { data, error } = await supabase
-      .from('expenses')
-      .select('*');
-
-    if (error) return null;
-    return data.map(ExpenseModel.fromDatabaseFormat);
+  async getExpenses1() {
+    try {
+      const { data, error } = await supabase
+        .from('expense')
+        .select('*');
+      if (error) {
+        console.error('Error fetching expenses:', error);
+        return null;
+      }
+      return data;
+    } catch (err) {
+      console.error('Unexpected error in getExpenses1:', err);
+      return null;
+    }
   }
-
-  async getExpenseById(id: string): Promise<ExpenseModel | null> {
-    const { data, error } = await supabase
-      .from('expenses')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) return null;
-    return ExpenseModel.fromDatabaseFormat(data);
+  async getExpenses(filters: GetExpensesRequest) {
+    try {
+      let query = supabase.from('expense').select('*');
+console.log("Using filters:", {
+  vendorId: filters.vendorId,
+  category: filters.category,
+  status: filters.status,
+  dateFrom: filters.dateFrom,
+  dateTo: filters.dateTo,
+  sortBy: filters.sortBy,
+  sortDirection: filters.sortDirection
+});
+      if (filters.vendorId) {
+        query = query.eq('vendor_id', filters.vendorId);
+      }
+      if (filters.category && filters.category.length > 0) {
+        query = query.in('category', filters.category);
+      }
+      if (filters.status && filters.status.length > 0) {
+        query = query.in('status', filters.status);
+      }
+      if (filters.dateFrom) {
+        query = query.gte('date', filters.dateFrom);
+      }
+      if (filters.dateTo) {
+        query = query.lte('date', filters.dateTo);
+      }
+      if (filters.sortBy) {
+        query = query.order(filters.sortBy, { ascending: filters.sortDirection !== 'desc' });
+      }
+      const { data, error } = await query;
+      if (error) {
+        console.error('Error fetching expenses with filters:', error);
+        return null;
+      }
+      return data;
+    } catch (err) {
+      console.error('Unexpected error in getExpenses:', err);
+      return null;
+    }
   }
-
-  async updateExpense(id: string, expense: ExpenseModel): Promise<ExpenseModel | null> {
-    const { data, error } = await supabase
-      .from('expenses')
-      .update([expense.toDatabaseFormat()])
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) return null;
-    return ExpenseModel.fromDatabaseFormat(data);
+  async getExpenseById(id: string) {
+    try {
+      const { data, error } = await supabase
+        .from('expense')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (error) {
+        console.error('Error fetching expense by ID:', error);
+        return null;
+      }
+      return data;
+    } catch (err) {
+      console.error('Unexpected error in getExpenseById:', err);
+      return null;
+    }
   }
-
-  async deleteExpense(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from('expenses')
-      .delete()
-      .eq('id', id);
-
-    return !error;
+  async updateExpense(id: string, updateData: UpdateExpenseRequest) {
+    try {
+      const { data, error } = await supabase
+        .from('expense')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) {
+        console.error('Error updating expense:', error);
+        return null;
+      }
+      return data;
+    } catch (err) {
+      console.error('Unexpected error in updateExpense:', err);
+      return null;
+    }
+  }
+  async markExpenseAsPaid(id: string, paidData: MarkExpenseAsPaidRequest) {
+    try {
+      const { data, error } = await supabase
+        .from('expense')
+        .update({
+          status: 'PAID',
+          paid_date: paidData.paidDate,
+          payment_method: paidData.paymentMethod,
+          reference: paidData.reference,
+          notes: paidData.notes,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) {
+        console.error('Error marking expense as paid:', error);
+        return null;
+      }
+      return data;
+    } catch (err) {
+      console.error('Unexpected error in markExpenseAsPaid:', err);
+      return null;
+    }
+  }
+  async deleteExpense(id: string) {
+    try {
+      const { error } = await supabase
+        .from('expense')
+        .delete()
+        .eq('id', id);
+      if (error) {
+        console.error('Error deleting expense:', error);
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.error('Unexpected error in deleteExpense:', err);
+      return false;
+    }
   }
 }

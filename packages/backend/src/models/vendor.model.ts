@@ -9,7 +9,6 @@ import type {
   VendorCategory,
   VendorStatus,
 } from "shared-types";
-
 export class VendorModel implements Vendor {
   id: ID;
   name: string;
@@ -27,7 +26,6 @@ export class VendorModel implements Vendor {
   // documents?: FileReference[];
   createdAt: DateISO;
   updatedAt: DateISO;
-
   constructor(params: {
     id?: ID;
     name: string;
@@ -44,9 +42,9 @@ export class VendorModel implements Vendor {
     category?: VendorCategory;
     status?: VendorStatus;
     notes?: string;
-    documents?: FileReference[];
+    // documents?: FileReference[];
   }) {
-    this.id = params.id ?? uuidv4(); // אם אין id - נייצר UUID חדש
+    this.id = params.id ?? uuidv4();
     this.name = params.name;
     this.contactName = params.contact_name;
     this.phone = params.phone;
@@ -63,7 +61,6 @@ export class VendorModel implements Vendor {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
   }
-
   toDatabaseFormat() {
     return {
       name: this.name,
@@ -82,5 +79,28 @@ export class VendorModel implements Vendor {
       created_at: this.createdAt,
       updated_at: this.updatedAt,
     };
+  }
+  static fromDatabaseFormat(dbData: any): VendorModel {
+    return new VendorModel({
+      id: dbData.id,
+      name: dbData.name,
+      contact_name: dbData.contact_name,
+      phone: dbData.phone,
+      email: dbData.email,
+      address: dbData.address,
+      website: dbData.website,
+      tax_id: dbData.tax_id,
+      payment_terms: dbData.payment_terms,
+      preferred_payment_method: dbData.preferred_payment_method,
+      category: dbData.category,
+      status: dbData.status,
+      notes: dbData.notes,
+      // documents: dbData.documents,
+      createdAt: dbData.createdAt,
+      updatedAt: dbData.updatedAt,
+    });
+  }
+  static fromDatabaseFormatArray(dbDataArray: any[]): VendorModel[] {
+    return dbDataArray.map(dbData => VendorModel.fromDatabaseFormat(dbData));
   }
 }
