@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 import * as tokenService from '../services/tokenService';
 import { LoginResponse } from "shared-types";
-
 import { HttpStatusCode } from 'axios';
 import { UserService } from '../services/user.service';
 

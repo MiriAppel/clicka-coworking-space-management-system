@@ -2,8 +2,8 @@ import { google } from 'googleapis';
 import axios from 'axios';
 
 import dotenv from 'dotenv';
-
 dotenv.config();
+
 //parameters for Google OAuth2 from environment variables
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
