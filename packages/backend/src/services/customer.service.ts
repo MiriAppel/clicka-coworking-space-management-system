@@ -13,38 +13,38 @@ import {
     RecordExitNoticeRequest,
     UpdateCustomerRequest,
 } from "shared-types";
-import { supabase } from '../db/supabaseClient'
+import { supabase } from "../db/supabaseClient";
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
 import { ContractModel } from "../models/contract.model";
 import { contractService } from '../services/contract.service';
 
 
 export class customerService extends baseService<CustomerModel> {
-    constructor() {
-        super("customer");
-    }
+  constructor() {
+    super("customer");
+  }
 
-    getAllCustomers = async (): Promise<CustomerModel[] | null> => {
-        const customers = await this.getAll();
-        return CustomerModel.fromDatabaseFormatArray(customers) // המרה לסוג UserModel
-    }
-    //מחזיר את כל הסטטוסים של הלקוח
-    getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
-        return Object.values(CustomerStatus) as CustomerStatus[];
-    };
+  getAllCustomers = async (): Promise<CustomerModel[] | null> => {
+    const customers = await this.getAll();
+    return CustomerModel.fromDatabaseFormatArray(customers); // המרה לסוג UserModel
+  };
+  //מחזיר את כל הסטטוסים של הלקוח
+  getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
+    return Object.values(CustomerStatus) as CustomerStatus[];
+  };
 
-    //לא הבנתי מה היא צריכה לעשות
-    getCustomersToNotify = async (
-        id: ID
-    ): Promise<GetCustomersRequest[] | null> => {
-        return [];
-    };
+  //לא הבנתי מה היא צריכה לעשות
+  getCustomersToNotify = async (
+    id: ID
+  ): Promise<GetCustomersRequest[] | null> => {
+    return [];
+  };
 
-    createCustomer = async (
-        newCustomer: CreateCustomerRequest,
-    ): Promise<CustomerModel> => {
-        console.log("in servise");
-        console.log(newCustomer);
+  createCustomer = async (
+    newCustomer: CreateCustomerRequest
+  ): Promise<CustomerModel> => {
+    console.log("in servise");
+    console.log(newCustomer);
 
         //מה לעשות עם זה: paymentMethods!!
 
@@ -151,62 +151,83 @@ export class customerService extends baseService<CustomerModel> {
         }
     }
 
-    // יצרית הודעת עזיבה של לקוח
-    postExitNotice = async (
-        exitNotice: RecordExitNoticeRequest,
-        id: ID
-    ): Promise<void> => {
-        const updateStatus: UpdateCustomerRequest = {
-            status: CustomerStatus.PENDING,
-        };
-
-        await this.updateCustomer(updateStatus as CustomerModel, id);
-
-        const customerLeave: CustomerModel | null = await this.getById(id);
-
-        if (customerLeave) {
-            // יצירת תקופת עזיבה ללקוח
-            const period: CustomerPeriodModel = {
-                customerId: id,
-                entryDate: customerLeave.createdAt || new Date().toISOString(),
-                exitDate: exitNotice.plannedExitDate,
-                exitNoticeDate: exitNotice.exitNoticeDate,
-                exitReason: exitNotice.exitReason,
-                exitReasonDetails: exitNotice.exitReasonDetails,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                toDatabaseFormat() {
-                    return {
-                        customer_id: this.customerId,
-                        entry_date: this.entryDate,
-                        exit_date: this.exitDate,
-                        exit_notice_date: this.exitNoticeDate,
-                        exit_reason: this.exitReason,
-                        exit_reason_details: this.exitReasonDetails,
-                        created_at: this.createdAt,
-                        updated_at: this.updatedAt
-                    };
-                }
-            };
-            try {
-                await serviceCustomerPeriod.post(period);
-
-            } catch (error) {
-                console.error("in Period ", error)
-            }
-        }
-
-        if (customerLeave && customerLeave.id) {
-            await this.patch(customerLeave, customerLeave.id);
-        } else {
-            throw new Error("Customer ID is undefined");
-        }
-
-        //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
-
-        // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
-        // קשור לקבוצת billing
+  // יצרית הודעת עזיבה של לקוח
+  postExitNotice = async (
+    exitNotice: RecordExitNoticeRequest,
+    id: ID
+  ): Promise<void> => {
+    const updateStatus: UpdateCustomerRequest = {
+      status: CustomerStatus.PENDING,
     };
+
+    await this.updateCustomer(updateStatus as CustomerModel, id);
+
+    const customerLeave: CustomerModel | null = await this.getById(id);
+
+    if (customerLeave) {
+      // יצירת תקופת עזיבה ללקוח
+      const period: CustomerPeriodModel = {
+        customerId: id,
+        entryDate: customerLeave.createdAt || new Date().toISOString(),
+        exitDate: exitNotice.plannedExitDate,
+        exitNoticeDate: exitNotice.exitNoticeDate,
+        exitReason: exitNotice.exitReason,
+        exitReasonDetails: exitNotice.exitReasonDetails,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        toDatabaseFormat() {
+          return {
+            customer_id: this.customerId,
+            entry_date: this.entryDate,
+            exit_date: this.exitDate,
+            exit_notice_date: this.exitNoticeDate,
+            exit_reason: this.exitReason,
+            exit_reason_details: this.exitReasonDetails,
+            created_at: this.createdAt,
+            updated_at: this.updatedAt,
+          };
+        },
+      };
+      try {
+        await serviceCustomerPeriod.post(period);
+      } catch (error) {
+        console.error("in Period ", error);
+      }
+    }
+
+    if (customerLeave && customerLeave.id) {
+      await this.patch(customerLeave, customerLeave.id);
+    } else {
+      throw new Error("Customer ID is undefined");
+    }
+
+    //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
+
+    // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
+    // קשור לקבוצת billing
+  };
+
+  getCustomersByText = async (text: string): Promise<CustomerModel[]> => {
+  const searchFields = ["name", "phone", "business_name", "business_type", "email"];
+  
+  const filters = searchFields
+    .map((field) => `${field}.ilike.%${text}%`)
+    .join(",");
+  
+  console.log("Filters:", filters);
+  
+  const { data, error } = await supabase
+    .from("customer")
+    .select("*")
+    .or(filters);
+  
+  if (error) {
+    console.error("שגיאה:", error);
+    return [];
+  }
+  
+  return data as CustomerModel[];
+};
 
 
     //מחזיר את כל הלקוחות רק של העמוד הראשון

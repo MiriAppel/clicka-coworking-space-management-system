@@ -114,18 +114,20 @@ export const getLeadsToRemind = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching leads to remind", error });
   }
 };
-export const getLeadsByFilter = async (req: Request, res: Response) => {
-  const filters = req.query;
-  try {
-    const customers = await serviceLead.getByFilters(filters);
 
-    if (customers.length > 0) {
-      res.status(200).json(customers);
-    } else {
-      res.status(404).json({ message: "No customers found" });
+export const searchLeadsByText = async (req: Request, res: Response) => {
+  try {
+    const text = req.query.text as string;
+
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
     }
+
+    const leads = await serviceLead.getLeadsByText(text);
+    return res.json(leads);
   } catch (error) {
-    res.status(500).json({ message: "Error filtering customers", error });
+    console.error("שגיאה בחיפוש לידים:", error);
+    return res.status(500).json({ error: "שגיאה בשרת." });
   }
 };
 //*****
@@ -162,14 +164,14 @@ export const deleteInteraction = async (req: Request, res: Response, next: NextF
   }
 }
 export const deleteLead = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    try {
-        const leads = await serviceLead.delete(id);
-        res.status(200).json(leads);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching all statuses', error });
-    }
-}
+  const { id } = req.params;
+  try {
+    const leads = await serviceLead.delete(id);
+    res.status(200).json(leads);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching all statuses", error });
+  }
+};
 export const getLeadsByPage = async (req: Request, res: Response) => {
   console.log("getLeadsByPage called");
 

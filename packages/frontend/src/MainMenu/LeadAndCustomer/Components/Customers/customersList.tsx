@@ -15,8 +15,9 @@ import debounce from "lodash/debounce";
 import { Pencil, Trash } from "lucide-react";
 import { supabase } from "../../../../Service/supabaseClient";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-
-
+import { set } from "lodash";
+import { text } from "body-parser";
+// import { supabase } from "../../../../Services/supabaseClient";
 
 interface ValuesToTable {
   id: string;
@@ -40,12 +41,13 @@ export const CustomersList = () => {
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [allCustomers, setAllCustomers] = useState<Customer[]>([]);
+
+  const allCustomersRef = useRef<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [term, setTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  // const [hasMore, setHasMore] = useState(true);
 
   //   const fetchCustomers = async () => {
   //     try {
@@ -58,83 +60,52 @@ export const CustomersList = () => {
   //       setIsLoading(false);
   //     }
   //   };
-  const fetchCustomers = async () => {
-    axios
-      .get("http://localhost:3001/api/customers/by-page", {
-        params: { page, limit: 50 },
-      })
-      .then((response) => {
-        if (response.data.length < 50) {
-          setHasMore(false);
-          // אין יותר נתונים
+  const fetchCustomers = async (
+    page: number,
+    limit: number,
+    searchTerm = ""
+  ) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        "http://localhost:3001/api/customers/by-page",
+        {
+          params: { page, limit },
         }
-        setCustomers((prev) => {
-          const ids = new Set(prev.map((l) => l.id));
-          const uniqueNew = response.data.filter(
-            (customer: Customer) => !ids.has(customer.id)
-          );
-          return [...prev, ...uniqueNew];
-        });
-        // עדכון המאגר הכללי של הלקוחות
-        setAllCustomers((prev) => {
-          const ids = new Set(prev.map((l) => l.id));
-          const uniqueNew = response.data.filter(
-            // מסנן לידים שלא קיימים כבר במאגר הכללי
-            (customer: Customer) => !ids.has(customer.id)
-          );
-          return [...prev, ...uniqueNew];
-        });
-      })
+      );
 
-      .catch((error) => {
-        console.log("error in customerList page", error);
+      const data: Customer[] = response.data;
 
-        console.error("Error fetching leads:", error);
-      })
-      .finally(() => setIsLoading(false));
-  }
+      // setHasMore(data.length === limit); // אם פחות מה-limit, אין עוד דפים
+
+      // תמיד להחליף את הסטייט בתוצאות הדף בלבד (לא להוסיף)
+      setCustomers(data);
+      allCustomersRef.current = data;
+    } catch (error) {
+      console.error("שגיאה ב-fetchCustomers:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
-    // axios
-    //   .get("http://localhost:3001/api/customers/by-page", {
-    //     params: { page, limit: 50 },
-    //   })
-    //   .then((response) => {
-    //     if (response.data.length < 50) {
-    //       setHasMore(false);
-    //       // אין יותר נתונים
-    //     }
-    //     setCustomers((prev) => {
-    //       const ids = new Set(prev.map((l) => l.id));
-    //       const uniqueNew = response.data.filter(
-    //         (customer: Customer) => !ids.has(customer.id)
-    //       );
-    //       return [...prev, ...uniqueNew];
-    //     });
-    //     // עדכון המאגר הכללי של הלקוחות
-    //     setAllCustomers((prev) => {
-    //       const ids = new Set(prev.map((l) => l.id));
-    //       const uniqueNew = response.data.filter(
-    //         // מסנן לידים שלא קיימים כבר במאגר הכללי
-    //         (customer: Customer) => !ids.has(customer.id)
-    //       );
-    //       return [...prev, ...uniqueNew];
-    //     });
-    //   })
+    if (searchTerm.trim() === "") {
+      setIsSearching(false);
+      fetchCustomers(page, 20, "");
+    }
+  }, [searchTerm]);
 
-    //   .catch((error) => {
-    //     console.log("error in customerList page", error);
-
-    //     console.error("Error fetching leads:", error);
-    //   })
-    //   .finally(() => setIsLoading(false));
-    fetchCustomers()
-
+  useEffect(() => {
+    fetchCustomers(page, 20, searchTerm).then(() => {
+      console.log(
+        "✅ אחרי fetchCustomers - כמות לקוחות ב־allCustomers:",
+        allCustomersRef.current.length
+      );
+    });
   }, [page]);
 
   useEffect(() => {
-    if (!loaderRef.current || !hasMore || isSearching) return;
+    if (!loaderRef.current || isSearching) return;
 
-    // ברגע שהלידים עומדים להגמר זה עובר לעמוד הבא
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         setPage((prev) => prev + 1);
@@ -143,7 +114,7 @@ export const CustomersList = () => {
 
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [hasMore, isSearching]);
+  }, [isSearching]);
 
   // useEffect(() => {
   //   // fetchCustomers();
@@ -166,49 +137,47 @@ export const CustomersList = () => {
   //   };
   // }, []);
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
+  useEffect(() => {
+    if (!loaderRef.current || isSearching) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prev) => prev + 1);
+      }
+    });
+    observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [isSearching]);
 
-    if (!term || term.trim() === "") {
-      setIsSearching(false);
-      setPage(1); // זה יגרום ל-useEffect לטעון את הדף הראשון
-      setCustomers([]); // מרוקן את הקיימים כדי שיטען מחדש
-      setHasMore(true);
-      return;
-    }
+  // הפונקציה שמטפלת בשינוי החיפוש
+ const handleSearch = (term: string) => {
+  setTerm(term);
+  setSearchTerm(term);
 
-    setIsSearching(true);
+  if (!term.trim()) {
+    // אם ריק, מחזירים לתצוגה רגילה
+    setIsSearching(false);
+    fetchCustomers(page, 20, "");
+    return;
+  }
 
-    // סינון תומך באותיות קטנות וגדולות
-    // מחפש גם לפי שם, פלאפון ודוא"ל
-    // אם לא מצא תוצאות, שולח בקשה לשרת
-    const filtered = allCustomers.filter(
-      (customer) =>
-        customer.name.toLowerCase().includes(term.toLowerCase()) ||
-        customer.phone.includes(term) ||
-        customer.email.toLowerCase().includes(term.toLowerCase()) ||
-        customer.businessName?.toLowerCase().includes(term.toLowerCase()) ||
-        customer.businessType?.toLowerCase().includes(term.toLowerCase()) ||
-        statusLabels[customer.status]?.includes(term) ||
-        translateStatus(customer.status)?.includes(term) // תרגום הסטטוס לחיפוש 
-        || customer.status.toLowerCase().includes(term.toLowerCase()) // הוספת חיפוש ישיר על הסטטוס
-    );
+  setIsSearching(true);
+  const lower = term.toLowerCase();
 
-    if (filtered.length > 0) {
-      setCustomers(filtered);
-    } else {
-      axios
-        .get("http://localhost:3001/api/customers/filter", {
-          params: { q: term, page: 1, limit: 50 },
-        })
-        .then((response) => {
-          setCustomers(response.data);
-        })
-        .catch((error) => {
-          console.error("Error searching from server:", error);
-        });
-    }
-  };
+  const filtered = allCustomersRef.current.filter(
+    (c) =>
+      c.name.toLowerCase().includes(lower) ||
+      c.phone.toLowerCase().includes(lower) ||
+      c.email.toLowerCase().includes(lower) ||
+      c.businessName?.toLowerCase().includes(lower) ||
+      c.businessType?.toLowerCase().includes(lower) ||
+      statusLabels[c.status].toLowerCase().includes(lower)
+  );
+
+  setCustomers(filtered);
+};
+
+
+
 
   const getValuseToTable = (): ValuesToTable[] => {
     return customers.map((customer) => ({
@@ -218,7 +187,7 @@ export const CustomersList = () => {
       email: customer.email,
       businessName: customer.businessName || "לא זמין",
       businessType: customer.businessType || "לא זמין",
-      status: customer.status
+      status: customer.status,
     }));
   };
 
@@ -251,7 +220,7 @@ export const CustomersList = () => {
       await deleteCustomer(val.id)
       // await fetchCustomers();
       setCustomers((prev) => prev.filter(customer => customer.id !== val.id));
-      setAllCustomers((prev) => prev.filter(customer => customer.id !== val.id));
+      allCustomersRef.current = allCustomersRef.current.filter((customer) => customer.id !== val.id);
       showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -318,8 +287,32 @@ export const CustomersList = () => {
               value={searchTerm}
               onChange={handleChange}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch(searchTerm);
+                if (
+                  (e.key === "Enter" && searchTerm.trim()) ||
+                  customers.length === 0 // אין תוצאות בדף הנוכחי
+                ) {
+                  console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
+
+                  axios
+                    .get("http://localhost:3001/api/customers/search", {
+                      params: { text: searchTerm },
+                    })
+                    .then((response) => {
+                      const data: Customer[] = response.data.map(
+                        (item: any) => ({
+                          ...item,
+                          businessName: item.business_name,
+                          businessType: item.business_type,
+                        })
+                      );
+
+                      setCustomers(data);
+                      allCustomersRef.current = data;
+                      console.log("✅ תוצאות שהגיעו מהשרת:", data.length);
+                    })
+                    .catch((error) => {
+                      console.error("שגיאה בחיפוש מהשרת:", error);
+                    });
                 }
               }}
             />
@@ -354,6 +347,32 @@ export const CustomersList = () => {
               </>
             )}
           />{" "}
+          <Button
+            variant="secondary"
+            disabled={page <= 1}
+            onClick={() => {
+              if (page > 1) {
+                const prevPage = page - 1;
+                setPage(prevPage);
+                fetchCustomers(prevPage, 20, "");
+              }
+            }}
+          >
+            דף הקודם
+          </Button>
+          <Button
+            variant="secondary"
+            // disabled={!hasMore}
+            onClick={() => {
+              // if (hasMore) {
+              const nextPage = page + 1;
+              setPage(nextPage);
+              fetchCustomers(nextPage, 20, "");
+              // }
+            }}
+          >
+            דף הבא
+          </Button>
           <div ref={loaderRef} className="h-4"></div>
         </div>
       )}

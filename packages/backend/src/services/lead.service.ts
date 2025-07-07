@@ -170,6 +170,29 @@ export class leadService extends baseService<LeadModel> {
     }
   };
 
+  getLeadsByText = async (text: string): Promise<LeadModel[]> => {
+  const searchFields = ["name", "status", "phone", "email", "city"]; // כל השדות שאת רוצה לבדוק בהם
+
+  const filters = searchFields
+    .map((field) => `${field}.ilike.%${text}%`)
+    .join(",");
+
+  const { data, error } = await supabase
+    .from("leads")
+    .select("*")
+    .or(filters);
+
+  if (error) {
+    console.error("שגיאה:", error);
+    return [];
+  }
+
+  return data as LeadModel[];
+};
+
+  
+      
+  
 }
 
 

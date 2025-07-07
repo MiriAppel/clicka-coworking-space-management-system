@@ -14,7 +14,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export class baseService<T> {
   // בשביל שם המחלקה
-  constructor(private tableName: string) { }
+  constructor(private tableName: string) {}
 
   getById = async (id: ID): Promise<T> => {
     const { data, error } = await supabase
@@ -35,33 +35,7 @@ export class baseService<T> {
     return data;
   };
 
-  getByFilters = async (filters: { q?: string; page?: number; limit?: number; }): Promise<T[]> => {
-    const { q, page, limit } = filters;
-
-    let query = supabase.from(this.tableName).select("*");
-
-    if (q) {
-      const searchValue = `%${q}%`;
-      query = query.or(
-        `name.ilike.${searchValue},email.ilike.${searchValue},phone.ilike.${searchValue},id_number.ilike.${searchValue}`
-      );
-    }
-    if (page && limit) {
-      const from = (page - 1) * limit;
-      const to = from + limit - 1;
-      query = query.range(from, to);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("Error fetching filtered data:", error);
-      throw error;
-    }
-
-    return data ?? [];
-  };
-
+  
   getAll = async (): Promise<T[]> => {
     console.log("🧾 טבלה:", this.tableName);
 
@@ -85,7 +59,6 @@ export class baseService<T> {
   };
 
   patch = async (dataToUpdate: Partial<T>, id: ID): Promise<T> => {
-
     let dataForInsert = dataToUpdate;
     if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
       try {
