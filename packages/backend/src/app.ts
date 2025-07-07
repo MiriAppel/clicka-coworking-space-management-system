@@ -18,15 +18,27 @@ const app = express();
 // Apply middlewares
 app.use(cookieParser());
 app.use(helmet());
+// app.use(cors({
+//   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
+//   credentials: true, // Allow cookies to be sent with requests
+// }));
+//fix
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
-  credentials: true, // Allow cookies to be sent with requests
+  origin: [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Set-Cookie']
 }));
+//////
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(json());
-app.use(urlencoded({ extended: true }));
+// app.use(json());
+// app.use(urlencoded({ extended: true }));
 app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
@@ -54,3 +66,9 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 export default app;
+
+
+
+
+
+
