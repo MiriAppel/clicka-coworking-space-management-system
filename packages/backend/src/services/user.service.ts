@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { UserModel } from '../models/user.model'; // נניח שהמודל User נמצא באותו תיק
 import { logUserActivity } from '../utils/logger';
 import dotenv from 'dotenv';
-import { UserRole } from 'shared-types';
+import { LoginResponse, UserRole } from 'shared-types';
 import { Response } from 'express';
 //טוען את משתני הסביבה מהקובץ .env
 dotenv.config();
@@ -196,8 +196,8 @@ export class UserService {
     }
 
 
-    createRoleCookies(res: Response<UserModel | { error: string }>, roleUser: UserRole): void{
-        // שליפת ה-role מתוך ה-result
+    createRoleCookies(res: Response<LoginResponse | { error: string }>, roleUser: UserRole): void{
+        // שליפת ה-role מתוך ה-resulte
         const role = roleUser;
         // הגדרת cookie עם ה-role
         const expirationDays = 7; // מספר הימים שהעוגיה תהיה זמינה

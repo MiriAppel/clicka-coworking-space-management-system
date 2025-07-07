@@ -34,6 +34,7 @@ export const clearAuthCookie = (res: Response): void => {
         sameSite: 'strict',
     });
 };
+// Function to get the current user ID from the session cookie
 export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string } | null => {
     const sessionToken = req.cookies.session;
     const sessionId = req.cookies.sessionId;

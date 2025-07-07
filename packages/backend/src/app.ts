@@ -3,8 +3,6 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
 import express, { NextFunction } from 'express';
-// import translationRouter from './routes/translation.route';
-// import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
@@ -14,11 +12,16 @@ import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
 import router from './routes';
+import { setupSwagger } from './docs/swagger';
 
 // Create Express app
 const app = express();
 dotenv.config();
 
+
+
+// Create Express app
+setupSwagger(app);
 
 // Apply middlewares
 app.use(cookieParser());
@@ -41,6 +44,7 @@ app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 // app.use('/api/translate', translationRouter);
 app.use('/api/auth',routerAuth);
+app.use('/api', router);
 // app.use('/api/leadInteraction', routerCstomer);
 
 
@@ -48,7 +52,6 @@ app.use('/api/auth',routerAuth);
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-app.use('/api', router);
 // app.use('/translations', translationRouter);
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

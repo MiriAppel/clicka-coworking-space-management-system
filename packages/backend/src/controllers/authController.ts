@@ -4,6 +4,7 @@ import * as tokenService from '../services/tokenService';
 import { LoginResponse } from "shared-types";
 
 import { HttpStatusCode } from 'axios';
+import { UserService } from '../services/user.service';
 
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
   console.log('Received Google auth code:', req.body.code);
@@ -17,6 +18,8 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     const loginResult = await authService.exchangeCodeAndFetchUser(code);
     console.log('Login result:', loginResult);
     tokenService.setAuthCookie(res, loginResult.token, loginResult.sessionId!);
+    const userService=new UserService();
+    userService.createRoleCookies(res, loginResult.user.role);   
     const response = {
       ...loginResult,
       message: 'התחברת בהצלחה. נותקת ממכשירים אחרים.'
@@ -31,7 +34,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     }
     else {
       console.error('Google login failed:', error);
-      res.status(500).json({ error: 'Authentication failed' });
+      res.status(400).json({ error: 'Authentication failed' });
     }
   }
 
