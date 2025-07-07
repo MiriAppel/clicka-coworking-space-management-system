@@ -1,10 +1,9 @@
-import React from 'react';  
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-import { routing } from './routing'; 
+import reportWebVitals from './reportWebVitals';
+import { Routing } from './routing';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const root = ReactDOM.createRoot(
@@ -18,7 +17,7 @@ root.render(
        <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID!}> 
     <BrowserRouter>
     {/* <App /> */}
-          {routing()}
+          {<Routing />}
 
     </BrowserRouter>
        </GoogleOAuthProvider>
@@ -28,7 +27,4 @@ root.render(
 console.log("ENV clientId:", process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

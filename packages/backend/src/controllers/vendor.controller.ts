@@ -1,45 +1,45 @@
-// import { VendorService } from "../services/vendor-service";
-// import { VendorModel } from "../models/Vendor";
-import { Request, Response } from "express";
-import { VendorModel } from "../models/vendor.model";
-import { VendorService } from "../services/vendor.service";
+import type{ CreateVendorRequest, Vendor } from 'shared-types';
+import {create ,deleteVendor ,getAllVendors ,getVendorById } from '../services/vendor.servic';
+import { Request, Response } from 'express';
+import { VendorModel } from '../models/vendor.model';
 
-export class VendorController {
-    vendorService = new VendorService();
 
-    async create(req: Request, res: Response) {
-        const data = req.body;
-        const vendor = new VendorModel(data);
-        const result = await this.vendorService.createVendor(vendor);
-        if (result) res.status(201).json(result);
-        else res.status(500).json({ error: "Failed to create vendor" });
-    }
+export const createVendorController = async (req: Request, res: Response) => {
+  try {
+    const newVendor = new VendorModel(req.body); // יצירת מופע מודל מ-req.body
+    const vn = await create(req.body as CreateVendorRequest); // העברת המודל
+    res.status(201).json(vn);
+    console.log("vendor.routes loaded");
 
-    async getAll(req: Request, res: Response) {
-        const result = await this.vendorService.getAllVendors();
-        if (result) res.status(200).json(result);
-        else res.status(500).json({ error: "Failed to fetch vendors" });
-    }
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
-    async getById(req: Request, res: Response) {
-        const id = req.params.id;
-        const result = await this.vendorService.getVendorById(id);
-        if (result) res.status(200).json(result);
-        else res.status(404).json({ error: "Vendor not found" });
-    }
+export const getVendorController = async (req: Request, res: Response) => {
+  try {
+    const vendors = await getAllVendors();
+    res.json(vendors);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
-    async update(req: Request, res: Response) {
-        const id = req.params.id;
-        const updatedVendor = new VendorModel(req.body);
-        const result = await this.vendorService.updateVendor(id, updatedVendor);
-        if (result) res.status(200).json(result);
-        else res.status(500).json({ error: "Failed to update vendor" });
-    }
+export const getVendorByIdController = async (req: Request, res: Response) => {
+  try {
+    const getById = await getVendorById(req.params.id as any);
+    res.json(getById);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
-    async delete(req: Request, res: Response) {
-        const id = req.params.id;
-        const result = await this.vendorService.deleteVendor(id);
-        if (result) res.status(200).send();
-        else res.status(500).json({ error: "Failed to delete vendor" });
-    }
-}
+
+export const deleteVendorController = async (req: Request, res: Response) => {
+  try {
+    const result = await deleteVendor(req.params.id as any);
+    res.json({ success: result });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};

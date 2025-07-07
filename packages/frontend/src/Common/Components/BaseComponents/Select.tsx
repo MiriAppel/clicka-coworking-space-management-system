@@ -2,7 +2,6 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
-
 interface SelectFieldProps {
   name: string;
   label: string;
@@ -13,7 +12,6 @@ interface SelectFieldProps {
   className?: string;
   "data-testid"?: string;
 }
-
 export const SelectField: React.FC<SelectFieldProps> = ({
   name,
   label,
@@ -29,10 +27,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({
     register,
     formState: { errors },
   } = useFormContext();
-
   const error = errors[name]?.message as string | undefined;
   const effectiveDir = dir || theme.direction;
-
   return (
     <div className="space-y-1 w-full" dir={effectiveDir}>
       <label
@@ -47,7 +43,6 @@ export const SelectField: React.FC<SelectFieldProps> = ({
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
-
       <select
         {...register(name)}
         disabled={disabled}
@@ -75,11 +70,10 @@ export const SelectField: React.FC<SelectFieldProps> = ({
             {opt.label}
           </option>
           //יש לי מערך של OPTIONS הוא בנוי בצורה שיש לו LABEL וVALUE עובר עם בMAP כל אלאמט קוראים לא OPT
-          //אחכ שומר את זה בVALUE ובKEY כדי שיהיה מיוחד כל אלד ואחד 
-          // <option value="male">Hombre</option> לדוגמא 
+          //אחכ שומר את זה בVALUE ובKEY כדי שיהיה מיוחד כל אלד ואחד
+          // <option value="male">Hombre</option> לדוגמא
         ))}
       </select>
-
       {error && (
         <p
           className="text-sm text-red-600"

@@ -323,10 +323,22 @@ console.log("Using filters:", {
         return false;
       }
 
-      return true;
-    } catch (err) {
+        return true;
+    }
+    catch (err) {
       console.error('Unexpected error in deleteExpense:', err);
       return false;
-    }
+    }}
+ async  getExpensesByVendorId(vendorId: string) {
+  const { data, error } = await supabase
+    .from('expense')
+    .select('*')
+    .eq('vendor_id', vendorId);
+
+  if (error) {
+    throw error;
   }
+
+  return data;
+}
 }

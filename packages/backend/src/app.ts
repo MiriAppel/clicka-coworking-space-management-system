@@ -8,6 +8,11 @@ import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import expenseRouter from './routes/expense.route';
+
+import dotenv from 'dotenv';
+dotenv.config();
+
+import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
@@ -31,15 +36,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 
-app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
+app.use('/vendor', (req, res, next) => {
+  console.log('Vendor route hit:', req.method, req.originalUrl);
+  next();
+}, vendorRouter);
+// app.use('/api/translate', translationRouter);
+app.use('/api/auth',routerAuth);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
-app.use('/api/vendors', vendorRouter);
 
 // app.use('/api/leadInteraction', routerCstomer);
 

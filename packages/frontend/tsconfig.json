@@ -23,6 +23,7 @@
     "paths": {
       "shared-types": ["../shared-types/src"]
     },
+    "types": []
     // "types": ["cookie-parser"]
   },
   "include": ["src", "../shared-types/src"]

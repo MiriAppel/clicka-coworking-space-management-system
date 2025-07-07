@@ -9,6 +9,11 @@ const expenseController = new ExpenseController();
 
 // יצירת מופע Router חדש - דרכו נגדיר את כל נתיבי ה-expenses
 const expenseRouter = Router();
+
+expenseRouter.get(
+  '/getExpensesByVendorId/:vendorId',
+  expenseController.getExpensesByVendorId.bind(expenseController)
+);
 expenseRouter.get("/getAll",expenseController.getAllExpenses1.bind(expenseController));
 expenseRouter.post("/createExpense",expenseController.createExpense.bind(expenseController));
 expenseRouter.get("/getAllExpenses",expenseController.getAllExpenses.bind(expenseController));
