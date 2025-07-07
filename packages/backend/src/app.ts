@@ -41,7 +41,6 @@ app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 // app.use('/api/translate', translationRouter);
 app.use('/api/auth',routerAuth);
-app.use('/api', router);
 // app.use('/api/leadInteraction', routerCstomer);
 
 
@@ -49,6 +48,7 @@ app.use('/api', router);
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+app.use('/api', router);
 // app.use('/translations', translationRouter);
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
