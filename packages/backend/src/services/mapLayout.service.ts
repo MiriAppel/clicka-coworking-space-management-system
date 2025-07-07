@@ -75,7 +75,6 @@ console.log('Prepared layout data for update:', JSON.stringify(updatedData, null
         return null;
     }
      const layout = MapLayoutModel.fromDatabaseFormat(data);
-  
     return layout;
 
 

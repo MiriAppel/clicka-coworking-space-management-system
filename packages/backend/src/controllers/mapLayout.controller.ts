@@ -44,15 +44,12 @@ export async function createLayout(req: Request, res: Response) {
 export async function updateLayout(req: Request, res: Response) {
         const layoutId = req.params.id;
         const updatedData = req.body;
-        console.log('11111111111111111', JSON.stringify(updatedData, null, 2));
         const updateLayout = new MapLayoutModel(updatedData);
-        console.log('222222222222222', JSON.stringify(updateLayout, null, 2));
-    // console.log('Prepared layout data:', JSON.stringify(updateLayout, null, 2));
         const result = await mapLayoutService.updateLayout(layoutId, updateLayout);
         if (result) {
             res.status(200).json(result);
         } else {
-            res.status(500).json({ error: "Failed to update user" });
+            res.status(500).json({ error: "Failed to update layout" });
         }
 }
 

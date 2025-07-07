@@ -47,26 +47,25 @@ export const createCalendarSync=async(sync: CalendarSyncModel): Promise<Calendar
  
     export async function updateCalendarSync(id: string, updatedData: CalendarSyncModel): Promise<CalendarSyncModel | null> {
     
+        console.log('Prepared sync data for update:', JSON.stringify(updatedData, null, 2));
         const { data, error } = await supabase
             .from('calendar_sync')
             .update([updatedData.toDatabaseFormat()])
             .eq('id', id)
             .select()
             .single();
-    
         if (error) {
             console.error('Error updating sync:', error);
             return null;
         }
          const sync = CalendarSyncModel.fromDatabaseFormat(data) ; 
-      
         return sync;
     
     
     
     }
     
-    // // מחיקת מפה
+    //  מחיקה 
     export async function deleteCalendarSync(id: string): Promise<boolean> {
         const { error } = await supabase
             .from('calendar_sync')
@@ -74,7 +73,7 @@ export const createCalendarSync=async(sync: CalendarSyncModel): Promise<Calendar
             .eq('id', id);
     
         if (error) {
-            console.error('Error deleting map:', error);
+            console.error('Error deleting sync:', error);
             return false;
         }
        
@@ -88,10 +87,10 @@ const { data, error } =  await supabase
         console.error('Error fetching maps layout :', error);
         return null;
     }
-    const layouts = CalendarSyncModel.fromDatabaseFormatArray(data);
+    // const layouts = CalendarSyncModel.fromDatabaseFormatArray(data);
 
 
-    return layouts;
+    return data;
 }
 export async function getCalendarSyncById(id: string) {
     const { data, error } = await supabase
@@ -105,7 +104,7 @@ export async function getCalendarSyncById(id: string) {
         return null;
     }
 
-    const layout = CalendarSyncModel.fromDatabaseFormat(data); // המרה לסוג UserModel
+    const layout = CalendarSyncModel.fromDatabaseFormat(data); 
    
     return layout;
 }

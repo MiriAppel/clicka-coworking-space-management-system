@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import * as CalendarService from '../services/googleCalendarBookingIntegration.service ';
 import { CalendarSync } from 'shared-types';
-import type{ ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
+import type { ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
 import { CalendarSyncModel } from '../models/calendarSync.model';
 
 export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
     try {
         const calendarId: string = req.params.calendarId;
         const token: string = req.params.token;
-        const events = await CalendarService.getGoogleCalendarEvents(calendarId,token);
+        const events = await CalendarService.getGoogleCalendarEvents(calendarId, token);
         res.status(200).json(events);
     } catch (error) {
         console.error('Error fetching Google Calendar events:', error);
@@ -27,7 +27,7 @@ export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
 // }
 export const createCalendarSync = async (req: Request, res: Response) => {
     try {
-       const sync = new CalendarSyncModel(req.body);
+        const sync = new CalendarSyncModel(req.body);
         const syncStatus = await CalendarService.createCalendarSync(sync);
         res.status(200).json({ status: syncStatus });
     } catch (error) {
@@ -36,25 +36,25 @@ export const createCalendarSync = async (req: Request, res: Response) => {
     }
 }
 export async function getAllCalendarSync(req: Request, res: Response) {
-  try {
-    const result = await CalendarService.gatAllCalendarSync()
-    res.json(result)
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message })
-  }
+    try {
+        const result = await CalendarService.gatAllCalendarSync()
+        res.json(result)
+    } catch (error) {
+        res.status(500).json({ error: (error as Error).message })
+    }
 }
 export async function getCalendarSyncById(req: Request, res: Response) {
-const syncId = req.params.id;
+    const syncId = req.params.id;
     const result = await CalendarService.getCalendarSyncById(syncId)
-   if(result){
-    res.status(200).json(result)
-   }
-   else{
-    res.status(404).json({ error: 'Map not found' })
-   }
+    if (result) {
+        res.status(200).json(result)
+    }
+    else {
+        res.status(404).json({ error: 'Calendar sync not found' })
+    }
 
-   
-  
+
+
 }
 // export const createCalendarEvent = async (req: Request, res: Response) => {
 //     try {
@@ -88,8 +88,8 @@ export const deleteEvent = async (req: Request, res: Response) => {
 }
 export const deleteCalendarSyncByEventId = async (req: Request, res: Response) => {
     try {
-        const eventId: string = req.params.eventId;
-        await CalendarService.deleteCalendarSync(eventId);
+        const id: string = req.params.id
+        await CalendarService.deleteCalendarSync(id);
         res.status(200).json({ message: 'Calendar sync deleted successfully' });
     } catch (error) {
         console.error('Error deleting calendar sync by event ID:', error);
@@ -108,16 +108,16 @@ export const updateEventOnChangeBooking = async (req: Request, res: Response) =>
 }
 
 export const updateCalendarSync = async (req: Request, res: Response) => {
-    try {
-        const eventId: string = req.params.eventId;
+    
+        const eventId: string = req.params.id;
         const updatedData = req.body;
         const updatedSync = new CalendarSyncModel(updatedData);
-        await CalendarService.updateCalendarSync(eventId, updatedSync);
-        res.status(200).json({ message: 'Calendar sync updated successfully' });
-    } catch (error) {
-        console.error('Error updating calendar sync:', error);
-        res.status(500).json({ message: 'Failed to update calendar sync', error: error });
-    }
+        const result =  await CalendarService.updateCalendarSync(eventId, updatedSync);
+   if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(500).json({ error: "Failed to update calendar sync" });
+        }
 }
 // export async function updateWorkspaceMap(req: Request, res: Response) {
 //         const mapId = req.params.id;
@@ -132,12 +132,12 @@ export const updateCalendarSync = async (req: Request, res: Response) => {
 //         }
 // }
 export async function deleteCalendarSync(req: Request, res: Response) {
-  try {
-    await CalendarService.deleteCalendarSync(req.params.id)
-    res.status(204).end()
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message })
-  }
+    try {
+        await CalendarService.deleteCalendarSync(req.params.id)
+        res.status(204).end()
+    } catch (error) {
+        res.status(500).json({ error: (error as Error).message })
+    }
 }
 export const getCalendarByRoom = async (req: Request, res: Response) => {
     try {
