@@ -1,7 +1,7 @@
 import { Children, ReactNode, useEffect } from "react";
-import { useAuthStore } from "../../../../Stores/Auth/useAuthStore";
+import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
-import { axiosInstance } from "../../../../service/Axios";
+import { axiosInstance } from "../../../../Service/Axios";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const checkAuth = async () => {
       try {
         setLoading(true);
-        let res = await axiosInstance.get("/api/auth/verify");
+        let res = await axiosInstance.get("/auth/verify");
         if (res.status == 200) {
           console.log("Authenticated successfully");
           const data = res.data;
@@ -31,10 +31,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (data.error === 'TokenExpired') {
             console.log(" Token expired, trying to refresh...");
             try {
-              const refreshRes = await axiosInstance.post("/api/auth/refresh");
+              const refreshRes = await axiosInstance.post("/auth/refresh");
               if (refreshRes.status === 200) {
                 console.log("Refresh token success");
-                const res = await axiosInstance.get("/api/auth/verify");
+                const res = await axiosInstance.get("/auth/verify");
                 if (res.status === 200) {
                   const data = res.data;
                   setUser(data.user);
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user != null) {
       interval = setInterval(async () => {
         try {
-          const res = await axiosInstance.get("/api/auth/verify");
+          const res = await axiosInstance.get("/auth/verify");
         } catch (err: any) {
           if (axios.isAxiosError(err) && err.response?.status === 409) {
             console.warn("Session ID mismatch - logging out.");
