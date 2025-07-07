@@ -4,9 +4,10 @@ import { z } from "zod";
 import { Form } from "./Form";
 import { InputField } from "./Input";
 import { CheckboxField } from "./CheckBox";
+import { Button } from "./Button";
 
 const schema = z.object({
-  email: z.string().email("Invalid Email").nonempty("EMAIL"),
+  email: z.string().min(1, "Email required").email("Invalid Email").nonempty("EMAIL"),
   acceptTerms: z.boolean().refine(val => val === true, {
     message: "Yo need to accept the terms",
   }),
@@ -26,9 +27,9 @@ export const FormExample = () => {
     >
       <InputField name="email" label="Email" required />
       <CheckboxField name="acceptTerms" label="Accept the terms" required />
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      <Button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
       Send
-      </button>
+      </Button>
     </Form>
   );
 };

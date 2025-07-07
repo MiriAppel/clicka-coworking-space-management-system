@@ -1,49 +1,54 @@
 import { CustomerModel } from "../models/customer.model";
-import { supabase } from "../db/supabaseClient";
 import { baseService } from "./baseService";
-import { createObjectCsvStringifier } from "csv-writer";
-import { leadService } from "./lead.service";
-import type{ ConvertLeadToCustomerRequest, CustomerPeriod, GetCustomersRequest, ID, PaginatedResponse, PaymentMethod, RecordExitNoticeRequest, UpdateCustomerRequest } from "shared-types";
-import { CustomerStatus } from "shared-types";
+import { serviceCustomerPeriod } from "./customerPeriod.service";
+import {
+    CreateCustomerRequest,
+    CustomerPeriod,
+    CustomerStatus,
+    GetCustomersRequest,
+    ID,
+    PaginatedResponse,
+    PaymentMethodType,
+    RecordExitNoticeRequest,
+    UpdateCustomerRequest,
+} from "shared-types";
+import { supabase } from '../db/supabaseClient'
+import { CustomerPeriodModel } from "../models/customerPeriod.model";
 
-export class customerService extends baseService <CustomerModel> {
-
+export class customerService extends baseService<CustomerModel> {
     constructor() {
-        super("CustomerModel")
+        super("customer");
     }
 
+    getAllCustomers = async (): Promise<CustomerModel[] | null> => {
+        const customers = await this.getAll();
+        return CustomerModel.fromDatabaseFormatArray(customers) // המרה לסוג UserModel
+    }
     //מחזיר את כל הסטטוסים של הלקוח
-    getAllCustomerStatus = async (): Promise <CustomerStatus[]|null> => {
-
+    getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
         return Object.values(CustomerStatus) as CustomerStatus[];
-
-    }
+    };
 
     //לא הבנתי מה היא צריכה לעשות
-    getCustomersToNotify = async(id: ID): Promise<GetCustomersRequest[] | null> => {
-
+    getCustomersToNotify = async (
+        id: ID
+    ): Promise<GetCustomersRequest[] | null> => {
         return [];
-    }
-    
-    // המרת ליד ללקוח
-    convertLeadToCustomer = async (newCustomer: ConvertLeadToCustomerRequest): Promise <CustomerModel> => {
+    };
 
-        const serviceLead = new leadService();
-        
-        const leadData = await serviceLead.getById(newCustomer.leadId);
+    createCustomer = async (
+        newCustomer: CreateCustomerRequest,
+    ): Promise<CustomerModel> => {
+        console.log("in servise");
+        console.log(newCustomer);
 
-        if (!leadData) {
-            throw new Error('Lead data not found for the provided leadId');
-        }
-        // המרה של ליד ללקוח
         const customerData: CustomerModel = {
-            id:leadData.id,
-            name: leadData.name,
-            email: leadData.email,
-            phone: leadData.phone,
-            idNumber: leadData.idNumber,
+            name: newCustomer.name,
+            email: newCustomer.email,
+            phone: newCustomer.phone,
+            idNumber: newCustomer.idNumber,
             businessName: newCustomer.businessName,
-            businessType: leadData.businessType,
+            businessType: newCustomer.businessType,
             status: CustomerStatus.ACTIVE,
             currentWorkspaceType: newCustomer.workspaceType,
             workspaceCount: newCustomer.workspaceCount,
@@ -52,19 +57,39 @@ export class customerService extends baseService <CustomerModel> {
             billingStartDate: newCustomer.billingStartDate,
             notes: newCustomer.notes,
             invoiceName: newCustomer.invoiceName,
-            contractDocuments: newCustomer.contractDocuments,
             paymentMethodsType: newCustomer.paymentMethodType,
-            periods: [],
-            contracts: [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            paymentMethods: []
+            paymentMethods: [],
+            toDatabaseFormat() {
+                return {
+                    name: this.name,
+                    email: this.email,
+                    phone: this.phone,
+                    id_number: this.idNumber,
+                    business_name: this.businessName,
+                    business_type: this.businessType,
+                    status: this.status,
+                    current_workspace_type: this.currentWorkspaceType,
+                    workspace_count: this.workspaceCount,
+                    contract_sign_date: this.contractSignDate,
+                    contract_start_date: this.contractStartDate,
+                    billing_start_date: this.billingStartDate,
+                    notes: this.notes,
+                    invoice_name: this.invoiceName,
+                    payment_methods_type: this.paymentMethodsType,
+                    created_at: this.createdAt,
+                    updated_at: this.updatedAt,
+                };
+            },
         };
 
         //לפני היצירה יש לבדוק שהחלל באמת פנוי צריך לפנות לקבוצה 3
+        console.log("in servise");
+
+        console.log(customerData);
 
         await this.post(customerData);
-
         //יש להעביר את פרטי הלקוח והחוזה למערכת החיוב (של Team 4 - Billing) לצורך חישוב תמחור והכנת חיובים ראשוניים.
 
         // קריאה לשירותי התראות/מייל מתאימים לאחר המרה מוצלחת קשור לקבוצה 1
@@ -72,123 +97,154 @@ export class customerService extends baseService <CustomerModel> {
         return customerData;
     };
 
-    // יצרית הודעת עזיבה של לקוח
-    postExitNotice = async (exitNotice: RecordExitNoticeRequest, id: ID): Promise<void> => {
+    updateCustomer = async (dataToUpdate: Partial<CustomerModel>, id: ID) => {
+        dataToUpdate.updatedAt = new Date().toISOString(),
+        this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id)
+    }
 
+    // יצרית הודעת עזיבה של לקוח
+    postExitNotice = async (
+        exitNotice: RecordExitNoticeRequest,
+        id: ID
+    ): Promise<void> => {
         const updateStatus: UpdateCustomerRequest = {
-            status: CustomerStatus.PENDING
+            status: CustomerStatus.PENDING,
         };
 
-        await this.patch(updateStatus as CustomerModel, id);
+        await this.updateCustomer(updateStatus as CustomerModel, id);
 
         const customerLeave: CustomerModel | null = await this.getById(id);
 
-        if (customerLeave){
+        if (customerLeave) {
             // יצירת תקופת עזיבה ללקוח
-            const period: CustomerPeriod = {
-                id: id,
+            const period: CustomerPeriodModel = {
                 customerId: id,
-                entryDate: new Date().toISOString(),
-                exitDate: new Date().toISOString(),
+                entryDate: customerLeave.createdAt || new Date().toISOString(),
+                exitDate: exitNotice.plannedExitDate,
                 exitNoticeDate: exitNotice.exitNoticeDate,
                 exitReason: exitNotice.exitReason,
                 exitReasonDetails: exitNotice.exitReasonDetails,
-                createdAt: customerLeave.createdAt,
-                updatedAt: customerLeave.updatedAt
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                toDatabaseFormat() {
+                    return {
+                        customer_id: this.customerId,
+                        entry_date: this.entryDate,
+                        exit_date: this.exitDate,
+                        exit_notice_date: this.exitNoticeDate,
+                        exit_reason: this.exitReason,
+                        exit_reason_details: this.exitReasonDetails,
+                        created_at: this.createdAt,
+                        updated_at: this.updatedAt
+                    };
+                }
             };
-            customerLeave.periods = [period];
+            try {
+                await serviceCustomerPeriod.post(period);
+
+            } catch (error) {
+                console.error("in Period ", error)
+            }
         }
 
-        await this.patch(customerLeave ,customerLeave.id);
-
-            //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
-
-            // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
-            // קשור לקבוצת billing
-    }
-
-    //מחזיר את כל הלקוחות רק של העמוד הראשון
-    getCustomersByPage = async (page: number = 1, pageSize: number = 50): Promise<PaginatedResponse<CustomerModel>> => {
-    
-        const from = (page - 1) * pageSize;
-        const to = from + pageSize - 1;
-
-        const { data, error, count } = await supabase
-            .from('CustomerModel')
-            .select('*', { count: 'exact' }) // count: 'exact' סופר את כל התוצאות
-            .range(from, to)
-            .order('createdAt', { ascending: false }); // ממיין 
-
-        if (error) {
-            console.error('Error fetching customers by page:', error);
-            throw new Error('Failed to fetch paginated customers');
+        if (customerLeave && customerLeave.id) {
+            await this.patch(customerLeave, customerLeave.id);
+        } else {
+            throw new Error("Customer ID is undefined");
         }
 
-        const totalPages = count ? Math.ceil(count / pageSize) : 1;
+        //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
 
-        return {
-            data: data as CustomerModel[],
-            meta: {
-                currentPage: page,
-                totalPages,
-                pageSize,
-                totalCount: count ?? 0,
-                hasNext: page < totalPages,
-                hasPrevious: page > 1,
-            },
-        };
+        // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
+        // קשור לקבוצת billing
+    };
 
-    }
-}
 
+  //מחזיר את כל הלקוחות רק של העמוד הראשון
+  getCustomersByPage = async (filters: {
+      page?: number;
+      limit?: number;
+    }): Promise<CustomerModel[]> => {
+      console.log("Service getCustomersByPage called with:", filters);
+  
+      const { page, limit } = filters;
+  
+      const pageNum = Number(filters.page);
+      const limitNum = Number(filters.limit);
+  
+      if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
+        throw new Error("Invalid filters provided for pagination");
+      }
+  
+      const from = (pageNum - 1) * limitNum;
+      const to = from + limitNum - 1;
+  
+      const { data, error } = await supabase
+        .from("customer")
+        .select("*")
+        .order("name", { ascending: true }) // מיון לפי שם
+        .range(from, to);
+  
+      console.log("Supabase data:", data);
+      console.log("Supabase error:", error);
+  
+      if (error) {
+        console.error("❌ Supabase error:", error.message || error);
+        return Promise.reject(
+          new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+        );
+      }
+  
+        const customers = data || [];
+      return CustomerModel.fromDatabaseFormatArray(customers)
+    };
+  }
 const serviceCustomer = new customerService();
 
-    // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
-export const exportCustomersToFileByFilter = async(filter: Partial <CustomerModel>) :Promise <Buffer|null> => {
-        
-        const customerToExport = await serviceCustomer.getByFilters(filter);
+// מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
+// export const exportCustomersToFileByFilter = async (
+//   filter: Partial<CustomerModel>
+// ): Promise<Buffer | null> => {
+// const customerToExport = await serviceCustomer.getByFilters(filter);
 
-        if (!customerToExport || customerToExport.length === 0) {
-            return null;
-        }
+// if (!customerToExport || customerToExport.length === 0) {
+//   return null;
+// }
 
-        // פונקציה מהספריה csv-writer
-        const csvStringifier = createObjectCsvStringifier({
-            header: [
-                { id: 'id', title: 'ID' },
-                { id: 'name', title: 'Name' },
-                { id: 'idNumber', title: 'ID Number' },
-                { id: 'businessName', title: 'Business Name' },
-                { id: 'businessType', title: 'Business Type' },
-                { id: 'currentWorkspaceType', title: 'Current Workspace Type' },
-                { id: 'workspaceCount', title: 'Workspace Count' },
-                { id: 'contractSignDate', title: 'Contract Sign Date' },
-                { id: 'billingStartDate', title: 'Billing Start Date' },
-                { id: 'notes', title: 'Notes' },
-                { id: 'invoiceName', title: 'InvoiceName' },
-                { id: 'contractDocuments', title: 'Contract Documents' },
-                { id: 'paymentMethodsType', title: 'Payment Methods Type' },
-                { id: 'notes', title: 'Notes' },
-                { id: 'updatedAt', title: 'Updated At'},
-                { id: 'contracts', title: 'Contracts' },
-                { id: 'phone', title: 'Phone' },
-                { id: 'status', title: 'Status' },
-                { id: 'createdAt', title: 'Created At' },
-            ],
-        });
+//   // פונקציה מהספריה csv-writer
+//   const csvStringifier = createObjectCsvStringifier({
+//     header: [
+//       { id: "id", title: "ID" },
+//       { id: "name", title: "Name" },
+//       { id: "idNumber", title: "ID Number" },
+//       { id: "businessName", title: "Business Name" },
+//       { id: "businessType", title: "Business Type" },
+//       { id: "currentWorkspaceType", title: "Current Workspace Type" },
+//       { id: "workspaceCount", title: "Workspace Count" },
+//       { id: "contractSignDate", title: "Contract Sign Date" },
+//       { id: "billingStartDate", title: "Billing Start Date" },
+//       { id: "invoiceName", title: "InvoiceName" },
+//       { id: "contractDocuments", title: "Contract Documents" },
+//       { id: "paymentMethodsType", title: "Payment Methods Type" },
+//       { id: "notes", title: "Notes" },
+//       { id: "updatedAt", title: "Updated At" },
+//       { id: "contracts", title: "Contracts" },
+//       { id: "phone", title: "Phone" },
+//       { id: "status", title: "Status" },
+//       { id: "createdAt", title: "Created At" },
+//     ],
+//   });
 
-        const csvHeader = csvStringifier.getHeaderString();
-        const csvBody = csvStringifier.stringifyRecords(customerToExport);
-        const csvFull = csvHeader + csvBody;
+//   const csvHeader = csvStringifier.getHeaderString();
+//   // const csvBody = csvStringifier.stringifyRecords(customerToExport);
+  // const csvFull = csvHeader + csvBody;
 
-        return Buffer.from(csvFull, 'utf-8');
-
-}
+  // return Buffer.from(csvFull, "utf-8");
+// };
 
 // לשאול את שולמית
 
 // export const getStatusChanges = async (id:ID): Promise<CustomerStatus[] | null> => {
-   
 //     const customer: GetCustomersRequest | null = await getCustomerById(id);
 
 //     if (customer && customer.status) {
@@ -196,22 +252,11 @@ export const exportCustomersToFileByFilter = async(filter: Partial <CustomerMode
 //         return statuses;
 //     } else {
 //         console.warn(`No status changes found for customer with ID: ${id}`);
-//         return null; 
+//         return null;
 //     }
 // }
-
-
 
 // export const getCustomerHistory = async (customerId: ID): Promise<CustomerHistory[]> => {
 //     // אמור לשלוף את ההיסטוריה של הלקוח עם ה-customerId הנתון
 //     return []; // להחזיר מערך של היסטוריית לקוח
 // }
-
-
-
-
-
-
-
-
-

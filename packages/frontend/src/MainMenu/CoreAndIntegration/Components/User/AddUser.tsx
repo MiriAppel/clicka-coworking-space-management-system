@@ -38,9 +38,8 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
   });
 
   const handleSubmit = async (data: z.infer<typeof schema>) => {
-    console.log('🚀 handleSubmit called with data:', data);
     setIsSubmitting(true);
-    
+
     try {
       const newUser: User = {
         id: "",
@@ -55,17 +54,14 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
         updatedAt: new Date().toISOString(),
       };
 
-      console.log('📤 Creating user:', newUser);
       const createdUser = await createUser(newUser);
-      
+
       if (createdUser) {
-        console.log('✅ User created successfully!');
         alert("User created successfully!");
         onUserAdded?.();
         onClose?.();
       }
     } catch (error) {
-      console.error("❌ Error creating user:", error);
       alert("Failed to create user. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -100,29 +96,29 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
           <InputField name="firstName" label="First Name" required />
           <InputField name="lastName" label="Last Name" required />
         </div>
-        
+
         <InputField name="email" label="Email" required type="email" />
-        
+
         <SelectField name="role" label="Role" options={roleOptions} required />
-        
+
         <CheckboxField name="active" label="Active User" />
-        
+
         <CheckboxField name="acceptTerms" label="Accept the terms and conditions" required />
-        
+
         <div className="flex gap-4 pt-4">
-          <Button 
-            type="submit" 
-            variant="primary" 
+          <Button
+            type="submit"
+            variant="primary"
             disabled={isSubmitting || loading}
             className="flex-1"
           >
             {isSubmitting ? "Creating..." : "Create User"}
           </Button>
-          
+
           {onClose && (
-            <Button 
-              type="button" 
-              variant="secondary" 
+            <Button
+              type="button"
+              variant="secondary"
               onClick={onClose}
               className="flex-1"
             >

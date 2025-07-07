@@ -49,7 +49,9 @@ export function Form<T extends FieldValues>({
   const {theme} = useTheme();
   const { t } = useTranslation();
   //שימוש לתירגום עם I18NEXT לפי הנדרש 
+
   const effectiveDir = dir || theme.direction;
+  
   const internalMethods = useForm<T>({
     ...(schema ? { resolver: zodResolver(schema) } : {}),
     mode: "onSubmit",
