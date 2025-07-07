@@ -7,6 +7,8 @@ import { json, urlencoded } from 'express';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
+import routerPricing from './routes/pricing.route';
+
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -38,6 +40,7 @@ app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
+app.use('/api/pricing',routerPricing)
 // app.use('/api/translate', translationRouter);
 app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);
