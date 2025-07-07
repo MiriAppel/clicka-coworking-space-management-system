@@ -2,7 +2,7 @@
 import { Request, Response } from "express";
 
 // ייבוא מחלקת השירות שמבצעת את הלוגיקה העסקית מול מסד הנתונים
-import { ExpenseService, getExpensesByVendorId } from "../services/expense.services";
+import { ExpenseService } from "../services/expense.services";
 
 // ייבוא טיפוסים עבור מבנה הנתונים של הבקשות (ליצירה/עדכון/סינון הוצאות)
 import type { CreateExpenseRequest, UpdateExpenseRequest, GetExpensesRequest, MarkExpenseAsPaidRequest } from "shared-types";
@@ -102,7 +102,7 @@ async getExpensesByVendorId(req: Request, res: Response) {
       return res.status(400).json({ message: 'חסר מזהה ספק' });
     }
 
-    const expenses = await getExpensesByVendorId(vendorId as string);
+    const expenses = await this.expenseService.getExpensesByVendorId(vendorId as string);
     res.status(200).json(expenses);
   } 
   catch (err) {

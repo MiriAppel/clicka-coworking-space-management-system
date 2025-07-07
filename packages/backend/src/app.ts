@@ -23,7 +23,7 @@ import userRouter from './routes/user.route';
 import router from './routes';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
-import vendorRouter from './routes/vendor.route';
+// import vendorRouter from './routes/vendor.route';
 
 // Create Express app
 const app = express();
@@ -60,10 +60,10 @@ app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
-app.use('/vendor', (req, res, next) => {
-  console.log('Vendor route hit:', req.method, req.originalUrl);
-  next();
-}, vendorRouter);
+// app.use('/vendor', (req, res, next) => {
+//   console.log('Vendor route hit:', req.method, req.originalUrl);
+//   next();
+// }, vendorRouter);
 // app.use('/api/translate', translationRouter);
 app.use('/api/auth',routerAuth);
 app.use('/api', router);
