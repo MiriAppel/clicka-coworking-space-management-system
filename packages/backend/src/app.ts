@@ -24,6 +24,7 @@ import routerMap from './routes/WorkspaceMapRoute';
 import userRouter from './routes/user.route';
 import vendorRouter from './routes/vendor.router';
 import expenseRouter from './routes/expense.route';
+import routerBilling from './routes/Billing.route'; 
 
 // Create Express app
 const app = express();
@@ -50,6 +51,7 @@ app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
 app.use('/api/space', spaceRouter);
 app.use('/api/map',routerMap);
+app.use('/api/billing', routerBilling);
  // User routes
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
