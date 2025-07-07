@@ -24,7 +24,7 @@ import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/WorkspaceMapRoute';
 import userRouter from './routes/user.route';
 import routerReport from './routes/Reports.route';
-import vendorRouter from './routes/vendor.route';
+import vendorRouter from './routes/vendor.router';
 
 // Create Express app
 const app = express();

@@ -329,6 +329,7 @@ console.log("Using filters:", {
       console.error('Unexpected error in deleteExpense:', err);
       return false;
     }}
+    
  async  getExpensesByVendorId(vendorId: string) {
   const { data, error } = await supabase
     .from('expense')
