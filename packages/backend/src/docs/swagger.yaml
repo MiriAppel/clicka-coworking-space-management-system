@@ -159,10 +159,9 @@ paths:
         content:
           application/json:
             schema:
-              type: User
-              properties:
-                googleId:
-                  type: string
+               type: string
+            required: true
+            description: User google ID
       responses:
         '200':
           description: User's Google ID updated successfully
@@ -212,10 +211,12 @@ paths:
       parameters:
         - in: path
           name: id
-          schema:
-            type: string
-          required: true
-          description: User ID
+          content:
+            application/json:
+            schema:
+              type: string
+            required: true
+            description: User ID
       responses:
         '204':
           description: User deleted successfully
