@@ -1,4 +1,4 @@
-import type{ DateISO, ID, LoungePricing, MeetingRoomPricing, PricingTier, WorkspaceType } from "shared-types";
+import { DateISO, ID, LoungePricing, MeetingRoomPricing, PricingTier, WorkspaceType } from "shared-types";
 
 export class LoungePricingModel implements LoungePricing{
     id?: ID;

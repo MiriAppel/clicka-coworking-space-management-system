@@ -14,8 +14,11 @@ process.on('unhandledRejection', (reason, promise) => {
 import app from './app';
 console.log('process.env.GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
 
+console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
 
 const PORT = process.env.PORT || 3001;
+console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
+console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
