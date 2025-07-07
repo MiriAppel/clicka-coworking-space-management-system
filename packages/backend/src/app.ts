@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
 import translationRouter from './routes/translation.route';
-//import routerCstomer from './routes/customer.route';
+import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import  routerAuth  from './routes/auth';
@@ -37,7 +37,7 @@ app.use(json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use('/api/users', userRouter); // User routes
-//app.use('/api/customers', routerCstomer);
+app.use('/api/customers', routerCstomer);
 app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
