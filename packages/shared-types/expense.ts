@@ -100,10 +100,11 @@ export interface Expense {
 // }
 
 export enum PaymentMethod {
-  BankTransfer = 'BankTransfer',
-  CreditCard = 'CreditCard',
-  Cash = 'Cash',
-  Other = 'Other'
+  CREDIT_CARD = "CREDIT_CARD",
+  BANK_TRANSFER = "BANK_TRANSFER",
+  CASH = "CASH",
+  CHECK = "CHECK",
+  OTHER = "OTHER",
 }
 export enum VendorStatus {
   Active = 'Active',
