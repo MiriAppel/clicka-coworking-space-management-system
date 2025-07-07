@@ -26,7 +26,7 @@ import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { SearchLeads } from "./SearchLeads";
-import { deleteLead } from "../../Service/LeadAndCustomersService";
+// import { deleteLead } from "../../../../service/Axios";
 
 
 interface ValuesToTable {
@@ -295,17 +295,17 @@ export const LeadsPage = () => {
   // };
   const navigate = useNavigate();
 
-  const deleteCurrentLead = async (id: string) => {
-    try {
-      await deleteLead(id);
-      //לראות איך לעדכן את הנתונים או שיעבוד הרפרוש או לרפרש שוב
-      fetchLeads();
-      alert("מתעניין נמחק בהצלחה");
-    } catch (error) {
-      console.error("שגיאה במחיקת מתעניין:", error);
-      alert("מחיקה נכשלה");
-    }
-  };
+  // const deleteCurrentLead = async (id: string) => {
+  //   try {
+  //     await deleteLead(id);
+  //     //לראות איך לעדכן את הנתונים או שיעבוד הרפרוש או לרפרש שוב
+  //     fetchLeads();
+  //     alert("מתעניין נמחק בהצלחה");
+  //   } catch (error) {
+  //     console.error("שגיאה במחיקת מתעניין:", error);
+  //     alert("מחיקה נכשלה");
+  //   }
+  // };
 
 
   return (
@@ -332,7 +332,7 @@ export const LeadsPage = () => {
         setTerm={setSearchTerm}
         onSearch={handleSearch}
       />
-      <LeadHomePage leads={leads} onDelete={deleteCurrentLead} />
+      {/* <LeadHomePage leads={leads} onDelete={deleteCurrentLead} /> */}
       <div ref={loaderRef} style={{ height: "1px" }} />
     </div>
   );

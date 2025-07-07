@@ -9,7 +9,8 @@ import {
   RecordExitNoticeRequest,
   StatusChangeRequest,
 } from 'shared-types';
-import { axiosInstance } from '../../../Services/Axios';
+// Update the import path below if the actual location of Axios.ts is different
+import { axiosInstance } from '../../../../service/Axios';
 
 // ---------- לידים ----------
 
@@ -154,3 +155,5 @@ export const recordExitNotice = async (id: string, data: RecordExitNoticeRequest
     throw error;
   }
 };
+
+export { axiosInstance };

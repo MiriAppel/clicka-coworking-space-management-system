@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
-import { createCustomer, deleteLead } from "../../Service/LeadAndCustomersService"
+import { createCustomer, deleteLead } from "../Customers/LeadAndCustomersService"
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
