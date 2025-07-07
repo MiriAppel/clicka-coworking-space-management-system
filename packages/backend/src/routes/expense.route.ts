@@ -74,6 +74,10 @@ expenseRouter.delete(
     "/deleteExpense/:id",
     expenseController.deleteExpense.bind(expenseController)
 );
+expenseRouter.get(
+  '/getExpensesByVendorId/:vendorId',
+  expenseController.getExpensesByVendorId.bind(expenseController)
+);
 
 // ייצוא ה-router לשימוש ב-app הראשי (main app)
 export default expenseRouter;

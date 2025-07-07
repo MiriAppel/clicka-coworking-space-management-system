@@ -80,15 +80,13 @@ export class contractService extends baseService<ContractModel> {
     const allContracts = await this.getByFilters({});
 
     // ואז מסנן אותם לפי התאריך
-    return allContracts
-  .filter(contract => {
-    if (!contract.endDate) return false;
-    return new Date(contract.endDate) <= targetDate;
-  })
-  .map(contract => ({
-    ...contract,
-    id: contract.id ?? "",  // מבטיח שה-id לא יהיה undefined
-  })) as Contract[];
+    return allContracts.filter(contract => {
+
+      if (!contract.endDate) return false;
+      return new Date(contract.endDate) <= targetDate;
+
+    });
+
   };
 
 

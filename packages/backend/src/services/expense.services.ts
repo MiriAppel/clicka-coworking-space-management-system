@@ -21,7 +21,7 @@ export class ExpenseService {
      */
     async createExpense(expenseData: CreateExpenseRequest) {
         const { data, error } = await supabase
-            .from('expenses')              // שם הטבלה ב-Supabase
+            .from('expense')              // שם הטבלה ב-Supabase
             .insert([expenseData])         // הכנסת ההוצאה החדשה לטבלה
             .select()                      // בקשה לקבל את הרשומה החדשה שחזרה
             .single();                     // מצפה לרשומה בודדת
@@ -41,7 +41,7 @@ export class ExpenseService {
      */
     async getExpenses(filters: GetExpensesRequest) {
         let query = supabase
-            .from('expenses')        // עבודה מול טבלת ההוצאות
+            .from('expense')        // עבודה מול טבלת ההוצאות
             .select('*');            // בחירה של כל השדות
 
         // סינון לפי vendorId (ספק)
@@ -89,7 +89,7 @@ export class ExpenseService {
      */
     async getExpenseById(id: string) {
         const { data, error } = await supabase
-            .from('expenses')        // עבודה מול טבלת ההוצאות
+            .from('expense')        // עבודה מול טבלת ההוצאות
             .select('*')             // שליפת כל השדות
             .eq('id', id)            // תנאי לפי מזהה
             .single();               // ציפייה לתוצאה אחת בלבד
@@ -110,7 +110,7 @@ export class ExpenseService {
      */
     async updateExpense(id: string, updateData: UpdateExpenseRequest) {
         const { data, error } = await supabase
-            .from('expenses')            // טבלת ההוצאות
+            .from('expense')            // טבלת ההוצאות
             .update(updateData)          // ביצוע עדכון בשדות הרצויים
             .eq('id', id)                // תנאי לפי מזהה ההוצאה
             .select()                    // בקשה לקבל את הרשומה המעודכנת
@@ -132,7 +132,7 @@ export class ExpenseService {
      */
     async markExpenseAsPaid(id: string, paidData: MarkExpenseAsPaidRequest) {
         const { data, error } = await supabase
-            .from('expenses')              // טבלת ההוצאות
+            .from('expense')              // טבלת ההוצאות
             .update({
                 status: 'PAID',            // שינוי סטטוס ל-PAID
                 paid_date: paidData.paidDate,  // עדכון תאריך התשלום
@@ -159,7 +159,7 @@ export class ExpenseService {
      */
     async deleteExpense(id: string) {
         const { error } = await supabase
-            .from('expenses')     // טבלת ההוצאות
+            .from('expense')     // טבלת ההוצאות
             .delete()             // מחיקה
             .eq('id', id);        // תנאי לפי מזהה
 
@@ -170,4 +170,16 @@ export class ExpenseService {
 
         return true;
     }
+}
+export async function getExpensesByVendorId(vendorId: string) {
+  const { data, error } = await supabase
+    .from('expense')
+    .select('*')
+    .eq('vendor_id', vendorId);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
 }

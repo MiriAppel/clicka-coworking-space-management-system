@@ -1,7 +1,7 @@
+import React from "react";
 import { useFormContext } from "react-hook-form";
-import { useTheme } from "../themeConfig";
 import clsx from "clsx";
-
+import { useTheme } from "../themeConfig";
 interface SelectFieldProps {
   name: string;
   label: string;
@@ -11,10 +11,7 @@ interface SelectFieldProps {
   dir?: "rtl" | "ltr";
   className?: string;
   "data-testid"?: string;
-  value?: string;  // להוסיף את הפרופס האלו
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
-
 export const SelectField: React.FC<SelectFieldProps> = ({
   name,
   label,
@@ -24,18 +21,14 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   dir,
   className,
   "data-testid": testId,
-  value,
-  onChange,
 }) => {
   const {theme} = useTheme();
   const {
     register,
     formState: { errors },
   } = useFormContext();
-
   const error = errors[name]?.message as string | undefined;
   const effectiveDir = dir || theme.direction;
-
   return (
     <div className="space-y-1 w-full" dir={effectiveDir}>
       <label
@@ -50,11 +43,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
-
       <select
-        {...(value !== undefined && onChange
-          ? { value, onChange }
-          : register(name))}
+        {...register(name)}
         disabled={disabled}
         aria-required={required}
         aria-invalid={!!error}
@@ -80,11 +70,10 @@ export const SelectField: React.FC<SelectFieldProps> = ({
             {opt.label}
           </option>
           //יש לי מערך של OPTIONS הוא בנוי בצורה שיש לו LABEL וVALUE עובר עם בMAP כל אלאמט קוראים לא OPT
-          //אחכ שומר את זה בVALUE ובKEY כדי שיהיה מיוחד כל אלד ואחד 
-          // <option value="male">Hombre</option> לדוגמא 
+          //אחכ שומר את זה בVALUE ובKEY כדי שיהיה מיוחד כל אלד ואחד
+          // <option value="male">Hombre</option> לדוגמא
         ))}
       </select>
-
       {error && (
         <p
           className="text-sm text-red-600"

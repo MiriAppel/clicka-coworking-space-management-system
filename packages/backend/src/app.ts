@@ -16,6 +16,7 @@ import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
 import vendorRouter from './routes/vendor.router';
+import expenseRouter from './routes/expense.route';
 
 // Create Express app
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
+app.use('/expense', expenseRouter);
 app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();

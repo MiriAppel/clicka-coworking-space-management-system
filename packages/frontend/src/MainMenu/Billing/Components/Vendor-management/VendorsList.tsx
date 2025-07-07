@@ -14,7 +14,7 @@ type VendorsListProps = {
 // פונקציה אסינכרונית לשליפת ספקים מה-API
 async function fetchVendors(): Promise<Vendor[]> {
   // קריאת GET לכתובת ה-API לקבלת רשימת ספקים
-  const response = await fetch("http://localhost:3001/vendor", {
+  const response = await fetch("http://localhost:3001/vendor/", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -105,11 +105,14 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
 
         // הוספת כפתור "לצפייה" בכל שורה
         renderActions={(row) => (
-          <Link to={`/vendors/${row.id}`}>
-            <Button size="sm" className="text-blue-600 hover:underline">
-              לצפייה
-            </Button>
-          </Link>
+          <>
+            {console.log('צפייה על ספק:', row)}
+            <Link to={`/vendors/${row.id}`}>
+              <Button size="sm" className="text-blue-600 hover:underline">
+                לצפייה
+              </Button>
+            </Link>
+          </>
         )}
       />
 
