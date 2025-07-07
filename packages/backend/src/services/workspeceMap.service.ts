@@ -11,9 +11,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export async function createWorkspaceMap(map: WorkspaceMapModel): Promise<WorkspaceMapModel | null> {
     const { data, error } = await supabase
         .from('workspace_map') // שם הטבלה ב-Supabase
-        // .insert([map]) // כך זה עובד?
-          .insert([map.toDatabaseFormat()]) 
-        //לא צריך עם המרה?
+        .insert([map.toDatabaseFormat()]) 
         .select()
         .single();
 
@@ -21,12 +19,10 @@ export async function createWorkspaceMap(map: WorkspaceMapModel): Promise<Worksp
         console.error('Error creating map:', error);
         return null;
     }
-
-    //  const createdMap = WorkspaceMapModel.fromDatabaseFormatArray(data); return-לסדר המרה היתה שגיאה ב
-    const createdMap = WorkspaceMapModel.fromDatabaseFormat(data); // המרה לסוג WorkspaceMapModel
-    
+    const createdMap = WorkspaceMapModel.fromDatabaseFormat(data);   
     return createdMap;
 }
+
 //קבלת כל המפות הקיימות
 export async function getAllmaps(): Promise<WorkspaceMapModel[] | null> {
 
@@ -38,16 +34,11 @@ export async function getAllmaps(): Promise<WorkspaceMapModel[] | null> {
         return null;
     }
     const maps = WorkspaceMapModel.fromDatabaseFormatArray(data);//שינוי
-
-    //  maps.forEach(map => {
-    //     logUserActivity(map.id? map.id:map.name, 'Map fetched');
-    // });
-    //         // מחזיר את כל המפות שנמצאו
     return maps;
 
 }
 
-// // קבלת מפה לפי מזהה
+//  קבלת מפה לפי מזהה
 export async function getWorkspaceMapById(id: string) {
     const { data, error } = await supabase
         .from('workspace_map')
@@ -63,6 +54,38 @@ export async function getWorkspaceMapById(id: string) {
     const map = WorkspaceMapModel.fromDatabaseFormat(data) // המרה לסוג UserModel
    
     return map;
+}
+export async function updateWorkspaceMap(id: string, updatedData: WorkspaceMapModel): Promise<WorkspaceMapModel | null> {
+
+    const { data, error } = await supabase
+        .from('workspace_map')
+        .update([updatedData.toDatabaseFormat()])
+        .eq('id', id)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error updating map:', error);
+        return null;
+    }
+     const map = WorkspaceMapModel.fromDatabaseFormat(data) ; 
+  
+    return map;
+}
+
+// // מחיקת מפה
+export async function deleteWorkspaceMap(id: string): Promise<boolean> {
+    const { error } = await supabase
+        .from('workspace_map')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error('Error deleting map:', error);
+        return false;
+    }
+   
+    return true;
 }
 export async function getWorkspaceMapByName(name: string) {
     const { data, error } = await supabase
@@ -85,41 +108,7 @@ export async function getWorkspaceMapByName(name: string) {
 // }
 
 // // עדכון פרטי מפה
-export async function updateWorkspaceMap(id: string, updatedData: WorkspaceMapModel): Promise<WorkspaceMapModel | null> {
 
-    const { data, error } = await supabase
-        .from('workspace_map')
-        .update([updatedData.toDatabaseFormat()])
-        .eq('id', id)
-        .select()
-        .single();
-
-    if (error) {
-        console.error('Error updating map:', error);
-        return null;
-    }
-     const map = WorkspaceMapModel.fromDatabaseFormat(data) ; 
-  
-    return map;
-
-
-
-}
-
-// // מחיקת מפה
-export async function deleteWorkspaceMap(id: string): Promise<boolean> {
-    const { error } = await supabase
-        .from('workspace_map')
-        .delete()
-        .eq('id', id);
-
-    if (error) {
-        console.error('Error deleting map:', error);
-        return false;
-    }
-   
-    return true;
-}
 
 
 

@@ -34,28 +34,28 @@ export const LoginWithGoogle = () => {
                 if (googleAccessToken) {
                     localStorage.setItem('google_token', googleAccessToken); // שמירה ב-localStorage
                     // בדיקת POST calendar
-                    // fetch('http://localhost:3001/api/calendar/calendars/primary/events', {
-                    //     method: 'POST',
-                    //     headers: {
-                    //         'Content-Type': 'application/json',
-                    //         'Authorization': `Bearer ${googleAccessToken}`,
-                    //     },
-                    //     body: JSON.stringify({
-                    //         summary: 'Weekly Monday Meeting',
-                    //         start: {
-                    //             dateTime: '2025-07-21T15:00:00+03:00',
-                    //             timeZone: 'Asia/Jerusalem'
-                    //         },
-                    //         end: {
-                    //             dateTime: new Date(new Date('2025-07-21T15:00:00+03:00').getTime() + 60 * 60 * 1000).toISOString(),
-                    //             timeZone: 'Asia/Jerusalem'
-                    //         },
-                    //         recurrence: ['RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=4']
-                    //     }),
-                    // })
-                    //     .then(res => res.json())
-                    //     .then(data => console.log('POST event:', data))
-                    //     .catch(err => console.error(err));
+                    fetch('http://localhost:3001/api/calendar/calendars/primary/events', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${googleAccessToken}`,
+                        },
+                        body: JSON.stringify({
+                            summary: ' ניסיון נחמי איתן',
+                            start: {
+                                dateTime: '2025-07-21T15:00:00+03:00',
+                                timeZone: 'Asia/Jerusalem'
+                            },
+                            end: {
+                                dateTime: new Date(new Date('2025-07-21T15:00:00+03:00').getTime() + 60 * 60 * 1000).toISOString(),
+                                timeZone: 'Asia/Jerusalem'
+                            },
+                            recurrence: ['RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=4']
+                        }),
+                    })
+                        .then(res => res.json())
+                        .then(data => console.log('POST event:', data))
+                        .catch(err => console.error(err));
                     // בדיקת GET calendar
                     fetch('http://localhost:3001/api/calendar/calendars/primary/events', {
                         method: 'GET',
@@ -84,21 +84,21 @@ export const LoginWithGoogle = () => {
                     //     .then(data => console.log('אירוע עודכן:', data))
                     //     .catch(err => console.error('שגיאה בעדכון:', err));
                     // בדיקת DELETE calendar
-                    const evenId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
-                    fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${evenId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${googleAccessToken}`,
-                        },
-                    })
-                        .then(res => {
-                            if (res.ok) {
-                                console.log('האירוע נמחק בהצלחה!');
-                            } else {
-                                res.json().then(data => console.error('שגיאה במחיקה:', data));
-                            }
-                        })
-                        .catch(err => console.error('שגיאה במחיקה:', err));
+                    // const evenId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
+                    // fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${evenId}`, {
+                    //     method: 'DELETE',
+                    //     headers: {
+                    //         'Authorization': `Bearer ${googleAccessToken}`,
+                    //     },
+                    // })
+                    //     .then(res => {
+                    //         if (res.ok) {
+                    //             console.log('האירוע נמחק בהצלחה!');
+                    //         } else {
+                    //             res.json().then(data => console.error('שגיאה במחיקה:', data));
+                    //         }
+                    //     })
+                    //     .catch(err => console.error('שגיאה במחיקה:', err));
                     // בדיקת freeBusy calendar
                 //     fetch('http://localhost:3001/api/calendar/calendars/primary/freeBusy', {
                 //         method: 'POST',

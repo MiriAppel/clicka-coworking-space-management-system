@@ -11,9 +11,6 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function createLayout(layout: MapLayoutModel): Promise<MapLayoutModel | null> {
     try{
-    console.log('aaaaaaaaaaaaaaaaaaaaa:', JSON.stringify(layout, null, 2));
-    // const a=layout.toDatabaseFormat();
-    //  console.log('bbbbbbbbbbbbbbbbbbbb:', JSON.stringify(a, null, 2));
     const { data, error } = await supabase
         .from('map_layout') // שם הטבלה ב-Supabase
         .insert([layout.toDatabaseFormat()])

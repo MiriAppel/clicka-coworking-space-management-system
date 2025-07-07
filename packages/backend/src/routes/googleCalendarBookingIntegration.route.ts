@@ -1,13 +1,12 @@
 import express from 'express'
-import * as workspaceMapController from '../controllers/workspaceMap.controller'
+import * as calendarSyncController from '../controllers/googleCalendarBookingIntegration.controller'
 
-const routerMap = express.Router()
-routerMap.get('/all', workspaceMapController.getAllWorkspacesMap.bind(workspaceMapController))
-routerMap.get('/get/:id', workspaceMapController.getWorkspaceMapById.bind(workspaceMapController))
-routerMap.get('/by-name/:name', workspaceMapController.getWorkspaceMapByName.bind(workspaceMapController))
-routerMap.post('/post-map', workspaceMapController.createWorkspaceMap.bind(workspaceMapController))
-routerMap.patch('/update/:id', workspaceMapController.updateWorkspaceMap.bind(workspaceMapController))
-routerMap.delete('/delete/:id', workspaceMapController.deleteWorkspaceMap.bind(workspaceMapController))
+const routerSync = express.Router()
+routerSync.get('/all', calendarSyncController.getAllCalendarSync.bind(calendarSyncController))
+routerSync.get('/get/:id', calendarSyncController.getCalendarSyncById.bind(calendarSyncController))
+routerSync.post('/post-sync', calendarSyncController.createCalendarSync.bind(calendarSyncController))
+routerSync.patch('/update/:id', calendarSyncController.updateCalendarSync.bind(calendarSyncController))
+routerSync.delete('/delete/:id', calendarSyncController.deleteCalendarSyncByEventId.bind(calendarSyncController))
 
 
-export default routerMap
+export default routerSync

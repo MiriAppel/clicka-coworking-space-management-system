@@ -10,7 +10,7 @@ export interface CalendarSync {
 
 export enum CalendarSyncStatus {
     SYNCED = 'SYNCED',
-    PENDING = 'PENDING',
+    PENDING = 'PENDING',//ממתין לאישור
     FAILED = 'FAILED',
     CONFLICT = 'CONFLICT'
 }

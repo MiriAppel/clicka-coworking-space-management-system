@@ -11,7 +11,7 @@ export class CalendarSyncModel implements CalendarSync {
   syncErrors?: string[];
 
   constructor(params: {
-    id: ID;
+    id?: ID;
     bookingId: ID;
     calendarId: string;
     lastSyncAt: DateISO;
@@ -26,8 +26,6 @@ export class CalendarSyncModel implements CalendarSync {
     this.syncErrors = params.syncErrors;
   }
   
- 
-
   toDatabaseFormat() {
     return {
       booking_id: this.bookingId,
@@ -41,7 +39,7 @@ export class CalendarSyncModel implements CalendarSync {
   static fromDatabaseFormat(data: any):CalendarSyncModel {
     return new CalendarSyncModel({
       id: data.id ,
-      bookingId: data.ooking_id,
+     bookingId: data.booking_id,
      calendarId: data.calendar_id,
      lastSyncAt: data.last_sync_at,
       syncStatus: data.sync_status,

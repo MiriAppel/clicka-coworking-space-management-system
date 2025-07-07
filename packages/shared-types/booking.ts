@@ -42,7 +42,7 @@ export interface Room {
 
 // Booking model
 export interface Booking {
-  id: ID;
+  id?: ID;
   roomId: ID;
   roomName: string;
   customerId?: ID;
@@ -59,7 +59,7 @@ export interface Booking {
   chargeableHours: number; // After free hours deduction
   totalCharge: number; // Amount to be charged
   isPaid: boolean;
-  approvedBy?: ID;
+  approvedBy: ID;
   approvedAt?: DateISO;
   createdAt: DateISO;
   updatedAt: DateISO;

@@ -1,13 +1,12 @@
 import express from 'express'
-import * as workspaceMapController from '../controllers/workspaceMap.controller'
+import * as mapLayoutController from '../controllers/mapLayout.controller'
 
 const routerMap = express.Router()
-routerMap.get('/all', workspaceMapController.getAllWorkspacesMap.bind(workspaceMapController))
-routerMap.get('/get/:id', workspaceMapController.getWorkspaceMapById.bind(workspaceMapController))
-routerMap.get('/by-name/:name', workspaceMapController.getWorkspaceMapByName.bind(workspaceMapController))
-routerMap.post('/post-map', workspaceMapController.createWorkspaceMap.bind(workspaceMapController))
-routerMap.patch('/update/:id', workspaceMapController.updateWorkspaceMap.bind(workspaceMapController))
-routerMap.delete('/delete/:id', workspaceMapController.deleteWorkspaceMap.bind(workspaceMapController))
+routerMap.get('/all', mapLayoutController.getAll.bind(mapLayoutController))
+routerMap.get('/get/:id', mapLayoutController.getLayoutById.bind(mapLayoutController))
+routerMap.post('/post-map', mapLayoutController.createLayout.bind(mapLayoutController))
+routerMap.patch('/update/:id', mapLayoutController.updateLayout.bind(mapLayoutController))
+routerMap.delete('/delete/:id', mapLayoutController.deleteLayout.bind(mapLayoutController))
 
 
 export default routerMap

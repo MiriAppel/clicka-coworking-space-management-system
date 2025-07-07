@@ -192,3 +192,5 @@ export interface SendEmailRequest {
     mimeType: string;
   }[];
 }
+ // הוספות של calandarSync By Nechami Eitan
+ 

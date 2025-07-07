@@ -1,11 +1,12 @@
 
-import type{ CreateGoogleCalendarEventRequest, DeleteGoogleCalendarEventRequest, GoogleCalendarEvent, ID, UpdateGoogleCalendarEventRequest } from "shared-types";
-import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "shared-types/calendarSync";
-import {SyncBookingsWithGoogleRequest} from "shared-types/booking";
+import type{  CalendarEventInput, CreateGoogleCalendarEventRequest, DeleteGoogleCalendarEventRequest, GoogleCalendarEvent, ID, UpdateGoogleCalendarEventRequest } from "shared-types";
+import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "shared-types";
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv';
 import { CalendarSyncModel } from "../models/calendarSync.model";
 import { getEvents } from './calendar-service';
+import {createEvent} from './calendar-service'
+import { BookingModel } from "../models/booking.model";
 // טוען את משתני הסביבה מקובץ .env
 dotenv.config();
 
@@ -17,75 +18,68 @@ export const getGoogleCalendarEvents=async(calendarId: string, token: string):Pr
 //שליפת כל האירועים לפי לוח
 const events=getEvents(calendarId,token);
 {
-        // "kind": "calendar#event",
-        // "etag": "\"3502887760417406\"",
-        // "id": "i7olv0aq1496o7c5oauerbc45s",
-        // "status": "confirmed",
-        // "htmlLink": "https://www.google.com/calendar/event?eid=aTdvbHYwYXExNDk2bzdjNW9hdWVyYmM0NXMgbDA1NDg1NDQ5NjJAbQ",
-        // "created": "2025-07-02T08:11:20.000Z",
-        // "updated": "2025-07-02T08:11:20.208Z",
-        // "summary": "פגישת בדיקה",
-        // "description": "פגישה לדוגמה",
-        // "location": "תל אביב",
-        // "creator": {
-        //     "email": "l0548544962@gmail.com",
-        //     "self": true
-        // },
-        // "organizer": {
-        //     "email": "l0548544962@gmail.com",
-        //     "self": true
-        // },
-        // "start": {
-        //     "dateTime": "2025-07-23T15:00:00+03:00",
-        //     "timeZone": "Asia/Jerusalem"
-        // },
-        // "end": {
-        //     "dateTime": "2025-07-23T16:00:00+03:00",
-        //     "timeZone": "Asia/Jerusalem"
-        // },
-        // "iCalUID": "i7olv0aq1496o7c5oauerbc45s@google.com",
-        // "sequence": 0,
-        // "reminders": {
-        //     "useDefault": true
-        // },
-        // "eventType": "default"
-
-
-
-//         export interface GoogleCalendarEvent {
-//   id: string;
-//   calendarId: string;
-//   summary: string;
-//   description?: string;
-//   location?: string;
-//   start: {
-//     dateTime: string; // ISO date string
-//     timeZone?: string;
-//   };
-//   end: {
-//     dateTime: string; // ISO date string
-//     timeZone?: string;
-//   };
-//   attendees?: {
-//     email: string;
-//     displayName?: string;
-//     responseStatus?: 'needsAction' | 'declined' | 'tentative' | 'accepted';
-//   }[];
-//   status: 'confirmed' | 'tentative' | 'cancelled';
-//   created: string; // ISO date string
-//   updated: string; // ISO date string
-//   htmlLink: string; // URL to the event in Google Calendar
-// }
+       
     }
     return null; 
 }
 
-export const createCalendarSync=async(request: SyncBookingsWithGoogleRequest):Promise<CalendarSyncStatus>=>{
+export const createCalendarSync=async(sync: CalendarSyncModel): Promise<CalendarSyncModel | null>=> {
+    const { data, error } = await supabase
+        .from('calendar_sync') // שם הטבלה ב-Supabase
+        // .insert([map]) // כך זה עובד?
+        .insert([sync.toDatabaseFormat()]) 
+        //לא צריך עם המרה?
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error creating sync:', error);
+        return null;
+    }
+   
+    const createdSync = CalendarSyncModel.fromDatabaseFormat(data); // המרה לסוג WorkspaceMapModel
+    
+    return createdSync;
+}
 // פונקציה זו תבדוק האם ניתן להוסיף אירוע לחדר הרצוי בזמן הרצוי
 //calendarSync ותיצר בהתאם לתוצאות אובייקט 
-    return CalendarSyncStatus.SYNCED; // דוגמה להחזרת סטטוס סינכרון
-}
-
+    // return CalendarSyncStatus.SYNCED; // דוגמה להחזרת סטטוס סינכרון
+ 
+    export async function updateCalendarSync(id: string, updatedData: CalendarSyncModel): Promise<CalendarSyncModel | null> {
+    
+        const { data, error } = await supabase
+            .from('calendar_sync')
+            .update([updatedData.toDatabaseFormat()])
+            .eq('id', id)
+            .select()
+            .single();
+    
+        if (error) {
+            console.error('Error updating sync:', error);
+            return null;
+        }
+         const sync = CalendarSyncModel.fromDatabaseFormat(data) ; 
+      
+        return sync;
+    
+    
+    
+    }
+    
+    // // מחיקת מפה
+    export async function deleteCalendarSync(id: string): Promise<boolean> {
+        const { error } = await supabase
+            .from('calendar_sync')
+            .delete()
+            .eq('id', id);
+    
+        if (error) {
+            console.error('Error deleting map:', error);
+            return false;
+        }
+       
+        return true;
+    }
 export const gatAllCalendarSync=async():Promise<CalendarSync[]|null>=>{
 const { data, error } =  await supabase
         .from('calendar_sync')
@@ -116,21 +110,46 @@ export async function getCalendarSyncById(id: string) {
     return layout;
 }
 
-export const createCalendarEvent=async(event:CreateGoogleCalendarEventRequest)=>{
-// react- פונקציה זו מקבלת פרטי אירוע מ
-//שמחזירה סטטוס סינכרון createCalendarSync שולחת לפונקציה
-
-// approvedAt approvedBy ו-וגם יש הרשאה להזמנה  CalendarSyncStatus.SYNCED  במידה והסטטוס
-// נוצרה ע"י לאה שארר-createGoogleCalendarEvent(event)  מבצעת שליחה לפונקצית הוספת אירוע
-// calendarשתוסיף את האירוע  ב 
-
-//faild/pending אם הסטטוס ????
-
-// detectCalendarConflicts תתבצע שליחה ל conflict-אם הסטטוס 
-//תקבל את הקונפליקטים הקיימים
-//ותציג את ההצעות לפתרון הקונפליקטים
-
+export const createCalendarEvent=async( calendarId: string,
+  event: CalendarEventInput,
+  token: string,booking :BookingModel)=>{
+const statusEvent=createEvent(calendarId, event, token);
+const sync = new CalendarSyncModel({
+    bookingId: booking.id, 
+    calendarId: calendarId, 
+    lastSyncAt: new Date().toISOString(), 
+    syncStatus: CalendarSyncStatus.SYNCED, 
+    syncErrors: [] // או undefined אם אין שגיאות
+});
+//אם יש קונפליקט של זמן
+if(!statusEvent){
+    sync.syncStatus = CalendarSyncStatus.CONFLICT; // אם האירוע לא נוצר בהצלחה
+    // sync.syncErrors = ["Failed to create event in Google Calendar"];
 }
+//אם לא אושר ע"י מנהל או לא אושר בכלל
+if(!booking.approvedBy){
+sync.syncStatus=CalendarSyncStatus.PENDING
+}
+//אם ההוספה לא צלחה
+if(!(await statusEvent).created){
+    sync.syncStatus=CalendarSyncStatus.FAILED
+}
+const create=createCalendarSync(sync)
+
+// // react- פונקציה זו מקבלת פרטי אירוע מ
+// //שמחזירה סטטוס סינכרון createCalendarSync שולחת לפונקציה
+
+// // approvedAt approvedBy ו-וגם יש הרשאה להזמנה  CalendarSyncStatus.SYNCED  במידה והסטטוס
+// // נוצרה ע"י לאה שארר-createGoogleCalendarEvent(event)  מבצעת שליחה לפונקצית הוספת אירוע
+// // calendarשתוסיף את האירוע  ב 
+
+// //faild/pending אם הסטטוס ????
+
+// // detectCalendarConflicts תתבצע שליחה ל conflict-אם הסטטוס 
+// //תקבל את הקונפליקטים הקיימים
+// //ותציג את ההצעות לפתרון הקונפליקטים
+
+ }
 
 export const detectCalendarConflicts=async(calendar:CalendarSync):Promise<CalendarConflict[]>=>{
        const conflicts: CalendarConflict[] = [];
@@ -169,11 +188,11 @@ export const updateEnevtOnChangeBooking=async(updateDetails:UpdateGoogleCalendar
  //updateCalendarSync() ע"י מציאתו בפונקציה 
 }
 
-export const updateCalendarSync=async(eventId:string)=>{
-//ע"י קוד אירוע  calendarSync  עדכון 
-//עדכון התאריך לנוכחי ושינוי סטטוס אם צריך
- return null;
-}
+// export const updateCalendarSync=async(eventId:string)=>{
+// //ע"י קוד אירוע  calendarSync  עדכון 
+// //עדכון התאריך לנוכחי ושינוי סטטוס אם צריך
+//  return null;
+// }
 
 export const getCalendarByRoom = async (roomId: ID): Promise<CalendarSync|null> => {
    //  לקבלת לוח שנה עפ"י קוד חדר

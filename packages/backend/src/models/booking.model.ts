@@ -1,6 +1,6 @@
 import type{ BookingStatus, DateISO, ID } from "shared-types";
 
-export class MapCoordinates {
+export class BookingModel {
   id: ID;
   roomId: ID;
   roomName: string;

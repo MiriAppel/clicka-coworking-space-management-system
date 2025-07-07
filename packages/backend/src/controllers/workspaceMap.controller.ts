@@ -18,9 +18,6 @@ const mapId = req.params.id;
    else{
     res.status(404).json({ error: 'Map not found' })
    }
-
-   
-  
 }
 export async function getWorkspaceMapByName(req: Request, res: Response) {
 const mapName = req.params.name;
@@ -31,9 +28,6 @@ const mapName = req.params.name;
    else{
     res.status(404).json({ error: 'Map not found' })
    }
-
-   
-  
 }
 
 export async function createWorkspaceMap(req: Request, res: Response) {
@@ -45,12 +39,6 @@ export async function createWorkspaceMap(req: Request, res: Response) {
     res.status(500).json({ error: (error as Error).message })
   }
 }
-  //  if (result) {
-  //           res.status(200).json(result);
-  //       } else {
-  //           res.status(500).json({ error: "Failed to fetch users" });
-        
-
 export async function updateWorkspaceMap(req: Request, res: Response) {
         const mapId = req.params.id;
         const updatedData = req.body;
@@ -63,8 +51,6 @@ export async function updateWorkspaceMap(req: Request, res: Response) {
             res.status(500).json({ error: "Failed to update user" });
         }
 }
-
-   
 
 export async function deleteWorkspaceMap(req: Request, res: Response) {
   try {
