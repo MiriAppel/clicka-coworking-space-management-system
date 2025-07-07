@@ -95,10 +95,10 @@ export class customerService extends baseService<CustomerModel> {
 
         console.log(customerData);
 
-       const customer =  await this.post(customerData);
+        const customer = await this.post(customerData);
 
         const newContract: ContractModel = {
-            customerId: customer.id!, 
+            customerId: customer.id!,
             version: 1,
             status: ContractStatus.DRAFT,
             signDate: newCustomer.contractSignDate,
@@ -106,7 +106,7 @@ export class customerService extends baseService<CustomerModel> {
             //   endDate?: string;
             //   terms?: ContractTerms;
             documents: newCustomer.contractDocuments || [],
-             //   signedBy?: string;
+            //   signedBy?: string;
             //   witnessedBy?: string;
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -141,8 +141,14 @@ export class customerService extends baseService<CustomerModel> {
     };
 
     updateCustomer = async (dataToUpdate: Partial<CustomerModel>, id: ID) => {
-        dataToUpdate.updatedAt = new Date().toISOString(),
-        this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id)
+        dataToUpdate.updatedAt = new Date().toISOString();
+
+        try {
+            await this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id); // תפס את השגיאה
+        } catch (error) {
+            console.error("שגיאה בעדכון הלקוח:", error);
+            throw error; // זרוק את השגיאה הלאה
+        }
     }
 
     // יצרית הודעת עזיבה של לקוח
@@ -203,45 +209,45 @@ export class customerService extends baseService<CustomerModel> {
     };
 
 
-  //מחזיר את כל הלקוחות רק של העמוד הראשון
-  getCustomersByPage = async (filters: {
-      page?: number;
-      limit?: number;
+    //מחזיר את כל הלקוחות רק של העמוד הראשון
+    getCustomersByPage = async (filters: {
+        page?: number;
+        limit?: number;
     }): Promise<CustomerModel[]> => {
-      console.log("Service getCustomersByPage called with:", filters);
-  
-      const { page, limit } = filters;
-  
-      const pageNum = Number(filters.page);
-      const limitNum = Number(filters.limit);
-  
-      if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
-        throw new Error("Invalid filters provided for pagination");
-      }
-  
-      const from = (pageNum - 1) * limitNum;
-      const to = from + limitNum - 1;
-  
-      const { data, error } = await supabase
-        .from("customer")
-        .select("*")
-        .order("name", { ascending: true }) // מיון לפי שם
-        .range(from, to);
-  
-    //   console.log("Supabase data:", data);
-      console.log("Supabase error:", error);
-  
-      if (error) {
-        console.error("❌ Supabase error:", error.message || error);
-        return Promise.reject(
-          new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
-        );
-      }
-  
+        console.log("Service getCustomersByPage called with:", filters);
+
+        const { page, limit } = filters;
+
+        const pageNum = Number(filters.page);
+        const limitNum = Number(filters.limit);
+
+        if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
+            throw new Error("Invalid filters provided for pagination");
+        }
+
+        const from = (pageNum - 1) * limitNum;
+        const to = from + limitNum - 1;
+
+        const { data, error } = await supabase
+            .from("customer")
+            .select("*")
+            .order("name", { ascending: true }) // מיון לפי שם
+            .range(from, to);
+
+        //   console.log("Supabase data:", data);
+        console.log("Supabase error:", error);
+
+        if (error) {
+            console.error("❌ Supabase error:", error.message || error);
+            return Promise.reject(
+                new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+            );
+        }
+
         const customers = data || [];
-      return CustomerModel.fromDatabaseFormatArray(customers)
+        return CustomerModel.fromDatabaseFormatArray(customers)
     };
-  }
+}
 const serviceCustomer = new customerService();
 
 // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה
@@ -280,9 +286,9 @@ const serviceCustomer = new customerService();
 
 //   const csvHeader = csvStringifier.getHeaderString();
 //   // const csvBody = csvStringifier.stringifyRecords(customerToExport);
-  // const csvFull = csvHeader + csvBody;
+// const csvFull = csvHeader + csvBody;
 
-  // return Buffer.from(csvFull, "utf-8");
+// return Buffer.from(csvFull, "utf-8");
 // };
 
 // לשאול את שולמית

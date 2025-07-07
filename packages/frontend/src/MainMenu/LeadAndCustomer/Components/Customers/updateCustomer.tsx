@@ -10,6 +10,7 @@ import { SelectField } from '../../../../Common/Components/BaseComponents/Select
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { patchCustomer } from "../../Service/LeadAndCustomersService"
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import axios from "axios";
 
 const schema = z.object({
     name: z.string().optional(),
@@ -58,8 +59,14 @@ export const UpdateCustomer: React.FC = () => {
                 navigate(-1);
             })
             .catch((error: Error) => {
-                console.error("Error update customer:", error);
-                showAlert("שגיאה", `עדכון לקוח נכשל\n${error}`, "error");
+                if (axios.isAxiosError(error)) {
+                    console.error('Axios error:', error.response?.data);
+                    showAlert("שגיאה בעדכון לקוח", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
+                } else {
+                    // טיפול בשגיאות אחרות
+                    console.error('Unexpected error:', error);
+                    showAlert("שגיאה בעדכון לקוח", 'שגיאה בלתי צפויה', "error");
+                }
             });
 
     }
@@ -74,36 +81,36 @@ export const UpdateCustomer: React.FC = () => {
     return <div className='interestedCustomerRegistration'>
         {/* כל עוד הטופס לא תקין רואים אותו ולאחר שליחה רואים את הדיב שבסוף */}
         {/* {showForm ? */}
-            <div>
-                <h1 className="text-3xl font-bold text-center text-blue-600 my-4">עדכון פרטי לקוח</h1>
-                <h4 className="text-lg text-center text-gray-600 my-2">ערוך את הפרטים הרצוים</h4>
-                <Form
-                    label=""
-                    schema={schema}
-                    onSubmit={onSubmit}
-                    methods={methods}
-                    className="mx-auto mt-10"
-                >
-                    <InputField name="name" label="שם" required />
-                    <InputField name="phone" label="טלפון" required />
-                    <InputField name="email" label="אימייל" required />
-                    <InputField name="idNumber" label="תעודת זהות" required />
-                    <InputField name="businessName" label="שם העסק" required />
-                    <InputField name="businessType" label="סוג העסק" required />
-                    <InputField name="notes" label="הערות" />
-                    <InputField name="invoiceName" label="שם לחשבונית" />
-                    <div className="flex justify-center mt-4 col-span-2">
-                        <Button
-                            variant="primary"
-                            size="md"
-                            type="submit"
-                        >
-                            ערוך
-                        </Button>
-                    </div>
-                </Form>
-            </div >
-            {/* :
+        <div>
+            <h1 className="text-3xl font-bold text-center text-blue-600 my-4">עדכון פרטי לקוח</h1>
+            <h4 className="text-lg text-center text-gray-600 my-2">ערוך את הפרטים הרצוים</h4>
+            <Form
+                label=""
+                schema={schema}
+                onSubmit={onSubmit}
+                methods={methods}
+                className="mx-auto mt-10"
+            >
+                <InputField name="name" label="שם" required />
+                <InputField name="phone" label="טלפון" required />
+                <InputField name="email" label="אימייל" required />
+                <InputField name="idNumber" label="תעודת זהות" required />
+                <InputField name="businessName" label="שם העסק" required />
+                <InputField name="businessType" label="סוג העסק" required />
+                <InputField name="notes" label="הערות" />
+                <InputField name="invoiceName" label="שם לחשבונית" />
+                <div className="flex justify-center mt-4 col-span-2">
+                    <Button
+                        variant="primary"
+                        size="md"
+                        type="submit"
+                    >
+                        ערוך
+                    </Button>
+                </div>
+            </Form>
+        </div >
+        {/* :
             <div className="text-center my-4">
                 <h2 className="text-2xl font-semibold text-gray-700 mb-2">הלקוח עודכן בהצלחה!</h2>
                 <Button onClick={() => navigate(`/leadAndCustomer/customers`)} variant="primary" size="sm">לחזרה לעמוד הלקוחות</Button>

@@ -12,9 +12,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
 import { createCustomer, updateLead } from "../../Service/LeadAndCustomersService"
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import axios from 'axios';
 
-//לראות איך לעשות שיראו את השגיאה עצמה לדוגמא תז כפול
-//לסדר שיראו את השגיאות של המשורשר
+//לסדר שיראו את השגיאות אימות של המשורשר
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
@@ -107,7 +107,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
     const stepFieldNames = [
         ["name", "phone", "email", "idNumber", "businessName", "businessType"] as const,
         ["workspaceType", "workspaceCount", "notes", "invoiceName"] as const,
-        ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType" , "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
+        ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType", "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
         // ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType", "contractDocuments"] as const
 
     ];
@@ -218,16 +218,34 @@ export const InterestedCustomerRegistration: React.FC = () => {
         await createCustomer(customerRequest)
             .then(async () => {
 
-                await updateLead(lead.id!, {status: LeadStatus.CONVERTED})
+                await updateLead(lead.id!, { status: LeadStatus.CONVERTED })
                     .then(() => {
                         showAlert("", "המתעניין נוסף ללקוחות בהצלחה", "success");
                         navigate(-1);
                     }).catch((error) => {
-                        showAlert("שגיאה", `שינוי סטטוס נכשל\n${error}`, "error");
+                        if (axios.isAxiosError(error)) {
+                            // אם השגיאה היא של Axios
+                            console.error('Axios error:', error.response?.data);
+                            // תוכל להציג את השגיאה למשתמש או לוג
+                            showAlert("שגיאה בעדכון סטטוס ", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
+                        } else {
+                            // טיפול בשגיאות אחרות
+                            console.error('Unexpected error:', error);
+                            showAlert("שגיאה בשינוי סטטוס", 'שגיאה בלתי צפויה', "error");
+                        }
                     })
 
             }).catch((error: Error) => {
-                showAlert("שגיאה", `שגיאה ביצירת לקוח:\n${error}`, "error");
+                if (axios.isAxiosError(error)) {
+                    // אם השגיאה היא של Axios
+                    console.error('Axios error:', error.response?.data);
+                    // תוכל להציג את השגיאה למשתמש או לוג
+                    showAlert("שגיאה ביצירת לקוח", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
+                } else {
+                    // טיפול בשגיאות אחרות
+                    console.error('Unexpected error:', error);
+                    showAlert("שגיאה ביצירת לקוח", 'שגיאה בלתי צפויה', "error");
+                }
             });
     }
 

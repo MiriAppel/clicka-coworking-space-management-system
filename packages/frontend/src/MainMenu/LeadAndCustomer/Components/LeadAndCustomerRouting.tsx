@@ -16,6 +16,7 @@ import { InteractionForm } from "./Interactions/interactionForm";
 import { addInteraction } from "./Interactions/leadInteractionDetails";
 import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
+
 export const LeadAndCustomerRouting = () => {
     const {
         selectedLead
@@ -25,11 +26,10 @@ export const LeadAndCustomerRouting = () => {
             <Route path="/" element={<LeadAndCustomer />} />
             <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
-            {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
+            <Route path="customers/:customerId" element={<CustomerDetails />} />
             <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
-            {/* <Route path="customers/intersections" element={<CustomerInteraction />} /> */}
             <Route path="contracts" element={<ContractManagement />}/>
             <Route path="contracts/:customerId" element={<ContractDetails />} />
             <Route path="contracts/new" element={<AddContract />} />
@@ -37,7 +37,7 @@ export const LeadAndCustomerRouting = () => {
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
-            <Route path="leads/interactions/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => addInteraction(lead)} onCancel={() => { }} />} />
+            <Route path="leads/intersections/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => addInteraction(lead)} onCancel={() => { }} />} />
         </Routes>
     );
 };

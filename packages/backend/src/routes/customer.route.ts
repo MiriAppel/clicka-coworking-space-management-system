@@ -15,7 +15,7 @@ routerCstomer.get('/status/all', customerController.getAllCustomerStatus);
 
 routerCstomer.get('/notify/:id', customerController.getCustomersToNotify); 
 
-routerCstomer.get('/id/:id', customerController.getCustomerById); 
+routerCstomer.get('/:id', customerController.getCustomerById); 
 
 routerCstomer.get('/filter', customerController.getCustomersByFilter);
 
