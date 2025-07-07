@@ -1,5 +1,3 @@
-// customer-types.d.ts
-
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 

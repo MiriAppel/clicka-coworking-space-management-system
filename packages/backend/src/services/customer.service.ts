@@ -17,34 +17,36 @@ import { supabase } from "../db/supabaseClient";
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
 import { ContractModel } from "../models/contract.model";
 import { contractService } from '../services/contract.service';
+import { customerPaymentMethodModel } from "../models/customerPaymentMethod.model";
+import { serviceCustomerPaymentMethod } from "./customerPaymentMethod.service";
 
 
 export class customerService extends baseService<CustomerModel> {
-  constructor() {
-    super("customer");
-  }
+    constructor() {
+        super("customer");
+    }
 
-  getAllCustomers = async (): Promise<CustomerModel[] | null> => {
-    const customers = await this.getAll();
-    return CustomerModel.fromDatabaseFormatArray(customers); // המרה לסוג UserModel
-  };
-  //מחזיר את כל הסטטוסים של הלקוח
-  getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
-    return Object.values(CustomerStatus) as CustomerStatus[];
-  };
+    getAllCustomers = async (): Promise<CustomerModel[] | null> => {
+        const customers = await this.getAll();
+        return CustomerModel.fromDatabaseFormatArray(customers); // המרה לסוג UserModel
+    };
+    //מחזיר את כל הסטטוסים של הלקוח
+    getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
+        return Object.values(CustomerStatus) as CustomerStatus[];
+    };
 
-  //לא הבנתי מה היא צריכה לעשות
-  getCustomersToNotify = async (
-    id: ID
-  ): Promise<GetCustomersRequest[] | null> => {
-    return [];
-  };
+    //לא הבנתי מה היא צריכה לעשות
+    getCustomersToNotify = async (
+        id: ID
+    ): Promise<GetCustomersRequest[] | null> => {
+        return [];
+    };
 
-  createCustomer = async (
-    newCustomer: CreateCustomerRequest
-  ): Promise<CustomerModel> => {
-    console.log("in servise");
-    console.log(newCustomer);
+    createCustomer = async (
+        newCustomer: CreateCustomerRequest
+    ): Promise<CustomerModel> => {
+        console.log("in servise");
+        console.log(newCustomer);
 
         //מה לעשות עם זה: paymentMethods!!
 
@@ -66,7 +68,6 @@ export class customerService extends baseService<CustomerModel> {
             paymentMethodType: newCustomer.paymentMethodType,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            paymentMethods: [],
             toDatabaseFormat() {
                 return {
                     name: this.name,
@@ -134,6 +135,40 @@ export class customerService extends baseService<CustomerModel> {
         console.log("in service");
         console.log(contract);
 
+        //create customer payment method
+        if (newCustomer.paymentMethodType == PaymentMethodType.CREDIT_CARD) {
+            const newPaymentMethod: customerPaymentMethodModel = {
+                customerId: customer.id!,
+                isActive: true,
+                creditCardExpiry: newCustomer.paymentMethod?.creditCardExpiry,
+                creditCardHolderIdNumber: newCustomer.paymentMethod?.creditCardHolderIdNumber,
+                creditCardHolderPhone: newCustomer.paymentMethod?.creditCardHolderPhone,
+                creditCardLast4: newCustomer.paymentMethod?.creditCardLast4,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                toDatabaseFormat() {
+                    return {
+                        customer_id: this.customerId,
+                        credit_card_last_4: this.creditCardLast4,
+                        credit_card_expiry: this.creditCardExpiry,
+                        credit_card_holder_id_number: this.creditCardHolderIdNumber,
+                        credit_card_holder_phone: this.creditCardHolderPhone,
+                        is_active: this.isActive,
+                        created_at: this.createdAt,
+                        updated_at: this.updatedAt
+                    };
+                }
+            }
+
+
+            const paymentMethod = await serviceCustomerPaymentMethod.post(newPaymentMethod)
+
+            console.log("paymentMethod in service");
+            console.log(paymentMethod);
+        }
+
+
+
 
         // קריאה לשירותי התראות/מייל מתאימים לאחר המרה מוצלחת קשור לקבוצה 1
 
@@ -151,88 +186,88 @@ export class customerService extends baseService<CustomerModel> {
         }
     }
 
-  // יצרית הודעת עזיבה של לקוח
-  postExitNotice = async (
-    exitNotice: RecordExitNoticeRequest,
-    id: ID
-  ): Promise<void> => {
-    const updateStatus: UpdateCustomerRequest = {
-      status: CustomerStatus.PENDING,
+    // יצרית הודעת עזיבה של לקוח
+    postExitNotice = async (
+        exitNotice: RecordExitNoticeRequest,
+        id: ID
+    ): Promise<void> => {
+        const updateStatus: UpdateCustomerRequest = {
+            status: CustomerStatus.PENDING,
+        };
+
+        await this.updateCustomer(updateStatus as CustomerModel, id);
+
+        const customerLeave: CustomerModel | null = await this.getById(id);
+
+        if (customerLeave) {
+            // יצירת תקופת עזיבה ללקוח
+            const period: CustomerPeriodModel = {
+                customerId: id,
+                entryDate: customerLeave.createdAt || new Date().toISOString(),
+                exitDate: exitNotice.plannedExitDate,
+                exitNoticeDate: exitNotice.exitNoticeDate,
+                exitReason: exitNotice.exitReason,
+                exitReasonDetails: exitNotice.exitReasonDetails,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                toDatabaseFormat() {
+                    return {
+                        customer_id: this.customerId,
+                        entry_date: this.entryDate,
+                        exit_date: this.exitDate,
+                        exit_notice_date: this.exitNoticeDate,
+                        exit_reason: this.exitReason,
+                        exit_reason_details: this.exitReasonDetails,
+                        created_at: this.createdAt,
+                        updated_at: this.updatedAt,
+                    };
+                },
+            };
+            try {
+                await serviceCustomerPeriod.post(period);
+            } catch (error) {
+                console.error("in Period ", error);
+            }
+        }
+
+        if (customerLeave && customerLeave.id) {
+            await this.patch(customerLeave, customerLeave.id);
+        } else {
+            throw new Error("Customer ID is undefined");
+        }
+
+        //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
+
+        // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
+        // קשור לקבוצת billing
     };
 
-    await this.updateCustomer(updateStatus as CustomerModel, id);
+    getCustomersByText = async (text: string): Promise<CustomerModel[]> => {
+        const searchFields = ["name", "phone", "business_name", "business_type", "email"];
 
-    const customerLeave: CustomerModel | null = await this.getById(id);
+        const filters = searchFields
+            .map((field) => `${field}.ilike.%${text}%`)
+            .join(",");
 
-    if (customerLeave) {
-      // יצירת תקופת עזיבה ללקוח
-      const period: CustomerPeriodModel = {
-        customerId: id,
-        entryDate: customerLeave.createdAt || new Date().toISOString(),
-        exitDate: exitNotice.plannedExitDate,
-        exitNoticeDate: exitNotice.exitNoticeDate,
-        exitReason: exitNotice.exitReason,
-        exitReasonDetails: exitNotice.exitReasonDetails,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        toDatabaseFormat() {
-          return {
-            customer_id: this.customerId,
-            entry_date: this.entryDate,
-            exit_date: this.exitDate,
-            exit_notice_date: this.exitNoticeDate,
-            exit_reason: this.exitReason,
-            exit_reason_details: this.exitReasonDetails,
-            created_at: this.createdAt,
-            updated_at: this.updatedAt,
-          };
-        },
-      };
-      try {
-        await serviceCustomerPeriod.post(period);
-      } catch (error) {
-        console.error("in Period ", error);
-      }
-    }
+        console.log("Filters:", filters);
 
-    if (customerLeave && customerLeave.id) {
-      await this.patch(customerLeave, customerLeave.id);
-    } else {
-      throw new Error("Customer ID is undefined");
-    }
+        const { data, error } = await supabase
+            .from("customer")
+            .select("*")
+            .or(filters);
 
-    //ליצור התראה שהלקוח עוזב - קשור לקבוצה 1
+        if (error) {
+            console.error("שגיאה:", error);
+            return [];
+        }
 
-    // לעדכן את מערכת החיוב לגבי סיום השירות או חישוב חיוב סופי
-    // קשור לקבוצת billing
-  };
-
-  getCustomersByText = async (text: string): Promise<CustomerModel[]> => {
-  const searchFields = ["name", "phone", "business_name", "business_type", "email"];
-  
-  const filters = searchFields
-    .map((field) => `${field}.ilike.%${text}%`)
-    .join(",");
-  
-  console.log("Filters:", filters);
-  
-  const { data, error } = await supabase
-    .from("customer")
-    .select("*")
-    .or(filters);
-  
-  if (error) {
-    console.error("שגיאה:", error);
-    return [];
-  }
-  
-  return data as CustomerModel[];
-};
+        return data as CustomerModel[];
+    };
 
 
     //מחזיר את כל הלקוחות רק של העמוד הראשון
     getCustomersByPage = async (filters: {
-        page?: number;
+        page?: string;
         limit?: number;
     }): Promise<CustomerModel[]> => {
         console.log("Service getCustomersByPage called with:", filters);
@@ -252,10 +287,10 @@ export class customerService extends baseService<CustomerModel> {
         const { data, error } = await supabase
             .from("customer")
             .select("*")
-            .order("name", { ascending: true }) // מיון לפי שם
+            .order("created_at", { ascending: false })
             .range(from, to);
 
-        //   console.log("Supabase data:", data);
+        // console.log("Supabase data:", data);
         console.log("Supabase error:", error);
 
         if (error) {
@@ -266,7 +301,7 @@ export class customerService extends baseService<CustomerModel> {
         }
 
         const customers = data || [];
-        return CustomerModel.fromDatabaseFormatArray(customers)
+        return CustomerModel.fromDatabaseFormatArray(customers);
     };
 }
 const serviceCustomer = new customerService();

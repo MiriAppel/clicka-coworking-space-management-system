@@ -1,9 +1,9 @@
 
 import { UUID } from "node:crypto";
-import type{ ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } from "shared-types";
+import type { ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } from "shared-types";
 
 export class LeadModel implements Lead {
-  
+
   id?: UUID; // PK
   idNumber: ID; // FK
   name: string;
@@ -20,7 +20,7 @@ export class LeadModel implements Lead {
   followUpDate?: string | undefined;
   notes?: string | undefined;
 
-    constructor( 
+  constructor(
     id: UUID,
     idNumber: ID,
     name: string,
@@ -93,7 +93,9 @@ export class LeadModel implements Lead {
   }
 
   static fromDatabaseFormatArray(dbDataArray: any[]): LeadModel[] {
-    return dbDataArray.map(dbData => {let lead = LeadModel.fromDatabaseFormat(dbData); console.log(lead.id+'-------------------------------');return lead
+    return dbDataArray.map(dbData => {
+      let lead = LeadModel.fromDatabaseFormat(dbData);
+      return lead
     });
   }
 

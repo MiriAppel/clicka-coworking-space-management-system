@@ -116,26 +116,24 @@ export const CustomersList = () => {
     return () => observer.disconnect();
   }, [isSearching]);
 
-  // useEffect(() => {
-  //   // fetchCustomers();
-  //   // האזנה לשינויים בטבלת customers
-  //   const channel = supabase
-  //     .channel('public:customer')
-  //     .on(
-  //       'postgres_changes',
-  //       { event: '*', schema: 'public', table: 'customer' },
-  //       (payload) => {
-  //         // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
-  //         fetchCustomers();
-  //       }
-  //     )
-  //     .subscribe();
+  //צריך בשביל זה גישה
+  //  useEffect(() => {
+  //       const channel = supabase
+  //         .channel('public:customer')
+  //         .on(
+  //           'postgres_changes',
+  //           { event: '*', schema: 'public', table: 'customer' },
+  //           (payload) => {
+  //             console.log('Change detected:', payload); // הוסף לוג כדי לבדוק אם האירועים מתקבלים
+  //             fetchCustomers(page, 20, ""); // ודא שהפונקציה זו מוגדרת
+  //           }
+  //         )
+  //         .subscribe();
 
-  //   // ניקוי מאזין כשיוצאים מהקומפוננטה
-  //   return () => {
-  //     supabase.removeChannel(channel);
-  //   };
-  // }, []);
+  //       return () => {
+  //         supabase.removeChannel(channel);
+  //       };
+  //   }, []);
 
   useEffect(() => {
     if (!loaderRef.current || isSearching) return;
@@ -218,9 +216,9 @@ export const CustomersList = () => {
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
     try {
       await deleteCustomer(val.id)
-      // await fetchCustomers();
-      setCustomers((prev) => prev.filter(customer => customer.id !== val.id));
-      allCustomersRef.current = allCustomersRef.current.filter((customer) => customer.id !== val.id);
+      await fetchCustomers(page, 20, "");
+      // setCustomers((prev) => prev.filter(customer => customer.id !== val.id));
+      // allCustomersRef.current = allCustomersRef.current.filter((customer) => customer.id !== val.id);
       showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -371,7 +369,7 @@ export const CustomersList = () => {
               // }
             }}
           >
-            דף הבא
+            <span></span> הבא
           </Button>
           <div ref={loaderRef} className="h-4"></div>
         </div>
