@@ -215,6 +215,63 @@
 .fc .fc-button-primary:focus {
     outline: none !important;
 }
+/* סטטוס מאושר */
+.fc-event.booking-status-approved {
+  background-color: #10B981 !important;
+  border-color: #059669 !important;
+  color: white !important;
+}
+
+/* סטטוס ממתין */
+.fc-event.booking-status-pending {
+  background-color: #F59E0B !important;
+  border-color: #D97706 !important;
+  color: white !important;
+}
+
+/* סטטוס נדחה */
+.fc-event.booking-status-rejected {
+  background-color: #EF4444 !important;
+  border-color: #DC2626 !important;
+  color: white !important;
+}
+
+/* סטטוס בוטל */
+.fc-event.booking-status-canceled {
+  background-color: #6B7280 !important;
+  border-color: #4B5563 !important;
+  color: white !important;
+  opacity: 0.7;
+}
+
+/* סטטוס הושלם */
+.fc-event.booking-status-completed {
+  background-color: #8B5CF6 !important;
+  border-color: #7C3AED !important;
+  color: white !important;
+}
+
+/* אפקטים נוספים */
+.fc-event.booking-status-canceled {
+  text-decoration: line-through;
+}
+
+.fc-event.booking-status-completed {
+  opacity: 0.8;
+}
+
+/* הוברים */
+.fc-event.booking-status-approved:hover {
+  background-color: #059669 !important;
+}
+
+.fc-event.booking-status-pending:hover {
+  background-color: #D97706 !important;
+}
+
+.fc-event.booking-status-rejected:hover {
+  background-color: #DC2626 !important;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

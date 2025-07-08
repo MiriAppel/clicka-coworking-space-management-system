@@ -13,6 +13,22 @@ interface Space {
   location?: string;
 }
 
+interface Customer {
+  id: string | number;
+  name: string;
+  email?: string;
+  phone?: string;
+}
+
+interface Room {
+  id: string | number;
+  name: string;
+  description?: string;
+  type: string;
+  capacity: number;
+  status: string;
+}
+
 interface Assignment {
   id: string | number;
   workspaceId: string | number;
@@ -24,23 +40,20 @@ interface Assignment {
   status: 'ACTIVE' | 'INACTIVE' | 'ENDED';
 }
 
-interface Customer {
-  id: string | number;
-  name: string;
-  email?: string;
-}
-
 interface AssignmentStoreState {
   // State
   assignments: Assignment[];
   spaces: Space[];
   customers: Customer[];
+  rooms: Room[];
   loading: boolean;
   error: string | null;
   selectedAssignment: Assignment | null;
 
   // Actions
   getAllSpaces: () => Promise<Space[]>;
+  getAllCustomers: () => Promise<Customer[]>;
+  getAllRooms: () => Promise<Room[]>;
   getSpaceById: (id: string | number) => Promise<Space>;
   createSpace: (spaceData: Omit<Space, 'id'>) => Promise<Space>;
   updateSpace: (id: string | number, spaceData: Partial<Space>) => Promise<Space>;
@@ -64,21 +77,19 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   assignments: [],
   spaces: [],
   customers: [],
+  rooms: [],
   loading: false,
   error: null,
   selectedAssignment: null,
 
   /**
-   * מביא את כל חללי העבודה מהשרת
-   * מעדכן את state.spaces עם הנתונים שהתקבלו
-   * מנהל loading state ושגיאות
-   * @returns Promise<Space[]> - מערך של כל חללי העבודה
+   * מביא את כל הלקוחות מהשרת
    */
-  getAllSpaces: async () => {
+  getAllCustomers: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await api.get<Space[]>('/getAllSpaces');
-      set({ spaces: response.data, loading: false });
+      const response = await api.get<Customer[]>('/api/customers');
+      set({ customers: response.data, loading: false });
       return response.data;
     } catch (error) {
       const errorMessage = error instanceof AxiosError 
@@ -90,6 +101,46 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   },
 
   /**
+   * מביא את כל החדרים מהשרת
+   */
+  getAllRooms: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await api.get<Room[]>('/api/rooms/getAllRooms');
+      set({ rooms: response.data, loading: false });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error instanceof AxiosError 
+        ? error.message 
+        : 'An unknown error occurred';
+      set({ error: errorMessage, loading: false });
+      throw error;
+    }
+  },
+  /**
+   * מביא את כל חללי העבודה מהשרת
+   * מעדכן את state.spaces עם הנתונים שהתקבלו
+   * מנהל loading state ושגיאות
+   * @returns Promise<Space[]> - מערך של כל חללי העבודה
+   */
+  getAllSpaces: async () => {
+    set({ loading: true, error: null });
+    try {
+      // תיקון הנתיב להתאים ל-Backend routes
+      const response = await api.get<Space[]>('/api/space/getAllSpaces');
+      set({ spaces: response.data, loading: false });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error instanceof AxiosError 
+        ? error.message 
+        : 'An unknown error occurred';
+      set({ error: errorMessage, loading: false });
+      throw error;
+    }
+  },
+
+
+  /**
    * מביא חלל עבודה ספציפי לפי ID
    * לא מעדכן את ה-state, רק מחזיר את הנתונים
    * @param id - מזהה חלל העבודה
@@ -98,7 +149,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   getSpaceById: async (id: string | number) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.get<Space>(`/getSpaceById/${id}`);
+      // תיקון הנתיב להתאים ל-Backend routes
+      const response = await api.get<Space>(`/api/space/getSpaceById/${id}`);
       set({ loading: false });
       return response.data;
     } catch (error) {
@@ -119,7 +171,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   createSpace: async (spaceData: Omit<Space, 'id'>) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.post<Space>('/createSpace', spaceData);
+      // תיקון הנתיב להתאים ל-Backend routes
+      const response = await api.post<Space>('/api/space/createSpace', spaceData);
       const newSpace = response.data;
       set((state) => ({
         spaces: [...state.spaces, newSpace],
@@ -145,7 +198,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   updateSpace: async (id: string | number, spaceData: Partial<Space>) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.put<Space>(`/updateSpace/${id}`, spaceData);
+      // תיקון הנתיב להתאים ל-Backend routes
+      const response = await api.put<Space>(`/api/space/updateSpace/${id}`, spaceData);
       const updatedSpace = response.data;
       set((state) => ({
         spaces: state.spaces.map((space) => 
@@ -172,7 +226,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   deleteSpace: async (id: string | number) => {
     set({ loading: true, error: null });
     try {
-      await api.delete(`/deleteSpace/${id}`);
+      // תיקון הנתיב להתאים ל-Backend routes
+      await api.delete(`/api/space/deleteSpace/${id}`);
       set((state) => ({
         spaces: state.spaces.filter((space) => space.id !== id),
         loading: false
@@ -188,14 +243,15 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
 
   /**
    * יוצר הקצאה חדשה (assignment) בשרת
-   * מוסיף את ההקצאה الجديدة למערך assignments ב-state
-   * @param assignmentData - נתוני ההקצאה الجديدة (ללא ID)
+   * מוסיף את ההקצאה החדשה למערך assignments ב-state
+   * @param assignmentData - נתוני ההקצאה החדשה (ללא ID)
    * @returns Promise<Assignment> - ההקצאה שנוצרה (כולל ID)
    */
   createAssignment: async (assignmentData: Omit<Assignment, 'id'>) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.post<Assignment>('/createAssignment', assignmentData);
+      // הערה: אין endpoint ל-assignments ב-routes שלך, אולי צריך להוסיף
+      const response = await api.post<Assignment>('/api/space/createAssignment', assignmentData);
       const newAssignment = response.data;
       set((state) => ({
         assignments: [...state.assignments, newAssignment],

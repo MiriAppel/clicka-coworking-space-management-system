@@ -458,7 +458,7 @@ export const WorkspaceMap = () => {
               transformOrigin: '0 0'
             }}
           >
-            {www.length > 0 && www.map((w) => {
+            {workSpaces.length > 0 && workSpaces.map((w) => {
               const hasActiveSearch = activeStatusSearch || activeTypeSearch;
               const matchesStatusSearch = !activeStatusSearch || w.status === selectedStatus;
               const matchesTypeSearch = !activeTypeSearch || w.type === selectedType;
