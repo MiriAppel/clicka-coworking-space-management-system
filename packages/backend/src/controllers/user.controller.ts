@@ -40,20 +40,7 @@ export class UserController {
         const result = await this.userService.loginByGoogleId(googleId);
 
         if (result) {
-            // שליפת ה-role מתוך ה-result
-            const role = result.role;
-
-            // הגדרת cookie עם ה-role
-            const expirationDays = 7; // מספר הימים שהעוגיה תהיה זמינה
-            const date = new Date();
-            date.setTime(date.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
-
-            // שמירת ה-cookie עם ה-role
-            res.cookie('role', role, {
-                expires: date,
-                httpOnly: true // httpOnly כדי למנוע גישה דרך JavaScript
-            });
-
+            this.userService.createRoleCookies(res,result.role);
             res.status(200).json(result);
         } else {
             res.status(404).json({ error: "User not found" });

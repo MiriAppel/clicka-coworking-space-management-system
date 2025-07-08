@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { UpdateUser } from './UpdateUser';
 import { AddUser } from './AddUser';
 import { useUserStore } from '../../../../Stores/CoreAndIntegration/userStore';
+import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
 
 export const UserTable = () => {
   const {
@@ -32,10 +33,10 @@ export const UserTable = () => {
     if (window.confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
       try {
         await removeUser(user.id as string);
-        alert("User deleted successfully");
+        showAlert("", "המשתמש נמחק בהצלחה", "success");
       } catch (error) {
         console.error("Error deleting user:", error);
-        alert("Failed to delete user. Please try again.");
+        showAlert("שגיאה", "מחיקת המשתמש נכשלה. נסה שוב", "error");
       }
     }
   };

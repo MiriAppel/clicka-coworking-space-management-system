@@ -13,6 +13,9 @@ import MainLayout from './layout/MainLayout';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
+import { Billing } from './MainMenu/Billing/Components/Billing';
+import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
+
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -50,6 +53,9 @@ export const Routing = () => {
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        <Route path="billing/*" element={<Billing />} />
+        <Route path="users" element={< UserTable />} />
+     
       </Route>
     </Routes>
   );
