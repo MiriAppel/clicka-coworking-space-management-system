@@ -126,7 +126,6 @@ import { serviceGetInvoiceById } from '../services/invoice.service'; // ייבו
  * @returns ReportData - דוח הכנסות מסווג לפי סוג שירותים
  */
 export async function generateRevenueDataFromPayments(parameters: ReportParameters): Promise<ReportData> {
-  console.log('Generating revenue data with parameters:', parameters);
   
   const paymentService = new PaymentService(); // יצירת מופע של PaymentService
   // שלב 1: שליפת כל התשלומים לפי טווח התאריכים
@@ -134,7 +133,6 @@ export async function generateRevenueDataFromPayments(parameters: ReportParamete
     dateFrom: parameters.dateRange.startDate,
     dateTo: parameters.dateRange.endDate,
   });
-console.log(payments);
 
   // משתנים לאגירת סכומים לפי סוג
   let membershipRevenue = 0;

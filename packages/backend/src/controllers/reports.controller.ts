@@ -12,7 +12,6 @@ export class ReportController {
   try {
     const { type } = req.params;
     const parameters = req.body as ReportParameters;
-    console.log('Generating report of type:', type, 'with parameters:', parameters);
     let reportData;
     switch (type as ReportType) {
       case 'REVENUE':

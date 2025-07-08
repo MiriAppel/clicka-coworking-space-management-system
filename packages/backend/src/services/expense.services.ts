@@ -196,15 +196,6 @@ export class ExpenseService {
   async getExpenses(filters: GetExpensesRequest) {
     try {
       let query = supabase.from('expense').select('*');
-console.log("Using filters:", {
-  vendorId: filters.vendorId,
-  category: filters.category,
-  status: filters.status,
-  dateFrom: filters.dateFrom,
-  dateTo: filters.dateTo,
-  sortBy: filters.sortBy,
-  sortDirection: filters.sortDirection
-});
 
       if (filters.vendorId) {
         query = query.eq('vendor_id', filters.vendorId);
