@@ -31,12 +31,12 @@ export const LeadInteractionDetails = () => {
   const [showGraph, setShowGraph] = useState(false);
   const navigate = useNavigate();
   const selectedLead = useLeadsStore(state => state.selectedLead);
-  const {  handleDeleteLead , handleSelectLead , resetSelectedLead} = useLeadsStore();
+  const { handleDeleteLead, handleSelectLead, resetSelectedLead } = useLeadsStore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingInteraction, setEditingInteraction] = useState<any>(null);
 
   // סוגי אינטראקציה
-  const interactionTypes = ["Call", "Email", "Meeting", "Other"];
+  const interactionTypes = ["Phone", "Email", "Meeting", "Other"];
 
   // פונקציה לעריכת אינטראקציה
   const editInteraction = (interactionId: string) => {
@@ -126,7 +126,10 @@ export const LeadInteractionDetails = () => {
                     <FaTrash />
                   </button>
                   <button
-                    onClick={() => interaction.id && editInteraction(interaction.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      interaction.id && editInteraction(interaction.id)
+                    }}
                     className="text-yellow-500 hover:text-yellow-700"
                   >
                     <FaPen />
@@ -143,7 +146,7 @@ export const LeadInteractionDetails = () => {
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-4 rounded-lg w-1/3">
             <h2 className="text-xl font-semibold mb-4">עריכת אינטראקציה</h2>
-            
+
             {/* שדה סוג אינטראקציה */}
             <label className="block mb-2">סוג אינטראקציה:</label>
             <select
@@ -213,7 +216,8 @@ export const LeadInteractionDetails = () => {
         <Button
           variant="accent"
           size="sm"
-          onClick={async() => {await resetSelectedLead();
+          onClick={async () => {
+            await resetSelectedLead();
             console.log(selectedLead);
           }}
         >
