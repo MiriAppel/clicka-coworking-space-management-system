@@ -4,6 +4,7 @@ import { PaymentService } from '../services/payments.service';
 import type{ ID } from 'shared-types';
 
 export const payment = {
+  
   async recordPayment(req: Request, res: Response) {
     try {
       const payment = await PaymentService.recordPayment(req.body, req.body.user.id);

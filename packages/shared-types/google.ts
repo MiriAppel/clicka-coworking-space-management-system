@@ -40,6 +40,7 @@ export interface CalendarEventInput {
     useDefault?: boolean;
     overrides?: Array<{ method: 'email' | 'popup'; minutes: number }>;
   };
+  recurrence?: string[]; // ← זה השדה החשוב לאירועים חוזרים!
   [key: string]: any; // שדה פתוח לשדות נוספים
 }
 

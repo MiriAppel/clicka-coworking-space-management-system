@@ -10,7 +10,7 @@ export const AuthenticationScreen = () => {
     <div className="authentication-screen">
       {isAuthenticated ? (
         <div>
-          <h1>שלום {user?.firstName}</h1>
+          <h1>שלום {user?.firstName} {user?.lastName}</h1>
           <LogoutButton />
         </div>
       ) : (
