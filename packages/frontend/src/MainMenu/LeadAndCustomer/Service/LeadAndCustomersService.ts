@@ -7,9 +7,8 @@ import {
   UpdateCustomerRequest,
   CreateCustomerRequest,
   RecordExitNoticeRequest,
-  StatusChangeRequest,
 } from 'shared-types';
-import { axiosInstance } from '../../../Services/Axios';
+import { axiosInstance } from '../../../Service/Axios';
 
 // ---------- לידים ----------
 
@@ -42,6 +41,14 @@ export const deleteLead = async (id: string): Promise<void> => {
   }
 };
 
+export const updateLead = async (id: string, data: Partial<Lead>): Promise<void> => {
+  try {
+    await axiosInstance.patch(`/leads/${id}`, data);
+  } catch (error) {
+    console.error('Error patching lead:', error);
+    throw error;
+  }
+};
 
 // ---------- לקוחות ----------
 

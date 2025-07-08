@@ -2,32 +2,32 @@ import express from 'express';
 import * as customerController from '../controllers/customer.controller'; 
 import * as contractController from '../controllers/contract.controller'
 
-const routerCstomer = express.Router();
+const routerCustomer = express.Router();
 
 // (GET)
-routerCstomer.get('/by-page', customerController.getCustomersByPage);
+routerCustomer.get('/by-page', customerController.getCustomersByPage);
 
-routerCstomer.get('/', customerController.getAllCustomers); 
+routerCustomer.get('/', customerController.getAllCustomers); 
 
-routerCstomer.get('/page', customerController.getCustomersByPage); 
+routerCustomer.get('/page', customerController.getCustomersByPage); 
 
-routerCstomer.get('/status/all', customerController.getAllCustomerStatus);
+routerCustomer.get('/status/all', customerController.getAllCustomerStatus);
 
-routerCstomer.get('/notify/:id', customerController.getCustomersToNotify); 
+routerCustomer.get('/notify/:id', customerController.getCustomersToNotify); 
 
-routerCstomer.get('/id/:id', customerController.getCustomerById); 
+routerCustomer.get('/:id', customerController.getCustomerById); 
 
-routerCstomer.get('/filter', customerController.getCustomersByFilter);
+routerCustomer.get("/search", customerController.searchCustomersByText);
 
 //(POST)
-routerCstomer.post('/:id/exit-notice', customerController.postExitNotice); 
+routerCustomer.post('/:id/exit-notice', customerController.postExitNotice); 
 
-routerCstomer.post('/post-customer', customerController.postCustomer); 
+routerCustomer.post('/post-customer', customerController.postCustomer); 
 
 //PATCH/PUT)
-routerCstomer.patch('/:id', customerController.patchCustomer); 
+routerCustomer.patch('/:id', customerController.patchCustomer); 
 
-routerCstomer.delete('/:id', customerController.deleteCustomer);
+routerCustomer.delete('/:id', customerController.deleteCustomer);
 
-export default routerCstomer;
+export default routerCustomer;
 

@@ -1,4 +1,4 @@
-import { parseISO, format } from 'date-fns'; // ייבוא פונקציות עזר לטיפול בתאריכים
+import {parse,  format } from 'date-fns'; // ייבוא פונקציות עזר לטיפול בתאריכים
 
 /**
  * פונקציה לקיבוץ מערך נתונים לפי תקופה (חודש / רבעון / שנה)
@@ -18,7 +18,7 @@ export function groupByPeriod<T>(
 
   for (const item of items) {
     const dateStr = item[dateField] as string; // חילוץ התאריך מתוך השדה
-    const date = parseISO(dateStr); // המרת התאריך למבנה Date בעזרת date-fns
+    const date = parse(dateStr); // המרת התאריך למבנה Date בעזרת date-fns
 
     let key = '';
 

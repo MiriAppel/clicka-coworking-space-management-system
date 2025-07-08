@@ -3,6 +3,9 @@
   color: white;
   padding: 10px 20px;
   direction: rtl;
+  position: sticky; /* הוסף את זה */
+  top: 0; /* הוסף את זה */
+  z-index: 1000; /* הוסף את זה כדי לוודא שהוא מעל תוכן אחר */
 }
 
 .navList {
