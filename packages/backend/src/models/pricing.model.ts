@@ -1,7 +1,7 @@
 import { DateISO, ID, LoungePricing, MeetingRoomPricing, PricingTier, WorkspaceType } from "shared-types";
 
 export class LoungePricingModel implements LoungePricing{
-    id?: ID;
+    id: ID;
     eveningRate: number;
     memberDiscountRate: number;
     active: boolean;
@@ -9,7 +9,7 @@ export class LoungePricingModel implements LoungePricing{
     createdAt: DateISO;
     updatedAt: DateISO;
     constructor(data: { 
-        id?: ID;
+        id: ID;
         eveningRate: number;
         memberDiscountRate: number;
         active: boolean;
@@ -17,7 +17,7 @@ export class LoungePricingModel implements LoungePricing{
         createdAt: DateISO;
         updatedAt: DateISO;
     }){
-        this.id = data.id || undefined;
+        this.id = data.id!;
         this.eveningRate = data.eveningRate;
         this.memberDiscountRate = data.memberDiscountRate;
         this.active = data.active;
@@ -38,7 +38,7 @@ export class LoungePricingModel implements LoungePricing{
 }
 
 export class MeetingRoomPricingModel implements MeetingRoomPricing{
-    id?: ID;
+    id: ID;
     hourlyRate: number;
     discountedHourlyRate: number;
     freeHoursKlikahCard: number;
@@ -47,7 +47,7 @@ export class MeetingRoomPricingModel implements MeetingRoomPricing{
     createdAt: DateISO;
     updatedAt: DateISO;
     constructor(data: { // שינוי: הקונסטרקטור מקבל אובייקט data
-        id?: ID;
+        id: ID;
         hourlyRate: number;
         discountedHourlyRate: number;
         freeHoursKlikahCard: number;
@@ -56,7 +56,7 @@ export class MeetingRoomPricingModel implements MeetingRoomPricing{
         createdAt: DateISO;
         updatedAt: DateISO;
     }){
-        this.id = data.id || undefined;
+        this.id = data.id!;
         this.hourlyRate = data.hourlyRate;
         this.discountedHourlyRate = data.discountedHourlyRate;
         this.freeHoursKlikahCard = data.freeHoursKlikahCard;
@@ -78,7 +78,7 @@ export class MeetingRoomPricingModel implements MeetingRoomPricing{
     }
 }
 export class PricingTierModel implements PricingTier{
-    id?: ID;
+    id: ID;
     workspaceType: WorkspaceType;
     year1Price: number;
     year2Price: number;
@@ -89,7 +89,7 @@ export class PricingTierModel implements PricingTier{
     createdAt: DateISO;
     updatedAt: DateISO;
     constructor(data: { // שינוי: הקונסטרקטור מקבל אובייקט data
-        id?: ID;
+        id: ID;
         workspaceType: WorkspaceType;
         year1Price: number;
         year2Price: number;
@@ -100,7 +100,7 @@ export class PricingTierModel implements PricingTier{
         createdAt: DateISO;
         updatedAt: DateISO;
     }){
-        this.id = data.id || undefined;
+        this.id = data.id!;
         this.workspaceType = data.workspaceType;
         this.year1Price = data.year1Price;
         this.year2Price = data.year2Price;

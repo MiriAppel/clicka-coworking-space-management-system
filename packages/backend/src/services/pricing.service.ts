@@ -1,5 +1,5 @@
 import {
-  PricingTierCreateRequest,
+//   PricingTierCreateRequest,
   PricingTier,
   UpdatePricingTierRequest,
   MeetingRoomPricing,
@@ -8,7 +8,7 @@ import {
   UpdateLoungePricingRequest,
 } from "shared-types";
 import { WorkspaceType } from "shared-types";
-import type { ID } from "shared-types";
+import type { ID, PricingTierCreateRequest } from "shared-types";
 
 import { supabase } from '../db/supabaseClient'; 
 import {
@@ -97,6 +97,7 @@ export async function createPricingTier(
 
     // יצירת מופע של המודל מהנתונים שהתקבלו בבקשה
     const newPricingTierModel = new PricingTierModel({
+        id: '', // ID ייווצר אוטומטית במסד הנתונים
       workspaceType: request.workspaceType,
       year1Price: request.year1Price,
       year2Price: request.year2Price,
@@ -431,6 +432,7 @@ export async function createMeetingRoomPricing(
     await checkEffectiveDateConflict(supabase, 'meeting_room_pricing', request.effectiveDate);
 
     const newPricingModel = new MeetingRoomPricingModel({
+    id: '',
       hourlyRate: request.hourlyRate,
       discountedHourlyRate: request.discountedHourlyRate,
       freeHoursKlikahCard: request.freeHoursKlikahCard,
@@ -639,6 +641,7 @@ export async function createLoungePricing(
     await checkEffectiveDateConflict(supabase, 'lounge_pricing', request.effectiveDate);
 
     const newPricingModel = new LoungePricingModel({
+      id: '',
       eveningRate: request.eveningRate,
       memberDiscountRate: request.memberDiscountRate,
       effectiveDate: request.effectiveDate,
