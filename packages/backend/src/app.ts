@@ -7,11 +7,8 @@ import { json, urlencoded } from 'express';
 import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
-<<<<<<< HEAD
 import routerPricing from './routes/pricing.route';
-=======
-import expenseRouter from './routes/expense.route';
->>>>>>> 749d8033416dfaf0059fc7e64665403ef0a99e8c
+// import expenseRouter from './routes/expense.route';
 
 import dotenv from 'dotenv';
 dotenv.config();
