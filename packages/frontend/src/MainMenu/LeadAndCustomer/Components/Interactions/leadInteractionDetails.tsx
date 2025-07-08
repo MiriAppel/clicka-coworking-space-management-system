@@ -43,6 +43,7 @@ export const LeadInteractionDetails = () => {
     const interactionToEdit = selectedLead?.interactions.find(
       (interaction) => interaction.id === interactionId
     );
+    
     if (interactionToEdit) {
       setEditingInteraction(interactionToEdit);
       setIsEditModalOpen(true); // פותחים את הפופאפ
