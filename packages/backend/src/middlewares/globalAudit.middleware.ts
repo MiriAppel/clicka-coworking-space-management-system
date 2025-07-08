@@ -41,22 +41,24 @@ async function logAuditAsync(req: AuthenticatedRequest, res: Response) {
     const functionName = extractFunctionFromUrl(req.path, req.method);
     
     // מציאת target user email אם זה קשור למשתמשים
-    let targetUserEmail: string | undefined;
-    if (req.path.includes('/users/') && req.method !== 'POST') {
-      // אם יש email בbody (למקרה של עדכון)
-      if (req.body && req.body.email) {
-        targetUserEmail = req.body.email;
-      }
-      // או אם יש ID ואת רוצה לשלוף את האמייל מהDB
-      // targetUserEmail = await getUserEmailById(req.params.id);
-    }
+    let targetInfo = "";
+    // if (req.path.includes('/users/') && req.method !== 'POST') {
+    //   // אם יש email בbody (למקרה של עדכון)
+    //   if (req.body && req.body.id) {
+    //     targetInfo = req.body.id;
+    //   }
+    //   // או אם יש ID ואת רוצה לשלוף את האמייל מהDB
+    //   // targetUserEmail = await getUserEmailById(req.params.id);
+    // }
 
-    await auditService.createAuditLog({
-      userEmail: req.user?.email || 'anonymous',
+    // שימוש בפונקציה המעודכנת של AuditLogService
+    await auditService.createAuditLog(req, {
       timestamp: new Date().toISOString(),
       action: req.method as 'POST' | 'PUT' | 'DELETE',
       functionName,
-      targetUserEmail
+      targetInfo,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     });
     
   } catch (error) {

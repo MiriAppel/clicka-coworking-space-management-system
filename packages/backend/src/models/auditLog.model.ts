@@ -6,7 +6,9 @@ export interface AuditLog {
   timestamp: DateISO;          // תאריך ושעה
   action: 'POST' | 'PUT' | 'DELETE';  // פעולה
   functionName: string;        // איזה פונקציה
-  targetUserEmail?: string;    // אמייל של המשתמש שעליו ביצעו את הפעולה
+  targetInfo: string;    // אמייל של המשתמש שעליו ביצעו את הפעולה
+  createdAt: DateISO;
+  updatedAt: DateISO;
 }
 
 export class AuditLogModel implements AuditLog {
@@ -15,7 +17,9 @@ export class AuditLogModel implements AuditLog {
   timestamp: DateISO;
   action: 'POST' | 'PUT' | 'DELETE';
   functionName: string;
-  targetUserEmail?: string;
+  targetInfo: string;
+  createdAt: DateISO;
+  updatedAt: DateISO;
 
   constructor(data: {
     id?: ID;
@@ -23,14 +27,18 @@ export class AuditLogModel implements AuditLog {
     timestamp: DateISO;
     action: 'POST' | 'PUT' | 'DELETE';
     functionName: string;
-    targetUserEmail?: string;
+    targetInfo: string;
+    createdAt: DateISO;
+    updatedAt: DateISO;
   }) {
-    this.id = data.id;
+    this.id = data.id || "";
     this.userEmail = data.userEmail;
     this.timestamp = data.timestamp;
     this.action = data.action;
     this.functionName = data.functionName;
-    this.targetUserEmail = data.targetUserEmail;
+    this.targetInfo = data.targetInfo;
+    this.createdAt = data.createdAt;
+    this.updatedAt = data.updatedAt;
   }
 
   // המרה לפורמט DB
@@ -38,9 +46,11 @@ export class AuditLogModel implements AuditLog {
     return {
       user_email: this.userEmail,
       timestamp: this.timestamp,
-      action: this.action,
+      auditlog_action_type: this.action,
       function_name: this.functionName,
-      target_user_email: this.targetUserEmail,
+      target_info: this.targetInfo,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt,
     };
   }
 
@@ -52,7 +62,9 @@ export class AuditLogModel implements AuditLog {
       timestamp: dbData.timestamp,
       action: dbData.action,
       functionName: dbData.function_name,
-      targetUserEmail: dbData.target_user_email,
+      targetInfo: dbData.target_user_email,
+      createdAt: dbData.created_at,
+      updatedAt: dbData.updated_at,
     });
   }
 
