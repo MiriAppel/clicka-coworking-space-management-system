@@ -4,6 +4,8 @@ import { customerService } from '../services/customer.service';
 import { CustomerModel } from '../models/customer.model'; // מבנה לקוח
 import { VAT_RATE } from '../constants';
 import { calculateBillingForCustomer } from '../services/billingCalcullation.services';
+import { validateInvoice } from '../utils/invoiceValidation';
+
 // שירות לשליפת לקוחות
 const serviceCustomer = new customerService();
 // פונקציות עזר לחישוב תאריכים
@@ -42,6 +44,8 @@ cron.schedule('0 2 1 * *', async () => {
       dueDate,
       VAT_RATE
     );
+    validateInvoice(billingResult.invoice);
+
     // יצירת חשבונית בפועל-שמירה במסד הנתונים
     await createInvoice({
       invoice_number: '', // אם יש מספר חשבונית, נכניס כאן
