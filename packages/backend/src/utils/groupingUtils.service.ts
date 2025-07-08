@@ -18,7 +18,7 @@ export function groupByPeriod<T>(
 
   for (const item of items) {
     const dateStr = item[dateField] as string; // חילוץ התאריך מתוך השדה
-    const date = parse(dateStr); // המרת התאריך למבנה Date בעזרת date-fns
+    const date = parse(dateStr,'',''); // המרת התאריך למבנה Date בעזרת date-fns
 
     let key = '';
 

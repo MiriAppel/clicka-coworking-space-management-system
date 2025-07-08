@@ -19,7 +19,7 @@ export class CustomerModel implements Customer {
   notes?: string;
   invoiceName?: string;
   // contractDocuments?: FileReference[];
-  paymentMethods?: CustomerPaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
+  paymentMethods: CustomerPaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
   paymentMethodType: PaymentMethodType;
   periods?: CustomerPeriod[];
   // contracts: Contract[];  // One customer can have several contracts. 1:N

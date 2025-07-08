@@ -15,6 +15,7 @@ import { InteractionForm } from "./Interactions/interactionForm";
 import { addInteraction } from "./Interactions/leadInteractionDetails";
 import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
+import { CustomerDetails } from "./Customers/customerDetails";
 
 export const LeadAndCustomerRouting = () => {
     const {

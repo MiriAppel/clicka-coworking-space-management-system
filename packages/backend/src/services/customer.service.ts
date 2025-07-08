@@ -65,6 +65,7 @@ export class customerService extends baseService<CustomerModel> {
             billingStartDate: newCustomer.billingStartDate,
             notes: newCustomer.notes,
             invoiceName: newCustomer.invoiceName,
+            paymentMethods:[],
             paymentMethodType: newCustomer.paymentMethodType,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),

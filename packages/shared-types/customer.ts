@@ -122,11 +122,7 @@ export interface Customer {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-<<<<<<< HEAD
-  paymentMethods: CustomerPaymentMethod[];
-=======
   paymentMethods?: CustomerPaymentMethod[];
->>>>>>> 5c25de6d3884b7c35f46d0005a2451d6fea5c9b0
   periods?: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -158,10 +154,6 @@ export interface CreateCustomerRequest {
   contractDocuments?: FileReference[];
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 5c25de6d3884b7c35f46d0005a2451d6fea5c9b0
 // Update customer request
 export interface UpdateCustomerRequest {
   name?: string;
