@@ -11,6 +11,10 @@ import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/Vend
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 
+import MainLayout from './layout/MainLayout';
+import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+import { Billing } from './MainMenu/Billing/Components/Billing';
+import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -53,6 +57,21 @@ export const Routing = () => {
       <Route path="expense-form" element={<CreateExpenseForm />} />
 
 
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<App />} />
+        <Route path="/" element={<App />} />
+        <Route path="/workspaceMap" element={<WorkspaceMap />} />
+        <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
+        <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        <Route path="payment" element={<PaymentForm />} />
+        <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        <Route path="billing/*" element={<Billing />} />
+        <Route path="users" element={< UserTable />} />
+     
+      </Route>
     </Routes>
 
   );

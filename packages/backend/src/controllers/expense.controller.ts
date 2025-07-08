@@ -35,6 +35,7 @@ async getAllExpenses1(req: Request, res: Response) {
             res.status(500).json({ error: "Failed to fetch expenses" }); // כשלון: החזרת שגיאה
         }
     }
+
     async getExpenseById(req: Request, res: Response) {
         const expenseId = req.params.id; // קריאת ה-ID מתוך פרמטרי הכתובת
         const result = await this.expenseService.getExpenseById(expenseId); // קריאה לשירות לשליפת ההוצאה
@@ -44,6 +45,7 @@ async getAllExpenses1(req: Request, res: Response) {
             res.status(404).json({ error: "Expense not found" }); // לא נמצא: החזרת 404
         }
     }
+
     async updateExpense(req: Request, res: Response) {
         const expenseId = req.params.id; // קריאת ה-ID מתוך ה-params
         const updateData: UpdateExpenseRequest = req.body; // קריאת נתוני העדכון מתוך גוף הבקשה
@@ -55,6 +57,7 @@ async getAllExpenses1(req: Request, res: Response) {
             res.status(500).json({ error: "Failed to update expense" }); // כשלון: החזרת שגיאה
         }
     }
+
     async markExpenseAsPaid(req: Request, res: Response) {
         const expenseId = req.params.id; // קריאת ה-ID מתוך ה-params
         const paidData: MarkExpenseAsPaidRequest = req.body; // קריאת נתוני התשלום מתוך גוף הבקשה
@@ -65,6 +68,7 @@ async getAllExpenses1(req: Request, res: Response) {
             res.status(500).json({ error: "Failed to mark expense as paid" }); // כשלון: החזרת שגיאה
         }
     }
+
     async deleteExpense(req: Request, res: Response) {
         const expenseId = req.params.id; // קריאת ה-ID מתוך ה-params
         const result = await this.expenseService.deleteExpense(expenseId); // קריאה לשירות למחיקת ההוצאה
@@ -74,4 +78,21 @@ async getAllExpenses1(req: Request, res: Response) {
             res.status(500).json({ error: "Failed to delete expense" }); // כשלון: החזרת שגיאה
         }
     }
+
+// async getExpensesByVendorId(req: Request, res: Response) {
+//   const { vendorId } = req.params;  // לשנות מ-query ל-params
+
+//   try {
+//     if (!vendorId) {
+//       return res.status(400).json({ message: 'חסר מזהה ספק' });
+//     }
+
+//     const expenses = await this.expenseService.getExpensesByVendorId(vendorId as string);
+//     res.status(200).json(expenses);
+//   } 
+//   catch (err) {
+//     console.error('שגיאה בשליפת הוצאות:', err);
+//     res.status(500).json({ message: 'שגיאה בשרת' });
+//   }
+// }
 }

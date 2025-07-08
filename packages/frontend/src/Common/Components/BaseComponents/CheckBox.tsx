@@ -25,7 +25,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
   "data-testid": testId,
   //הגדרת הקומפוננטה ושימוש בPROPS 
 }) => {
-  const {theme} = useTheme();
+  const theme = useTheme();
   const {
     register,
     formState: { errors },
@@ -33,7 +33,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
 //נכנס לתוך הAPI של REACT-HOOK-FORM  כדי שהוא יביא לי את השגיעות 
   const error = errors[name]?.message as string | undefined;
   //מחפש אם קיים הידעה של שגיעה 
-  const effectiveDir = dir || theme.direction;
+  const effectiveDir = dir || theme.theme.direction;
 
   return (
     <div className="flex items-center space-x-2" dir={effectiveDir}>
@@ -51,8 +51,8 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
         className={clsx(
   "h-4 w-4 rounded focus:ring-2",
   error
-    ? `border-[${theme.colors.semantic.error}] focus:ring-[${theme.colors.semantic.error}]`
-    : `border-gray-300 focus:ring-[${theme.colors.primary}]`,
+    ? `border-[${theme.theme.colors.semantic.error}] focus:ring-[${theme.theme.colors.semantic.error}]`
+    : `border-gray-300 focus:ring-[${theme.theme.colors.primary}]`,
   className
   //שימוש בTHEEMCONFIG מתי שיזרקו שגיאה יהיה לפי התנאים והצבאים שדורשים 
   //focus-ring: מתי שעוברים על הדברים לדוכמא בוטון עם המקלדת אז רואים שהוא מודגש גם כן עושה לפי הצבאים של הTHEMECONFIG 
@@ -63,8 +63,8 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
   style={{
     fontFamily:
       effectiveDir === "rtl"
-        ? theme.typography.fontFamily.hebrew
-        : theme.typography.fontFamily.latin,
+        ? theme.theme.typography.fontFamily.hebrew
+        : theme.theme.typography.fontFamily.latin,
   }}
 >
   {label} {required && <span className="text-red-500 ml-1">*</span>}
@@ -76,7 +76,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
     role="alert"
     aria-live="assertive"
     tabIndex={-1}
-    style={{ color: theme.colors.semantic.error }}
+    style={{ color: theme.theme.colors.semantic.error }}
   >
     {error}
   </p>

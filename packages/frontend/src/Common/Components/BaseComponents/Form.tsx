@@ -5,7 +5,7 @@ import {
   FormProvider,
   SubmitHandler,
   FieldValues,
-  UseFormReturn,
+  UseFormReturn
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodType } from "zod";

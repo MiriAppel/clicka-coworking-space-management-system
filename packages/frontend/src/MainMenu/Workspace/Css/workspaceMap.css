@@ -1,0 +1,1252 @@
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+.workspaceMap {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  direction: rtl;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.workspaceMap h1 {
+  text-align: center;
+  color: #007BFF;
+  margin-bottom: 10px;
+  font-size: 2rem;
+  font-weight: 600;
+  padding: 10px 0;
+  border-bottom: 2px solid #007BFF;
+}
+
+/* הוסף בתחילת הקובץ */
+.contentContainer {
+  display: flex !important;
+  align-items: flex-start !important;
+  height: 100% !important;
+  gap: 20px !important;
+}
+
+.right, .mapContainer {
+  margin: 0 !important;
+  padding-top: 0 !important;
+  vertical-align: top !important;
+}
+
+/* כפתור הטוגל */
+.toggleSidebarBtn {
+    display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  background:#f5f5f5 !important;
+  color:  #007bff !important;
+  border: none 1px solid !important;
+  border-radius: 20% !important;
+  width: 50px !important;
+  height: 50px !important;
+  cursor: pointer !important;
+  /* box-shadow: 0 4px 12px rgba(0,123,255,0.3) !important; */
+  transition: all 0.3s ease !important;
+  font-size: 30px !important;
+}
+
+.toggleSidebarBtn:hover {
+  /* background: #0056b3 !important; */
+  transform: scale(1.2) !important;
+  /* box-shadow: 0 6px 16px rgba(0,123,255,0.4) !important; */
+}
+
+/* אייקונים מותאמים אישית */
+.toggleSidebarBtn::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.toggleSidebarBtn.open::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M18 6L6 18M6 6l12 12'/%3E%3C/svg%3E");
+}
+
+.toggleSidebarBtn.closed::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M3 12h18M3 6h18M3 18h18'/%3E%3C/svg%3E");
+}
+
+/* אנימציה לדיב הצדדי */
+.right {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.right.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* התאמת המפה כשהתפריט סגור */
+.contentContainer.fullWidth .mapContainer {
+  width: 100%;
+  margin-right: 0;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    z-index: 50;
+    background: white;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.15);
+  }
+  
+  .toggleSidebarBtn {
+    right: 10px;
+    top: 10px;
+    width: 45px !important;
+    height: 45px !important;
+  }
+}
+
+/* Left Sidebar Container */
+.contentContainer > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: fit-content;
+}
+
+/* Search Panel */
+.search {
+  margin-top: 2vh;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px;
+  border-radius: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  min-width: 250px;
+}
+
+.search::before {
+  content: "חיפוש וסינון";
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #007BFF;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #a5d8ff;
+}
+
+.displayByDate{
+  margin-top: 2vh;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 20px;
+  border-radius: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  min-width: 250px;
+}
+.displayByDate::before {
+  content: "תצוגת מפה";
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #007BFF;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #a5d8ff;
+}
+
+.search > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.search select {
+  padding: 10px 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background-color: white;
+  transition: border-color 0.3s ease;
+  direction: rtl;
+}
+
+.search select:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.search select:hover {
+  border-color: #007BFF;
+}
+
+.search button,
+.search .MuiButton-root {
+  width: 100%;
+  padding: 10px 18px !important;
+  background-color: #007BFF !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+  text-transform: none !important;
+}
+
+.search button:hover,
+.search .MuiButton-root:hover {
+  background-color: #0056b3 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
+}
+
+/* עיצוב אחיד לכל הכפתורים באזור החיפוש */
+.right .MuiButton-root,
+.right button {
+  background-color: #007bff !important;
+  color: white !important;
+  border: 1px solid #007bff !important;
+  padding: 8px 16px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
+  text-transform: none !important;
+  min-height: 36px !important;
+  width: 100% !important;
+  margin-top: 10px !important;
+}
+
+.right .MuiButton-root:hover,
+.right button:hover {
+  background-color: #0056b3 !important;
+  border-color: #0056b3 !important;
+}
+
+/* עיצוב ספציפי לכפתור Clear Search */
+.clearSearchBtn {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.clearSearchBtn:hover {
+  background-color: #545b62 !important;
+  border-color: #545b62 !important;
+}
+
+/* עיצוב ספציפי לכפתור Back */
+.backBtn {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+  margin-top: auto !important; /* דוחף את הכפתור לתחתית */
+}
+
+.backBtn:hover {
+  background-color: #1e7e34 !important;
+  border-color: #1e7e34 !important;
+}
+
+/* Map Container */
+.mapContainer {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Map Viewport - הקונטיינר הפנימי שמכיל את המפה */
+.mapViewport {
+  width: 90%;
+  height: 85%;
+  max-width: 1000px;
+  overflow: hidden;
+  position: relative;
+  background-color: #fafafa;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.mapViewport.dragging {
+  cursor: grabbing !important;
+}
+
+.mapViewport.dragging * {
+  pointer-events: none !important;
+}
+
+/* Map Content - התוכן בפועל של המפה */
+.mapContent {
+  position: relative;
+  width: 900px;
+  height: 540px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+  margin: 20px;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+}
+
+.mapContainer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #a5d8ff 0%, #ffffff 100%);
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Zoom Controls */
+.zoomControls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px; /* תמיד בשמאל */
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 6px 15px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  backdrop-filter: blur(8px);
+}
+
+/* כפתורי + ו - */
+.zoomBtn {
+  width: 26px;
+  height: 26px;
+  /* border: 1px solid #007bff; */
+  border-radius: 50%;
+  background: transparent;
+  color: #007bff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoomBtn:hover {
+  background: rgba(0, 123, 255, 0.1);
+  color: #0056b3;
+  border-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.zoomBtn:active {
+  background: rgba(0, 123, 255, 0.2);
+  transform: scale(0.95);
+}
+
+/* הסרגל עצמו */
+.zoomSlider {
+  width: 90px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.zoomSlider:hover {
+  height: 6px;
+}
+
+/* המסלול של הסרגל */
+.zoomSliderTrack {
+  height: 100%;
+  background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+/* הכדור הנע */
+.zoomSliderThumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #007bff;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: grab;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+
+.zoomSliderThumb:hover {
+  width: 14px;
+  height: 14px;
+  background: #0056b3;
+}
+
+.zoomSliderThumb:active {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* תצוגת האחוזים */
+.zoomLevel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #333;
+  min-width: 35px;
+  text-align: center;
+  background: #f8f9fa;
+  padding: 3px 6px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+/* כפתור איפוס */
+.resetBtn {
+  background: transparent !important;
+  /* border: 1px solid #6c757d !important; */
+  color: #6c757d !important;
+  font-size: 12px;
+  width: 24px;
+  height: 24px;
+}
+
+.resetBtn:hover {
+  background: rgba(108, 117, 125, 0.1) !important;
+  color: #545b62 !important;
+  border-color: #545b62 !important;
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .zoomControls {
+    bottom: 10px;
+    left: 10px;
+    padding: 5px 12px;
+    gap: 8px;
+  }
+  
+  .zoomSlider {
+    width: 70px;
+  }
+  
+  .zoomBtn {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+  
+  .resetBtn {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* Space Items */
+.space {
+  position: absolute;
+  border: 2px solid #007BFF;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #333;
+  padding: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  pointer-events: auto;
+}
+
+.space:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+  border-color: #0056b3;
+  z-index: 50;
+}
+
+.space > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.space span {
+  font-weight: 600;
+  color: #007BFF;
+}
+
+.space small {
+  font-size: 0.7rem;
+  color: #666;
+  font-weight: 400;
+}
+
+/* Space Status Colors */
+.space.AVAILABLE {
+  background-color: rgba(40, 167, 69, 0.1);
+  border-color: #28a745;
+}
+
+.space.OCCUPIED {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-color: #dc3545;
+}
+
+.space.RESERVED {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-color: #ffc107;
+}
+
+.space.MAINTENANCE {
+  background-color: rgba(108, 117, 125, 0.1);
+  border-color: #6c757d;
+}
+
+.space.INACTIVE {
+  background-color: rgba(108, 117, 125, 0.05);
+  border-color: #adb5bd;
+  opacity: 0.7;
+}
+
+/* Dimmed and Highlighted States */
+.space.dimmed {
+  opacity: 0.3 !important;
+  filter: grayscale(50%) !important;
+}
+
+.space.highlighted {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Space Content Styling */
+.space div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  line-height: 1.1;
+}
+
+.space:hover div {
+  gap: 6px;
+  text-overflow: initial;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+.space h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #007BFF;
+  margin: 0 0 4px 0;
+  text-align: center;
+}
+
+.space h4 {
+  font-size: 0.75rem;
+  margin: 2px 0;
+  padding: 2px 6px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.space h5 {
+  font-size: 0.7rem;
+  color: #666;
+  margin: 1px 0;
+  font-weight: 400;
+}
+
+.space h6 {
+  font-size: 0.65rem;
+  color: #007BFF;
+  margin: 1px 0;
+  font-weight: 500;
+}
+
+/* Status Badge Colors */
+.space .AVAILABLE h4 { background-color: #28a745; }
+.space .OCCUPIED h4 { background-color: #dc3545; }
+.space .RESERVED h4 { background-color: #007BFF; }
+.space .MAINTENANCE h4 { background-color: #ffc107; color: #333; }
+.space .INACTIVE h4 { background-color: #E0E0E0; color: #666; }
+
+/* Hover Content Container */
+.space:hover > div {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 2px solid #007BFF;
+  border-radius: 12px;
+  padding: 10px 35px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  min-width: 500px;
+  max-width: 600px;
+  max-height: 180px;
+  width: auto;
+  height: auto;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  text-align: right;
+  z-index: 1000;
+  animation: popupAppear 0.2s ease;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  pointer-events: auto;
+}
+
+.space:hover h2 {
+  font-size: 0.95rem;
+  margin: 0 0 5px 0;
+  color: #007BFF;
+  font-weight: 700;
+  border-bottom: 2px solid #007BFF;
+  padding-bottom: 2px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.space:hover h4 {
+  font-size: 0.8rem;
+  margin: 2px 0;
+  font-weight: 600;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.space:hover h5 {
+  font-size: 0.75rem;
+  margin: 2px 0;
+  color: #666;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.space:hover h6 {
+  font-size: 0.7rem;
+  margin: 1px 0;
+  color: #888;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .contentContainer {
+    flex-direction: column;
+  }
+  
+  .mapContainer {
+    height: 500px;
+  }
+  
+  .space:hover > div {
+    min-width: 450px;
+    max-width: 500px;
+    padding: 10px 35px;
+  }
+}
+
+@media (max-width: 992px) {
+  .contentContainer {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    height: auto;
+  }
+  
+  .workspaceMap > .MuiButton-root {
+    width: 100%;
+    margin: 15px 0 0 0;
+  }
+  
+  .mapContainer {
+    height: 60vh;
+    max-height: none;
+  }
+  
+  /* הפעלת זום אוטומטי במסכים בינוניים */
+  .mapViewport {
+    transform: scale(0.8);
+  }
+  
+  .mapContent {
+    width: 1125px;
+    height: 675px;
+  }
+}
+
+@media (max-width: 768px) {
+  .workspaceMap {
+    padding: 15px;
+  }
+  
+  .workspaceMap h1 {
+    font-size: 1.75rem;
+    padding: 12px 0;
+    margin-bottom: 15px;
+  }
+  
+  .search {
+    padding: 15px;
+  }
+  
+  .mapContainer {
+    height: 50vh;
+    min-height: 300px;
+  }
+  
+  /* זום אוטומטי חזק יותר למסכים קטנים */
+  .mapViewport {
+    transform: scale(0.6);
+  }
+  
+  .mapContent {
+    width: 1500px;
+    height: 900px;
+  }
+  
+  .zoomControls {
+    top: 10px;
+    left: 10px;
+    padding: 6px;
+  }
+  
+  .zoomBtn {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+  
+  .search {
+    min-width: auto;
+  }
+  
+  .space:hover > div {
+    min-width: 280px;
+    max-width: 320px;
+    padding: 10px 15px;
+    font-size: 0.8rem;
+  }
+  
+  .workspaceMap > button:last-child {
+    margin-top: 30px !important;
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+  .space {
+    font-size: 0.7rem;
+    padding: 4px;
+  }
+  
+  .space:hover > div {
+    min-width: 160px;
+    max-width: 200px;
+    padding: 8px;
+  }
+
+@media (max-width: 480px) {
+  .workspaceMap {
+    padding: 8px;
+  }
+  
+  .workspaceMap h1 {
+    font-size: 1.5rem;
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
+  
+  .search {
+    padding: 12px;
+  }
+  
+  .mapContainer {
+    height: 45vh;
+    min-height: 250px;
+  }
+  
+  /* זום אוטומטי מקסימלי למסכים קטנים מאוד */
+  .mapViewport {
+    transform: scale(0.4);
+  }
+  
+  .mapContent {
+    width: 2250px;
+    height: 1350px;
+  }
+  
+  .zoomControls {
+    top: 8px;
+    left: 8px;
+    padding: 4px;
+  }
+  
+  .zoomBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+  
+  .space {
+    font-size: 0.65rem;
+    padding: 3px;
+  }
+  
+  .space:hover > div {
+    min-width: 250px;
+    max-width: 280px;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .workspaceMap > button:last-child {
+    margin-top: 25px !important;
+    padding: 8px 14px !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Scrollbar Styling */
+.mapViewport::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.mapViewport::-webkit-scrollbar-track {
+  background: #E0E0E0;
+  border-radius: 4px;
+}
+
+.mapViewport::-webkit-scrollbar-thumb {
+  background: #007BFF;
+  border-radius: 4px;
+}
+
+.mapViewport::-webkit-scrollbar-thumb:hover {
+  background: #0056b3;
+}
+
+/* Animation for smooth transitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.space {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Hover popup animation */
+@keyframes popupAppear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.space:hover > div {
+  animation: popupAppear 0.15s ease;
+}
+
+/* Touch and Mobile Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .space:hover {
+    transform: none;
+  }
+  
+  .space:active {
+    transform: scale(0.95);
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+  
+  .zoomBtn:hover {
+    transform: none;
+  }
+  
+  .zoomBtn:active {
+    transform: scale(0.95);
+    background-color: #007BFF;
+    color: white;
+  }
+}
+
+/* High DPI Display Optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .space {
+    border-width: 1px;
+  }
+  
+  .space:hover {
+    border-width: 2px;
+  }
+  
+  .zoomControls {
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* Landscape Mobile Optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+  .mapContainer {
+    height: 70vh;
+  }
+  
+  .mapViewport {
+    transform: scale(0.7);
+  }
+  
+  .mapContent {
+    width: 1285px;
+    height: 771px;
+  }
+}
+
+/* Portrait Mobile Optimization */
+@media (max-width: 480px) and (orientation: portrait) {
+  .mapContainer {
+    height: 40vh;
+  }
+  
+  .mapViewport {
+    transform: scale(0.35);
+  }
+  
+  .mapContent {
+    width: 2571px;
+    height: 1543px;
+  }
+}
+
+/* Zoom States */
+.mapViewport.zoom-0-5 { transform: scale(0.5); }
+.mapViewport.zoom-0-75 { transform: scale(0.75); }
+.mapViewport.zoom-1 { transform: scale(1); }
+.mapViewport.zoom-1-25 { transform: scale(1.25); }
+.mapViewport.zoom-1-5 { transform: scale(1.5); }
+.mapViewport.zoom-2 { transform: scale(2); }
+
+/* Ensure spaces are properly positioned at all zoom levels */
+.space {
+  transform-origin: center center;
+}
+
+/* Prevent text selection during zoom operations */
+.mapContainer {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Loading state for map */
+.mapContainer.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.mapContainer.loading::after {
+  content: "טוען מפה...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #007BFF;
+  z-index: 1000;
+}
+
+/* Accessibility improvements */
+.zoomBtn:focus {
+  outline: 2px solid #007BFF;
+  outline-offset: 2px;
+}
+
+.space:focus {
+  outline: 2px solid #007BFF;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .zoomControls {
+    display: none;
+  }
+  
+  .mapViewport {
+    transform: scale(1) !important;
+    overflow: visible !important;
+  }
+  
+  .space:hover > div {
+    display: none;
+  }
+}
+
+  .space:hover > div {
+    min-width: 350px;
+    max-width: 400px;
+    padding: 8px 25px;
+    font-size: 0.75rem;
+  }
+  
+  .workspaceMap > button:last-child {
+    margin-top: 30px !important;
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .zoomControls {
+    padding: 8px;
+  }
+  
+  .zoomBtn {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+
+@media (max-width: 480px) {
+  .workspaceMap {
+    padding: 8px;
+  }
+  
+  .mapContainer {
+    height: 350px;
+  }
+  
+  .space:hover > div {
+    min-width: 280px;
+    max-width: 320px;
+    padding: 6px 20px;
+    font-size: 0.7rem;
+  }
+  
+  .workspaceMap > button:last-child {
+    margin-top: 25px !important;
+    padding: 8px 14px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .zoomControls {
+    top: 10px;
+    left: 10px;
+    padding: 6px;
+  }
+  
+  .zoomBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .zoomLevel {
+    font-size: 0.7rem;
+    padding: 2px 0;
+  }
+}
+
+/* עיצוב נוסף לגרירה */
+.mapViewport:active {
+  cursor: grabbing;
+}
+
+.mapContent.dragging {
+  transition: none;
+}
+
+/* הסתרת סלקשן בזמן גרירה */
+.mapViewport.dragging * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* עיצוב חלק יותר לזום */
+.mapContent {
+  will-change: transform;
+}
+
+/* מניעת בעיות עם pointer events בזמן זום */
+.mapViewport[style*="scale"] .space {
+  pointer-events: auto;
+}
+
+.mapViewport[style*="scale"] .space > div {
+  pointer-events: none;
+}
+
+/* הדגשה של אזור הזום */
+.zoomControls::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: rgba(0, 123, 255, 0.05);
+  border-radius: 15px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.zoomControls:hover::before {
+  opacity: 1;
+}
+
+/* אפקט hover על המפה כשהיא ניתנת לגרירה */
+.mapViewport[style*="scale"] {
+  cursor: grab;
+}
+
+.mapViewport[style*="scale"]:active {
+  cursor: grabbing;
+}
+
+/* שיפור ביצועים */
+.mapContent * {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* הסרת האינדיקטור המבלבל */
+.mapContainer::after {
+  content: 'זום: השתמש בכפתורים או גלגל העכבר';
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 90;
+}
+
+.mapContainer:hover::after {
+  opacity: 1;
+}
+
+/* שיפור הגרירה */
+.mapViewport {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.mapViewport.dragging {
+  cursor: grabbing !important;
+}
+
+.mapViewport.dragging * {
+  pointer-events: none !important;
+}
+
+/* הוספת אינדיקטור גרירה כשמוגדל */
+.mapContainer[data-zoom="true"]::after {
+  content: 'גרור כדי לנווט • זום: כפתורים או גלגל עכבר';
+}
+.right{
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 2px solid #fafafa;
+  gap: 40px;
+  width: 25%;
+  overflow: hidden;
+  background-color: white;
+  padding: 20px;
+}
+.contentContainer.fullWidth .zoomControls {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: 20px !important;
+}
