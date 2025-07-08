@@ -8,7 +8,7 @@ import routerCstomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import routerPricing from './routes/pricing.route';
-// import expenseRouter from './routes/expense.route';
+import expenseRouter from './routes/expense.route';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -25,8 +25,7 @@ import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/WorkspaceMapRoute';
 import userRouter from './routes/user.route';
 import routerReport from './routes/Reports.route';
-import vendorRouter from './routes/vendor.route';
-import expenseRouter from './routes/expense.route';
+import vendorRouter from './routes/vendor.router';
 
 // Create Express app
 const app = express();
