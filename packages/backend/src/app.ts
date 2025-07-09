@@ -13,11 +13,14 @@ import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 const cookieParser = require('cookie-parser');
 import userRouter from './routes/user.route';
+import vendorRouter from './routes/vendor.router';
 // Create Express app
 const app = express();
 // Apply middlewares
 app.use(cookieParser());
 app.use(helmet());
+//vendor
+app.use('/api/vendor', vendorRouter);
 // app.use(cors({
 //   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
 //   credentials: true, // Allow cookies to be sent with requests
@@ -44,6 +47,7 @@ app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 //app.use('/api/contract', routerContract);
 // app.use('/api/translate', translationRouter);
+
 app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);
 // Health check endpoint

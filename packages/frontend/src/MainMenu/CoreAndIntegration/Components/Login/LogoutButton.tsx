@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../../../../Stores/CoreAndIntegration/useAuthStore'; // ודאי שהנתיב נכון
 import { useNavigate } from 'react-router-dom';
-import { axiosInstance } from '../../../../Services/Axios';
+import { axiosInstance } from '../../../../services/Axios';
 
 export const LogoutButton = () => {
   const clearAuth = useAuthStore((state) => state.clearUser); // Function that clears the auth state

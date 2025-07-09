@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "incremental": false,
+     "incremental": false,
     "lib": [
       "dom",
       "dom.iterable",
@@ -20,10 +20,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+
     "paths": {
       "shared-types": ["../shared-types/src"]
     },
-    "types": []
+    "types": ["node"]
     // "types": ["cookie-parser"]
   },
   "include": ["src", "../shared-types/src", "../shared-types/core.ts", "../shared-types/customer.ts", "../shared-types/google.ts", "../shared-types/language.ts", "../shared-types/mapCoordinates.ts", "../shared-types/occupancy.ts", "../shared-types/report.ts", "../shared-types/spaceAssignment.ts", "../shared-types/workspaceMap.ts"]

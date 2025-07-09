@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { User } from 'shared-types';
-import { axiosInstance } from '../../../../frontend/src/MainMenu/LeadAndCustomer/Components/Customers/LeadAndCustomersService';
+// import { axiosInstance } from '../../services/Axios';
+import { axiosInstance } from '../../services/Axios';
 
 interface UserState {
   users: User[];

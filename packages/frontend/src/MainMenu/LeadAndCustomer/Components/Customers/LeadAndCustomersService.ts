@@ -10,7 +10,7 @@ import {
   // StatusChangeRequest,
 } from 'shared-types';
 // Update the import path below if the actual location of Axios.ts is different
-import { axiosInstance } from '../../../../service/Axios';
+import { axiosInstance } from '../../../../services/Axios';
 
 
 // ---------- לידים ----------
