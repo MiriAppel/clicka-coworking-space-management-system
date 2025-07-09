@@ -80,12 +80,44 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
     },
 
     fetchLeadDetails: async (leadId: string) => {
-        // Fetch lead details logic here
-        return {} as Lead; // Return the fetched lead details
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch(`http://localhost:3001/api/leads/${leadId}`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch lead details");
+            }
+            const data: Lead = await response.json();
+            set({ selectedLead: data, loading: false });
+            return data;
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה בטעינת פרטי הליד", loading: false });
+            return {} as Lead;
+        }
     },
     setShowGraphForId: (id: string | null) => {
         set({ showGraphForId: id });
     },
+
+    // handleDeleteInteraction: async (interactionId: string) => {
+    //     const selectedLead = get().selectedLead;
+    //     if (!selectedLead) {
+    //         console.error("No selected lead to delete interaction from");
+    //         return;
+    //     }
+    //     try {
+    //         const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${interactionId}`, {
+    //             method: "DELETE",
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error("Failed to delete interaction");
+    //         }
+    //         // אין עדכון סטייט ידני! רק קריאה לשרת
+    //         console.log("Interaction deleted successfully");
+    //     } catch (error: any) {
+    //         console.error("Error deleting interaction:", error);
+    //     }
+    // }
+
     setIsEditModalOpen(flag: boolean) {
         set({ isEditModalOpen: flag })
     },
@@ -115,7 +147,7 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
 
             throw error;
         }
-        
+
     },
     handleDeleteInteraction: async (interactionId: string) => {
         const { selectedLead } = get();

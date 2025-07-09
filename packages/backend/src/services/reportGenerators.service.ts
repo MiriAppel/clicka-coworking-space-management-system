@@ -33,7 +33,7 @@ export async function generateExpenseData(parameters: ReportParameters): Promise
     dateFrom: parameters.dateRange?.startDate,
     dateTo: parameters.dateRange?.endDate,
     category: expenseCategories,
-    vendorId: parameters.customerIds?.at(0),
+    // vendorId: parameters.customerIds?.at(0),
   });
 
   if (!expenses || expenses.length === 0) {
