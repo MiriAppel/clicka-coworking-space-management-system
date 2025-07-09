@@ -1,4 +1,4 @@
-import type { ID } from "shared-types";
+import type { ID, LeadInteraction } from "shared-types";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
@@ -14,7 +14,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export class baseService<T> {
   // בשביל שם המחלקה
-  constructor(private tableName: string) {}
+  constructor(private tableName: string) { }
 
   getById = async (id: ID): Promise<T> => {
     const { data, error } = await supabase
@@ -35,16 +35,16 @@ export class baseService<T> {
     return data;
   };
 
-  
+
   getAll = async (): Promise<T[]> => {
     console.log("🧾 טבלה:", this.tableName);
 
     const { data, error } = await supabase
-    .from(this.tableName)
-    .select("*, lead_interaction(*)")
+      .from(this.tableName)
+      .select("*, lead_interaction(*)")
 
     console.log(data);
-    
+
     if (!data || data.length === 0) {
       console.log(` אין נתונים בטבלה ${this.tableName}`);
       return []; // תחזירי מערך ריק במקום לזרוק שגיאה
@@ -63,7 +63,6 @@ export class baseService<T> {
     if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
       try {
         dataForInsert = (dataToUpdate as any).toDatabaseFormat();
-        console.log(dataForInsert);
 
       } catch (error) {
         console.error("שגיאה בהמרה", error)
@@ -72,7 +71,16 @@ export class baseService<T> {
 
     const { data, error } = await supabase
       .from(this.tableName)
-      .update(dataForInsert)
+      .update({
+        id: (dataToUpdate as unknown as LeadInteraction).id,
+        lead_id: (dataToUpdate as unknown as LeadInteraction).leadId,
+        notes:(dataToUpdate as unknown as LeadInteraction).notes,
+        user_email:(dataToUpdate as unknown as LeadInteraction).userEmail,
+        updated_at:(dataToUpdate as unknown as LeadInteraction).updatedAt,
+        created_at:(dataToUpdate as unknown as LeadInteraction).createdAt,
+        date:(dataToUpdate as unknown as LeadInteraction).date,
+        type:(dataToUpdate as unknown as LeadInteraction).type.toUpperCase()
+      })
       .eq("id", id)
       .select();
 
@@ -87,6 +95,9 @@ export class baseService<T> {
     return data[0];
   };
 
+  patchInteraction = async (data: T, id: ID) => {
+
+  }
   post = async (dataToAdd: T): Promise<T> => {
     console.log("come to function");
 

@@ -9,6 +9,7 @@ import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import routerPricing from './routes/pricing.route';
 import expenseRouter from './routes/expense.route';
+import interactionRouter from './routes/leadInteraction.route';
 
 import dotenv from 'dotenv';
 import routerPayment from './routes/payment.route';
@@ -64,7 +65,7 @@ app.use('/vendor', (req, res, next) => {
 app.use('/api/auth',routerAuth);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
-
+app.use('/api/interaction', interactionRouter)
 app.use(urlencoded({ extended: true }));
 app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);

@@ -1,60 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTrash, FaPen } from "react-icons/fa"; // ייבוא האייקונים
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { useNavigate } from "react-router-dom";
-import { Lead } from "shared-types";
+import { useLocation, useNavigate } from "react-router-dom";
+import { InteractionType, Lead, LeadInteraction } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { set } from "react-hook-form";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-// פונקציה להוספת אינטראקציה
-export const addInteraction = async (lead: Lead) => {
-  try {
-    const response = await fetch(`http://localhost:3001/api/leads/${lead.id}/addInteraction`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(lead.interactions[lead.interactions.length - 1]),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to add interaction");
-    }
-    return await response;
-  } catch (error) {
-    console.error("Error adding interaction:", error);
-    throw error;
-  }
-};
-
 export const LeadInteractionDetails = () => {
-  const [showGraph, setShowGraph] = useState(false);
   const navigate = useNavigate();
   const selectedLead = useLeadsStore(state => state.selectedLead);
   const { handleDeleteLead, handleSelectLead, resetSelectedLead } = useLeadsStore();
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingInteraction, setEditingInteraction] = useState<any>(null);
-
+  const location = useLocation();
+  const isEditModalOpen = useLeadsStore(state => state.isEditModalOpen);
+  const setIsEditModalOpen = useLeadsStore(state => state.setIsEditModalOpen);
+  const editingInteraction = useLeadsStore(state => state.editingInteraction);
+  const setEditingInteraction = useLeadsStore(state => state.setEditingInteraction);
   // סוגי אינטראקציה
   const interactionTypes = ["Phone", "Email", "Meeting", "Other"];
 
+  useEffect(() => {
+    // טען את הליד מהשרת ועדכן ב-store
+    // handleSelectLead(selectedLead?.id!)
+
+  }, [selectedLead, handleSelectLead,location.pathname]);
+
   // פונקציה לעריכת אינטראקציה
   const editInteraction = (interactionId: string) => {
-    const interactionToEdit = selectedLead?.interactions.find(
-      (interaction) => interaction.id === interactionId
-    );
-    
-    if (interactionToEdit) {
-      setEditingInteraction(interactionToEdit);
-      setIsEditModalOpen(true); // פותחים את הפופאפ
-    }
+    const interaction = selectedLead?.interactions.find(i => i.id === interactionId);
+    setEditingInteraction(interaction!);
+    setIsEditModalOpen(true);
   };
-
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingInteraction(null);
+  };
   // פונקציה לשליחת עדכון האינטראקציה
   const handleSaveInteraction = async () => {
     if (editingInteraction && selectedLead?.id) {
       try {
-        const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${editingInteraction.id}`, {
+        const response = await fetch(`http://localhost:3001/api/interaction/${editingInteraction.id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -127,9 +112,12 @@ export const LeadInteractionDetails = () => {
                     <FaTrash />
                   </button>
                   <button
-                    onClick={(e) => {
+                    onClick={async e => {
                       e.stopPropagation();
-                      interaction.id && editInteraction(interaction.id)
+                      await setIsEditModalOpen(true); // פותח את הפופאפ
+                      await setEditingInteraction({ ...interaction }); // עותק חדש של האינטראקציה
+                      console.log(editingInteraction);
+                      
                     }}
                     className="text-yellow-500 hover:text-yellow-700"
                   >
@@ -144,53 +132,76 @@ export const LeadInteractionDetails = () => {
 
       {/* פופאפ לעריכת אינטראקציה */}
       {isEditModalOpen && editingInteraction && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded-lg w-1/3">
-            <h2 className="text-xl font-semibold mb-4">עריכת אינטראקציה</h2>
-
-            {/* שדה סוג אינטראקציה */}
-            <label className="block mb-2">סוג אינטראקציה:</label>
-            <select
-              value={editingInteraction.type}
-              onChange={(e) => setEditingInteraction({ ...editingInteraction, type: e.target.value })}
-              className="mb-4 p-2 border w-full"
-            >
-              {interactionTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-
-            {/* שדה אימייל משתמש */}
-            <label className="block mb-2">אימייל משתמש:</label>
-            <input
-              type="email"
-              value={editingInteraction.userEmail}
-              onChange={(e) => setEditingInteraction({ ...editingInteraction, userEmail: e.target.value })}
-              className="mb-4 p-2 border w-full"
-            />
-
-            {/* שדה תאריך */}
-            <label className="block mb-2">תאריך:</label>
-            <input
-              type="date"
-              value={editingInteraction.updatedAt?.split('T')[0]} // המרת התאריך לפורמט הנכון
-              onChange={(e) => setEditingInteraction({ ...editingInteraction, updatedAt: e.target.value })}
-              className="mb-4 p-2 border w-full"
-            />
-
-            {/* כפתור שמירה */}
-            <button onClick={handleSaveInteraction} className="bg-blue-500 text-white p-2 rounded-lg">
-              שמור
-            </button>
-            {/* כפתור סגירה */}
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 border border-blue-200">
+            {/* כפתור סגירה עגול בפינה */}
             <button
-              onClick={() => setIsEditModalOpen(false)}
-              className="bg-gray-500 text-white p-2 rounded-lg ml-2"
+              onClick={closeEditModal}
+              className="absolute top-4 left-4 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full w-9 h-9 flex items-center justify-center shadow transition"
+              aria-label="סגור"
+              type="button"
             >
-              סגור
+              ×
             </button>
+            <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center">עריכת אינטראקציה</h2>
+            {/* שדות הטופס */}
+            <form
+              onSubmit={e => {
+                e.preventDefault();
+                handleSaveInteraction();
+              }}
+            >
+              {/* סוג אינטראקציה */}
+              <label className="block mb-2 font-semibold text-blue-700">סוג אינטראקציה:</label>
+              <select
+                value={editingInteraction.type}
+                onChange={e => setEditingInteraction({ ...editingInteraction, type: e.target.value as InteractionType })}
+                className="mb-4 p-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                {interactionTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+
+              {/* אימייל משתמש */}
+              <label className="block mb-2 font-semibold text-blue-700">אימייל משתמש:</label>
+              <input
+                type="email"
+                value={editingInteraction.userEmail}
+                onChange={e => setEditingInteraction({ ...editingInteraction, userEmail: e.target.value })}
+                className="mb-4 p-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+
+              {/* תאריך */}
+              <label className="block mb-2 font-semibold text-blue-700">תאריך:</label>
+              <input
+                type="date"
+                value={editingInteraction.updatedAt?.split('T')[0]}
+                onChange={e => setEditingInteraction({ ...editingInteraction, updatedAt: e.target.value })}
+                className="mb-6 p-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+
+              <div className="flex justify-end gap-2 mt-8">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition"
+                >
+                  סגור
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+                >
+                  שמור
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -210,7 +221,12 @@ export const LeadInteractionDetails = () => {
         <Button
           variant="accent"
           size="sm"
-          onClick={() => navigate(`${selectedLead!.id}/addInteraction`)}
+          onClick={() => {
+            console.log(selectedLead);
+
+            handleSelectLead(selectedLead?.id!)
+            navigate(`${selectedLead!.id}/addInteraction`)
+          }}
         >
           הוספת אינטראקציה
         </Button>

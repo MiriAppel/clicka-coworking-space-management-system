@@ -28,7 +28,7 @@ routerLead.delete('/:id', controllerLead.deleteLead);
 
 routerLead.post('/:id/addInteraction', controllerLead.addInteractionToLead);
 
-
+// routerLead.patch('/:leadId/interactions/:interactionId', controllerLead.deleteInteraction);
 
 routerLead.delete('/:leadId/interactions/:interactionId', controllerLead.deleteInteraction);
 export default routerLead;

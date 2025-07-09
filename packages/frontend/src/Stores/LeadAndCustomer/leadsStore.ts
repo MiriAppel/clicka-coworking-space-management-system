@@ -1,9 +1,11 @@
-import { Lead } from "shared-types";
+import { Lead, LeadInteraction } from "shared-types";
 import { UUIDTypes } from "uuid";
 import { create } from "zustand";
 
 interface LeadsState {
     leads: Lead[];
+    isEditModalOpen: boolean,
+    editingInteraction: LeadInteraction | null,
     selectedLead: Lead | null;
     loading: boolean;
     error?: string;
@@ -13,10 +15,13 @@ interface LeadsState {
     handleSelectLead: (leadId: string | null) => void;
     handleDeleteLead: (leadId: string) => Promise<void>;
     handleCreateLead: (lead: Lead) => Promise<Lead>;
+    handleCreateInteraction: (lead: Lead) => Promise<Response>;
     handleUpdateLead: (leadId: string, lead: Lead) => Promise<Lead>;
     resetSelectedLead: () => void;
     fetchLeadDetails: (leadId: string) => Promise<Lead>;
     setShowGraphForId: (id: string | null) => void;
+    setIsEditModalOpen: (flag: boolean) => void;
+    setEditingInteraction: (interaction: LeadInteraction | null) => void;
 
 }
 
@@ -26,6 +31,8 @@ export const useLeadsStore = create<LeadsState>((set) => ({
     loading: false,
     error: undefined,
     showGraphForId: null,
+    isEditModalOpen: false,
+    editingInteraction: null,
     fetchLeads: async () => {
         set({ loading: true, error: undefined });
         try {
@@ -35,19 +42,21 @@ export const useLeadsStore = create<LeadsState>((set) => ({
             }
             const data: Lead[] = await response.json();
             set({ leads: data, loading: false });
-            
+
         } catch (error: any) {
             set({ error: error.message || "שגיאה בטעינת הלידים", loading: false });
         }
     },
 
     handleSelectLead: (leadId: UUIDTypes | null) => {
-        if(leadId === null) {
-            set({ selectedLead: null });
+        if (leadId === null) {
+            set({ selectedLead: null, isEditModalOpen: false, editingInteraction: null });
             return;
         }
         set((state) => ({
-            selectedLead: state.leads.find(lead => lead.id === leadId)
+            selectedLead: state.leads.find(lead => lead.id === leadId),
+            isEditModalOpen: false,
+            editingInteraction: null
         }));
     },
 
@@ -66,9 +75,7 @@ export const useLeadsStore = create<LeadsState>((set) => ({
     },
 
     resetSelectedLead: () => {
-        set({ selectedLead: null });
-        
-        
+        set({ selectedLead: null, isEditModalOpen: false, editingInteraction: null });
     },
 
     fetchLeadDetails: async (leadId: string) => {
@@ -77,5 +84,37 @@ export const useLeadsStore = create<LeadsState>((set) => ({
     },
     setShowGraphForId: (id: string | null) => {
         set({ showGraphForId: id });
-    }
-}));
+    },
+    setIsEditModalOpen(flag: boolean) {
+        set({ isEditModalOpen: flag })
+    },
+    setEditingInteraction: async (interaction: LeadInteraction | null) => {
+        set({ editingInteraction: interaction })
+    },
+    handleCreateInteraction: async (lead: Lead) => {
+        try {
+            console.log(lead);
+            const response = await fetch(`http://localhost:3001/api/leads/${lead.id}/addInteraction`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(lead.interactions[lead.interactions.length - 1]),
+            });
+            if (!response.ok) {
+                console.log('***********************************');
+
+            }
+            console.log('-----------------------------');
+
+            return await response;
+        } catch (error) {
+            console.error("Error adding interaction:", error);
+            console.log('111111111111111111111111111');
+
+            throw error;
+        }
+        
+    },
+}
+));
