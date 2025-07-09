@@ -105,7 +105,14 @@ export class customerService extends baseService<CustomerModel> {
             signDate: newCustomer.contractSignDate,
             startDate: newCustomer.contractStartDate,
             //   endDate?: string;
-            //   terms?: ContractTerms;
+            terms: {  //ערכים התחלתיים לבנתיים
+                workspaceType: newCustomer.workspaceType,
+                workspaceCount: newCustomer.workspaceCount,
+                duration: 1,
+                monthlyRate: 0,
+                renewalTerms: "",
+                terminationNotice: 0
+            },
             documents: newCustomer.contractDocuments || [],
             //   signedBy?: string;
             //   witnessedBy?: string;
@@ -132,7 +139,7 @@ export class customerService extends baseService<CustomerModel> {
 
         const contract = await serviceContract.post(newContract)
 
-        console.log("in service");
+        console.log("new contract in customer service");
         console.log(contract);
 
         //create customer payment method
@@ -176,8 +183,6 @@ export class customerService extends baseService<CustomerModel> {
     };
 
     updateCustomer = async (dataToUpdate: Partial<CustomerModel>, id: ID) => {
-        dataToUpdate.updatedAt = new Date().toISOString();
-
         try {
             await this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id); // תפס את השגיאה
         } catch (error) {

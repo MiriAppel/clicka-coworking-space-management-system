@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { Lead } from "shared-types";
+import { Lead, LeadStatus } from "shared-types";
 
 interface LeadsTableProps {
   leads: Lead[];
@@ -11,7 +11,7 @@ interface LeadsTableProps {
 interface RowData {
   id: string;
   name: string;
-  status: string;
+  status: LeadStatus;
   phone: string;
   email: string;
 }
@@ -40,17 +40,19 @@ export const LeadsTable = ({ leads, onDelete }: LeadsTableProps) => {
       columns={columns}
       onDelete={(row) => onDelete(row.id)}
       renderActions={(row) => (
-        <Button
-          onClick={() =>
-            navigate("interestedCustomerRegistration", {
-              state: { data: leads.find((l) => l.id === row.id) },
-            })
-          }
-          variant="primary"
-          size="sm"
-        >
-          לטופס רישום
-        </Button>
+        row.status != LeadStatus.CONVERTED ? (  // תנאי לבדוק אם השדה isEligible הוא true
+          <Button
+            onClick={() =>
+              navigate("interestedCustomerRegistration", {
+                state: { data: leads.find((l) => l.id === row.id) },
+              })
+            }
+            variant="primary"
+            size="sm"
+          >
+            לטופס רישום
+          </Button>
+        ) : null
       )}
     />
   );

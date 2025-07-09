@@ -40,7 +40,10 @@ export const postCustomer = async (req: Request, res: Response) => {
 }
 
 export const getCustomerById = async (req: Request, res: Response) => {
+  
   const { id } = req.params;
+    console.log("in getCustomerById", id);
+
   try {
     const customer = await serviceCustomer.getById(id);
     if (customer) {

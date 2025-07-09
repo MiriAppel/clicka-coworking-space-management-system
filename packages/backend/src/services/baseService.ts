@@ -60,6 +60,8 @@ export class baseService<T> {
 
   patch = async (dataToUpdate: Partial<T>, id: ID): Promise<T> => {
     let dataForInsert = dataToUpdate;
+    (dataToUpdate as any).updated_at = new Date().toISOString();
+
     if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
       try {
         dataForInsert = (dataToUpdate as any).toDatabaseFormat();

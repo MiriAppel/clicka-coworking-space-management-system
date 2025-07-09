@@ -12,6 +12,9 @@ import { patchCustomer } from "../../Service/LeadAndCustomersService"
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import axios from "axios";
 
+//לבדוק דחוף איזה שדות צריך להיות כאן!!!
+//האם גם כל הפרטים של החוזה והתשלום וכו
+
 const schema = z.object({
     name: z.string().optional(),
     phone: z.string().optional().refine(val => !val || /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }),
@@ -25,7 +28,6 @@ const schema = z.object({
     // workspaceCount: z.number().optional(),
     notes: z.string().optional(), // אופציונלי
     invoiceName: z.string().optional(), // אופציונלי
-    //לבדוק דחוף מה עם זה!!!
     // paymentMethods: z.array(z.object({
     //     creditCardLast4: z.string().optional().refine(val => !val || (/^\d{4}$/.test(val)), { message: "חובה להזין 4 ספרות בדיוק" }), // אופציונלי
     //     creditCardExpiry: z.string().optional().refine(val => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }), // אופציונלי
@@ -73,7 +75,7 @@ export const UpdateCustomer: React.FC = () => {
 
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        defaultValues: { ...customer }
+        defaultValues: { ...customer, notes: customer.notes || "" }
 
     });
 

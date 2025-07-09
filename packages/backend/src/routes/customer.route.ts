@@ -15,9 +15,9 @@ routerCustomer.get('/status/all', customerController.getAllCustomerStatus);
 
 routerCustomer.get('/notify/:id', customerController.getCustomersToNotify); 
 
-routerCustomer.get('/:id', customerController.getCustomerById); 
+routerCustomer.get('/search', customerController.searchCustomersByText);
 
-routerCustomer.get("/search", customerController.searchCustomersByText);
+routerCustomer.get('/:id', customerController.getCustomerById); 
 
 //(POST)
 routerCustomer.post('/:id/exit-notice', customerController.postExitNotice); 
