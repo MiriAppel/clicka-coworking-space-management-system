@@ -13,7 +13,7 @@ export enum SpaceStatus {
 
 // Space model
 export interface Space {
-  id: ID;
+  id?: ID;
   name: string;
   description?: string;
   type: WorkspaceType;

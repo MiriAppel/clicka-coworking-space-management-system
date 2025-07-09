@@ -99,9 +99,9 @@ invoice_file: this.invoice_file,
 receipt_file: this.receipt_file,
 notes: this.notes,
 approved_by: this.approved_by,
-approvedAt: this.approvedAt,
-createdAt: this.createdAt,
-updatedAt: this.updatedAt,
+approved_at: this.approvedAt,
+created_at: this.createdAt,
+updated_at: this.updatedAt,
 };
 }
 }

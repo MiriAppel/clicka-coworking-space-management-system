@@ -7,10 +7,11 @@ import {
   UpdateCustomerRequest,
   CreateCustomerRequest,
   RecordExitNoticeRequest,
-  StatusChangeRequest,
+  // StatusChangeRequest,
 } from 'shared-types';
 // Update the import path below if the actual location of Axios.ts is different
 import { axiosInstance } from '../../../../service/Axios';
+
 
 // ---------- לידים ----------
 
