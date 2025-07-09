@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as CalendarService from '../services/googleCalendarBookingIntegration.service ';
 import { CalendarSync } from 'shared-types';
-import type { ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
+import type { CalendarEventInput, ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
 import { CalendarSyncModel } from '../models/calendarSync.model';
+import { validateEventInput } from '../utils/validateEventInput';
 
 export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
     try {
@@ -25,6 +26,33 @@ export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
 //     res.status(500).json({ error: (error as Error).message })
 //   }
 // }
+
+
+// זו הפונקציה העדכנית-----------------------------
+// export const createCalendarEvent = async (req: Request, res: Response, next: NextFunction) => {
+//     const token = extractToken(req);
+//       if (!token) return next({ status: 401, message: 'Missing token' });
+//       const { calendarId } = req.params;
+//       const{ event, booking }: {event: CalendarEventInput ,booking:string}= req.body;
+//       try {
+//         validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
+    
+//         const createdEvent = await CalendarService.createCalendarEvent(calendarId, event, token,booking);
+//         res.status(201).json(createdEvent);
+//       } catch (err: any) {
+//         if (!err.status) err.status = 500;
+//         next(err);
+//       }
+//     // try {
+//     //     const { calendarId, event, token, booking } = req.body;
+//     //     const syncStatus = await CalendarService.createCalendarEvent(calendarId, event, token, booking);
+//     //     res.status(201).json({ status: syncStatus });
+//     // } catch (error) {
+//     //     console.error('Error creating calendar event:', error);
+//     //     res.status(500).json({ message: 'Failed to create calendar event', error: error });
+//     // }
+// }
+
 export const createCalendarSync = async (req: Request, res: Response) => {
     try {
         const sync = new CalendarSyncModel(req.body);
@@ -176,7 +204,10 @@ export const shareCalendar = async (req: Request, res: Response) => {
     }
 }
 
-
+function extractToken(req: Request): string | null {
+  const auth = req.headers.authorization;
+  return auth?.startsWith('Bearer ') ? auth.split(' ')[1] : null;
+}
 
 
 

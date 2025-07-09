@@ -1,7 +1,8 @@
-import type{ BookingStatus, DateISO, ID } from "shared-types";
+import type{  DateISO, ID } from "shared-types/core";
+import {Booking,BookingStatus} from 'shared-types/booking'
 
-export class BookingModel {
-  id: ID;
+export class BookingModel implements Booking {
+  id?: ID;
   roomId: ID;
   roomName: string;
   customerId?: ID;
@@ -71,17 +72,39 @@ export class BookingModel {
 
   toDatabaseFormat() {
     return {
-      id: this.id,
-      roomId: this.roomId,
-      roomName: this.roomName,
-      customerId: this.customerId,
-      customerName: this.customerName,
-      externalUserName: this.externalUserName,
-      externalUserEmail: this.externalUserEmail,
-      externalUserPhone: this.externalUserPhone,
-      startTime: this.startTime,
-      endTime: this.endTime,
+      room_id: this.roomId,
+      room_name: this.roomName,
+      customer_id: this.customerId,
+      customer_name: this.customerName,
+      external_user_name: this.externalUserName,
+      external_user_email: this.externalUserEmail,
+      external_user_phone: this.externalUserPhone,
+      start_time: this.startTime,
+      end_time: this.endTime,
       status: this.status,
       notes: this.notes,
+      is_paid:this.isPaid,
 }}
+     static fromDatabaseFormat(dbData: any): BookingModel {
+        return new BookingModel({
+            id: dbData.id,
+            roomId: dbData.room_id,
+            roomName: dbData.room_name,
+            customerId: dbData.customer_id,
+            customerName: dbData.customer_name,
+            externalUserName: dbData.external_user_name,
+            externalUserEmail: dbData.external_user_email,
+            externalUserPhone: dbData.external_user_phone,
+            startTime: dbData.start_time,
+            endTime: dbData.end_time,
+            status: dbData.status,
+            notes: dbData.notes,
+            googleCalendarEventId: dbData.google_calendar_event_id,
+            isPaid: dbData.is_paid,
+            totalHours: dbData.total_hours,
+        });
+    }
+    static fromDatabaseFormatArray(dbDataArray: any[] ): BookingModel[] {
+        return dbDataArray.map(dbData => BookingModel.fromDatabaseFormat(dbData));
+    }
 }

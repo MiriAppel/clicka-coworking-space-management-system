@@ -7,7 +7,11 @@ export enum RoomType {
   MEETING_ROOM = 'MEETING_ROOM',
   LOUNGE = 'LOUNGE'
 }
-
+export interface RoomFeature {
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
 // Room status enum
 export enum RoomStatus {
   AVAILABLE = 'AVAILABLE',
@@ -24,10 +28,16 @@ export enum BookingStatus {
   CANCELED = 'CANCELED',
   COMPLETED = 'COMPLETED'
 }
+export interface RoomFeature {
+  id?: ID;
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
 
 // Room model
 export interface Room {
-  id: ID;
+  id?: ID;
   name: string;
   description?: string;
   type: RoomType;
@@ -39,6 +49,14 @@ export interface Room {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
+export interface BookingRules {
+  MinimumBookingMinutes: number;
+  MaximumBookingMinutes: number;
+  AdvanceBookingDays: number;
+  RequiredApproval: boolean;
+  FreeHoursForKlikcaCard: number;
+}
+
 
 // Booking model
 export interface Booking {
@@ -59,7 +77,7 @@ export interface Booking {
   chargeableHours: number; // After free hours deduction
   totalCharge: number; // Amount to be charged
   isPaid: boolean;
-  approvedBy: ID;
+  approvedBy?: ID;
   approvedAt?: DateISO;
   createdAt: DateISO;
   updatedAt: DateISO;

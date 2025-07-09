@@ -15,6 +15,7 @@ import routerMap from './routes/workspaceMap.route';
 import routerLayout from './routes/mapLayout.route';
 import routerCalendarSync from './routes/googleCalendarBookingIntegration.route';
 import router from './routes';
+import bookRouter from './routes/booking.route';
 
 // Create Express app
 const app = express();
@@ -43,7 +44,7 @@ app.use('/api/map',routerMap);
 app.use('/api/layout',routerLayout);
 app.use('/api/calendar-sync',routerCalendarSync)
 app.use('/api',router)
-
+app.use('/api/book', bookRouter);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {

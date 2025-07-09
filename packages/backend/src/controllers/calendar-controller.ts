@@ -4,36 +4,22 @@ import * as calendarService from '../services/calendar-service';
 import { CalendarEventInput } from 'shared-types/google'; 
 import { DateISO } from 'shared-types/core'; 
 
-// export async function postEvent(req: Request, res: Response, next: NextFunction) {
-//   const token = extractToken(req);
-//   if (!token) return next({ status: 401, message: 'Missing token' });
-//   const { calendarId } = req.params;
-//   const event: CalendarEventInput = req.body;
-//   try {
-//     validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
-//     const createdEvent = await calendarService.createEvent(calendarId, event, token);
-//     res.status(201).json(createdEvent);
-//   } catch (err: any) {
-//     if (!err.status) err.status = 500;
-//     next(err);
-//   }
-// }
 export async function postEvent(req: Request, res: Response, next: NextFunction) {
   const token = extractToken(req);
   if (!token) return next({ status: 401, message: 'Missing token' });
-
   const { calendarId } = req.params;
   const event: CalendarEventInput = req.body;
-
   try {
-     validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
+    validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
+
     const createdEvent = await calendarService.createEvent(calendarId, event, token);
     res.status(201).json(createdEvent);
   } catch (err: any) {
     if (!err.status) err.status = 500;
     next(err);
   }
-} 
+}
+
 export async function getListEvents(req: Request, res: Response, next: NextFunction) {
   const token = extractToken(req);
   if (!token) return next({ status: 401, message: 'Missing token' });
