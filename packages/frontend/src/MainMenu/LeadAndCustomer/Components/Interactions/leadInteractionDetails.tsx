@@ -10,7 +10,7 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, X
 export const LeadInteractionDetails = () => {
   const navigate = useNavigate();
   const selectedLead = useLeadsStore(state => state.selectedLead);
-  const { handleDeleteLead, handleSelectLead, resetSelectedLead } = useLeadsStore();
+  const { handleDeleteInteraction, handleSelectLead, resetSelectedLead } = useLeadsStore();
   const location = useLocation();
   const isEditModalOpen = useLeadsStore(state => state.isEditModalOpen);
   const setIsEditModalOpen = useLeadsStore(state => state.setIsEditModalOpen);
@@ -62,25 +62,7 @@ export const LeadInteractionDetails = () => {
 
   // פונקציה למחיקת אינטראקציה
   const deleteInteraction = async (interactionId: string) => {
-    if (!selectedLead?.id) {
-      console.error("Selected lead is not defined");
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${interactionId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        console.log("Interaction deleted successfully");
-        // עדכון הסטייט או רענון המידע
-      } else {
-        throw new Error("Failed to delete interaction");
-      }
-    } catch (error) {
-      console.error("Error deleting interaction:", error);
-    }
+    await handleDeleteInteraction(interactionId);
   };
 
   return (

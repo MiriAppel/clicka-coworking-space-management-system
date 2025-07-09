@@ -22,10 +22,11 @@ interface LeadsState {
     setShowGraphForId: (id: string | null) => void;
     setIsEditModalOpen: (flag: boolean) => void;
     setEditingInteraction: (interaction: LeadInteraction | null) => void;
+    handleDeleteInteraction: (interactionId: string) => Promise<void>; 
 
 }
 
-export const useLeadsStore = create<LeadsState>((set) => ({
+export const useLeadsStore = create<LeadsState>((set,get) => ({
     leads: [],
     selectedLead: null,
     loading: false,
@@ -116,5 +117,34 @@ export const useLeadsStore = create<LeadsState>((set) => ({
         }
         
     },
+    handleDeleteInteraction: async (interactionId: string) => {
+        const { selectedLead } = get();
+        if (!selectedLead) {
+            console.error("No selected lead to delete interaction from");
+            return;
+        }
+        try {
+            const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${interactionId}`, {
+                method: "DELETE",
+            });
+            if (!response.ok) {
+                throw new Error("Failed to delete interaction");
+            }
+            // מעדכן את selectedLead בסטייט כך שיכיל את רשימת האינטראקציות לאחר מחיקה
+            const updatedInteractions = selectedLead.interactions.filter(
+                (interaction) => interaction.id !== interactionId
+            );
+            set({
+                selectedLead: {
+                    ...selectedLead,
+                    interactions: updatedInteractions
+                }
+            });
+            console.log("Interaction deleted successfully");
+        } catch (error: any) {
+            console.error("Error deleting interaction:", error);
+        }
+    }
+,
 }
 ));
