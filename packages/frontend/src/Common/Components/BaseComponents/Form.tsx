@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodType } from "zod";
 //מייבים את ZOD כדי שנוכל להשתמש בולידציות בהמשך הקוד 
 import { useTheme } from "../themeConfig";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 //מגדירים את ז ה לתרגום הFORM 
 
 // import { AlertCircle } from "lucide-react"; // 
@@ -46,7 +46,7 @@ export function Form<T extends FieldValues>({
   methods: externalMethods,
 }: FormComponentProps<T>) {
   const {theme} = useTheme();
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   //שימוש לתירגום עם I18NEXT לפי הנדרש 
 
   const effectiveDir = dir || theme.direction;
@@ -80,7 +80,7 @@ export function Form<T extends FieldValues>({
               : theme.typography.fontFamily.latin,
         }}
         role="form"
-        aria-label={label ? t(label) : undefined} //  ומשתמש בשפה הנדרשת שיקרא את הכותרת של הטופס 
+        aria-label={label} //  ומשתמש בשפה הנדרשת שיקרא את הכותרת של הטופס 
       >
       
        {label && (
@@ -91,7 +91,7 @@ export function Form<T extends FieldValues>({
   }}
   tabIndex={-1}  
    >
-  {t(label)}
+  {label}
   {/* //שימוד בשפה נדרשת לפי הI18NEXT */}
     </h2>
      )}

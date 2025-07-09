@@ -1,5 +1,5 @@
 import { z } from "zod";
-import React from "react";
+import React, { useEffect } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
@@ -8,7 +8,7 @@ import { SelectField } from "../../../../Common/Components/BaseComponents/Select
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { AddLeadInteractionRequest, Lead } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const MySwal = withReactContent(Swal);
 
@@ -31,76 +31,107 @@ export const InteractionForm: React.FC<InteractionFormProps> = ({
     handleSelectLead
   } = useLeadsStore();
 
+  const { leadId } = useParams()
+  useEffect(() => {
+    if (!selectedLead && leadId)
+      // טען את הליד מהשרת ועדכן ב-store
+      handleSelectLead(leadId)
+  }, [selectedLead, leadId, handleSelectLead, handleSelectLead]);
+
   const nav = useNavigate()
   return (
-    <Form<InteractionFormData>
-      label="הוספת אינטראקציה"
-      schema={interactionSchema}
-      onSubmit={async (data) => {
-        try {
-          const temp = {
-            ...selectedLead,
-            interactions: [
-              ...(selectedLead?.interactions || []),
-              { ...data, userEmail: selectedLead?.email }
-            ]
-          } as Lead;
-
-          handleSelectLead(temp.id!);
-          await onSubmit(temp);
-
-          MySwal.fire({
-            title: 'בוצע בהצלחה!',
-            text: 'האינטראקציה נוספה',
-            icon: 'success',
-            confirmButtonText: 'סגור',
-            customClass: {
-              popup: 'swal2-rtl',
-            }
-          }).then(
-            () => nav('/leadAndCustomer/leads/interactions')
-          );
-
-        } catch (error) {
-          MySwal.fire({
-            title: 'אירעה שגיאה',
-            text: 'ניסיון ההוספה נכשל. נסה שוב.',
-            icon: 'error',
-            confirmButtonText: 'סגור',
-            customClass: {
-              popup: 'swal2-rtl',
-            }
-          });
-        }
-      }}
-    >
-      <SelectField
-        name="type"
-        label="סוג אינטראקציה"
-        options={[
-          { label: "שיחה", value: "phone" },
-          { label: "אימייל", value: "email" },
-          { label: "פגישה", value: "meeting" },
-        ]}
-      />
-      <InputField name="date" label="תאריך" type="date" />
-      <InputField name="notes" label="הערות" />
-
-      <div className="col-span-full flex justify-end gap-2 mt-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 border border-blue-200">
+        {/* כפתור סגירה עגול בפינה */}
         <button
-          type="button"
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded"
           onClick={onCancel}
+          className="absolute top-4 left-4 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full w-9 h-9 flex items-center justify-center shadow transition"
+          aria-label="סגור"
+          type="button"
         >
-          ביטול
+          ×
         </button>
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded"
+        <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center">הוספת אינטראקציה</h2>
+        <Form<InteractionFormData>
+          label=""
+          schema={interactionSchema}
+          onSubmit={async (data) => {
+            try {
+              console.log(selectedLead);
+
+              const temp = {
+                ...selectedLead,
+                interactions: [
+                  ...(selectedLead?.interactions || []),
+                  { ...data, userEmail: selectedLead?.email }
+                ]
+              } as Lead;
+
+              handleSelectLead(temp.id!);
+              await onSubmit(temp);
+
+              MySwal.fire({
+                title: 'בוצע בהצלחה!',
+                text: 'האינטראקציה נוספה',
+                icon: 'success',
+                confirmButtonText: 'סגור',
+                customClass: {
+                  popup: 'swal2-rtl',
+                }
+              }).then(() => {
+                handleSelectLead(null)
+                nav('/leadAndCustomer/leads/intersections')
+              });
+
+            } catch (error) {
+              MySwal.fire({
+                title: 'אירעה שגיאה',
+                text: 'ניסיון ההוספה נכשל. נסה שוב.',
+                icon: 'error',
+                confirmButtonText: 'סגור',
+                customClass: {
+                  popup: 'swal2-rtl',
+                }
+              });
+            }
+          }}
         >
-          שמור
-        </button>
+          <label className="block mb-2 font-semibold text-blue-700">סוג אינטראקציה:</label>
+          <SelectField
+            required
+            name="type"
+            label=""
+            options={[
+              { label: "סיור", value: "tour" },
+              { label: "שיחה", value: "phone" },
+              { label: "אימייל", value: "email" },
+              { label: "פגישה", value: "meeting" },
+            ]}
+          />
+
+          <label className="block mb-2 font-semibold text-blue-700">תאריך:</label>
+          <InputField required name="date" label="" type="date" />
+
+          <label className="block mb-2 font-semibold text-blue-700">הערות:</label>
+          <InputField required name="notes" label="" />
+
+          <div className="flex justify-end gap-2 mt-8">
+            <button
+              type="button"
+              className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition"
+              onClick={onCancel}
+            >
+              ביטול
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+            >
+              שמור
+            </button>
+          </div>
+        </Form>
       </div>
-    </Form>
+    </div>
   );
 };
