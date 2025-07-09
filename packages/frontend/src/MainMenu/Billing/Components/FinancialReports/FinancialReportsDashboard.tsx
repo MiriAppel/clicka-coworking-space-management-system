@@ -56,7 +56,7 @@ const expenseCategoryLabels: Record<ExpenseCategory, string> = {
 export const FinancialReportsDashboard: React.FC = () => {
   // אתחול טופס עם סכימה וערכי ברירת מחדל
   const methods = useForm<ExtendedReportParameters>({
-    resolver: zodResolver(ReportFormSchema),
+    // resolver: zodResolver(ReportFormSchema),
     defaultValues: {
       dateRange: { startDate: '', endDate: '' },
       categories: [],
@@ -110,7 +110,7 @@ export const FinancialReportsDashboard: React.FC = () => {
       label="טופס דוחות פיננסיים"
       schema={ReportFormSchema}
       onSubmit={onSubmit}
-      methods={methods}
+      // methods={methods}
     >
       <div className="flex flex-col gap-4">
         {/* בחירת סוג דוח */}

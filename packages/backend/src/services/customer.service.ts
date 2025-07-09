@@ -66,7 +66,7 @@ export class customerService extends baseService<CustomerModel> {
             notes: newCustomer.notes,
             invoiceName: newCustomer.invoiceName,
             paymentMethods:[],
-            paymentMethodType: newCustomer.paymentMethodType,
+            paymentMethodType: PaymentMethodType.BANK_TRANSFER,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             toDatabaseFormat() {
@@ -137,36 +137,36 @@ export class customerService extends baseService<CustomerModel> {
         console.log(contract);
 
         //create customer payment method
-        if (newCustomer.paymentMethodType == PaymentMethodType.CREDIT_CARD) {
-            const newPaymentMethod: customerPaymentMethodModel = {
-                customerId: customer.id!,
-                isActive: true,
-                creditCardExpiry: newCustomer.paymentMethod?.creditCardExpiry,
-                creditCardHolderIdNumber: newCustomer.paymentMethod?.creditCardHolderIdNumber,
-                creditCardHolderPhone: newCustomer.paymentMethod?.creditCardHolderPhone,
-                creditCardLast4: newCustomer.paymentMethod?.creditCardLast4,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                toDatabaseFormat() {
-                    return {
-                        customer_id: this.customerId,
-                        credit_card_last_4: this.creditCardLast4,
-                        credit_card_expiry: this.creditCardExpiry,
-                        credit_card_holder_id_number: this.creditCardHolderIdNumber,
-                        credit_card_holder_phone: this.creditCardHolderPhone,
-                        is_active: this.isActive,
-                        created_at: this.createdAt,
-                        updated_at: this.updatedAt
-                    };
-                }
-            }
+        // if (newCustomer.paymentMethodType == PaymentMethodType.CREDIT_CARD) {
+        //     const newPaymentMethod: customerPaymentMethodModel = {
+        //         customerId: customer.id!,
+        //         isActive: true,
+        //         creditCardExpiry: newCustomer.paymentMethod?.creditCardExpiry,
+        //         creditCardHolderIdNumber: newCustomer.paymentMethod?.creditCardHolderIdNumber,
+        //         creditCardHolderPhone: newCustomer.paymentMethod?.creditCardHolderPhone,
+        //         creditCardLast4: newCustomer.paymentMethod?.creditCardLast4,
+        //         createdAt: new Date().toISOString(),
+        //         updatedAt: new Date().toISOString(),
+        //         toDatabaseFormat() {
+        //             return {
+        //                 customer_id: this.customerId,
+        //                 credit_card_last_4: this.creditCardLast4,
+        //                 credit_card_expiry: this.creditCardExpiry,
+        //                 credit_card_holder_id_number: this.creditCardHolderIdNumber,
+        //                 credit_card_holder_phone: this.creditCardHolderPhone,
+        //                 is_active: this.isActive,
+        //                 created_at: this.createdAt,
+        //                 updated_at: this.updatedAt
+        //             };
+        //         }
+        //     }
 
 
-            const paymentMethod = await serviceCustomerPaymentMethod.post(newPaymentMethod)
+        //     const paymentMethod = await serviceCustomerPaymentMethod.post(newPaymentMethod)
 
-            console.log("paymentMethod in service");
-            console.log(paymentMethod);
-        }
+        //     console.log("paymentMethod in service");
+        //     console.log(paymentMethod);
+        // }
 
 
 

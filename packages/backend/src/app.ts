@@ -7,7 +7,7 @@ import { json, urlencoded } from 'express';
 import routerCustomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
-import routerPricing from './routes/pricing.route';
+// import routerPricing from './routes/pricing.route';
 import expenseRouter from './routes/expense.route';
 
 import dotenv from 'dotenv';
@@ -55,7 +55,7 @@ app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
-app.use('/api/pricing',routerPricing)
+// app.use('/api/pricing',routerPricing)
 app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();

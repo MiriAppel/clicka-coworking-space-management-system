@@ -17,10 +17,12 @@ interface LeadsState {
     resetSelectedLead: () => void;
     fetchLeadDetails: (leadId: string) => Promise<Lead>;
     setShowGraphForId: (id: string | null) => void;
+    handleDeleteInteraction: (interactionId: string) => Promise<void>; // הוספת המאפיין החדש
+
 
 }
 
-export const useLeadsStore = create<LeadsState>((set) => ({
+export const useLeadsStore = create<LeadsState>((set, get) => ({
     leads: [],
     selectedLead: null,
     loading: false,
@@ -72,10 +74,73 @@ export const useLeadsStore = create<LeadsState>((set) => ({
     },
 
     fetchLeadDetails: async (leadId: string) => {
-        // Fetch lead details logic here
-        return {} as Lead; // Return the fetched lead details
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch(`http://localhost:3001/api/leads/${leadId}`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch lead details");
+            }
+            const data: Lead = await response.json();
+            set({ selectedLead: data, loading: false });
+            return data;
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה בטעינת פרטי הליד", loading: false });
+            return {} as Lead;
+        }
     },
     setShowGraphForId: (id: string | null) => {
         set({ showGraphForId: id });
+    },
+
+// handleDeleteInteraction: async (interactionId: string) => {
+//     const selectedLead = get().selectedLead;
+//     if (!selectedLead) {
+//         console.error("No selected lead to delete interaction from");
+//         return;
+//     }
+//     try {
+//         const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${interactionId}`, {
+//             method: "DELETE",
+//         });
+//         if (!response.ok) {
+//             throw new Error("Failed to delete interaction");
+//         }
+//         // אין עדכון סטייט ידני! רק קריאה לשרת
+//         console.log("Interaction deleted successfully");
+//     } catch (error: any) {
+//         console.error("Error deleting interaction:", error);
+//     }
+// }
+handleDeleteInteraction: async (interactionId: string) => {
+    const { selectedLead } = get();
+    if (!selectedLead) {
+        console.error("No selected lead to delete interaction from");
+        return;
     }
+    try {
+        const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${interactionId}`, {
+            method: "DELETE",
+        });
+        if (!response.ok) {
+            throw new Error("Failed to delete interaction");
+        }
+
+        // מעדכן את selectedLead בסטייט כך שיכיל את רשימת האינטראקציות לאחר מחיקה
+        const updatedInteractions = selectedLead.interactions.filter(
+            (interaction) => interaction.id !== interactionId
+        );
+
+        set({
+            selectedLead: {
+                ...selectedLead,
+                interactions: updatedInteractions
+            }
+        });
+
+        console.log("Interaction deleted successfully");
+    } catch (error: any) {
+        console.error("Error deleting interaction:", error);
+    }
+}
+
 }));

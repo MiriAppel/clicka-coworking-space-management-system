@@ -52,7 +52,7 @@ export function Form<T extends FieldValues>({
   const effectiveDir = dir || theme.direction;
   
   const internalMethods = useForm<T>({
-    ...(schema ? { resolver: zodResolver(schema) } : {}),
+    // ...(schema ? { resolver: zodResolver(schema) } : {}),
     mode: "onSubmit",
   });
   const methods: UseFormReturn<T> = externalMethods ?? internalMethods;
