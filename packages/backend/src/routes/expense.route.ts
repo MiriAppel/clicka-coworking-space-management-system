@@ -10,8 +10,11 @@ expenseRouter.get("/getAll",expenseController.getAllExpenses1.bind(expenseContro
 expenseRouter.post("/createExpense",expenseController.createExpense.bind(expenseController));
 expenseRouter.get("/getAllExpenses",expenseController.getAllExpenses.bind(expenseController));
 expenseRouter.get("/getExpenseById/:id",expenseController.getExpenseById.bind(expenseController));
-expenseRouter.put("/updateExpense/:id",expenseController.updateExpense.bind(expenseController));
+expenseRouter.put("/:id",expenseController.updateExpense.bind(expenseController));
 expenseRouter.put("/markExpenseAsPaid/:id",expenseController.markExpenseAsPaid.bind(expenseController));
-expenseRouter.delete("/deleteExpense/:id",expenseController.deleteExpense.bind(expenseController));
+expenseRouter.delete("/:id",expenseController.deleteExpense.bind(expenseController));
+expenseRouter.get('/by-page', expenseController.getExpensesByPage.bind(expenseController));
+expenseRouter.get('/filter', expenseController.getExpensesByFilter.bind(expenseController));
+
 // ייצוא ה-router לשימוש ב-app הראשי (main app)
 export default expenseRouter;

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Expense, ExpenseCategory, ExpenseStatus, Vendor} from 'shared-types';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { Table } from '../../../../Common/Components/BaseComponents/Table';
-import VendorDocuments from './VendorDocuments';
+//import VendorDocuments from './VendorDocuments';
 
 // טיפוס הפרופס - מערך ספקים ופונקציה לעדכון
 type VendorSummaryProps = {
@@ -102,7 +102,7 @@ export default function VendorSummary({ vendors, setVendors }: VendorSummaryProp
       </div>
 
       {/* קומפוננטת מסמכים של הספק */}
-      <VendorDocuments />
+      {/* <VendorDocuments /> */}
 
       {/* סיכום כללי של הוצאות הספק */}
       <div className="max-w-xl mx-auto mt-8 space-y-4">

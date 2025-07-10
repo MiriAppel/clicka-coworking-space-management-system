@@ -16,6 +16,7 @@
 //   email: string; // מייל
 // }
 // //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
+
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import {

@@ -10,6 +10,10 @@ import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
+import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
+import MainLayout from './layout/MainLayout';
+import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
+import { ExpenseDetails } from './MainMenu/Billing/Components/expenseManagementSystem/expenseDetails';
 
 
 export const Routing = () => {
@@ -42,17 +46,21 @@ export const Routing = () => {
   // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
   return (
     <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
-      <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-      <Route path="payment" element={<PaymentForm />} />
-      <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
-      <Route path="expense-form" element={<CreateExpenseForm />} />
-
-
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<App />} />
+        <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
+        <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        <Route path="billing/*" element={<BillingRouting />} />
+        <Route path="expenses" element={<ExpenseList />} />
+        <Route path="expenses/expense-form" element={<CreateExpenseForm />} />
+        <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
+        <Route path="payment" element={<PaymentForm />} />
+        <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        <Route path="expense-form" element={<CreateExpenseForm />} />
+      </Route>
     </Routes>
 
   );

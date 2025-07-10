@@ -6,7 +6,8 @@ import { NumberInputField } from '../../../../Common/Components/BaseComponents/I
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
 import FileUploader from '../FileUploader';
 import { ExpenseCategory, ExpenseStatus, Vendor } from 'shared-types';
-import { getAllVendors } from '../../../../Api/vendor-api'; // ודאי שזה הנתיב הנכון אצלך
+import { getAllVendors } from '../../../../Api/vendor-api';
+import { useParams } from "react-router-dom";
 
 // --------------------------------------------------
 // מילונים
@@ -31,13 +32,6 @@ const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   OTHER: 'אחר',
 };
 
-const expenseStatusLabels: Record<ExpenseStatus, string> = {
-  PENDING: 'ממתין',
-  APPROVED: 'מאושר',
-  PAID: 'שולם',
-  REJECTED: 'נדחה',
-};
-
 // --------------------------------------------------
 // סכימת אימות
 // --------------------------------------------------
@@ -52,31 +46,60 @@ const schema = z.object({
   notes: z.string().optional(),
   receiptUrl: z.string().url('יש להזין קישור תקין').optional(),
 });
-
-export type ExpenseFormValues = z.infer<typeof schema>;
+type ExpenseFormValues = z.infer<typeof schema>;
 
 // --------------------------------------------------
-// קומפוננטת יצירת הוצאה
+// קומפוננטת יצירת/עריכת הוצאה
 // --------------------------------------------------
 export const CreateExpenseForm: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [defaultValues, setDefaultValues] = useState<Partial<ExpenseFormValues>>({});
+  const [loadingExpense, setLoadingExpense] = useState(!!id);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-  const fetchVendors = async () => {
-    try {
-      const data = await getAllVendors();
-      console.log("✅ ספקים שהתקבלו:", data); // 🔥 תוספת חשובה!
-      setVendors(data);
-    } catch (error) {
-      console.error('❌ שגיאה בשליפת ספקים:', error);
-    } finally {
-      setLoading(false);
-    }
+  const expenseStatusLabels: Record<ExpenseStatus, string> = {
+    PENDING: 'ממתין',
+    APPROVED: 'מאושר',
+    PAID: 'שולם',
+    REJECTED: 'נדחה',
   };
 
-  fetchVendors();
-}, []);
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        const data = await getAllVendors();
+        setVendors(data);
+      } catch (error) {
+        console.error('❌ שגיאה בשליפת ספקים:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVendors();
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      setLoadingExpense(true);
+      fetch(`${process.env.REACT_APP_API_BASE ?? 'http://localhost:3001'}/api/expenses/getExpenseById/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          setDefaultValues({
+            vendorId: data.vendor_id,
+            category: data.category,
+            description: data.description,
+            amount: data.amount,
+            date: data.date?.slice(0, 10),
+            status: data.status,
+            reference: data.reference ?? "",
+            notes: data.notes ?? "",
+            receiptUrl: data.receipt_file?.url ?? "",
+          });
+        })
+        .finally(() => setLoadingExpense(false));
+    }
+  }, [id]);
 
   const handleSubmit = async (data: ExpenseFormValues) => {
     const vendor = vendors.find(v => v.id === data.vendorId);
@@ -92,35 +115,39 @@ export const CreateExpenseForm: React.FC = () => {
       reference: data.reference ?? null,
       notes: data.notes ?? null,
       receipt_file: data.receiptUrl ?? null,
-      created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE ?? 'http://localhost:3001'}/api/expenses/createExpense`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        },
-      );
+      const url = `${process.env.REACT_APP_API_BASE ?? 'http://localhost:3001'}/api/expenses/${id ? `updateExpense/${id}` : 'createExpense'}`;
+      const method = id ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText);
       }
 
-      alert('ההוצאה נשמרה בהצלחה!');
+      alert(id ? 'ההוצאה עודכנה בהצלחה!' : 'ההוצאה נשמרה בהצלחה!');
     } catch (error: any) {
       alert('שגיאה בשמירת ההוצאה: ' + error.message);
     }
   };
 
-  if (loading) return <div>טוען ספקים...</div>;
+  if (loading || loadingExpense) return <div>טוען...</div>;
 
   return (
-    <Form schema={schema} onSubmit={handleSubmit} label="טופס יצירת הוצאה">
+    <Form
+      schema={schema}
+      onSubmit={handleSubmit}
+      label={id ? "עריכת הוצאה" : "טופס יצירת הוצאה"}
+      defaultValues={defaultValues}
+    >
       <SelectField
         name="vendorId"
         label="בחר ספק"

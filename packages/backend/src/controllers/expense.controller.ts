@@ -74,4 +74,64 @@ async getAllExpenses1(req: Request, res: Response) {
             res.status(500).json({ error: "Failed to delete expense" }); // כשלון: החזרת שגיאה
         }
     }
+    async getExpensesByPage (req: Request, res: Response) {
+      console.log("getExpensesByPage called");
+
+      const filters = req.params; // הנח שהפרמטרים מגיעים מה-params של הבקשה
+      console.log("Filters received:", filters);
+    
+      console.log(
+        "getExpensesByPage called with page:",
+        filters.page,
+        "and limit:",
+        filters.limit
+      );
+    
+      try {
+        const pageNum = Math.max(1, Number(filters.page) || 1);
+        const limitNum = Math.max(1, Number(filters.limit) || 50);
+        const filtersForService = {
+          page: pageNum,
+          limit: limitNum,
+        };
+    
+        console.log("Filters passed to service:", filtersForService);
+
+        const expenses = await this.expenseService.getExpensesByPage(filtersForService);
+
+        if (expenses.length > 0) {
+          res.status(200).json(expenses);
+        } else {
+          res.status(404).json({ message: "No expenses found" });
+        }
+      } catch (error: any) {
+        console.error("❌ Error in getExpensesByPage controller:");
+        if (error instanceof Error) {
+          console.error("🔴 Message:", error.message);
+          console.error("🟠 Stack:", error.stack);
+        } else {
+          console.error("🟡 Raw error object:", error);
+        }
+    
+        res
+          .status(500)
+          .json({ message: "Server error", error: error?.message || error });
+      }
+      console.log("getExpensesByPage completed");
+    }
+   async getExpensesByFilter  (req: Request, res: Response)  {
+      const filters = req.query;
+      try {
+        const expenses = await this.expenseService.getByFilters(filters);
+
+        if (expenses.length > 0) {
+          res.status(200).json(expenses);
+        } else {
+          res.status(404).json({ message: "No expenses found" });
+        }
+      } catch (error) {
+        res.status(500).json({ message: "Error filtering expenses", error });
+      }
+    };
+
 }
