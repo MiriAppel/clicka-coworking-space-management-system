@@ -1,4 +1,3 @@
-// מייבא את מבנה ה- InvoiceModel ממודל החשבונית
 import { InvoiceModel } from '../models/invoice.model';
 
 // פונקציה לבדוק תקינות של חשבונית לפני שמירתה במסד נתונים

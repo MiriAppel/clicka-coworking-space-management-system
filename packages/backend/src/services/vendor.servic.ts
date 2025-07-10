@@ -1,3 +1,4 @@
+//server/vendor.service.ts
 import { ID, Vendor, CreateVendorRequest, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms } from "shared-types"
 import { VendorModel } from "../models/vendor.model";
 import { supabase } from '../db/supabaseClient';
@@ -18,7 +19,7 @@ export async function create(
             category: request.category,
             status: VendorStatus.Inactive, // סטטוס ברירת מחדל אם לא נשלח
             notes: request.notes,
-            // documents: request.documents || [],
+            document_ids: request.document_ids || [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         });
@@ -46,7 +47,7 @@ export async function create(
             category: data.category,
             status: data.status, // סטטוס ברירת מחדל אם לא נשלח
             notes: data.notes,
-            // documents: data.documents,
+            document_ids: data.document_ids,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
         });
@@ -83,7 +84,7 @@ export async function getAllVendors(): Promise<Vendor[] | null> {
             category: vendor.category,
             status: vendor.status,
             notes: vendor.notes,
-            // documents: vendor.documents,
+            document_ids: vendor.document_ids,
             createdAt: vendor.createdAt,
             updatedAt: vendor.updatedAt,
         }));
@@ -112,14 +113,14 @@ export async function getVendorById(id: string): Promise<Vendor | null> {
             phone: data.phone,
             email: data.email,
             address: data.address,
-            website: (data as any).website, 
+            website: (data as any).website,
             tax_id: data.taxId,
             payment_terms: data.payment_terms,
             preferred_payment_method: data.preferred_payment_method,
             category: data.category,
-            status: data.status, 
+            status: data.status,
             notes: data.notes,
-            // documents: data.documents,
+            document_ids: data.document_ids,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
         });
@@ -129,20 +130,20 @@ export async function getVendorById(id: string): Promise<Vendor | null> {
     }
 }
 export async function deleteVendor(id: ID): Promise<boolean> {
-  try {
-    const { error } = await supabase
-      .from('vendor')
-      .update({ active: false, updated_at: new Date().toISOString() })
-      .eq('id', id);
+    try {
+        const { error } = await supabase
+            .from('vendor')
+            .update({ active: false, updated_at: new Date().toISOString() })
+            .eq('id', id);
 
-    if (error) {
-      console.error('Error deleting vendor:', error);
-      throw new Error("Failed to delete vendor");
+        if (error) {
+            console.error('Error deleting vendor:', error);
+            throw new Error("Failed to delete vendor");
+        }
+
+        return true;
+    } catch (e) {
+        console.error('Exception in deleteLoungePricing:', e);
+        throw e;
     }
-
-    return true;
-  } catch (e) {
-    console.error('Exception in deleteLoungePricing:', e);
-    throw e;
-  }
 }

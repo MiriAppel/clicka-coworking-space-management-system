@@ -24,7 +24,7 @@ export class VendorModel implements Vendor {
   category?: VendorCategory;
   status?: VendorStatus;
   notes?: string;
-  // documents?: FileReference[];
+  document_ids?: string[];
   createdAt: DateISO;
   updatedAt: DateISO;
 
@@ -44,7 +44,7 @@ export class VendorModel implements Vendor {
     category?: VendorCategory;
     status?: VendorStatus;
     notes?: string;
-    // documents?: FileReference[];
+    document_ids?: string[];
   }) {
     this.id = params.id ?? uuidv4();
     this.name = params.name;
@@ -59,7 +59,7 @@ export class VendorModel implements Vendor {
     this.category = params.category;
     this.status = params.status;
     this.notes = params.notes;
-    // this.documents = params.documents;
+    this.document_ids = params.document_ids;
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
   }
@@ -78,7 +78,7 @@ export class VendorModel implements Vendor {
       category: this.category,
       status: this.status,
       notes: this.notes,
-      // documents: this.documents,
+      document_ids: this.document_ids,
       created_at: this.createdAt,
       updated_at: this.updatedAt,
     };
@@ -99,7 +99,7 @@ export class VendorModel implements Vendor {
       category: dbData.category,
       status: dbData.status,
       notes: dbData.notes,
-      // documents: dbData.documents,
+      document_ids: dbData.document_ids,
       createdAt: dbData.createdAt,
       updatedAt: dbData.updatedAt,
     });

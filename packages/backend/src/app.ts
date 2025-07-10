@@ -27,6 +27,7 @@ import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import router from './routes';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
+import documentRouter from './routes/document.routes';
 
 // Create Express app
 const app = express();
@@ -69,6 +70,7 @@ app.use('/vendor', (req, res, next) => {
 app.use('/api/auth',routerAuth);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
+app.use('/api/document', documentRouter);
 
 // app.use('/api/leadInteraction', routerCstomer);
 

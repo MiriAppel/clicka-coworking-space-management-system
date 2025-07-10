@@ -13,6 +13,7 @@ import MainLayout from './layout/MainLayout';
 import { Billing } from './MainMenu/Billing/Components/Billing';
 // import { WorkspaceMap } from './MainMenu/Workspace/Components/WorkspaceMap'
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
+import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -47,14 +48,15 @@ export const Routing = () => {
       <Route element={<MainLayout />}>
         <Route path="/" element={<App />} />
         <Route path="/" element={<App />} />
-        {/* <Route path="/workspaceMap" element={<WorkspaceMap />} /> */}
+        <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="payment" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-        <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        {/* <Route path="/vendors/:id" element={<VendorSummary />} /> */}
+        {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
      

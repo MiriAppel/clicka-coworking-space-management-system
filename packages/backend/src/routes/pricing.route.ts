@@ -8,7 +8,7 @@ import {
   deletePricingTierController,
   bulkUpdatePricingTiersController,
   createMeetingRoomPricingController,
-  createMeetingRoomPricingWithHistoryController, // ✅ נוספה כאן
+  createMeetingRoomPricingWithHistoryController, 
   getCurrentMeetingRoomPricingController,
   getMeetingRoomPricingHistoryController,
   updateMeetingRoomPricingController,
