@@ -11,6 +11,7 @@ interface FileInputFieldProps {
   className?: string;
   "data-testid"?: string;
   multiple?: boolean; //אפשרות להוספת הרבה קבצים 
+  
 }
 
 export const FileInputField: React.FC<FileInputFieldProps> = ({

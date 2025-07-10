@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import { LeadAndCustomer } from "./leadAndCustomer";
-import { CustomerDetails } from "./Customers/customerDetails";
 import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";

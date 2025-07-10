@@ -34,7 +34,7 @@ export const clearAuthCookie = (res: Response): void => {
         sameSite: 'strict',
     });
 };
-export const getUserFromCookie = (req: Request): string | null => {
+export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string } | null => {
     const sessionToken = req.cookies.session;
     const sessionId = req.cookies.sessionId;
     if (!sessionToken || !sessionId) return null;
@@ -45,7 +45,11 @@ export const getUserFromCookie = (req: Request): string | null => {
         if (!isValidSession) {
             return null;
         }
-        return userId;
+        return {
+            userId,
+            email: payload.email,
+            googleId: payload.googleId
+        };
     } catch (error) {
         console.error('Error verifying JWT token:', error);
         return null;
