@@ -1,7 +1,5 @@
 import type { ID } from "shared-types";
-import { createClient } from "@supabase/supabase-js";
 import { supabase } from "../db/supabaseClient";
-
 
 
 export class baseService<T> {
