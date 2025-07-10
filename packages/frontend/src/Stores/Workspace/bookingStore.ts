@@ -54,7 +54,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       // מוודאים שה־payload נכון
-      const response = await axiosInstance.post('/api/bookings/createBook', booking);
+      const response = await axiosInstance.post("/book", booking);
       const created = response.data;
 
       set(state => ({

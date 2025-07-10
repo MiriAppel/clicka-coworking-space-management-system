@@ -6,12 +6,19 @@ import { Form } from "../../../Common/Components/BaseComponents/Form";
 import { SelectField } from "../../../Common/Components/BaseComponents/Select";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
 import { v4 as uuidv4 } from "uuid";
-import { BookingStatus } from "../../../../../shared-types/booking";
-
+import '../Css/roomReservations.css'; 
 
 export enum MeetingRoomManagement {
   MEETING_ROOM = "MEETING_ROOM",
   LUENGE = "LUENGE",
+}
+
+export enum BookingStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  CANCELED = 'CANCELED',
+  COMPLETED = 'COMPLETED'
 }
 
 const roomOptions = Object.entries(MeetingRoomManagement).map(([key, value]) => ({
@@ -42,7 +49,7 @@ export function RoomReservations() {
     mode: "onSubmit",
   });
 
-  const { createBooking ,getCustomerByPhoneOrEmail} = useBookingStore();
+  const { createBooking, getCustomerByPhoneOrEmail } = useBookingStore();
   const status = useWatch({ control: methods.control, name: "customerStatus" });
   const phoneOrEmail = useWatch({ control: methods.control, name: "phoneOrEmail" });
 
@@ -114,8 +121,8 @@ export function RoomReservations() {
             return;
           }
         }
-      } else {
-        // ולידציה לליד חדש
+      } 
+      else {
         if (!data.name || !data.phone || !data.email) {
           alert("נא למלא את כל השדות ללקוח חדש");
           return;
@@ -135,38 +142,66 @@ export function RoomReservations() {
   };
 
   return (
-    <FormProvider {...methods}>
-      <Form onSubmit={handleSubmit}>
-        <fieldset>
-          <legend>סטטוס לקוח</legend>
-          <label>
-            <InputField type="radio" name="customerStatus" value="valid" label="וליד חדש" />
-          </label>
-          <label>
-            <InputField type="radio" name="customerStatus" value="customer" label="לקוח קיים" />
-          </label>
-        </fieldset>
+    <div className="form-page">
+      <div className="form-wrapper">
+        <h1 className="form-title">הזמנות חדרים</h1>
+        <FormProvider {...methods}>
+          {/* <Form onSubmit={handleSubmit}> */}
+          <form onSubmit={methods.handleSubmit(handleSubmit)}>
+            <fieldset>
+              <legend>סטטוס לקוח</legend>
+              <label>
+                <InputField type="radio" name="customerStatus" value="valid" label="מתענין" />
+              </label>
+              <label>
+                <InputField type="radio" name="customerStatus" value="customer" label="לקוח קיים" />
+              </label>
+            </fieldset>
 
-        {status === "customer" && (
-          <InputField type="text" name="phoneOrEmail" label="טלפון או מייל לזיהוי" required
-          />
-        )}
+            {status === "customer" && (
+      <div className="form-field">
+        <InputField name="phone" label="טלפון" type="tel" required /> <InputField type="text" name="phoneOrEmail" label="טלפון או מייל לזיהוי" required />
+      </div>
+    )}
 
-        {status === "valid" && (
-          <>
-            <InputField name="name" label="שם" type="text" required />
-            <InputField name="phone" label="טלפון" type="tel" required />
-            <InputField name="email" label="מייל" type="email" required />
-        </>)}
+    {status === "valid" && (
+      <>
+        <div className="form-field">
+          <InputField name="name" label="שם" type="text" required />
+        </div>
+        <div className="form-field">
+          <InputField name="phone" label="טלפון" type="tel" required />
+        </div>
+        <div className="form-field">
+          <InputField name="email" label="מייל" type="email" required />
+        </div>
+      </>
+    )}
 
-        <SelectField  name="selectedRoom" label="בחירת חדר" options={roomOptions}/>
-        <InputField name="startDate" label="תאריך התחלה" type="date" required />
-        <InputField name="startTime" label="שעת התחלה" type="time" required />
-        <InputField name="endDate" label="תאריך סיום" type="date" required />
-        <InputField name="endTime" label="שעת סיום" type="time" required />
 
-        <Button type="submit">שלח</Button>
-      </Form>
-    </FormProvider>
+            <div className="form-field">
+              <SelectField name="selectedRoom" label="בחירת חדר" options={roomOptions} />
+            </div>
+
+            <div className="form-field">
+              <InputField name="startDate" label="תאריך התחלה" type="date" required />
+            </div>
+            <div className="form-field">
+              <InputField name="startTime" label="שעת התחלה" type="time" required />
+            </div>
+            <div className="form-field">
+              <InputField name="endDate" label="תאריך סיום" type="date" required />
+            </div>
+            <div className="form-field">
+              <InputField name="endTime" label="שעת סיום" type="time" required />
+            </div>
+
+            <div className="form-actions">
+              <Button type="submit">שלח</Button>
+            </div>
+          </form>
+        </FormProvider>
+      </div>
+    </div>
   );
 }
