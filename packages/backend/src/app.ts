@@ -12,27 +12,30 @@ dotenv.config();
 
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
-import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
-
+const cookieParser = require("cookie-parser")
 // Create Express app
 const app = express();
 
 
 // Apply middlewares
-app.use(cookieParser());
-
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
   credentials: true, // Allow cookies to be sent with requests
 }));
+
+
+
+
+
+ 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 
-app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
@@ -63,5 +66,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     }
   });
 });
+ app.use(cookieParser());
 
 export default app;

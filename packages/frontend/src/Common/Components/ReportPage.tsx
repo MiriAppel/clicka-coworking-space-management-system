@@ -2,15 +2,16 @@ import React, { useRef, useState } from 'react';
 import { ChartDisplay, ChartData } from '../Components/BaseComponents/Graph';
 import { ExportButtons } from '../Components/BaseComponents/exportButtons';
 import { Button } from '../Components/BaseComponents/Button';
+// import {formatNumberIL } 
 
 export const ReportPage = () => {
   const chartRef = useRef<HTMLDivElement>(null);
-//עושים רפרנס לדיו שאחרי זה יעזור לי לייצא לPDF 
-  
+  //עושים רפרנס לדיו שאחרי זה יעזור לי לייצא לPDF 
+
   const initialData: ChartData[] = [
-    { label: 'Group A', value: 100 },
-    { label: 'Group B', value: 150 },
-    { label: 'Group C', value: 80 },
+    { label: 'Group A', value: 100, date: '2025-01-15' },
+    { label: 'Group B', value: 150, date: '2025-03-10' },
+    { label: 'Group C', value: 80, date: '2025-04-20' },
   ];
   //אלו הדברים הראשונים שרואים אותם בטעינת הקומםוננטה. הנתונים הראשונים שאח"כ מתי 
   //dynamicDrillDataשלוחצים עלים עובר לנו ל
@@ -18,15 +19,15 @@ export const ReportPage = () => {
   // האובייקטים האולו לא מחייבים שיהיו כך. אפשר להביא מה שכל אחד צריך מהAPI 
   const dynamicDrillData: Record<string, ChartData[]> = {
     'Group A': [
-      { label: 'Element A1', value: 40 },
+      { label: 'Element A1', value: 40, date: '2025-02-05' },
       //Label: השם של הקבוצנ 
       //value: יכול להיות גגם שמייצג מספר 
-      { label: 'Element A2', value: 60 },
+      { label: 'Element A2', value: 60, date: '2025-04-08' },
     ],
     //אם אני לוחצת על הGROUP A אז מראה לי את A1-A2 
     'Group B': [
-      { label: 'Element B1', value: 90 },
-      { label: 'Element B2', value: 60 },
+      { label: 'Element B1', value: 90, date: '2025-04-15' },
+      { label: 'Element B2', value: 60, date: '2025-07-04' },
     ],
     // IMPORTANT: חייב להיות שיהיה נתונים לאחרי הלחיצה שך הCHARTDATA אם לא הDRILL לא יעבוד 
   };
@@ -38,10 +39,17 @@ export const ReportPage = () => {
   //אם אנחנו רואים את הנתונים עושה TRUE אם לא עושה FALSE 
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   // שומר פה איזה קבוצה נבחרה ונשמרה 
+  const [chartType, setChartType] = useState<'bar' | 'line' | 'pie'>('bar');
+  // 👆 מוסיף מצב שמייצג את סוג הגרף לבחירה
+  const [groupBy, setGroupBy] = useState<'month' | 'quarter' | 'year'>('month');
+  //בחירה איך שאני רוצה שהדברי =ם יהיו
+  const [startDate, setStartDate] = useState<string>(''); // FORMAT: yyyy-mm-dd
+  // משתנה שמאפשר אפשרות של בחירה בתאריכים-תאריך תחילה ותאריך סוף 
+  const [endDate, setEndDate] = useState<string>('');
 
   // מסדר את הלחיצה בגרפים 
-  const handleBarClick = (event: any) => {
-    const label = event?.activeLabel;
+  const handleBarClick = (label: string) => {
+    // const label = event?.activeLabel;
     // שם של מה שלחצנו 
     if (!label) return;
 
@@ -62,12 +70,103 @@ export const ReportPage = () => {
     setSelectedLabel(null);
   };
   //חוזר לגרך ההתחלתי 
+  function groupDataBy(data: ChartData[], groupBy: 'month' | 'quarter' | 'year'): ChartData[] {
+    const groups: Record<string, number> = {};
+    //זה כמו מילון לדוגמא : { "2024-01": 100, "2024-02": 230 }.
+    data.forEach(item => {
+      const date = new Date(item.date); //אמחנו מחליפים את התאריך לאובייקט DATE
+      let key = '';
+      //אנחנו עושים נתון שבו נשמור את הנתונים של של הקבוצה הנדרשת 
 
+      switch (groupBy) {
+        case 'month':
+          key = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+          //אנחנו מייצרים את הKEY הזה תלוי לפי הבחירה שאנחנו רוצים אם זה לפי יום חודש או שנה ומכניסים את זה לתוך
+          //לחודש עושים את השנה+0 כשי שיצא יותר מסודר 
+          break;
+        case 'quarter':
+          const quarter = Math.floor(date.getMonth() / 3) + 1;
+          key = `${date.getFullYear()} Q${quarter}`;
+          break;
+        //לכל טרימסטר אנחנו עושים את זה לפפי קווארטרים עם הנובחה הספציפית שלהם 
+        case 'year':
+          key = `${date.getFullYear()}`;
+          break;
+      }
+
+      groups[key] = (groups[key] || 0) + item.value;
+      //אם הKEY קיימת אז רק מוסיפים את הVALUE ואם היא לר קיימת אז מאתחלים אותה לאפס ואז מוסיפים 
+    });
+
+    return Object.entries(groups).map(([label, value]) => ({
+      label,
+      value,
+      date: label 
+    }));
+    //ואז כבר מתי שיש לנו את מה שאנחנו רוצים לפי מה שבחרנו אנו רותים לשנות את זה לאובייקט עם תבנית של יום חודש שנה 
+  }
+  function filterByDateRange(data: ChartData[], start: string, end: string): ChartData[] {
+    if (!start && !end) return data;
+
+    return data.filter(item => {
+      const itemDate = new Date(item.date);
+      const startD = start ? new Date(start) : null;
+      const endD = end ? new Date(end) : null;
+
+      return (!startD || itemDate >= startD) && (!endD || itemDate <= endD);
+    });
+  }
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">
         {isDrillDown ? `Details of "${selectedLabel}"` : 'General Report'}
       </h1>
+
+      {/* ⬇️ Select to change the graph type */}
+      <div className="mb-4">
+        {/* מאפשר לבחור בין שלושה סוגים של גרפים */}
+        <label htmlFor="chartType" className="mr-2 font-semibold">Chart Type:</label>
+        <select
+          id="chartType"
+          value={chartType}
+          onChange={(e) => setChartType(e.target.value as 'bar' | 'line' | 'pie')}
+          className="border p-1 rounded"
+        >
+          <option value="bar">Bar</option>
+          <option value="line">Line</option>
+          <option value="pie">Pie</option>
+        </select>
+      </div>
+      <div className="mb-4">
+        <label htmlFor="groupBy" className="mr-2 font-semibold">Group by:</label>
+        <select
+          id="groupBy"
+          value={groupBy}
+          onChange={(e) => setGroupBy(e.target.value as 'month' | 'quarter' | 'year')}
+          className="border p-1 rounded"
+        >
+          <option value="month">Month</option>
+          <option value="quarter">Quarter</option>
+          <option value="year">Year</option>
+        </select>
+      </div>
+      <div className="mb-5">
+        <label className="mr-2 font-semibold">Start Date:</label>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="border p-1 rounded mr-4"
+        />
+
+        <label className="mr-2 font-semibold">End Date:</label>
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="border p-1 rounded"
+        />
+      </div>
 
       {/* Export Buttons */}
       <ExportButtons
@@ -84,16 +183,21 @@ export const ReportPage = () => {
         className="bg-white mt-4 p-4 shadow rounded"
       >
         <ChartDisplay
-          type="bar"
-          data={data}
+          type={chartType} // 👈 כאן אנחנו שולחים את סוג הגרף שנבחר
+          data={
+            isDrillDown
+              ? groupDataBy(filterByDateRange(data, startDate, endDate), groupBy)
+              : filterByDateRange(data, startDate, endDate)
+          }
           rtl={false}
+          onClickLabel={handleBarClick}
         />
       </div>
 
       {/* Instruction and Bach Button */}
       {!isDrillDown && (
         <p className="text-sm text-gray-500 mt-2">
-         Click on a bar to see details
+          Click on a bar to see details
         </p>
       )}
       {isDrillDown && (
