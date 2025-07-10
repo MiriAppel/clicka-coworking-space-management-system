@@ -1,6 +1,6 @@
-
 // ייבוא React (כולל טיפוסי FC)
 import React from 'react';
+
 
 // ייבוא רכיבי גרפים מהספרייה Recharts
 import {
@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 // ייבוא קריאת ערכת עיצוב (theme) מתוך hook פנימי
 import { useTheme } from '../themeConfig';
+import { formatDateIL, formatNumberIL } from '../../Service/FormatHebrew';
 
 // טיפוס עבור הנתונים שכל גרף יקבל (label לציר X, value לערך המספרי)
 export interface ChartData {
@@ -23,11 +24,12 @@ interface ChartDisplayProps {
   data: ChartData[];            // הנתונים להצגה
   title?: string;               // כותרת אופציונלית לגרף
   rtl?: boolean;                // האם הכיוון הוא ימין לשמאל (ברירת מחדל: true)
-  color?: string;               // צבע אופציונלי (אם לא – נשלוף מ־theme)
+  color?: string;
+  onClickLabel?: (label: string) => void;            // צבע אופציונלי (אם לא – נשלוף מ־theme)
 }
 
 // קומפוננטת ChartDisplay – מציגה גרף לפי סוג שנבחר
-export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = true }) => {
+export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = true, onClickLabel }) => {
   const { theme: { colors } } = useTheme(); // שליפת צבעים מה־theme (צבעים אחידים לגרפים)
 
   // מערך צבעים לפרוסות גרף עוגה
@@ -38,41 +40,74 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = tr
     <div dir={rtl ? 'rtl' : 'ltr'}>
       {/* עטיפה רספונסיבית שתתאים את הגרף לגודל האלמנט ההורה */}
       <ResponsiveContainer width="100%" height={300}>
-        
+
         {/* גרף מסוג קו (LineChart) */}
         {type === 'line' ? (
           <LineChart
             data={data}
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+
           >
             <CartesianGrid strokeDasharray="3 3" /> {/* רשת רקע עם קווים מקווקווים */}
             <XAxis dataKey="label" reversed={rtl} /> {/* ציר X – שם הקטגוריות */}
             <YAxis /> {/* ציר Y – ערכים מספריים */}
-            <Tooltip /> {/* חלונית מידע כאשר מרחפים */}
+            <Tooltip
+              formatter={(value: number) => formatNumberIL(value)}
+              labelFormatter={(_, payload) => {
+                const date = payload?.[0]?.payload?.date;
+                return date ? formatDateIL(date) : '';
+              }}
+            /> {/* חלונית מידע כאשר מרחפים */}
             <Line
               type="monotone" // סוג הקו – עקומה חלקה
               dataKey="value" // הערך להצגה
               stroke={colors.primary} // צבע קו
+              onClick={(data: any) => {
+                if (onClickLabel && data && data.payload && data.payload.label) {
+                  onClickLabel(data.payload.label);
+                }
+              }}
             />
           </LineChart>
 
-        // גרף מסוג עמודות (BarChart)
+          // גרף מסוג עמודות (BarChart)
         ) : type === 'bar' ? (
           <BarChart
             data={data}
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="label" reversed={rtl} />
             <YAxis />
-            <Tooltip />
-            <Bar dataKey="value" fill={colors.primary} /> {/* עמודות בצבע עיקרי */}
+            <Tooltip
+              formatter={(value: number) => formatNumberIL(value)}
+              labelFormatter={(_, payload) => {
+                const date = payload?.[0]?.payload?.date;
+                return date ? formatDateIL(date) : '';
+              }}
+            />
+            <Bar
+              dataKey="value"
+              fill={colors.primary}
+              onClick={(data: any) => {
+                if (onClickLabel && data && data.payload && data.payload.label) {
+                  onClickLabel(data.payload.label);
+                }
+              }}
+            /> {/* עמודות בצבע עיקרי */}
           </BarChart>
 
-        // גרף מסוג עוגה (PieChart)
+          // גרף מסוג עוגה (PieChart)
         ) : (
           <PieChart>
-            <Tooltip /> {/* חלונית מידע על פרוסה */}
+            <Tooltip
+              formatter={(value: number) => formatNumberIL(value)}
+              labelFormatter={(_, payload) => {
+                const date = payload?.[0]?.payload?.date;
+                return date ? formatDateIL(date) : '';
+              }}
+            /> {/* חלונית מידע על פרוסה */}
             <Legend wrapperStyle={{ fontSize: '12px', padding: 30 }} /> {/* מקרא הצבעים */}
 
             <Pie
@@ -84,19 +119,11 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = tr
               outerRadius={100} // רדיוס פרוסות העוגה
               labelLine={false} // ביטול קו תוויות
               isAnimationActive={true} // הפעלת אנימציה
-              
-              // (אפשרות להוספת תוויות בהתאמה אישית)
-              // label={({ cx, cy, midAngle, outerRadius, value, index }) => {
-              //   const radius = outerRadius + 20;
-              //   const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
-              //   const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
-              //   const fillColor = COLORS[index % COLORS.length];
-              //   return (
-              //     <text x={x} y={y} fill={fillColor} textAnchor="middle" dominantBaseline="middle">
-              //       {value}
-              //     </text>
-              //   );
-              // }}
+              onClick={(entry: any) => {
+                if (onClickLabel && entry && entry.label) {
+                  onClickLabel(entry.label);
+                }
+              }}
             >
               {/* עבור כל פרוסה בעוגה נבחר צבע מתוך COLORS */}
               {data.map((entry, index) => (

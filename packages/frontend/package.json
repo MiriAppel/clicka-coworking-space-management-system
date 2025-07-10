@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fullcalendar/core": "^6.1.18",
@@ -31,17 +34,17 @@
     "for": "^0.0.1-dev.0",
     "html2canvas": "^1.4.1",
     "in": "^0.19.0",
-    "jspdf": "^3.0.1",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.525.0",
     "package": "^1.0.1",
     "project": "^0.1.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-hook-form": "^7.60.0",
-    "react-i18next": "^15.6.0",
-    "react-icons": "5.5.0",
+    "react-hook-form": "^7.52.1",
+    "react-i18next": "^15.5.3",
+    "react-icons": "4",
     "react-responsive": "^10.0.1",
-    "react-router-dom": "^7.6.3",
+    "react-router-dom": "^7.6.2",
     "react-scripts": "5.0.1",
     "react-transition-group": "^4.4.5",
     "recharts": "^3.0.2",
@@ -83,8 +86,9 @@
   "devDependencies": {
     "@types/glob": "^9.0.0",
     "@types/lodash": "^4.17.20",
+    "@types/mime": "^4.0.0",
     "@types/parse-json": "^7.0.0",
-    "@types/xlsx": "^0.0.36"
+    "@types/xlsx": "^0.0.35"
   },
   "proxy": "http://localhost:3001"
 }

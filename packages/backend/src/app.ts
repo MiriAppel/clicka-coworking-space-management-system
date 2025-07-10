@@ -29,15 +29,25 @@ import userRouter from './routes/user.route';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 
-
-
+// import cookieParser from "cookie-parser";
+import userRouter from './routes/user.route';
+const cookieParser = require("cookie-parser")
 // Create Express app
 const app = express();
 
 
 // Apply middlewares
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
+  credentials: true, // Allow cookies to be sent with requests
+}));
+
+
+
+
+
+ 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -95,25 +105,6 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
     }
   });
 });
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Clicka API',
-      version: '1.0.0',
-      description: 'API Documentation for Clicka backend',
-    },
-    servers: [
-      {
-        url: 'http://localhost:3001',
-      },
-    ],
-  },
-  apis: [
-    './src/routes/*.ts',
-    './src/swagger.ts' ,
-    './src/services/*.ts'
-  ],
-};
+ app.use(cookieParser());
 
 export default app;
