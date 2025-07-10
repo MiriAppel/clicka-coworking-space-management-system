@@ -12,7 +12,7 @@ import routerPricing from './routes/pricing.route';
 import expenseRouter from './routes/expense.route';
 
 import dotenv from 'dotenv';
-import  routerAuth  from './routes/auth';
+import routerAuth from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
 import bookRouter from './routes/booking.route';
@@ -25,8 +25,9 @@ import routerMap from './routes/WorkspaceMapRoute';
 import userRouter from './routes/user.route';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
+import emailTemplateRouter from './routes/emailTemplate.route';
 import router from './routes';
-import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
+import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 
 // Create Express app
 const app = express();
@@ -54,19 +55,21 @@ app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
 app.use('/api/space', spaceRouter);
-app.use('/api/map',routerMap);
- // User routes
+app.use('/api/map', routerMap);
+// User routes
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
-app.use('/api/pricing',routerPricing)
+app.use('/api/pricing', routerPricing);
+app.use('/api/emailTemplate', emailTemplateRouter);
+
 app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
 // app.use('/api/translate', translationRouter);
-app.use('/api/auth',routerAuth);
+app.use('/api/auth', routerAuth);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 
@@ -122,7 +125,7 @@ const swaggerOptions = {
   },
   apis: [
     './src/routes/*.ts',
-    './src/swagger.ts' ,
+    './src/swagger.ts',
     './src/services/*.ts'
   ],
 };
