@@ -84,19 +84,7 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = tr
               outerRadius={100} // רדיוס פרוסות העוגה
               labelLine={false} // ביטול קו תוויות
               isAnimationActive={true} // הפעלת אנימציה
-              
-              // (אפשרות להוספת תוויות בהתאמה אישית)
-              // label={({ cx, cy, midAngle, outerRadius, value, index }) => {
-              //   const radius = outerRadius + 20;
-              //   const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
-              //   const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
-              //   const fillColor = COLORS[index % COLORS.length];
-              //   return (
-              //     <text x={x} y={y} fill={fillColor} textAnchor="middle" dominantBaseline="middle">
-              //       {value}
-              //     </text>
-              //   );
-              // }}
+              label// תווית פרוסה
             >
               {/* עבור כל פרוסה בעוגה נבחר צבע מתוך COLORS */}
               {data.map((entry, index) => (
