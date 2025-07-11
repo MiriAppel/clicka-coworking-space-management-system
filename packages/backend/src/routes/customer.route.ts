@@ -5,11 +5,11 @@ import * as contractController from '../controllers/contract.controller'
 const routerCustomer = express.Router();
 
 // (GET)
-routerCustomer.get('/by-page', customerController.getCustomersByPage);
-
-routerCustomer.get('/', customerController.getAllCustomers); 
+// routerCustomer.get('/by-page', customerController.getCustomersByPage);
 
 routerCustomer.get('/page', customerController.getCustomersByPage); 
+
+routerCustomer.get('/', customerController.getAllCustomers); 
 
 routerCustomer.get('/status/all', customerController.getAllCustomerStatus);
 

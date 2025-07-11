@@ -10,9 +10,11 @@ import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
-import { createCustomer, updateLead } from "../../Service/LeadAndCustomersService"
+import { updateLead } from "../../Service/LeadAndCustomersService"
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import axios from 'axios';
+import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
+import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 
 //האם להכניס עוד שדות שקשורים לחוזה????
 
@@ -47,19 +49,50 @@ const schema = z.object({
     notes: z.string().optional(), // אופציונלי
     invoiceName: z.string().optional(), // אופציונלי
     // paymentMethod: z.object({
-   creditCardLast4: z.string().optional().refine(val => val && /^\d{4}$/.test(val), { message: "חובה להזין 4 ספרות בדיוק" }),
-    creditCardExpiry: z.string().optional().refine(val => val && /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }),
-    creditCardHolderIdNumber: z.string().optional().refine(val => val && /^\d{9}$/.test(val), { message: "חובה להזין 9 ספרות בדיוק" }),
-    creditCardHolderPhone: z.string().optional().refine(val => val && /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }),
+    //    creditCardLast4: z.string().optional().refine(val => val && /^\d{4}$/.test(val), { message: "חובה להזין 4 ספרות בדיוק" }),
+    //     creditCardExpiry: z.string().optional().refine(val => val && /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }),
+    //     creditCardHolderIdNumber: z.string().optional().refine(val => val && /^\d{9}$/.test(val), { message: "חובה להזין 9 ספרות בדיוק" }),
+    //     creditCardHolderPhone: z.string().optional().refine(val => val && /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }),
     // }).optional(), // אופציונלי
     paymentMethodType: z.nativeEnum(PaymentMethodType).refine(val => !!val, { message: "חובה" }),
-    // creditCardLast4: z.string().optional(),
-    // creditCardExpiry: z.string().optional(),
-    // creditCardHolderIdNumber: z.string().optional(),
-    // creditCardHolderPhone: z.string().optional(),
+    creditCardLast4: z.string().optional(),
+    creditCardExpiry: z.string().optional(),
+    creditCardHolderIdNumber: z.string().optional(),
+    creditCardHolderPhone: z.string().optional(),
     contractDocuments: z.array(z.any()).optional(),
     ProfilePicture: z.any().optional(),
-})
+}).superRefine((data, ctx) => {
+    if (data.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
+        if (!data.creditCardLast4 || !/^\d{4}$/.test(data.creditCardLast4)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['creditCardLast4'],
+                message: "חובה להזין 4 ספרות בדיוק",
+            });
+        }
+        if (!data.creditCardExpiry || !/^(0[1-9]|1[0-2])\/\d{2}$/.test(data.creditCardExpiry)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['creditCardExpiry'],
+                message: "פורמט תוקף לא תקין (MM/YY)",
+            });
+        }
+        if (!data.creditCardHolderIdNumber || !/^\d{9}$/.test(data.creditCardHolderIdNumber)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['creditCardHolderIdNumber'],
+                message: "חובה להזין 9 ספרות בדיוק",
+            });
+        }
+        if (!data.creditCardHolderPhone || !/^0\d{8,9}$/.test(data.creditCardHolderPhone)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ['creditCardHolderPhone'],
+                message: "מספר טלפון לא תקין",
+            });
+        }
+    }
+});
 // type FormData = z.infer<typeof schema>;
 
 export const InterestedCustomerRegistration: React.FC = () => {
@@ -71,6 +104,12 @@ export const InterestedCustomerRegistration: React.FC = () => {
     lead.idNumber = lead.idNumber != "UNKNOWN" ? lead.idNumber : "";
 
     const [currentStep, setCurrentStep] = useState<number>(0);
+
+    const {
+        createCustomer,
+    } = useCustomerStore();
+
+    const { handleUpdateLead } = useLeadsStore();
 
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -109,6 +148,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
         ["paymentMethodType", "invoiceName", "creditCardLast4", "creditCardExpiry", "creditCardHolderIdNumber", "creditCardHolderPhone"] as const,
         ["workspaceType", "workspaceCount", "contractSignDate", "contractStartDate", "billingStartDate", "contractDocuments"] as const
     ];
+    const paymentMethodType = methods.watch("paymentMethodType");
 
 
     const steps = [
@@ -141,10 +181,10 @@ export const InterestedCustomerRegistration: React.FC = () => {
                     <div className="col-span-2 mt-4 mb-2">
                         <h3 className="text-lg font-semibold text-gray-700 pb-1">פרטי אשראי</h3>
                     </div>
-                    <InputField name="creditCardLast4" label="4 ספרות אחרונות של כרטיס אשראי" required={methods.getValues("paymentMethodType") === PaymentMethodType.CREDIT_CARD}/>
-                    <InputField name="creditCardExpiry" label="תוקף כרטיס אשראי" required={methods.getValues("paymentMethodType") === PaymentMethodType.CREDIT_CARD}/>
-                    <InputField name="creditCardHolderIdNumber" label="תעודת זהות בעל הכרטיס" required={methods.getValues("paymentMethodType") === PaymentMethodType.CREDIT_CARD}/>
-                    <InputField name="creditCardHolderPhone" label="טלפון בעל הכרטיס" required={methods.getValues("paymentMethodType") === PaymentMethodType.CREDIT_CARD}/>
+                    <InputField name="creditCardLast4" label="4 ספרות אחרונות של כרטיס אשראי" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} />
+                    <InputField name="creditCardExpiry" label="תוקף כרטיס אשראי" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} />
+                    <InputField name="creditCardHolderIdNumber" label="תעודת זהות בעל הכרטיס" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} />
+                    <InputField name="creditCardHolderPhone" label="טלפון בעל הכרטיס" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} />
 
                 </>
             )
@@ -182,13 +222,34 @@ export const InterestedCustomerRegistration: React.FC = () => {
     //לבדוק דחוף למה לא מבטל שגיאות כמו לפני זה!!
     const goToStep = async (index: number) => {
 
-        const valid = await methods.trigger(stepFieldNames[currentStep]);
+        // הכריחי את הטופס לעדכן את הערכים
+        await methods.trigger(stepFieldNames[currentStep]);
+        // נבדוק שוב את השגיאות אחרי trigger
+        const errors = methods.formState.errors;
+        const fields = stepFieldNames[currentStep] as readonly string[];
+        // אם בחרו כרטיס אשראי, ודאי ששדות האשראי נבדקים
+        let valid = fields.every(field => !(field in errors));
+        // אם במקטע הזה יש שדות אשראי, נבדוק אותם ידנית
+        if (
+            currentStep === 1 &&
+            paymentMethodType === PaymentMethodType.CREDIT_CARD
+        ) {
+            console.log("in credit card step");
+
+            const creditFields = [
+                "creditCardLast4",
+                "creditCardExpiry",
+                "creditCardHolderIdNumber",
+                "creditCardHolderPhone"
+            ];
+            valid = valid && creditFields.every(field => !(field in errors));
+        }
         if (valid) {
             setValidSteps((prev) => {
-            const updatedSteps = [...prev];
-            updatedSteps[currentStep] = true; // עדכון המצב של השלב הנוכחי
-            return updatedSteps; // מחזירים את המערך המעודכן
-        });
+                const updatedSteps = [...prev];
+                updatedSteps[currentStep] = true; // עדכון המצב של השלב הנוכחי
+                return updatedSteps; // מחזירים את המערך המעודכן
+            });
             setCurrentStep((prev) => {
                 // const next = Math.min(prev + 1, steps.length - 1);
                 const next = index;
@@ -202,10 +263,10 @@ export const InterestedCustomerRegistration: React.FC = () => {
         }
         else {
             setValidSteps((prev) => {
-            const updatedSteps = [...prev];
-            updatedSteps[currentStep] = false; // עדכון המצב של השלב הנוכחי
-            return updatedSteps; // מחזירים את המערך המעודכן
-        });
+                const updatedSteps = [...prev];
+                updatedSteps[currentStep] = false; // עדכון המצב של השלב הנוכחי
+                return updatedSteps; // מחזירים את המערך המעודכן
+            });
             if (index < currentStep)
                 setCurrentStep(index);
         }
@@ -257,38 +318,23 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
         console.log(customerRequest);
 
-        await createCustomer(customerRequest)
-            .then(async () => {
+        await createCustomer(customerRequest);
 
-                await updateLead(lead.id!, { status: LeadStatus.CONVERTED })
-                    .then(() => {
-                        showAlert("", "המתעניין נוסף ללקוחות בהצלחה", "success");
-                        navigate(-1);
-                    }).catch((error) => {
-                        if (axios.isAxiosError(error)) {
-                            // אם השגיאה היא של Axios
-                            console.error('Axios error:', error.response?.data);
-                            // תוכל להציג את השגיאה למשתמש או לוג
-                            showAlert("שגיאה בעדכון סטטוס ", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
-                        } else {
-                            // טיפול בשגיאות אחרות
-                            console.error('Unexpected error:', error);
-                            showAlert("שגיאה בשינוי סטטוס", 'שגיאה בלתי צפויה', "error");
-                        }
-                    })
+        const latestError = useCustomerStore.getState().error;
+        if (latestError) {
+            showAlert("שגיאה ביצירת לקוח", latestError || "שגיאה בלתי צפויה", "error");
+        } else {
+            await handleUpdateLead(lead.id!, { status: LeadStatus.CONVERTED })
+            const latestError = useLeadsStore.getState().error;
+            if (latestError) {
+                showAlert("שגיאה בעדכון סטטוס למתעניין", latestError || "שגיאה בלתי צפויה", "error");
+            }
+            else {
+                showAlert("", "המתעניין נוסף ללקוחות בהצלחה", "success");
+                navigate(-1);
+            }
+        }
 
-            }).catch((error: Error) => {
-                if (axios.isAxiosError(error)) {
-                    // אם השגיאה היא של Axios
-                    console.error('Axios error:', error.response?.data);
-                    // תוכל להציג את השגיאה למשתמש או לוג
-                    showAlert("שגיאה ביצירת לקוח", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
-                } else {
-                    // טיפול בשגיאות אחרות
-                    console.error('Unexpected error:', error);
-                    showAlert("שגיאה ביצירת לקוח", 'שגיאה בלתי צפויה', "error");
-                }
-            });
     }
 
 

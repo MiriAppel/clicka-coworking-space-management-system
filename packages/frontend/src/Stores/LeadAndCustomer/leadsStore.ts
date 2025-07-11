@@ -13,12 +13,15 @@ interface LeadsState {
     handleSelectLead: (leadId: string | null) => void;
     handleDeleteLead: (leadId: string) => Promise<void>;
     handleCreateLead: (lead: Lead) => Promise<Lead>;
-    handleUpdateLead: (leadId: string, lead: Lead) => Promise<Lead>;
+    handleUpdateLead: (leadId: string, lead: Partial<Lead>) => Promise<Lead>;
     resetSelectedLead: () => void;
     fetchLeadDetails: (leadId: string) => Promise<Lead>;
     setShowGraphForId: (id: string | null) => void;
 
 }
+
+const BASE_API_URL = `${process.env.REACT_APP_API_URL}/leads`;
+
 
 export const useLeadsStore = create<LeadsState>((set) => ({
     leads: [],
@@ -35,14 +38,14 @@ export const useLeadsStore = create<LeadsState>((set) => ({
             }
             const data: Lead[] = await response.json();
             set({ leads: data, loading: false });
-            
+
         } catch (error: any) {
             set({ error: error.message || "שגיאה בטעינת הלידים", loading: false });
         }
     },
 
     handleSelectLead: (leadId: UUIDTypes | null) => {
-        if(leadId === null) {
+        if (leadId === null) {
             set({ selectedLead: null });
             return;
         }
@@ -60,15 +63,39 @@ export const useLeadsStore = create<LeadsState>((set) => ({
         return lead; // Return the created lead
     },
 
-    handleUpdateLead: async (leadId: UUIDTypes, lead: Lead) => {
-        // Update lead logic here
-        return lead; // Return the updated lead
+    handleUpdateLead: async (leadId: UUIDTypes, lead: Partial<Lead>): Promise<Lead> => {
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch(`${BASE_API_URL}/${leadId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(lead),
+            });
+            if (!response.ok) {
+                let errorMsg = "Failed to update customer";
+                try {
+                    const errorBody = await response.json();
+                    errorMsg = errorBody?.error?.details || errorBody?.error?.message || errorBody?.message || errorMsg;
+                } catch (e) { }
+                throw new Error(errorMsg);
+            }
+            const updatedLead: Lead = await response.json();
+            await useLeadsStore.getState().fetchLeads();
+            return updatedLead;
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה בעדכון מתעניין", loading: false });
+            throw error; // חשוב לזרוק את השגיאה כדי שההבטחה תיכשל ולא תחזור undefined
+        } finally {
+            set({ loading: false });
+        }
     },
 
     resetSelectedLead: () => {
         set({ selectedLead: null });
-        
-        
+
+
     },
 
     fetchLeadDetails: async (leadId: string) => {

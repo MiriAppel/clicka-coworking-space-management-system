@@ -266,7 +266,8 @@ export class customerService extends baseService<CustomerModel> {
             return [];
         }
 
-        return data as CustomerModel[];
+        const customers = data || [];
+        return CustomerModel.fromDatabaseFormatArray(customers);
     };
 
 

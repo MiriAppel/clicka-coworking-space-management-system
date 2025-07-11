@@ -60,13 +60,13 @@ export const searchCustomersByText = async (req: Request, res: Response) => {
   try {
     const text = req.query.text as string;
 
-    if (!text || text.trim() === "") {
-      return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
-    }
+    // if (!text || text.trim() === "") {
+    //   return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
+    // }
 
     console.log("מחפש לקוחות עם טקסט:", text);
     const leads = await serviceCustomer.getCustomersByText(text);
-    console.log("לקוחות שמצאתי:", leads);
+    // console.log("לקוחות שמצאתי:", leads);
 
     return res.json(leads);
   } catch (error) {

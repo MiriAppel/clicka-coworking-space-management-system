@@ -1,20 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
+import { NavLink } from "react-router";
 import { ExportToExcel } from "../exportToExcel";
 import {
   Table,
   TableColumn,
 } from "../../../../Common/Components/BaseComponents/Table";
 import { Customer, CustomerStatus, DateISO, PaymentMethodType, WorkspaceType } from "shared-types";
+import { deleteCustomer } from "../../Service/LeadAndCustomersService";
 import { Stack, TextField } from "@mui/material";
+import axios from "axios";
 import debounce from "lodash/debounce";
 import { Pencil, Trash } from "lucide-react";
+import { supabase } from "../../../../Service/supabaseClient";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { set } from "lodash";
+import { text } from "body-parser";
 import { showAlertHTML } from "../../../../Common/Components/BaseComponents/showAlertHTML";
 import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
-import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
-
 
 interface ValuesToTable {
   id: string;
@@ -52,29 +56,60 @@ const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
 export const CustomersList = () => {
   const navigate = useNavigate();
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [customers, setCustomers] = useState<Customer[]>([]);
 
-  const [usedCustomers, setUsedCustomers] = useState<Customer[]>([]);
+  const allCustomersRef = useRef<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [term, setTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const {
-    customers,
-    deleteCustomer,
-    loading,
-    error,
-    currentPage,
-    limit,
-    searchCustomersByText,
-    fetchCustomersByPage,
-    searchCustomersInPage,
-    fetchNextPage,
-    fetchPrevPage,
-  } = useCustomerStore();
+  const fetchCustomers = async (
+    page: number,
+    limit: number,
+    searchTerm = ""
+  ) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        "http://localhost:3001/api/customers/page",
+        {
+          params: { page, limit },
+        }
+      );
+
+      const data: Customer[] = response.data;
+
+      setHasMore(data.length === limit); // אם פחות מה-limit, אין עוד דפים
+      setCustomers(data);
+      allCustomersRef.current = data;
+    } catch (error) {
+      console.error("שגיאה ב-fetchCustomers:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // useEffect(() => {
+  //   if (searchTerm.trim() === "") {
+  //     setIsSearching(false);
+  //     fetchCustomers(page, 20, "");
+  //   }
+  // }, [searchTerm]);
 
   useEffect(() => {
-    fetchCustomersByPage()
-  }, [fetchCustomersByPage]);
+    console.log("in useefect", page);
+    // if (searchTerm != "")
+    fetchCustomers(page, 20, searchTerm).then(() => {
+      console.log(
+        "✅ אחרי fetchCustomers - כמות לקוחות ב־allCustomers:",
+        allCustomersRef.current.length
+      );
+    });
+  }, [page]);
+
 
   //צריך בשביל זה גישה
   //  useEffect(() => {
@@ -97,10 +132,31 @@ export const CustomersList = () => {
 
   // הפונקציה שמטפלת בשינוי החיפוש
   const handleSearch = (term: string) => {
-    searchCustomersInPage(term)
-      .then(() => {
+    setTerm(term);
+    setSearchTerm(term);
 
-      })
+    if (!term.trim()) {
+      console.log("in not term", page);
+      // אם ריק, מחזירים לתצוגה רגילה
+      setIsSearching(false);
+      fetchCustomers(page, 20, "");
+      return;
+    }
+
+    setIsSearching(true);
+    const lower = term.toLowerCase();
+
+    const filtered = allCustomersRef.current.filter(
+      (c) =>
+        c.name.toLowerCase().includes(lower) ||
+        c.phone.toLowerCase().includes(lower) ||
+        c.email.toLowerCase().includes(lower) ||
+        c.businessName?.toLowerCase().includes(lower) ||
+        c.businessType?.toLowerCase().includes(lower) ||
+        statusLabels[c.status].toLowerCase().includes(lower)
+    );
+
+    setCustomers(filtered);
   };
 
   const showCustomerDetailsAlert = (row: ValuesToTable) => {
@@ -192,15 +248,22 @@ export const CustomersList = () => {
     const confirmed = await ShowAlertWarn('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?', 'לא ניתן לשחזר את המידע לאחר מחיקה.');
 
     if (confirmed) {
-
-      await deleteCustomer(val.id);
-      showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
-      const latestError = useCustomerStore.getState().error;
-      if (latestError) {
-        // נניח שהשגיאה מכילה את ההודעה שהגדרת ב-store
-        const errorMessage = latestError || 'שגיאה בלתי צפויה';
-        console.error('Error:', errorMessage);
-        showAlert("שגיאה במחיקת לקוח", errorMessage, "error");
+      try {
+        await deleteCustomer(val.id)
+        await fetchCustomers(page, 20, "");
+        // setCustomers((prev) => prev.filter(customer => customer.id !== val.id));
+        // allCustomersRef.current = allCustomersRef.current.filter((customer) => customer.id !== val.id);
+        showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error('Axios error:', error.response?.data);
+          showAlert("שגיאה במחיקת לקוח", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
+        } else {
+          // טיפול בשגיאות אחרות
+          console.error('Unexpected error:', error);
+          showAlert("שגיאה במחיקת לקוח", 'שגיאה בלתי צפויה', "error");
+        }
+        // showAlert("שגיאה", `מחיקת לקוח נכשלה\n${error}`, "error");
       }
     }
   };
@@ -217,30 +280,27 @@ export const CustomersList = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     const value = e.target.value;
-    console.log("value", value);
+    // console.log("value", value);
 
     setTerm(value);
     setSearchTerm(value);
     debouncedSearch(value);
-  }
+  };
 
-
-  const searchInApi = (e: { key: string; }) => {
-    if (
-      (e.key === "Enter" && searchTerm.trim())
-      || usedCustomers.length === 0 // אין תוצאות בדף הנוכחי
-    ) {
-      console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
-
-      searchCustomersByText(searchTerm)
-        .then(() => {
-          setUsedCustomers(customers)
-          console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
-        }).catch((error) => {
-          console.error("שגיאה בחיפוש מהשרת:", error);
-        });
+  const translateStatus = (status: CustomerStatus): string => {
+    switch (term) {
+      case "פעיל":
+        return CustomerStatus.ACTIVE;
+      case "הודעת עזיבה":
+        return CustomerStatus.NOTICE_GIVEN;
+      case "עזב":
+        return CustomerStatus.EXITED;
+      case "בהמתנה":
+        return CustomerStatus.PENDING;
+      default:
+        return status; // מחזיר את הסטטוס המקורי אם לא נמצא ת
     }
-  }
+  };
 
   return (
     <>
@@ -258,7 +318,35 @@ export const CustomersList = () => {
             fullWidth
             value={searchTerm}
             onChange={handleChange}
-            onKeyDown={searchInApi}
+            onKeyDown={(e) => {
+              if (
+                (e.key === "Enter" && searchTerm.trim()) ||
+                customers.length === 0 // אין תוצאות בדף הנוכחי
+              ) {
+                console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
+
+                axios
+                  .get("http://localhost:3001/api/customers/search", {
+                    params: { text: searchTerm },
+                  })
+                  .then((response) => {
+                    const data: Customer[] = response.data.map(
+                      (item: any) => ({
+                        ...item,
+                        businessName: item.business_name,
+                        businessType: item.business_type,
+                      })
+                    );
+
+                    setCustomers(data);
+                    allCustomersRef.current = data;
+                    console.log("✅ תוצאות שהגיעו מהשרת:", data.length);
+                  })
+                  .catch((error) => {
+                    console.error("שגיאה בחיפוש מהשרת:", error);
+                  });
+              }
+            }}
           />
         </Stack>
         <br />
@@ -271,7 +359,7 @@ export const CustomersList = () => {
             onDelete={deleteCurrentCustomer}
             onUpdate={editCustomer}
           />
-          {loading && (
+          {isLoading && (
             <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
               <div className="loader border-8 border-gray-300 border-t-8 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div> {/* גלגל טעינה */}
             </div>
@@ -279,22 +367,26 @@ export const CustomersList = () => {
         </div>
         <div className="flex justify-center space-x-4 my-4">
           <Button
-            variant={currentPage > 1 ? "secondary" : "accent"}
-            disabled={currentPage <= 1}
-            onClick={async () => {
-              if (currentPage > 1) {
-                await fetchPrevPage()
+            variant={page > 1 ? "secondary" : "accent"}
+            disabled={page <= 1}
+            onClick={() => {
+              if (page > 1) {
+                const prevPage = page - 1;
+                setPage(prevPage);
+                fetchCustomers(prevPage, 20, "");
               }
             }}
           >
             <span>❮❮</span> הקודם
           </Button>
           <Button
-            variant={customers.length == limit ? "secondary" : "accent"}
-            disabled={customers.length < limit}
-            onClick={async () => {
-              if (customers.length == limit) {
-                await fetchNextPage()
+            variant={hasMore ? "secondary" : "accent"}
+            disabled={!hasMore}
+            onClick={() => {
+              if (hasMore) {
+                const nextPage = page + 1;
+                setPage(nextPage);
+                fetchCustomers(nextPage, 20, "");
               }
             }}
           >
@@ -308,6 +400,7 @@ export const CustomersList = () => {
     </>
   );
 };
+
 const formatDate = (dateString: DateISO) => {
   if (!dateString) return 'לא זמין'; // אם התאריך ריק, מחזירים 'לא זמין'
 

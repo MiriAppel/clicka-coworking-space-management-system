@@ -6,11 +6,10 @@ import { z } from "zod";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
-import { patchCustomer } from "../../Service/LeadAndCustomersService"
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import axios from "axios";
+import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
+
 
 //לבדוק דחוף איזה שדות צריך להיות כאן!!!
 //האם גם כל הפרטים של החוזה והתשלום וכו
@@ -40,37 +39,28 @@ const schema = z.object({
 export const UpdateCustomer: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const {
+        updateCustomer,
+    } = useCustomerStore();
 
     // המידע שאני מקבלת מהדף הקודם - או לעשות קריאת שרת שמקבלת לקוח בודד לפי מזהה
     const customer: Customer = location.state?.data;
-
-    // const [showForm, setShowForm] = useState<boolean>(true);
-
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
 
         //צריך לשלוח רק את השדות ששונו - אם אפשר לדעת
         JSON.stringify(data, null, 2);
-        const updateCustomer: Partial<UpdateCustomerRequest> = { ...data }
+        const newCustomer: Partial<UpdateCustomerRequest> = { ...data }
         console.log(updateCustomer);
 
-
-        await patchCustomer(customer.id!, updateCustomer)
-            .then(() => {
-                showAlert("עדכון", "לקוח עודכן בהצלחה", "success");
-                navigate(-1);
-            })
-            .catch((error: Error) => {
-                if (axios.isAxiosError(error)) {
-                    console.error('Axios error:', error.response?.data);
-                    showAlert("שגיאה בעדכון לקוח", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
-                } else {
-                    // טיפול בשגיאות אחרות
-                    console.error('Unexpected error:', error);
-                    showAlert("שגיאה בעדכון לקוח", 'שגיאה בלתי צפויה', "error");
-                }
-            });
-
+        await updateCustomer(customer.id!, newCustomer);
+        const latestError = useCustomerStore.getState().error;
+        if (latestError) {
+            showAlert("שגיאה בעדכון לקוח", latestError || "שגיאה בלתי צפויה", "error");
+        } else {
+            showAlert("עדכון", "לקוח עודכן בהצלחה", "success");
+            navigate(-1);
+        }
     }
 
     const methods = useForm<z.infer<typeof schema>>({
