@@ -1,28 +1,27 @@
+
 import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
-import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import VendorSummary from './MainMenu/Billing/Components/Vendor-management/VendorSummary';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
-import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
-
+import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import MainLayout from './layout/MainLayout';
-import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { Billing } from './MainMenu/Billing/Components/Billing';
+// import { WorkspaceMap } from './MainMenu/Workspace/Components/WorkspaceMap'
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
-
+import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+// import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
+import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
-
   // משתנה שמייצג האם הנתונים עוד בטעינה
   const [loading, setLoading] = useState(true);
-
   // useEffect - רץ פעם אחת לאחר טעינת הקומפוננטה
   useEffect(() => {
     const fetchVendors = async () => {
@@ -36,27 +35,13 @@ export const Routing = () => {
         setLoading(false); // מסמן שהטעינה הסתיימה (בין אם הצליחה או נכשלה)
       }
     };
-
     fetchVendors(); // מפעיל את הפונקציה
   }, []); // [] אומר שה־useEffect ירוץ רק בפעם הראשונה
-
   // אם עדיין טוען – מציג הודעת טעינה למשתמש
   if (loading) return <div>טוען נתונים...</div>;
-
   // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
   return (
     <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
-      <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-      <Route path="payment" element={<PaymentForm />} />
-      <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-      <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
-      <Route path="expense-form" element={<CreateExpenseForm />} />
-
-
       <Route element={<MainLayout />}>
         <Route path="/" element={<App />} />
         <Route path="/" element={<App />} />
@@ -70,9 +55,10 @@ export const Routing = () => {
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
-     
+        {/* <Route path="expense-form" element={<CreateExpenseForm />} /> */}
+        <Route path="/expenses" element={< ExpensesPage/>} />
       </Route>
     </Routes>
-
   );
 };
+ 

@@ -31,10 +31,6 @@ export async function create(
             console.error('Error creating vendor:', error);
             throw new Error('Failed to create vendor');
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
         return new VendorModel({
             id: data.id,
             name: data.name,
@@ -65,18 +61,10 @@ export async function getAllVendors(): Promise<Vendor[] | null> {
             .from('vendor')
             .select('*')
             .eq('active', true);
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
         if (error) {
             console.error('Error fetching vendors:', error);
             throw new Error('Failed to fetch vendors');
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
         if (!data) return null;
         return data.map((vendor) => new VendorModel({
             id: vendor.id,
@@ -108,10 +96,6 @@ export async function getVendorById(id: string): Promise<Vendor | null> {
             .select('*')
             .eq('id', id)
             .single();
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
         if (error && error.code !== 'PGRST116') {
             console.error('Error fetching vendor by ID:', error);
             throw new Error('Failed to fetch vendor');
@@ -124,20 +108,12 @@ export async function getVendorById(id: string): Promise<Vendor | null> {
             phone: data.phone,
             email: data.email,
             address: data.address,
-<<<<<<< HEAD
             website: (data as any).website,
-=======
-            website: (data as any).website, 
->>>>>>> origin/main
             tax_id: data.taxId,
             payment_terms: data.payment_terms,
             preferred_payment_method: data.preferred_payment_method,
             category: data.category,
-<<<<<<< HEAD
             status: data.status,
-=======
-            status: data.status, 
->>>>>>> origin/main
             notes: data.notes,
             // documents: data.documents,
             createdAt: data.createdAt,
@@ -154,24 +130,15 @@ export async function deleteVendor(id: ID): Promise<boolean> {
       .from('vendor')
       .update({ active: false, updated_at: new Date().toISOString() })
       .eq('id', id);
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
     if (error) {
       console.error('Error deleting vendor:', error);
       throw new Error("Failed to delete vendor");
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
     return true;
   } catch (e) {
     console.error('Exception in deleteLoungePricing:', e);
     throw e;
   }
-<<<<<<< HEAD
 }
 
 
@@ -185,6 +152,3 @@ export async function deleteVendor(id: ID): Promise<boolean> {
 
 
 
-=======
-}
->>>>>>> origin/main

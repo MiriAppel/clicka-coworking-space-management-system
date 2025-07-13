@@ -151,6 +151,13 @@ import React, { useRef, useState, useEffect } from "react";
 //         </>
 //     );
 // };
+
+
+
+
+/////////////
+import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
+
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { NavLink } from "react-router";
 import { ExportToExcel } from "../exportToExcel";
@@ -471,7 +478,7 @@ export const CustomersList = () => {
             />
           </Stack>
           <br />
-          <Table<ValuesToTable>
+          {/* <Table<ValuesToTable>
             data={getValuseToTable()}
             columns={columns}
             onDelete={deleteCurrentCustomer}
@@ -491,8 +498,27 @@ export const CustomersList = () => {
                   חוזה לקוח
                 </NavLink>
               </>
-            )}
-          />{" "}
+            
+          )}
+          /> */}
+{customers
+  .filter((c): c is Customer & { id: string } => !!c.id)
+  .map((customer) => (
+    <ExpandableCustomerCard
+      key={customer.id}
+      id={customer.id}
+      name={customer.name}
+      phone={customer.phone}
+      email={customer.email}
+      businessName={customer.businessName || "לא זמין"}
+      businessType={customer.businessType || "לא זמין"}
+      status={customer.status}
+      onEdit={() => editCustomer(customer)}
+      onDelete={() => deleteCurrentCustomer(customer)}
+    />
+  ))}
+
+          {" "}
           <div ref={loaderRef} className="h-4"></div>
         </div>
       )}

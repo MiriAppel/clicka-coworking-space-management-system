@@ -6,7 +6,6 @@ import { ExpenseController } from "../controllers/expense.controller";
 const expenseController = new ExpenseController();
 // יצירת מופע Router חדש - דרכו נגדיר את כל נתיבי ה-expenses
 const expenseRouter = Router();
-<<<<<<< HEAD
 expenseRouter.get("/getAll",expenseController.getAllExpenses1.bind(expenseController));
 expenseRouter.post("/createExpense",expenseController.createExpense.bind(expenseController));
 expenseRouter.get("/getAllExpenses",expenseController.getAllExpenses.bind(expenseController));
@@ -14,20 +13,5 @@ expenseRouter.get("/getExpenseById/:id",expenseController.getExpenseById.bind(ex
 expenseRouter.put("/updateExpense/:id",expenseController.updateExpense.bind(expenseController));
 expenseRouter.put("/markExpenseAsPaid/:id",expenseController.markExpenseAsPaid.bind(expenseController));
 expenseRouter.delete("/deleteExpense/:id",expenseController.deleteExpense.bind(expenseController));
-=======
-
-expenseRouter.get(
-  '/getExpensesByVendorId/:vendorId',
-  expenseController.getExpensesByVendorId.bind(expenseController)
-);
-expenseRouter.get("/getAll",expenseController.getAllExpenses1.bind(expenseController));
-expenseRouter.post("/createExpense",expenseController.createExpense.bind(expenseController));
-expenseRouter.get("/getAllExpenses",expenseController.getAllExpenses.bind(expenseController));
-expenseRouter.get("/getExpenseById/:id",expenseController.getExpenseById.bind(expenseController)); 
-expenseRouter.put("/updateExpense/:id",expenseController.updateExpense.bind(expenseController));
-expenseRouter.put("/markExpenseAsPaid/:id",expenseController.markExpenseAsPaid.bind(expenseController));
-expenseRouter.delete("/deleteExpense/:id",expenseController.deleteExpense.bind(expenseController));
-
->>>>>>> origin/main
 // ייצוא ה-router לשימוש ב-app הראשי (main app)
 export default expenseRouter;

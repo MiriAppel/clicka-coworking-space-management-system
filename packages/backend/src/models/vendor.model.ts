@@ -80,10 +80,6 @@ export class VendorModel implements Vendor {
       updated_at: this.updatedAt,
     };
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
   static fromDatabaseFormat(dbData: any): VendorModel {
     return new VendorModel({
       id: dbData.id,
@@ -104,10 +100,6 @@ export class VendorModel implements Vendor {
       updatedAt: dbData.updatedAt,
     });
   }
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
   static fromDatabaseFormatArray(dbDataArray: any[]): VendorModel[] {
     return dbDataArray.map(dbData => VendorModel.fromDatabaseFormat(dbData));
   }
