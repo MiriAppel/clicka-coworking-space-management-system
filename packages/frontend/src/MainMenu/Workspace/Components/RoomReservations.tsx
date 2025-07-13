@@ -1,57 +1,83 @@
-import React, { useEffect } from "react";
+import React, {
+  useEffect,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { InputField } from "../../../Common/Components/BaseComponents/Input";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
-import { Form } from "../../../Common/Components/BaseComponents/Form";
 import { SelectField } from "../../../Common/Components/BaseComponents/Select";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
 import { v4 as uuidv4 } from "uuid";
-import '../Css/roomReservations.css'; 
-
-export enum MeetingRoomManagement {
-  MEETING_ROOM = "MEETING_ROOM",
-  LUENGE = "LUENGE",
-}
+import "../Css/roomReservations.css";
 
 export enum BookingStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-  CANCELED = 'CANCELED',
-  COMPLETED = 'COMPLETED'
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  CANCELED = "CANCELED",
+  COMPLETED = "COMPLETED",
 }
 
-const roomOptions = Object.entries(MeetingRoomManagement).map(([key, value]) => ({
-  label: key.replace("_", " ").toUpperCase(),
-  value,
-}));
+type Room = {
+  id: string;
+  name: string;
+};
 
-type FormFields = {
+export type FormFields = {
   customerStatus: "valid" | "customer";
   phoneOrEmail?: string;
   customerId?: string;
   name?: string;
   phone?: string;
   email?: string;
-  selectedRoom: MeetingRoomManagement;
+  selectedRoomId: string;
   startDate: string;
   startTime: string;
   endDate: string;
   endTime: string;
 };
 
-export function RoomReservations() {
+export type RoomReservationsRef = {
+  fillFormWithExternalData: (data: Partial<FormFields>) => void;
+};
+
+export const RoomReservations = forwardRef<RoomReservationsRef>((props, ref) => {
   const methods = useForm<FormFields>({
     defaultValues: {
       customerStatus: "valid",
-      selectedRoom: MeetingRoomManagement.MEETING_ROOM,
     },
     mode: "onSubmit",
   });
 
-  const { createBooking, getCustomerByPhoneOrEmail } = useBookingStore();
+  const { createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
+  const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
+
   const status = useWatch({ control: methods.control, name: "customerStatus" });
   const phoneOrEmail = useWatch({ control: methods.control, name: "phoneOrEmail" });
+
+  // מאפשר חשיפה של פונקציה שממלאת ערכים בטופס
+  useImperativeHandle(ref, () => ({
+    fillFormWithExternalData: (data: Partial<FormFields>) => {
+      Object.entries(data).forEach(([key, value]) => {
+        methods.setValue(key as keyof FormFields, value as any);
+      });
+    },
+  }));
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      const rooms: Room[] = await getAllRooms();
+      setRoomOptions(
+        rooms.map((room) => ({
+          label: room.name,
+          value: room.id,
+        }))
+      );
+    };
+    fetchRooms();
+  }, []);
 
   useEffect(() => {
     const fetchCustomer = async () => {
@@ -76,10 +102,13 @@ export function RoomReservations() {
     const startTime = `${data.startDate}T${data.startTime}:00.000Z`;
     const endTime = `${data.endDate}T${data.endTime}:00.000Z`;
 
+    const selectedRoom = roomOptions.find((room) => room.value === data.selectedRoomId);
+    const roomName = selectedRoom?.label ?? "Unknown";
+
     const base = {
       id: uuidv4(),
-      roomId: data.selectedRoom,
-      roomName: data.selectedRoom,
+      roomId: data.selectedRoomId,
+      roomName: roomName,
       startTime,
       endTime,
       status: BookingStatus.PENDING,
@@ -111,18 +140,13 @@ export function RoomReservations() {
       if (data.customerStatus === "customer") {
         if (!data.customerId) {
           const customer = await getCustomerByPhoneOrEmail(data.phoneOrEmail ?? "");
-          if (customer) {
-            data.customerId = customer.id;
-            data.name = customer.name;
-            data.phone = customer.phone;
-            data.email = customer.email;
-          } else {
+          if (!customer) {
             alert("לא נמצא לקוח עם הטלפון או המייל שסופקו");
             return;
           }
+          data.customerId = customer.id;
         }
-      } 
-      else {
+      } else {
         if (!data.name || !data.phone || !data.email) {
           alert("נא למלא את כל השדות ללקוח חדש");
           return;
@@ -131,6 +155,7 @@ export function RoomReservations() {
 
       const bookingPayload = convertFormToBooking(data);
       const result = await createBooking(bookingPayload);
+
       if (result) {
         alert("ההזמנה נוצרה בהצלחה");
         methods.reset();
@@ -146,12 +171,11 @@ export function RoomReservations() {
       <div className="form-wrapper">
         <h1 className="form-title">הזמנות חדרים</h1>
         <FormProvider {...methods}>
-          {/* <Form onSubmit={handleSubmit}> */}
           <form onSubmit={methods.handleSubmit(handleSubmit)}>
             <fieldset>
               <legend>סטטוס לקוח</legend>
               <label>
-                <InputField type="radio" name="customerStatus" value="valid" label="מתענין" />
+                <InputField type="radio" name="customerStatus" value="valid" label="מתעניין" />
               </label>
               <label>
                 <InputField type="radio" name="customerStatus" value="customer" label="לקוח קיים" />
@@ -159,28 +183,27 @@ export function RoomReservations() {
             </fieldset>
 
             {status === "customer" && (
-      <div className="form-field">
-        <InputField name="phone" label="טלפון" type="tel" required /> <InputField type="text" name="phoneOrEmail" label="טלפון או מייל לזיהוי" required />
-      </div>
-    )}
+              <div className="form-field">
+                <InputField name="phoneOrEmail" label="טלפון או מייל לזיהוי" type="text" required />
+              </div>
+            )}
 
-    {status === "valid" && (
-      <>
-        <div className="form-field">
-          <InputField name="name" label="שם" type="text" required />
-        </div>
-        <div className="form-field">
-          <InputField name="phone" label="טלפון" type="tel" required />
-        </div>
-        <div className="form-field">
-          <InputField name="email" label="מייל" type="email" required />
-        </div>
-      </>
-    )}
-
+            {status === "valid" && (
+              <>
+                <div className="form-field">
+                  <InputField name="name" label="שם" type="text" required />
+                </div>
+                <div className="form-field">
+                  <InputField name="phone" label="טלפון" type="tel" required />
+                </div>
+                <div className="form-field">
+                  <InputField name="email" label="מייל" type="email" required />
+                </div>
+              </>
+            )}
 
             <div className="form-field">
-              <SelectField name="selectedRoom" label="בחירת חדר" options={roomOptions} />
+              <SelectField name="selectedRoomId" label="בחירת חדר" options={roomOptions} required />
             </div>
 
             <div className="form-field">
@@ -204,4 +227,4 @@ export function RoomReservations() {
       </div>
     </div>
   );
-}
+});
