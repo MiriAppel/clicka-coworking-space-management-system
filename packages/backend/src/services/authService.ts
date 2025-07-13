@@ -1,4 +1,4 @@
-import { LoginResponse, User } from "shared-types";
+import {  LoginResponse, User } from "shared-types";
 import { getTokens, getGoogleUserInfo } from './googleAuthService';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
@@ -22,7 +22,7 @@ export const verifyJwtToken = (token: string) => {
   return jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string };
 };
 
-export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse & { googleAccessToken: string }> => {
+export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse> => {
   try {
     const tokens = await getTokens(code);
     if (!tokens.access_token) {
@@ -31,37 +31,50 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     console.log('Tokens received from Google:', tokens);
     const userInfo = await getGoogleUserInfo(tokens.access_token);
     console.log(userInfo);
+
+    //need to check if the user have permission to login
+    const userService = new UserService();
+    if (!userInfo.id) {
+      throw new Error('Google ID is missing for the user');
+    }
+    let checkUser = await userService.loginByGoogleId(userInfo.id);
+    if (checkUser == null) {
+      //need to check if the user in the system but doesnt have googleId yet
+      try {
+        checkUser = await userService.getUserByEmail(userInfo.email);
+        if(checkUser==null){
+          console.log('user not found by email:', userInfo.email);
+          
+           throw new Error("User not found")
+        }
+        await userService.updateGoogleIdUser(checkUser.id ?? userInfo.id,userInfo.id);
+
+      } catch (error:any) {
+        throw error;
+      }
+    }
     const user: User = {
-      id: userInfo.id,
-      email: userInfo.email,
-      firstName: userInfo.given_name,
-      lastName: userInfo.family_name,
-      role: userInfo.role,
+      id: checkUser.id,
+      email: checkUser.email,
+      firstName: checkUser.firstName,
+      lastName: checkUser.lastName,
+      role: checkUser.role,
       googleId: userInfo.id, // Google user ID
       lastLogin: new Date().toISOString(),
       active: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: checkUser.createdAt,
+      updatedAt:checkUser.updatedAt,
     }
-    //need to check if the user have permission to login
-const userService=new UserService();
-    if (!user.googleId) {
-      throw new Error('Google ID is missing for the user');
-    }
-    const checkUser = await userService.loginByGoogleId(user.googleId);
-    // if(checkUser===null){
-    //   throw new Error('User not found or not authorized to login');
-    // }
     //---------------------------------------------------
     const newSessionId = randomUUID();
     console.log('in exchange code and fetch user, newSessionId:', newSessionId);
 
-    await saveUserTokens(user.id ?? '', tokens.refresh_token ?? '', tokens.access_token, newSessionId);
+    await saveUserTokens(checkUser.id?? userInfo.id, tokens.refresh_token ?? '', tokens.access_token, newSessionId);
 
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);
     const jwtToken = generateJwtToken({
-      userId: user.id || '',
+      userId: checkUser.id?? userInfo.id,
       email: user.email,
       googleId: user.googleId!
     });
@@ -69,13 +82,13 @@ const userService=new UserService();
       user,
       token: jwtToken,
       sessionId: newSessionId,
-      googleAccessToken:tokens.access_token,
+       googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
 
-  } catch (error) {
-    console.error('Error exchanging code or fetching user:', error);
-    throw new Error('Google login failed');
+  } catch (error:any) {
+    //console.error('error in exchange code and fetch user', error);
+    throw error;
   }
 };

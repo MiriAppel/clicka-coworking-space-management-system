@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import * as workspaceMapService from '../services/workspeceMap.service'
+import * as workspaceMapService from '../services/workspaceMap.service'
 import { WorkspaceMapModel } from '../models/workspaceMap.model'
 export async function getAllWorkspacesMap(req: Request, res: Response) {
   try {
@@ -51,6 +51,8 @@ export async function updateWorkspaceMap(req: Request, res: Response) {
             res.status(500).json({ error: "Failed to update user" });
         }
 }
+
+   
 
 export async function deleteWorkspaceMap(req: Request, res: Response) {
   try {

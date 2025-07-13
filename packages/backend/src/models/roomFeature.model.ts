@@ -1,35 +1,40 @@
-import type{ ID, Room } from "shared-types";
+import { ID } from "../../../shared-types/core";
+import { Room,RoomFeature } from "../../../../types/booking";
 
-export class RoomFaeature {
-    id!: ID;
-    name: string;
+export class RoomFeatureModel implements RoomFeature {
+  id?: ID;
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+
+   constructor(params: {
+    id: ID;
     description?: string;
-    IsIncluded:boolean;
-    additionalCost:number;
-      // קשר: פיצ'ר שייך לחדר אחד
-  room?: Room;
-    constructor(
-      id:ID,
-      name: string,
-      description: string,
-      IsIncluded: boolean,
-      additionalCost: number,
-    ) {
-      this.id=id;
-      this.name = name;
-      this.description = description;
-     this.IsIncluded=IsIncluded;
-     this.additionalCost=additionalCost;
-    }
-  
-    toDatabaseFormat() {
-      return {
-        id:this.id,
-        name: this.name,
-        description: this.description,
-        IsIncluded:this.IsIncluded,
-        additionalCost:this.additionalCost
-      };
-    }
+    IsIncluded: boolean;
+    additionalCost: number;
+   }) {
+    this.id = params.id;
+    this.description = params.description;
+    this.IsIncluded = params.IsIncluded;
+    this.additionalCost = params.additionalCost; 
+   }
+
+  toDatabaseFormat() {
+    return {
+      description: this.description,
+      isincluded: this.IsIncluded,
+      additional_cost: this.additionalCost
+    };
   }
-  
+      static fromDatabaseFormat(dbData: any): RoomFeatureModel {
+        return new RoomFeatureModel({
+            id: dbData.id,
+            description: dbData.description,
+            IsIncluded: dbData.isincluded,
+            additionalCost: dbData.additional_cost
+        });
+    }
+    static fromDatabaseFormatArray(dbDataArray: any[] ): RoomFeatureModel[] {
+        return dbDataArray.map(dbData => RoomFeatureModel.fromDatabaseFormat(dbData));
+    }
+}

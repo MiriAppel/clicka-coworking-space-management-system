@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import * as CalendarService from '../services/googleCalendarBookingIntegration.service ';
-import { CalendarSync } from 'shared-types';
+import { CalendarSync } from 'shared-types/calendarSync';
 import type { CalendarEventInput, ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
 import { CalendarSyncModel } from '../models/calendarSync.model';
 import { validateEventInput } from '../utils/validateEventInput';
+import { BookingModel } from '../models/booking.model';
 
 export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
     try {
@@ -29,40 +30,39 @@ export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
 
 
 // זו הפונקציה העדכנית-----------------------------
-// export const createCalendarEvent = async (req: Request, res: Response, next: NextFunction) => {
-//     const token = extractToken(req);
-//       if (!token) return next({ status: 401, message: 'Missing token' });
-//       const { calendarId } = req.params;
-//       const{ event, booking }: {event: CalendarEventInput ,booking:string}= req.body;
-//       try {
-//         validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
-    
-//         const createdEvent = await CalendarService.createCalendarEvent(calendarId, event, token,booking);
-//         res.status(201).json(createdEvent);
-//       } catch (err: any) {
-//         if (!err.status) err.status = 500;
-//         next(err);
-//       }
-//     // try {
-//     //     const { calendarId, event, token, booking } = req.body;
-//     //     const syncStatus = await CalendarService.createCalendarEvent(calendarId, event, token, booking);
-//     //     res.status(201).json({ status: syncStatus });
-//     // } catch (error) {
-//     //     console.error('Error creating calendar event:', error);
-//     //     res.status(500).json({ message: 'Failed to create calendar event', error: error });
-//     // }
-// }
-
-export const createCalendarSync = async (req: Request, res: Response) => {
-    try {
-        const sync = new CalendarSyncModel(req.body);
-        const syncStatus = await CalendarService.createCalendarSync(sync);
-        res.status(200).json({ status: syncStatus });
-    } catch (error) {
-        console.error('Error creating calendar sync:', error);
-        res.status(500).json({ message: 'Failed to create calendar sync', error: error });
-    }
+export const createCalendarEvent = async (req: Request, res: Response, next: NextFunction) => {
+    const token = extractToken(req);
+      if (!token) return next({ status: 401, message: 'Missing token' });
+      const { calendarId } = req.params;
+      const{  booking }: {booking:BookingModel}= req.body;
+      try {
+        // validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
+        const createdEvent = await CalendarService.createCalendarEvent(calendarId, booking,token);
+        res.status(201).json(createdEvent);
+      } catch (err: any) {
+        if (!err.status) err.status = 500;
+        next(err);
+      }
+    // try {
+    //     const { calendarId, event, token, booking } = req.body;
+    //     const syncStatus = await CalendarService.createCalendarEvent(calendarId, event, token, booking);
+    //     res.status(201).json({ status: syncStatus });
+    // } catch (error) {
+    //     console.error('Error creating calendar event:', error);
+    //     res.status(500).json({ message: 'Failed to create calendar event', error: error });
+    // }
 }
+
+// export const createCalendarSync = async (req: Request, res: Response) => {
+//     try {
+//         const sync = new CalendarSyncModel(req.body);
+//         const syncStatus = await CalendarService.createCalendarSync(sync);
+//         res.status(200).json({ status: syncStatus });
+//     } catch (error) {
+//         console.error('Error creating calendar sync:', error);
+//         res.status(500).json({ message: 'Failed to create calendar sync', error: error });
+//     }
+// }
 export async function getAllCalendarSync(req: Request, res: Response) {
     try {
         const result = await CalendarService.gatAllCalendarSync()
@@ -135,18 +135,18 @@ export const updateEventOnChangeBooking = async (req: Request, res: Response) =>
     }
 }
 
-export const updateCalendarSync = async (req: Request, res: Response) => {
+// export const updateCalendarSync = async (req: Request, res: Response) => {
     
-        const eventId: string = req.params.id;
-        const updatedData = req.body;
-        const updatedSync = new CalendarSyncModel(updatedData);
-        const result =  await CalendarService.updateCalendarSync(eventId, updatedSync);
-   if (result) {
-            res.status(200).json(result);
-        } else {
-            res.status(500).json({ error: "Failed to update calendar sync" });
-        }
-}
+//         const eventId: string = req.params.id;
+//         const updatedData = req.body;
+//         const updatedSync = new CalendarSyncModel(updatedData);
+//         const result =  await CalendarService.updateCalendarSync(eventId, updatedSync);
+//    if (result) {
+//             res.status(200).json(result);
+//         } else {
+//             res.status(500).json({ error: "Failed to update calendar sync" });
+//         }
+// }
 // export async function updateWorkspaceMap(req: Request, res: Response) {
 //         const mapId = req.params.id;
 //         const updatedData = req.body;

@@ -1,10 +1,10 @@
 import path from "path";
-
-import type{ Contract, ContractStatus, ContractTerms, DateISO, FileReference, ID } from "shared-types";
+import { Contract, ContractStatus, ContractTerms } from "shared-types";
+import type{  DateISO, FileReference, ID } from "shared-types/core";
 
 export class ContractModel implements Contract {
   
-  id: ID; // PK
+  id?: ID; // PK
   customerId: ID; // FK.  כל חוזה שייך ללקוח אחד בלבד. אבל ללקוח יכולים להיות כמה חוזים לאורך זמן – למשל, הוא חתם שוב אחרי שנה, או שינה תנאים.
   version: number;
   status: ContractStatus;
@@ -48,31 +48,20 @@ export class ContractModel implements Contract {
     this.updatedAt = updatedAt;
   }
 
-  toDatabaseFormat?() {
+  toDatabaseFormat() {
     return {
-      id: this.id,
-      customerId: this.customerId,
+      customer_id: this.customerId,
       version: this.version,
       status: this.status,
-      signDate: this.signDate,
-      startDate: this.startDate,
-      endDate: this.endDate,
+      sign_date: this.signDate,
+      start_date: this.startDate,
+      end_date: this.endDate,
       terms: this.terms,
-      documents: this.documents.map(doc => ({
-        id: doc.id,
-        name: doc.name,
-        path: doc.path,
-        mimeType: doc.mimeType,
-        size: doc.size,
-        url: doc.url,
-        googleDriveId: doc.googleDriveId,
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt
-      })),
-      signedBy: this.signedBy,
-      witnessedBy: this.witnessedBy,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      documents: this.documents,
+      signed_by: this.signedBy,
+      witnessed_by: this.witnessedBy,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt
     };   
   }
 }

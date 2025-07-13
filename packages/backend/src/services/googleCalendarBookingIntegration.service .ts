@@ -1,6 +1,6 @@
 
 import type { CalendarEventInput, CreateGoogleCalendarEventRequest, DeleteGoogleCalendarEventRequest, GoogleCalendarEvent, ID, UpdateGoogleCalendarEventRequest } from "shared-types";
-import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "shared-types";
+import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "shared-types/calendarSync";
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv';
 import { CalendarSyncModel } from "../models/calendarSync.model";
@@ -9,6 +9,7 @@ import { createEvent } from './calendar-service'
 import { BookingModel } from "../models/booking.model";
 import * as syncController from "../controllers/googleCalendarBookingIntegration.controller";
 import {BookingService} from "./booking.service"
+import { log } from "util";
 // טוען את משתני הסביבה מקובץ .env
 dotenv.config();
 
@@ -111,8 +112,17 @@ export async function getCalendarSyncById(id: string) {
     return layout;
 }
 export async function convertBookingToCalendarEvent(booking: BookingModel): Promise<CalendarEventInput> {
+    console.log("booking in in the convert\n",booking);
+    
+    let newName="";
+    if(booking.customerName){
+        newName = booking.customerName;
+    }
+    else if(booking.externalUserName){
+        newName = booking.externalUserName;
+    }
     return {
-        summary: `פגישה עבור ${booking.customerName}`,
+        summary: `פגישה עבור ${newName}`,
         description: booking.notes,
         location: booking.roomName,
         start: {
@@ -144,14 +154,26 @@ export const createCalendarEvent = async (calendarId: string,
 
         throw new Error('Booking must be approved by someone before creating a calendar event.');
     }
+    console.log("booking is aproved by", booking.approvedBy);
+    
+    console.log("booking before the convert\n",booking);
     const calendarEvent = await convertBookingToCalendarEvent(booking);
     console.log(calendarEvent);
     try {
         const statusEvent = await createEvent(calendarId, calendarEvent, token);
+        console.log("statusEvent\n", statusEvent);
+        
         if (statusEvent.id != null) {
             booking.googleCalendarEventId = statusEvent.id;
         }
-        BookingService.updateBooking(booking,booking.id)
+        console.log("booking.googleCalendarEventId",booking.googleCalendarEventId);
+        
+
+        //לעדכן את נאווה שחייבים לשלוח id
+          if (!booking.id) {
+            throw new Error('Booking ID is required to update the booking.');
+          }
+          BookingService.updateBooking(booking.id, booking);
 
 
         // if (!statusEvent || !statusEvent.id) {

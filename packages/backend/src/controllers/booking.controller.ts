@@ -31,7 +31,7 @@ export class BookingController {
     try{
         const bookingData = req.body;
         const booking = new BookingModel(bookingData);
-      const updateBooking=await this.bookingservice.updateBooking(req.params.id,booking);
+      const updateBooking = await BookingService.updateBooking(req.params.id, booking);
       res.json(updateBooking);
     }
     catch(err){

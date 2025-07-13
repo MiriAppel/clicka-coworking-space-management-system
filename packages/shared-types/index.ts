@@ -14,3 +14,5 @@ export * from './pricing';
 export * from './translation';
 export * from './person'
 // export * from './calendarSync';
+
+export * from './document';

@@ -1,166 +1,501 @@
 import { useNavigate } from "react-router-dom";
-import React from 'react';
-import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
-import { NavLink, Outlet } from "react-router";
-import { ExportToExcel } from '../exportToExcel';
-import { useState } from "react";
-import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus, PaymentMethodType } from "shared-types";
-import { Search} from "lucide-react";
+import React, { useRef, useState, useEffect } from "react";
+// import { Button } from '../../../../Common/Components/BaseComponents/Button';
+// import { NavLink } from "react-router";
+// import { ExportToExcel } from '../exportToExcel';
+// import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+// import { Customer, CustomerStatus } from "shared-types";
+// import { deleteCustomer, getAllCustomers } from "../../Service/LeadAndCustomersService";
+// import { Stack, TextField } from '@mui/material';
+// import { supabase } from "../../../../Services/supabaseClient";
+
+// interface ValuesToTable {
+//     id: string;
+//     name: string;
+//     phone: string;
+//     email: string;
+//     status: React.ReactElement;
+//     businessName: string;
+//     businessType: string;
+// }
+// const statusLabels: Record<CustomerStatus, string> = {
+//     ACTIVE: 'פעיל',
+//     NOTICE_GIVEN: 'הודעת עזיבה',
+//     EXITED: 'עזב',
+//     PENDING: 'בהמתנה',
+// };
+// export const CustomersList = () => {
+//     const navigate = useNavigate();
+//     const [isLoading, setIsLoading] = useState(true);
+//     const [customers, setCustomers] = useState<Customer[]>([]);
+//     const [searchTerm, setSearchTerm] = useState('');
+
+//     const fetchCustomers = async () => {
+//         try {
+//             setIsLoading(true);
+//             const data = await getAllCustomers();
+//             setCustomers(data);
+//         } catch (error) {
+//             console.error('Error fetching customers:', error);
+//         } finally {
+//             setIsLoading(false);
+//         }
+//     };
+
+//     useEffect(() => {
+//         fetchCustomers();
+//          //לבדוק למה לא עובד המשתני סביבה!!!
+//         // האזנה לשינויים בטבלת customers
+//         const channel = supabase
+//             .channel('public:customer')
+//             .on(
+//                 'postgres_changes',
+//                 { event: '*', schema: 'public', table: 'customers' },
+//                 (payload) => {
+//                     // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
+//                     fetchCustomers();
+//                 }
+//             )
+//             .subscribe();
+
+//         // ניקוי מאזין כשיוצאים מהקומפוננטה
+//         return () => {
+//             supabase.removeChannel(channel);
+//         };
+//     }, []);
+
+//     const handleSearch = (term: string) => {
+//         const lower = term.toLowerCase();
+//         const filtered = customers.filter((c) =>
+//             c.name.toLowerCase().includes(lower) ||
+//             c.email.toLowerCase().includes(lower) ||
+//             c.phone.toLowerCase().includes(lower) ||
+//             statusLabels[c.status].toLowerCase().includes(lower)||
+//             c.businessName.toLowerCase().includes(lower)||
+//             c.businessType.toLowerCase().includes(lower)
+//         );
+//         return filtered;
+//     };
+
+//     const getValuseToTable = (): ValuesToTable[] => {
+//         return handleSearch(searchTerm).map(customer => ({
+//             id: customer.id!,
+//             name: customer.name,
+//             phone: customer.phone,
+//             email: customer.email,
+//             status: (
+//                 <div className="flex justify-between">
+//                     {statusLabels[customer.status]}
+//                     <Button variant="secondary" size="sm" onClick={() => navigate(`updateStatus/${customer.id}`)}>עדכון</Button>
+//                 </div>
+//             ),
+//             businessName: customer.businessName,
+//             businessType: customer.businessType,
+//         }));
+//     };
+
+//     const columns: TableColumn<ValuesToTable>[] = [
+//         { header: "שם", accessor: "name" },
+//         { header: "פלאפון", accessor: "phone" },
+//         { header: "מייל", accessor: "email" },
+//         { header: "סטטוס", accessor: "status" },
+//         { header: "שם העסק", accessor: "businessName" },
+//         { header: "סוג עסק", accessor: "businessType" }
+//     ];
+
+//     const deleteCurrentCustomer = async (val: ValuesToTable) => {
+//         try {
+//             await deleteCustomer(val.id);
+//             fetchCustomers();
+//             alert("לקוח נמחק בהצלחה");
+//         } catch (error) {
+//             console.error("שגיאה במחיקת לקוח:", error);
+//             alert("מחיקה נכשלה");
+//         }
+//     };
+//     const editCustomer = (val: ValuesToTable) => {
+//         const selected = customers.find(c => c.id === val.id);
+//         navigate("update", { state: { data: selected } });
+//     };
+//     return (
+//         <>
+//             {isLoading ? (
+//                 <h2 className="text-3xl font-bold text-center text-blue-600 my-4">טוען...</h2>
+//             ) : (
+//                 <div className="p-6">
+//                     <h2 className="text-3xl font-bold text-center text-blue-600 my-4">לקוחות</h2>
+//                     <ExportToExcel data={customers} fileName="לקוחות" /><br /><br />
+//                     <Stack spacing={2} direction="row">
+//                         <TextField
+//                             label="חיפוש"
+//                             fullWidth
+//                             value={searchTerm}
+//                             onChange={(e) => setSearchTerm(e.target.value)}
+//                         />
+//                     </Stack>
+//                     <br />
+//                     <Table<ValuesToTable>
+//                         data={getValuseToTable()}
+//                         columns={columns}
+//                         onDelete={deleteCurrentCustomer}
+//                         onUpdate={editCustomer}
+//                         renderActions={(row) => (
+//                             <>
+//                                 <NavLink to={`:${row.id}/dashboard`} className="text-blue-500 hover:underline ml-2">לוח בקרה</NavLink>
+//                                 <NavLink to={`:${row.id}/contract`} className="text-blue-500 hover:underline ml-2">חוזה לקוח</NavLink>
+//                             </>
+//                         )}
+//                     />
+//                 </div>
+//             )}
+//         </>
+//     );
+// };
+import { Button } from "../../../../Common/Components/BaseComponents/Button";
+import { NavLink } from "react-router";
+import { ExportToExcel } from "../exportToExcel";
+import {
+  Table,
+  TableColumn,
+} from "../../../../Common/Components/BaseComponents/Table";
+import { Customer, CustomerStatus } from "shared-types";
+import { deleteCustomer } from "../../Service/LeadAndCustomersService";
+import { Stack, TextField } from "@mui/material";
+import axios from "axios";
+import debounce from "lodash/debounce";
+import { Pencil, Trash } from "lucide-react";
+// import { supabase } from "../../../../Services/supabaseClient";
+
 
 
 interface ValuesToTable {
-    id: string;
-    name: string; // שם הלקוח
-    status: CustomerStatus; // סטטוס הלקוח
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  status: CustomerStatus;
+  businessName: string;
+  businessType: string;
 }
 
-//כל הצבעים של הכפתורים והכל בכל העמודים הם דוג' בלבד
+const statusLabels: Record<CustomerStatus, string> = {
+  ACTIVE: "פעיל",
+  NOTICE_GIVEN: "הודעת עזיבה",
+  EXITED: "עזב",
+  PENDING: "בהמתנה",
+};
+
 export const CustomersList = () => {
-    const navigate = useNavigate();
-    //דוג' בלבד לרשימת לקוחות
-    //צריך לעשות קריאת שרת לקבלת כל הלקוחות למשתנה הזה
-    const [customers, setCustomers] = useState<Customer[]>([
-        {
-            id: '1',
-            name: 'יוסי כהן',
-            phone: '050-1234567',
-            email: 'yossi@example.com',
-            idNumber: '123456789',
-            businessName: 'יוסי טכנולוגיות',
-            businessType: 'טכנולוגיה',
-            status: CustomerStatus.ACTIVE,
-            workspaceCount: 5,
-            createdAt: '2023-01-01T00:00:00Z',
-            updatedAt: '2023-01-10T00:00:00Z',
-            paymentMethodsType: PaymentMethodType.CREDIT_CARD,
-            paymentMethods: [
-                {
-                    id: 'pm1',
-                    customerId: '1',
-                    isActive: true,
-                    createdAt: '2023-01-01T00:00:00Z',
-                    updatedAt: '2023-01-10T00:00:00Z',
-                    creditCardLast4: '1234',
-                }
-            ],
-            periods: [
-                {
-                    id: 'period1',
-                    customerId: '1',
-                    entryDate: '2023-01-01',
-                    createdAt: '2023-01-01T00:00:00Z',
-                    updatedAt: '2023-01-10T00:00:00Z',
-                }
-            ],
-        },
-        {
-            id: '2',
-            name: 'שרה לוי',
-            phone: '052-7654321',
-            email: 'sara@example.com',
-            idNumber: '987654321',
-            businessName: 'שרה פתרונות',
-            businessType: 'שירותים',
-            status: CustomerStatus.ACTIVE,
-            workspaceCount: 3,
-            createdAt: '2023-02-01T00:00:00Z',
-            updatedAt: '2023-02-10T00:00:00Z',
-            paymentMethodsType:PaymentMethodType.BANK_TRANSFER,
-            paymentMethods: [
-                {
-                    id: 'pm2',
-                    customerId: '2',
-                    isActive: true,
-                    createdAt: '2023-02-01T00:00:00Z',
-                    updatedAt: '2023-02-10T00:00:00Z'
-                }
-            ],
-            periods: [
-                {
-                    id: 'period2',
-                    customerId: '2',
-                    entryDate: '2023-02-01',
-                    createdAt: '2023-02-01T00:00:00Z',
-                    updatedAt: '2023-02-10T00:00:00Z'
-                }
-            ],
+  const navigate = useNavigate();
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [allCustomers, setAllCustomers] = useState<Customer[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [term, setTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  //   const fetchCustomers = async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       const data = await getAllCustomers();
+  //       setCustomers(data);
+  //     } catch (error) {
+  //       console.error("Error fetching customers:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  const fetchCustomers = async () => {
+    axios
+      .get("http://localhost:3001/api/customers/by-page", {
+        params: { page, limit: 50 },
+      })
+      .then((response) => {
+        if (response.data.length < 50) {
+          setHasMore(false);
+          // אין יותר נתונים
         }
-    ]);
+        setCustomers((prev) => {
+          const ids = new Set(prev.map((l) => l.id));
+          const uniqueNew = response.data.filter(
+            (customer: Customer) => !ids.has(customer.id)
+          );
+          return [...prev, ...uniqueNew];
+        });
+        // עדכון המאגר הכללי של הלקוחות
+        setAllCustomers((prev) => {
+          const ids = new Set(prev.map((l) => l.id));
+          const uniqueNew = response.data.filter(
+            // מסנן לידים שלא קיימים כבר במאגר הכללי
+            (customer: Customer) => !ids.has(customer.id)
+          );
+          return [...prev, ...uniqueNew];
+        });
+      })
 
-    //יצירת מערך עם ערכים המתאימים לטבלה
-    const valuesToTable: ValuesToTable[] = customers.map(customer => ({
-        id: customer.id,
-        name: customer.name,
-        status: customer.status,
+      .catch((error) => {
+        console.log("error in customerList page", error);
 
-    }));
+        console.error("Error fetching leads:", error);
+      })
+      .finally(() => setIsLoading(false));
+  }
+  useEffect(() => {
+    // axios
+    //   .get("http://localhost:3001/api/customers/by-page", {
+    //     params: { page, limit: 50 },
+    //   })
+    //   .then((response) => {
+    //     if (response.data.length < 50) {
+    //       setHasMore(false);
+    //       // אין יותר נתונים
+    //     }
+    //     setCustomers((prev) => {
+    //       const ids = new Set(prev.map((l) => l.id));
+    //       const uniqueNew = response.data.filter(
+    //         (customer: Customer) => !ids.has(customer.id)
+    //       );
+    //       return [...prev, ...uniqueNew];
+    //     });
+    //     // עדכון המאגר הכללי של הלקוחות
+    //     setAllCustomers((prev) => {
+    //       const ids = new Set(prev.map((l) => l.id));
+    //       const uniqueNew = response.data.filter(
+    //         // מסנן לידים שלא קיימים כבר במאגר הכללי
+    //         (customer: Customer) => !ids.has(customer.id)
+    //       );
+    //       return [...prev, ...uniqueNew];
+    //     });
+    //   })
 
-    const Columns: TableColumn<ValuesToTable>[] = [
-        { header: "שם", accessor: "name" },
-        { header: "סטטוס", accessor: "status" },
-    ];
+    //   .catch((error) => {
+    //     console.log("error in customerList page", error);
 
-    const deleteCustomer = (val: ValuesToTable) => {
-        //כאן יהיה קריאת שרת למחיקת לקוח ועדכון מחדש של המערך המקומי
-        //זה רק דוג' למחיקה מקומית
-        const newCustomers = customers.filter(customer => customer.id !== val.id);
-        setCustomers(newCustomers); // עדכון ה-state
+    //     console.error("Error fetching leads:", error);
+    //   })
+    //   .finally(() => setIsLoading(false));
+    fetchCustomers()
 
+  }, [page]);
+
+  useEffect(() => {
+    if (!loaderRef.current || !hasMore || isSearching) return;
+
+    // ברגע שהלידים עומדים להגמר זה עובר לעמוד הבא
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prev) => prev + 1);
+      }
+    });
+
+    observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [hasMore, isSearching]);
+
+  // useEffect(() => {
+  //   fetchCustomers();
+  //   // האזנה לשינויים בטבלת customers
+  //   const channel = supabase
+  //     .channel('public:customer')
+  //     .on(
+  //       'postgres_changes',
+  //       { event: '*', schema: 'public', table: 'customers' },
+  //       (payload) => {
+  //         // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
+  //         fetchCustomers();
+  //       }
+  //     )
+  //     .subscribe();
+
+  //   // ניקוי מאזין כשיוצאים מהקומפוננטה
+  //   return () => {
+  //     supabase.removeChannel(channel);
+  //   };
+  // }, []);
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+
+    if (!term || term.trim() === "") {
+      setIsSearching(false);
+      setPage(1); // זה יגרום ל-useEffect לטעון את הדף הראשון
+      setCustomers([]); // מרוקן את הקיימים כדי שיטען מחדש
+      setHasMore(true);
+      return;
     }
 
-    const editCustomer = (val: ValuesToTable) => {
-        //כאן יפתח טופס למילוי הפרטים האפשריים לעריכה
-        //מאותחל בכל הפרטים הנוכחחים עם אפשרות לשנות
-        //צריך להפעיל קריאת שרת של עריכת לקוח ולעדכן בהתאם את הנתונים
-    }
+    setIsSearching(true);
 
-    const searchCustomer = () => {
-
-        //חיפוש לקוח לפי הערך שהוזן באינפוט
-        //שימוש בפונצקית חיפוש המוכנה
-        //אפשר לעשות יותר מתקדם עם בחירה וכו לפי הדרישה
-    }
-
-    return (
-        <div className="p-6">
-            <h2 className="text-3xl font-bold text-center text-blue-600 my-4">לקוחות</h2>
-
-            {/* שימוש בקומפוננטה של יצוא לאקסל */}
-            <ExportToExcel data={customers} fileName="לקוחות" /><br />
-            <Button variant="primary" size="sm" onClick={() => navigate('intersections')}>אינטראקציות של לקוחות</Button><br />
-
-            {/* אפשרות חיפוש - בחירה לפי מה לחפש ושדה להכנסת ערך לחיפוש - אפשר בקומפוננטה נפרדת */}
-            <input type="text" placeholder="הכנס ערך לחיפוש" />
-            {/* לא חייבים את הכפתור אפשר בכל לחיצת מקלדת של קלט לחפש */}
-            <Button variant="primary" size="sm" onClick={() => searchCustomer()}
-                >
-                    <Search size={16} className="mr-1" />
-                    </Button>
-
-            {/* טבלה של כל הלקוחות עם שם וסטטוס ולכל אחד קישור לקומפוננטה של לקוח בודד שתציג את כל הפרטים המלאים שלו */}
-            <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteCustomer} onUpdate={editCustomer}
-                renderActions={(row) => (
-                    <>
-                        {/* לא בטוח שצריך את הדברים האלה!!!! */}
-                        <NavLink
-                            to={`:${row.id}/dashboard`}
-                            className="text-blue-500 hover:underline ml-2"
-                        >
-                            לוח בקרה
-                        </NavLink>
-                        <NavLink
-                            to={`:${row.id}/contract`}
-                            className="text-blue-500 hover:underline ml-2"
-                        >
-                            חוזה לקוח
-                        </NavLink>
-                    </>
-
-                )}
-            />
-
-        </div>
+    // סינון תומך באותיות קטנות וגדולות
+    // מחפש גם לפי שם, פלאפון ודוא"ל
+    // אם לא מצא תוצאות, שולח בקשה לשרת
+    const filtered = allCustomers.filter(
+      (customer) =>
+        customer.name.toLowerCase().includes(term.toLowerCase()) ||
+        customer.phone.includes(term) ||
+        customer.email.toLowerCase().includes(term.toLowerCase()) ||
+        customer.businessName?.toLowerCase().includes(term.toLowerCase()) ||
+        customer.businessType?.toLowerCase().includes(term.toLowerCase()) ||
+        statusLabels[customer.status]?.includes(term) ||
+        translateStatus(customer.status)?.includes(term) // תרגום הסטטוס לחיפוש 
+        || customer.status.toLowerCase().includes(term.toLowerCase()) // הוספת חיפוש ישיר על הסטטוס
     );
-}
 
+    if (filtered.length > 0) {
+      setCustomers(filtered);
+    } else {
+      axios
+        .get("http://localhost:3001/api/customers/filter", {
+          params: { q: term, page: 1, limit: 50 },
+        })
+        .then((response) => {
+          setCustomers(response.data);
+        })
+        .catch((error) => {
+          console.error("Error searching from server:", error);
+        });
+    }
+  };
+
+  //   const handleDeleteCustomer = (id: string) => {
+  //     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
+  //     setAllCustomers((prev) => prev.filter((customer) => customer.id !== id)); // גם מהמאגר הכללי
+  //   };
+
+  const getValuseToTable = (): ValuesToTable[] => {
+    return customers.map((customer) => ({
+      id: customer.id!,
+      name: customer.name,
+      phone: customer.phone,
+      email: customer.email,
+      businessName: customer.businessName || "לא זמין",
+      businessType: customer.businessType || "לא זמין",
+      status: customer.status
+    }));
+  };
+
+  const columns: TableColumn<ValuesToTable>[] = [
+    { header: "שם", accessor: "name" },
+    { header: "פלאפון", accessor: "phone" },
+    { header: "מייל", accessor: "email" },
+    {
+      header: "סטטוס",
+      accessor: "status",
+      render: (value, row) => (
+        <div className="flex justify-between items-center">
+          {statusLabels[row.status as CustomerStatus] || row.status}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate(`updateStatus/${row.id}`)}
+          >
+            <Pencil size={10} />
+          </Button>
+        </div>
+      ),
+    },
+    { header: "שם העסק", accessor: "businessName" },
+    { header: "סוג עסק", accessor: "businessType" },
+  ];
+
+  const deleteCurrentCustomer = async (val: ValuesToTable) => {
+    try {
+      await deleteCustomer(val.id);
+
+      alert("לקוח נמחק בהצלחה");
+    } catch (error) {
+      console.error("שגיאה במחיקת לקוח:", error);
+      alert("מחיקה נכשלה");
+    }
+  };
+
+  const editCustomer = (val: ValuesToTable) => {
+    const selected = customers.find((c) => c.id === val.id);
+    navigate("update", { state: { data: selected } });
+  };
+
+  const debouncedSearch = useRef(
+    debounce((value: string) => handleSearch(value), 400)
+  ).current;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTerm(value);
+    setSearchTerm(value);
+    debouncedSearch(value);
+  };
+
+  const translateStatus = (status: CustomerStatus): string => {
+    switch (term) {
+      case "פעיל":
+        return CustomerStatus.ACTIVE;
+      case "הודעת עזיבה":
+        return CustomerStatus.NOTICE_GIVEN;
+      case "עזב":
+        return CustomerStatus.EXITED;
+      case "בהמתנה":
+        return CustomerStatus.PENDING;
+      default:
+        return status; // מחזיר את הסטטוס המקורי אם לא נמצא ת
+    }
+  };
+
+  return (
+    <>
+      {isLoading ? (
+        <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
+          טוען...
+        </h2>
+      ) : (
+        <div className="p-6">
+          <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
+            לקוחות
+          </h2>
+          <ExportToExcel data={customers} fileName="לקוחות" />
+          <br />
+          <br />
+          <Stack spacing={2} direction="row">
+            <TextField
+              label="חיפוש"
+              fullWidth
+              value={searchTerm}
+              onChange={handleChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch(searchTerm);
+                }
+              }}
+            />
+          </Stack>
+          <br />
+          <Table<ValuesToTable>
+            data={getValuseToTable()}
+            columns={columns}
+            onDelete={deleteCurrentCustomer}
+            onUpdate={editCustomer}
+            renderActions={(row) => (
+              <>
+                <NavLink
+                  to={`:${row.id}/dashboard`}
+                  className="text-blue-500 hover:underline ml-2"
+                >
+                  לוח בקרה
+                </NavLink>
+                <NavLink
+                  to={`:${row.id}/contract`}
+                  className="text-blue-500 hover:underline ml-2"
+                >
+                  חוזה לקוח
+                </NavLink>
+              </>
+            )}
+          />{" "}
+          <div ref={loaderRef} className="h-4"></div>
+        </div>
+      )}
+    </>
+  );
+};

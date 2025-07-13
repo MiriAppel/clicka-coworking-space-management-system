@@ -2,6 +2,7 @@ import { ID, DateISO } from  "shared-types";
 import { CalendarSync,CalendarSyncStatus} from "shared-types/calendarSync";
 
 // מחלקה לסינכרון קלנדר
+
 export class CalendarSyncModel implements CalendarSync {
   id?: ID;
   bookingId: ID;
@@ -18,6 +19,7 @@ export class CalendarSyncModel implements CalendarSync {
     syncStatus: CalendarSyncStatus;
     syncErrors?: string[];
   }) {
+    this.id = params.id|| undefined;
     this.id = params.id|| undefined;
     this.bookingId = params.bookingId;
     this.calendarId = params.calendarId;

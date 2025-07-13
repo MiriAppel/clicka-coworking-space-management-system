@@ -64,19 +64,31 @@ export const LoginWithGoogle = () => {
                             'Authorization': `Bearer ${googleAccessToken}`,
                         },
                         body: JSON.stringify({
-                            event: { // הוסף את המידע של האירוע כאן
-                                summary: 'הוספה מסונכרנת עם המסד!!!!!!',
-                                start: {
-                                    dateTime: new Date('2025-07-09T11:30:00+03:00').toISOString(),
-                                    timeZone: 'Asia/Jerusalem'
-                                },
-                                end: {
-                                    dateTime: new Date('2025-07-09T12:35:00+03:00').toISOString(),
-                                    timeZone: 'Asia/Jerusalem'
-                                },
-                                recurrence: ['RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=4']
-                            },
-                            booking: '3c438e55-50d4-47e5-81c6-5ddcc8134b63'
+
+                            booking: {
+                                id:"bec60177-ec14-4ab8-a6ec-40592306a464",
+                                roomId: "10da8c25-6b79-48f3-8c50-f506b3ea16ee",
+                                roomName: "חדר ישיבות",
+                                // customerId: "00506d08-83c4-45b5-8913-140be971ceec",
+                                externalUserName: "אדריכלית",
+                                externalUserEmail: "nechamie10@gmail.com",
+                                externalUserPhone: "0556775395",
+                                startTime: "2025-07-10T12:00:00.000Z",
+                                endTime: "2025-07-10T14:00:00.000Z",
+                                status: "PENDING",
+                                notes: "פגישה חשובה",
+                                googleCalendarEventId: "",
+                                totalHours: 2,
+                                chargeableHours: 2,
+                                totalCharge: 100,
+                                isPaid: true,
+                                approvedBy: "admin-01",
+                                approvedAt: "2025-07-10T11:00:00.000Z",
+                                createdAt: "2025-07-10T10:00:00.000Z",
+                                updatedAt: "2025-07-10T10:10:00.000Z"
+
+                            }
+
                         }),
                     })
                         .then(res => res.json())
@@ -93,39 +105,39 @@ export const LoginWithGoogle = () => {
                         .then(res => res.json())
                         .then(data => console.log('GET events:', data))
                         .catch(err => console.error(err))
-                        // בדיקת PATCH calendar
-                        // const eventId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
-                        // fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${eventId}`, {
-                        //     method: 'PATCH',
-                        //     headers: {
-                        //         'Content-Type': 'application/json',
-                        //         'Authorization': `Bearer ${googleAccessToken}`,
-                        //     },
-                        //     body: JSON.stringify({
-                        //         summary: 'אירוע מעודכן',
-                        //         description: 'עודכן מה-frontend',
-                        //         recurrence: ['RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=4'],
-                        //     }),
-                        // })
-                        //     .then(res => res.json())
-                        //     .then(data => console.log('אירוע עודכן:', data))
-                        //     .catch(err => console.error('שגיאה בעדכון:', err));
-                        // בדיקת DELETE calendar
-                        // const evenId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
-                        // fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${evenId}`, {
-                        //     method: 'DELETE',
-                        //     headers: {
-                        //         'Authorization': `Bearer ${googleAccessToken}`,
-                        //     },
-                        // })
-                        //     .then(res => {
-                        //         if (res.ok) {
-                        //             console.log('האירוע נמחק בהצלחה!');
-                        //         } else {
-                        //             res.json().then(data => console.error('שגיאה במחיקה:', data));
-                        //         }
-                        //     })
-                        .catch(err => console.error('שגיאה במחיקה:', err));
+                    // בדיקת PATCH calendar
+                    // const eventId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
+                    // fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${eventId}`, {
+                    //     method: 'PATCH',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         'Authorization': `Bearer ${googleAccessToken}`,
+                    //     },
+                    //     body: JSON.stringify({
+                    //         summary: 'אירוע מעודכן',
+                    //         description: 'עודכן מה-frontend',
+                    //         recurrence: ['RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=4'],
+                    //     }),
+                    // })
+                    //     .then(res => res.json())
+                    //     .then(data => console.log('אירוע עודכן:', data))
+                    //     .catch(err => console.error('שגיאה בעדכון:', err));
+                    // בדיקת DELETE calendar
+                    // const evenId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
+                    // fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${evenId}`, {
+                    //     method: 'DELETE',
+                    //     headers: {
+                    //         'Authorization': `Bearer ${googleAccessToken}`,
+                    //     },
+                    // })
+                    //     .then(res => {
+                    //         if (res.ok) {
+                    //             console.log('האירוע נמחק בהצלחה!');
+                    //         } else {
+                    //             res.json().then(data => console.error('שגיאה במחיקה:', data));
+                    //         }
+                    //     })
+                    // .catch(err => console.error('שגיאה במחיקה:', err));
                 }
                 //עד כאן
             } catch (error) {
@@ -140,3 +152,5 @@ export const LoginWithGoogle = () => {
         <button onClick={() => login()}> Google התחבר עם </button>
     );
 };
+
+

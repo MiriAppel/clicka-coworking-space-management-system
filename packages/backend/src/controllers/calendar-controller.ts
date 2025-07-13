@@ -1,8 +1,9 @@
 import { validateEventInput } from '../utils/validateEventInput';
 import { Request, Response, NextFunction } from 'express';
 import * as calendarService from '../services/calendar-service';
-import { CalendarEventInput } from 'shared-types/google'; 
-import { DateISO } from 'shared-types/core'; 
+import { CalendarEventInput, DateISO } from 'shared-types';
+// import { CalendarEventInput } from 'shared-types/google'; 
+// import { DateISO } from 'shared-types/core'; 
 
 export async function postEvent(req: Request, res: Response, next: NextFunction) {
   const token = extractToken(req);

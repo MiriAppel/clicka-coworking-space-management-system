@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-
-dotenv.config(); 
-
+// // טוען את משתני הסביבה מקובץ .env
+dotenv.config();
+// dotenv.config({
+//   path: path.resolve(__dirname, '../../.env'),
+// });
 console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
 console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
 

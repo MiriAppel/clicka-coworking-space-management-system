@@ -58,7 +58,7 @@ export interface Vendor {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
- 
+
 // Expense model
 export interface Expense {
   id: ID;
@@ -100,10 +100,11 @@ export interface Expense {
 // }
 
 export enum PaymentMethod {
-  BankTransfer = 'BankTransfer',   
-  CreditCard = 'CreditCard',      
-  Cash = 'Cash',                  
-  Other = 'Other'                 
+  CREDIT_CARD = "CREDIT_CARD",
+  BANK_TRANSFER = "BANK_TRANSFER",
+  CASH = "CASH",
+  CHECK = "CHECK",
+  OTHER = "OTHER",
 }
 export enum VendorStatus {
   Active = 'Active',
@@ -120,13 +121,18 @@ export enum VendorCategory {
 // Create vendor request
 export interface CreateVendorRequest {
   name: string;
-  contactName?: string;
+  contact_name?: string;
   phone?: string;
   email?: string;
   address?: string;
   website?: string;
   taxId?: string;
   notes?: string;
+  documents?: never[];
+  category?: VendorCategory | undefined;
+  preferred_payment_method?: PaymentMethod | undefined;
+  payment_terms?: string | undefined;
+
 }
 
 // Update vendor request
