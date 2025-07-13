@@ -11,12 +11,8 @@ import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { CheckboxField } from '../../../../Common/Components/BaseComponents/CheckBox';
 import { useCustomerFormData } from '../../Hooks/useCustomerFormData';
-import {
-  getCustomerById,
-  patchCustomer,
-  recordExitNotice,
-} from '../../Service/LeadAndCustomersService';
 import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
+import { useCustomerStore } from '../../../../Stores/LeadAndCustomer/customerStore';
 
 // interface Props {
 //   open: boolean;
@@ -86,6 +82,13 @@ export const CustomerStatusChanged: React.FC = () => {
   const { customerId } = useParams<{ customerId: string }>();
   const navigate = useNavigate();
 
+  const {
+    updateCustomer,
+    recordExitNotice,
+    fetchCustomerById,
+    error,
+  } = useCustomerStore();
+
   //  if (!customerId) return null;
   const handleClose = () => navigate(-1);
 
@@ -107,11 +110,13 @@ export const CustomerStatusChanged: React.FC = () => {
   const selectedStatus = methods.watch('status');
 
   const fetchCustomerData = useCallback(async (id: string) => {
-    const customer = await getCustomerById(id);
-    const latestPeriod = customer.periods?.[0];
+    const customer = await fetchCustomerById(id);
+
+    //במקום זה צריך לקבל מהשרת מהטבלה של תקופות
+    const latestPeriod = customer!.periods?.[0];
 
     return {
-      status: customer.status,
+      status: customer!.status,
       // effectiveDate: customer.billingStartDate ?? '',
       notifyCustomer: false,
       reason: '',
@@ -135,28 +140,31 @@ export const CustomerStatusChanged: React.FC = () => {
   const onSubmit = async (data: FormData) => {
     console.log("data in submit", data);
 
-    try {
-      // 1. אם מדובר בעזיבה – קודם נקליט את פרטי העזיבה
-      if (data.status === CustomerStatus.NOTICE_GIVEN) {
-        await recordExitNotice(customerId, {
-          exitNoticeDate: data.exitNoticeDate!,
-          plannedExitDate: data.plannedExitDate!,
-          exitReason: data.exitReason!,
-          exitReasonDetails: data.exitReasonDetails,
-        });
-      }
-      // 2. שולחים את עדכון הלקוח
-      await patchCustomer(customerId, {
-        status: data.status,
-        notes: data.exitReasonDetails,
-        ...(data.reason && { reason: data.reason }),
+
+    // 1. אם מדובר בעזיבה – קודם נקליט את פרטי העזיבה
+    if (data.status === CustomerStatus.NOTICE_GIVEN) {
+      await recordExitNotice(customerId, {
+        exitNoticeDate: data.exitNoticeDate!,
+        plannedExitDate: data.plannedExitDate!,
+        exitReason: data.exitReason!,
+        exitReasonDetails: data.exitReasonDetails,
       });
-      // סגירה
+    }
+    // 2. שולחים את עדכון הלקוח
+    await updateCustomer(customerId, {
+      status: data.status,
+      notes: data.exitReasonDetails,
+      ...(data.reason && { reason: data.reason }),
+    });
+
+    const latestError = useCustomerStore.getState().error;
+    if (latestError) {
+      showAlert("שגיאה", `שגיאה בעדכון סטטוס:\n${error}`, "error");
+    } else {
       showAlert("עדכון", "סטטוס עודכן בהצלחה!", "success");
       navigate(-1);
-    } catch (error) {
-      showAlert("שגיאה", `שגיאה בעדכון סטטוס:\n${error}`, "error");
     }
+
   };
 
   return (

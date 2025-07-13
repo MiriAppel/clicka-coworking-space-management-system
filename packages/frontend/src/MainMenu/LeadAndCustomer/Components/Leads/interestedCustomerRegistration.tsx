@@ -222,28 +222,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
     //לבדוק דחוף למה לא מבטל שגיאות כמו לפני זה!!
     const goToStep = async (index: number) => {
 
-        // הכריחי את הטופס לעדכן את הערכים
-        await methods.trigger(stepFieldNames[currentStep]);
-        // נבדוק שוב את השגיאות אחרי trigger
-        const errors = methods.formState.errors;
-        const fields = stepFieldNames[currentStep] as readonly string[];
-        // אם בחרו כרטיס אשראי, ודאי ששדות האשראי נבדקים
-        let valid = fields.every(field => !(field in errors));
-        // אם במקטע הזה יש שדות אשראי, נבדוק אותם ידנית
-        if (
-            currentStep === 1 &&
-            paymentMethodType === PaymentMethodType.CREDIT_CARD
-        ) {
-            console.log("in credit card step");
-
-            const creditFields = [
-                "creditCardLast4",
-                "creditCardExpiry",
-                "creditCardHolderIdNumber",
-                "creditCardHolderPhone"
-            ];
-            valid = valid && creditFields.every(field => !(field in errors));
-        }
+        const valid = await methods.trigger(stepFieldNames[currentStep]);        
         if (valid) {
             setValidSteps((prev) => {
                 const updatedSteps = [...prev];
@@ -274,6 +253,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
         // אחרת, השגיאות יוצגו אוטומטית בשדות הלא תקינים
     };
 
+    
     const onSubmit = async (data: z.infer<typeof schema>) => {
 
         //איך לשמור את התמונת פרופיל ואיפה ואם לא הכניסו אז לשים ברירת מחדל

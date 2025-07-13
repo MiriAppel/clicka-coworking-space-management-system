@@ -1,4 +1,4 @@
-import { CreateCustomerRequest, Customer, CustomerStatus } from 'shared-types'; // עדכן את הנתיב אם צריך
+import { CreateCustomerRequest, Customer, CustomerStatus, RecordExitNoticeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
 import { create } from 'zustand';
 
 interface CustomerStore {
@@ -20,6 +20,7 @@ interface CustomerStore {
     updateCustomer: (id: string, customer: Partial<Customer>) => Promise<void>;
     deleteCustomer: (id: string) => Promise<void>;
     resetSelectedCustomer: () => void;
+    recordExitNotice: (id: string, data: RecordExitNoticeRequest) => Promise<void>;
 }
 
 const BASE_API_URL = `${process.env.REACT_APP_API_URL}/customers`;
@@ -210,6 +211,34 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
             await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות
         } catch (error: any) {
             set({ error: error.message || "שגיאה במחיקת לקוח", loading: false });
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    recordExitNotice: async (id: string, data: RecordExitNoticeRequest): Promise<void> => {
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch(`${BASE_API_URL}/${id}/exit-notice`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            if (!response.ok) {
+                let errorMsg = "Failed to record exit notice";
+                try {
+                    const errorBody = await response.json();
+                    errorMsg = errorBody?.error?.details || errorBody?.error?.message || errorBody?.message || errorMsg;
+                } catch (e) { }
+                throw new Error(errorMsg);
+            }
+            // עדכן את הלקוחות אחרי שינוי
+            await useCustomerStore.getState().fetchCustomersByPage();
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה ברישום הודעת עזיבה", loading: false });
+            throw error;
         } finally {
             set({ loading: false });
         }
