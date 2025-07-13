@@ -31,7 +31,8 @@ import heLocale from '@fullcalendar/core/locales/he';
 import '../Css/bookingCalendar.css';
 import { useBookingCalendarStore } from '../../../Stores/Workspace/bookingCalendarStore';
 import { showAlert } from '../../../Common/Components/BaseComponents/ShowAlert';
-
+import { RoomReservations } from './RoomReservations'; 
+import type { FormFields } from './RoomReservations'; 
 interface BookingCalendarProps {
   roomId: string;
   roomName: string;
@@ -55,6 +56,8 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
 
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState<any>(null);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [formInitialData, setFormInitialData] = useState<Partial<FormFields>>({});
 
   useEffect(() => {
     if (roomId) {
@@ -125,26 +128,17 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleSelect = async (selectInfo: DateSelectArg) => {
-    const customerName = prompt(`הזמנה חדשה עבור ${roomName}:\nשם הלקוח:`);
-    if (!customerName) return;
-
-    const newBooking = {
-      roomId: roomId,
-      customerName,
-      startTime: selectInfo.startStr,
-      endTime: selectInfo.endStr,
-      notes: `הזמנה עבור ${roomName}`
-    };
-
-    try {
-      validateBookingUpdate(selectInfo.startStr, selectInfo.endStr, 'new');
-      await createBooking(newBooking);
-      selectInfo.view.calendar.unselect();
-      showAlert('הצלחה!', 'ההזמנה נוצרה בהצלחה', 'success');
-    } catch (error: any) {
-      showAlert('שגיאה', `שגיאה ביצירת ההזמנה: ${error.message}`, 'error');
-    }
+  const handleSelect = (selectInfo: DateSelectArg) => {
+  setFormInitialData({
+    startDate: selectInfo.startStr.slice(0, 10),
+    startTime: selectInfo.startStr.slice(11, 16),
+    endDate: selectInfo.endStr.slice(0, 10),
+    endTime: selectInfo.endStr.slice(11, 16),
+    selectedRoomId: roomId,
+    // אפשר להוסיף כאן עוד נתונים אם יש
+  });
+  setShowFormModal(true);
+  selectInfo.view.calendar.unselect()
   };
 
   const handleEventChange = async (changeInfo: EventDropArg) => {
@@ -468,6 +462,25 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
           <li>• השתמש בתפריט העליון לשינוי תצוגה (יום/שבוע/חודש)</li>
         </ul>
       </div>
+      <div className="mb-4 flex justify-end">
+      <button
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-bold"
+        onClick={() => {
+          setFormInitialData({
+            selectedRoomId: roomId,
+           // roomName: roomName,
+            startDate: new Date().toISOString().slice(0, 10),
+            startTime: "08:00",
+            endDate: new Date().toISOString().slice(0, 10),
+            endTime: "09:00",
+            // אפשר להוסיף כאן עוד נתונים אם צריך
+          });
+          setShowFormModal(true);
+        }}
+      >
+        יצירת אירוע חדש
+      </button>
+    </div>
 
       {/* לוח השנה */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
@@ -616,6 +629,24 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
           </div>
         </div>
       )}
+      {showFormModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 p-6 max-h-[90vh] overflow-y-auto">
+      <RoomReservations
+        initialData={formInitialData}
+        onSubmit={() => setShowFormModal(false)}
+      />
+      <button
+        className="mt-4 w-full bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700"
+        onClick={() => setShowFormModal(false)}
+      >
+        סגור
+      </button>
     </div>
+  </div>
+)}
+    </div>
+    
   );
+  
 };
