@@ -14,3 +14,4 @@ export * from './pricing';
 export * from './translation';
 export * from './person';
 export * from './templates';
+export * from './document';

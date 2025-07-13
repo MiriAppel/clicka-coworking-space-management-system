@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 import * as tokenService from '../services/tokenService';
 import { LoginResponse } from "shared-types";
-
 import { HttpStatusCode } from 'axios';
 
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
@@ -22,21 +21,26 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
       message: 'התחברת בהצלחה. נותקת ממכשירים אחרים.'
     };
     res.status(200).json(response);
-  } catch (error) {
+  } catch (error: any) {
+    console.log('in auth controller catch ',error)
     if ((error as any).message === 'User not found or not authorized to login') {
       res.status(HttpStatusCode.Forbidden).json({ error: 'User not found or not authorized to login' });
-    } else {
+    } else if (error.message === 'User not found') {
+      res.status(HttpStatusCode.Unauthorized).json({ error: 'User not found' });
+    }
+    else {
       console.error('Google login failed:', error);
       res.status(500).json({ error: 'Authentication failed' });
     }
   }
+
 };
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const userId = await tokenService.getUserFromCookie(req);
-    if (userId) {
-      await tokenService.logoutUser(userId, res);
+    const user = await tokenService.getUserFromCookie(req);
+    if (user) {
+      await tokenService.logoutUser(user.userId, res);
     }
   } catch (error) {
     console.error('Logout failed:', error);

@@ -1,48 +1,48 @@
 // pricing-types.d.ts
 
-import { ApiResponse, ID } from './core';
+import { ApiResponse, ID, DateISO } from './core'; 
 import { WorkspaceType } from './customer';
 
 // Pricing tier
 export interface PricingTier {
-  id: ID;
+  id?: ID; // שינוי: ה-ID אופציונלי
   workspaceType: WorkspaceType;
   year1Price: number;
   year2Price: number;
   year3Price: number;
   year4Price: number;
   active: boolean;
-  effectiveDate: string; // ISO date string
-  createdAt: string;
-  updatedAt: string;
+  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  createdAt: DateISO; // שינוי: תוקן ל-DateISO
+  updatedAt: DateISO; // שינוי: תוקן ל-DateISO
 }
 
 // Meeting room pricing
 export interface MeetingRoomPricing {
-  id: ID;
+  id?: ID; // שינוי: ה-ID אופציונלי
   hourlyRate: number;
   discountedHourlyRate: number; // For 4+ hours
   freeHoursKlikahCard: number; // Free hours for Klikah Card holders
   active: boolean;
-  effectiveDate: string; // ISO date string
-  createdAt: string;
-  updatedAt: string;
+  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  createdAt: DateISO; // שינוי: תוקן ל-DateISO
+  updatedAt: DateISO; // שינוי: תוקן ל-DateISO
 }
 
 // Lounge pricing
 export interface LoungePricing {
-  id: ID;
+  id?: ID; // שינוי: ה-ID אופציונלי
   eveningRate: number;
   memberDiscountRate: number; // For members
   active: boolean;
-  effectiveDate: string; // ISO date string
-  createdAt: string;
-  updatedAt: string;
+  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  createdAt: DateISO; // שינוי: תוקן ל-DateISO
+  updatedAt: DateISO; // שינוי: תוקן ל-DateISO
 }
 
 // Get current pricing request
 export interface GetCurrentPricingRequest {
-  date?: string; // ISO date string, defaults to current date
+  date?: string; // ISO date string, defaults to current date - נשאר string כי ה-API החיצוני משתמש בו כך
 }
 
 // Get current pricing response
@@ -64,7 +64,7 @@ export interface GetCurrentPricingResponse {
     eveningRate: number;
     memberDiscountRate: number;
   };
-  effectiveDate: string; // ISO date string
+  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
 }
 
 // Update pricing tier request
@@ -74,7 +74,7 @@ export interface UpdatePricingTierRequest {
   year2Price: number;
   year3Price: number;
   year4Price: number;
-  effectiveDate: string; // ISO date string
+  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
 }
 
 // Update meeting room pricing request
@@ -82,27 +82,27 @@ export interface UpdateMeetingRoomPricingRequest {
   hourlyRate: number;
   discountedHourlyRate: number;
   freeHoursKlikahCard: number;
-  effectiveDate: string; // ISO date string
+  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
 }
 
 // Update lounge pricing request
 export interface UpdateLoungePricingRequest {
   eveningRate: number;
   memberDiscountRate: number;
-  effectiveDate: string; // ISO date string
+  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
 }
 
 // Get pricing history request
 export interface GetPricingHistoryRequest {
   workspaceType?: WorkspaceType;
-  startDate?: string; // ISO date string
-  endDate?: string; // ISO date string
+  startDate?: DateISO; // שינוי: תוקן ל-DateISO
+  endDate?: DateISO; // שינוי: תוקן ל-DateISO
 }
 
 // Get pricing history response
 export interface GetPricingHistoryResponse {
   pricingHistory: {
-    effectiveDate: string;
+    effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
     pricingData: {
       workspaceType: WorkspaceType;
       year1Price: number;
@@ -120,4 +120,13 @@ export interface GetPricingHistoryResponse {
       memberDiscountRate: number;
     };
   }[];
+}
+
+export interface PricingTierCreateRequest {
+  workspaceType: WorkspaceType;
+  year1Price: number;
+  year2Price: number;
+  year3Price: number;
+  year4Price: number;
+  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
 }

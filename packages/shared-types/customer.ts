@@ -1,3 +1,5 @@
+// customer-types.d.ts
+
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
@@ -151,7 +153,6 @@ export interface CreateCustomerRequest {
     paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
-
 
 // Update customer request
 export interface UpdateCustomerRequest {

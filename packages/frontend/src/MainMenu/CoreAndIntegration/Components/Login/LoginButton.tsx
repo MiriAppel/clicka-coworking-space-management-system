@@ -3,14 +3,11 @@ import axios from 'axios';
 import { googleAuthConfig } from '../../Config/googleAuth';
 import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
+import { axiosInstance } from '../../../../Services/Axios';
 
-const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3001',
-    withCredentials: true, // Ensure cookies are sent with requests
-});
 export const LoginWithGoogle = () => {
     // const setUser = useAuthStore((state) => state.setUser);
-    const {setUser, setSessionId}=useAuthStore();
+    const { setUser, setSessionId } = useAuthStore();
     const login = useGoogleLogin({
         flow: 'auth-code',
         onSuccess: async (codeResponse) => {
@@ -18,7 +15,7 @@ export const LoginWithGoogle = () => {
                 console.log('Code received from Google:', codeResponse);
 
                 const response = await axiosInstance.post<LoginResponse>(
-                    '/api/auth/google',
+                    '/auth/google',
                     { code: codeResponse.code },
                     {
                         headers: {
@@ -31,7 +28,14 @@ export const LoginWithGoogle = () => {
                 setUser(response.data.user);
                 setSessionId(response.data.sessionId!)
                 // Optionally, you can handle the token and expiration here
-            } catch (error) {
+            } catch (error:any) {
+                 if (axios.isAxiosError(error) && error.response?.status === 401){
+                    alert('You are not authorized to access this resource.');
+                    return;
+                 }
+                 if(axios.isAxiosError(error)){
+                    alert(error.message)
+                 }
                 console.error('Error sending code to server:', error);
             }
         },
@@ -41,6 +45,8 @@ export const LoginWithGoogle = () => {
     });
 
     return (
-        <button onClick= {() => login()}> Google התחבר עם </button>
+        <button onClick={() => login()}> Google התחבר עם </button>
     );
 };
+
+

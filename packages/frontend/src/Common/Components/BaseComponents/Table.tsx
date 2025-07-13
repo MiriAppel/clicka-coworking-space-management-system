@@ -24,7 +24,6 @@ export interface TableProps<T> extends BaseComponentProps {
   onUpdate?: (row: T) => void;  //פונקציה לעידכון 
   onDelete?: (row: T) => void; //פונקציה למחיקה 
   renderActions?: (row: T) => React.ReactNode; // הוסף שורה זו
-
 }
 
 
