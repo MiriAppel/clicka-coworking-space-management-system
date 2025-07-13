@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
 import { UserRole } from "shared-types";
-
-
 // Auth middleware to check user permissions
 export const authorizeUser = (permission: UserRole[]) => {
     return (req: Request, res: Response, next: NextFunction): void => {

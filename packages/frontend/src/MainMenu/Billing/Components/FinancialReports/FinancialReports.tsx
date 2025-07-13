@@ -4,6 +4,8 @@ import { useFinancialReportsStore } from '../../../../Stores/Billing/financialRe
 import ReportControls from "./ReportControls";
 // ייבוא קומפוננטת ההצגה של הדוחות
 import ReportDisplay from './reportDisplay';
+// import ReportDisplay from './reportDisplay';
+
 
 // קומפוננטת האב המאגדת את כל מערכת הדוחות
 const FinancialReports = () => {
@@ -33,7 +35,7 @@ const FinancialReports = () => {
       <ReportControls></ReportControls>
 
 {/* קומפוננטת הצגת הדוח שנוצר */}
-      <ReportDisplay></ReportDisplay>
+      {/* <ReportDisplay></ReportDisplay> */}
     </>
   );
 };

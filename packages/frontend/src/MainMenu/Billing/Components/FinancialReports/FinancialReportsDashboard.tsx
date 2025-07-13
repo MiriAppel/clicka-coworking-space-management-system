@@ -84,7 +84,7 @@ export const FinancialReportsDashboard: React.FC = () => {
       try {
         const [customerRes, vendorRes] = await Promise.all([
           axios.get('http://localhost:3001/api/customers', { withCredentials: true }),
-          axios.get('http://localhost:3001/api/vendors', { withCredentials: true }),
+          axios.get('http://localhost:3001/vendor', { withCredentials: true }),
         ]);
         setCustomers(customerRes.data || []);
         setVendors(vendorRes.data || []);
