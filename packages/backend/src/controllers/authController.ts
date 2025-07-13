@@ -41,7 +41,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const user = await tokenService.getUserFromCookie(req);
+    const user = await tokenService.getUserFromCookie(req); 
     if (user) {
       await tokenService.logoutUser(user.userId, res);
     }

@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { log } from 'console';
 dotenv.config();
 
 //parameters for Google OAuth2 from environment variables
@@ -20,6 +21,7 @@ export const oauth2Client = new google.auth.OAuth2(
 export async function getTokens(code: string) {
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
+  log('Tokens received:', tokens.scope);
   return {
     access_token: tokens.access_token!,
     refresh_token: tokens.refresh_token, // חשוב - שומר אותו אם גוגל החזירה
