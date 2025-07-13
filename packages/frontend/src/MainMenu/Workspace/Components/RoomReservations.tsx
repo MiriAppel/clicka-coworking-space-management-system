@@ -40,10 +40,11 @@ export type RoomReservationsRef = {
 
 export type RoomReservationsProps = {
   initialData?: Partial<FormFields>;
+    onSubmit?: () => void; // הוסיפי שורה זו
 };
 
 export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservationsProps>(
-  ({ initialData }, ref) => {
+  ({ initialData , onSubmit}, ref) => {
     const methods = useForm<FormFields>({
       defaultValues: {
         customerStatus: "valid",
@@ -159,6 +160,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         if (result) {
           alert("ההזמנה נוצרה בהצלחה");
           methods.reset();
+                    if (onSubmit) onSubmit(); 
         }
       } catch (error) {
         console.error("שגיאה ביצירת ההזמנה:", error);

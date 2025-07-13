@@ -40,6 +40,12 @@
     padding: 24px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
     border: 1px solid #E0E0E0;
+    overflow-x: auto; /* גלילה אופקית במידת הצורך */
+}
+
+/* תיקון לטבלה */
+.fc-timegrid {
+    min-width: 800px; /* רוחב מינימלי */
 }
 
 /* Day Headers */
@@ -48,10 +54,13 @@
     color: #007BFF !important;
     font-weight: 600 !important;
     padding: 16px 12px !important;
-    border: none !important;
+    border-right: 2px solid #007BFF !important;
+    border-bottom: 2px solid #007BFF !important;
     font-size: 14px !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
+    text-align: center !important;
+    min-width: 120px !important;
 }
 
 /* Today Header */
@@ -162,54 +171,100 @@ td.fc-timegrid-slot-major {
 
 
 
-/* הפרדה ברורה בין ימים - גבולות חזקים */
+/* הגישה חדשה - כפיית גבולות חזקים בין ימים */
+.fc-timegrid-body .fc-timegrid-col,
+.fc-timegrid .fc-timegrid-col,
 .fc .fc-timegrid-col,
-.fc-timegrid-col {
+td.fc-timegrid-col {
     border-right: 4px solid #007BFF !important;
+    border-left: 1px solid #007BFF !important;
     background: #ffffff !important;
+    min-width: 150px !important;
+    max-width: 200px !important;
 }
 
-/* הפרדה חזקה יותר בין ימים */
+/* כפיית גבול על כל תא בעמודה */
+.fc-timegrid-col .fc-timegrid-slot,
+.fc-timegrid-col td,
+.fc .fc-timegrid-col .fc-timegrid-slot,
+.fc .fc-timegrid-col td {
+    border-right: 4px solid #007BFF !important;
+    border-left: 1px solid #007BFF !important;
+}
 
+/* גבול חזק לעמודת השעות */
+.fc-timegrid-axis,
+.fc .fc-timegrid-axis,
+.fc-timegrid .fc-timegrid-axis {
+    border-right: 4px solid #007BFF !important;
+    background: #F8F9FA !important;
+    width: 80px !important;
+    min-width: 80px !important;
+}
 
-.fc .fc-timegrid-col:not(:last-child),
-.fc-timegrid-col:not(:last-child) {
+/* גבולות בכותרות */
+.fc-col-header-cell,
+.fc .fc-col-header-cell {
+    border-right: 4px solid #007BFF !important;
+    border-left: 1px solid #007BFF !important;
+    border-bottom: 3px solid #007BFF !important;
+    min-width: 150px !important;
+}
+
+/* תיקון צבע היום הנוכחי - תכלת */
+.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot,
+.fc-timegrid-col.fc-day-today .fc-timegrid-slot,
+.fc-day-today .fc-timegrid-slot,
+td.fc-day-today {
+    background: #a5d8ff !important;
+    border-right: 4px solid #007BFF !important;
+    border-left: 4px solid #007BFF !important;
+}
+
+/* כותרת היום הנוכחי */
+.fc .fc-col-header-cell.fc-day-today {
+    background: #007BFF !important;
+    color: #fff !important;
+    border: 4px solid #007BFF !important;
+}
+
+/* עמודת השעות של היום הנוכחי */
+.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot-label {
+    background: #a5d8ff !important;
+    color: #007BFF !important;
+}
+
+/* כפיית גבולות על הטבלה הראשית */
+.fc-scrollgrid,
+.fc .fc-scrollgrid {
+    border: 3px solid #007BFF !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+/* גבול נוסף לוודא הפרדה */
+.fc-scrollgrid-sync-table,
+.fc .fc-scrollgrid-sync-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.fc-scrollgrid-sync-table td,
+.fc .fc-scrollgrid-sync-table td {
     border-right: 4px solid #007BFF !important;
 }
 
-/* הדגשה מיוחדת ליום הנוכחי */
-
-
-.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot,
-.fc-timegrid-col.fc-day-today .fc-timegrid-slot {
-    background: #a5d8ff !important;
+/* גבול מיוחד לעמודה האחרונה */
+.fc-timegrid-col:last-child,
+.fc .fc-timegrid-col:last-child {
+    border-right: 4px solid #007BFF !important;
 }
 
-
-.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot-minor,
-.fc-timegrid-col.fc-day-today .fc-timegrid-slot-minor {
-    background: #a5d8ff !important;
+/* גבול מיוחד לעמודה הראשונה */
+.fc-timegrid-col:first-child,
+.fc .fc-timegrid-col:first-child {
+    border-left: 4px solid #007BFF !important;
 }
-
-
-.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot-major,
-.fc-timegrid-col.fc-day-today .fc-timegrid-slot-major {
-    background: #a5d8ff !important;
-}
-
-/* גבול מיוחד ליום הנוכחי */
-
-
-
-.fc .fc-timegrid-col.fc-day-today,
-.fc-timegrid-col.fc-day-today {
-    border-left: 6px solid #007BFF !important;
-    border-right: 6px solid #007BFF !important;
-    background: #a5d8ff !important;
-}
-
-
-
 
 /* אפקט hover פשוט */
 .fc-timegrid-slot:hover,
@@ -568,4 +623,88 @@ td.fc-timegrid-slot:hover {
 .fc-day-today td {
     background-color: #a5d8ff !important;
     background: #a5d8ff !important;
+}
+
+/* הסרת כל ההגדרות הקיימות של גובה והוספת הגדרות חדשות */
+
+/* גובה שעות - פשוט וברור */
+.fc .fc-timegrid-slot {
+    height: 60px !important;
+    min-height: 60px !important;
+    border-bottom: 1px solid #E0E0E0 !important;
+}
+
+/* הפרדה ברורה בין ימים */
+.fc .fc-timegrid-col {
+    border-right: 3px solid #007BFF !important;
+    border-left: 1px solid #E0E0E0 !important;
+    min-width: 150px !important;
+    max-width: 200px !important;
+}
+
+/* תיקון כותרות ימים */
+.fc .fc-col-header-cell {
+    background: #F8F9FA !important;
+    color: #007BFF !important;
+    font-weight: 600 !important;
+    padding: 16px 12px !important;
+    border-right: 3px solid #007BFF !important;
+    border-bottom: 2px solid #007BFF !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    min-width: 150px !important;
+}
+
+/* תיקון עמודת השעות */
+.fc .fc-timegrid-axis {
+    border-right: 3px solid #007BFF !important;
+    background: #F8F9FA !important;
+    width: 80px !important;
+    min-width: 80px !important;
+}
+
+/* תיקון רוחב הלוח */
+.fc .fc-scrollgrid {
+    width: 100% !important;
+    border: 2px solid #007BFF !important;
+    border-radius: 8px !important;
+}
+
+/* הסרת overflow מהקונטיינר */
+.calendar-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #E0E0E0;
+    overflow: visible !important;
+}
+
+/* תיקון אירועים - הצגת פרטים מלאים */
+.fc .fc-event {
+    background: #a5d8ff !important;
+    color: #007BFF !important;
+    border: 1px solid #007BFF !important;
+    border-radius: 4px !important;
+    font-weight: 500 !important;
+    font-size: 11px !important;
+    padding: 4px 6px !important;
+    box-shadow: 0 2px 4px rgba(0,123,255,0.3) !important;
+    cursor: pointer !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+    line-height: 1.2 !important;
+}
+
+/* הצגת פרטים באירוע */
+.fc .fc-event-title {
+    font-weight: 600 !important;
+    display: block !important;
+}
+
+.fc .fc-event-time {
+    font-size: 10px !important;
+    display: block !important;
+    opacity: 0.8;
 }

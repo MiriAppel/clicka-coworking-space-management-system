@@ -1,3 +1,21 @@
+/**
+ * Represents a booking calendar component for managing room bookings.
+ * 
+ * @component
+ * @param {Object} props - Component properties
+ * @param {string} props.roomId - Unique identifier for the room
+ * @param {string} props.roomName - Display name of the room
+ * @param {string} [props.roomType="MEETING_ROOM"] - Type of room (defaults to meeting room)
+ * 
+ * @description
+ * This component provides a comprehensive calendar interface for:
+ * - Viewing existing bookings
+ * - Creating new bookings
+ * - Editing and managing booking statuses
+ * - Displaying booking statistics
+ * 
+ * Uses FullCalendar for rendering and supports Hebrew localization.
+ */
 import React, { useEffect, useState } from 'react';
 import { BookingStatus, UpdateBookingRequest  } from 'shared-types';
 import FullCalendar from '@fullcalendar/react';
@@ -13,7 +31,8 @@ import heLocale from '@fullcalendar/core/locales/he';
 import '../Css/bookingCalendar.css';
 import { useBookingCalendarStore } from '../../../Stores/Workspace/bookingCalendarStore';
 import { showAlert } from '../../../Common/Components/BaseComponents/ShowAlert';
-
+import { RoomReservations } from './RoomReservations'; 
+import type { FormFields } from './RoomReservations'; 
 interface BookingCalendarProps {
   roomId: string;
   roomName: string;
@@ -37,6 +56,8 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
 
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState<any>(null);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [formInitialData, setFormInitialData] = useState<Partial<FormFields>>({});
 
   useEffect(() => {
     if (roomId) {
@@ -107,26 +128,17 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleSelect = async (selectInfo: DateSelectArg) => {
-    const customerName = prompt(`הזמנה חדשה עבור ${roomName}:\nשם הלקוח:`);
-    if (!customerName) return;
-
-    const newBooking = {
-      roomId: roomId,
-      customerName,
-      startTime: selectInfo.startStr,
-      endTime: selectInfo.endStr,
-      notes: `הזמנה עבור ${roomName}`
-    };
-
-    try {
-      validateBookingUpdate(selectInfo.startStr, selectInfo.endStr, 'new');
-      await createBooking(newBooking);
-      selectInfo.view.calendar.unselect();
-      showAlert('הצלחה!', 'ההזמנה נוצרה בהצלחה', 'success');
-    } catch (error: any) {
-      showAlert('שגיאה', `שגיאה ביצירת ההזמנה: ${error.message}`, 'error');
-    }
+  const handleSelect = (selectInfo: DateSelectArg) => {
+  setFormInitialData({
+    startDate: selectInfo.startStr.slice(0, 10),
+    startTime: selectInfo.startStr.slice(11, 16),
+    endDate: selectInfo.endStr.slice(0, 10),
+    endTime: selectInfo.endStr.slice(11, 16),
+    selectedRoomId: roomId,
+    // אפשר להוסיף כאן עוד נתונים אם יש
+  });
+  setShowFormModal(true);
+  selectInfo.view.calendar.unselect()
   };
 
   const handleEventChange = async (changeInfo: EventDropArg) => {
@@ -450,6 +462,25 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
           <li>• השתמש בתפריט העליון לשינוי תצוגה (יום/שבוע/חודש)</li>
         </ul>
       </div>
+      <div className="mb-4 flex justify-end">
+      <button
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 font-bold"
+        onClick={() => {
+          setFormInitialData({
+            selectedRoomId: roomId,
+           // roomName: roomName,
+            startDate: new Date().toISOString().slice(0, 10),
+            startTime: "08:00",
+            endDate: new Date().toISOString().slice(0, 10),
+            endTime: "09:00",
+            // אפשר להוסיף כאן עוד נתונים אם צריך
+          });
+          setShowFormModal(true);
+        }}
+      >
+        יצירת אירוע חדש
+      </button>
+    </div>
 
       {/* לוח השנה */}
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
@@ -461,42 +492,54 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             direction="rtl"
             height="auto"
             expandRows={true}
-            slotMinTime="07:00"
-            slotMaxTime="22:00"
+            
+            // תיקון זמנים - רק 8-18
+            slotMinTime="08:00"
+            slotMaxTime="18:00"
             slotDuration="01:00"
             slotLabelInterval="01:00"
             snapDuration="00:15"
+            
             slotLabelFormat={{
               hour: '2-digit',
               minute: '2-digit',
               hour12: false
             }}
+            
             allDaySlot={false}
             weekends={true}
+            
+            // שעות עסקים
             businessHours={{
               daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
               startTime: '08:00',
-              endTime: '20:00',
+              endTime: '18:00',
             }}
+            
+            // תיקון כותרת
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
               right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
-            buttonText={{
-              today: 'היום',
-              month: 'חודש',
-              week: 'שבוע',
-              day: 'יום'
+            
+            // הגדרות נוספות לתיקון התצוגה
+            dayHeaderFormat={{ weekday: 'short', day: 'numeric' }}
+            
+            // תיקון לאירועים
+            selectConstraint={{
+              start: '08:00',
+              end: '18:00'
             }}
+            
+            // הגדרות נוספות
+            aspectRatio={1.35}
+            contentHeight="auto"
+            
             events={events}
             selectMirror={true}
             selectable={true}
             selectOverlap={false}
-            selectConstraint={{
-              start: '07:00',
-              end: '22:00'
-            }}
             eventOverlap={false}
             select={handleSelect}
             eventClick={handleEventClick}
@@ -517,7 +560,6 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
               const startTime = new Date(info.event.start!);
               const minutes = startTime.getMinutes();
               
-              // הוספת אטריביוט למיקום האירוע
               if (minutes !== 0) {
                 info.el.setAttribute('data-start-minute', minutes.toString());
                 info.el.style.marginTop = `${(minutes / 60) * 100}%`;
@@ -587,6 +629,24 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
           </div>
         </div>
       )}
+      {showFormModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg shadow-xl max-w-lg w-full mx-4 p-6 max-h-[90vh] overflow-y-auto">
+      <RoomReservations
+        initialData={formInitialData}
+        onSubmit={() => setShowFormModal(false)}
+      />
+      <button
+        className="mt-4 w-full bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700"
+        onClick={() => setShowFormModal(false)}
+      >
+        סגור
+      </button>
     </div>
+  </div>
+)}
+    </div>
+    
   );
+  
 };
