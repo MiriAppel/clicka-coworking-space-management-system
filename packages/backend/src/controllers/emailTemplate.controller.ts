@@ -28,6 +28,20 @@ export class EmailTemplateController {
         }
     }
 
+    async getTemplateByName(req: Request, res: Response) {
+        const templateName = req.params.name;
+        try {
+            const template = await this.emailTemplateService.getTemplateByName(templateName);
+            if (template) {
+                res.json(template);
+            } else {
+                res.status(404).json({ error: "Template not found" });
+            }
+        } catch (err) {
+            res.status(500).json({ error: (err as Error).message });
+        }
+    }
+
     async createTemplate(req: Request, res: Response) {
         const templateData = req.body;
         const template = new EmailTemplateModel(templateData);

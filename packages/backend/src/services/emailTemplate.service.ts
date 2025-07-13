@@ -46,6 +46,19 @@ export class EmailTemplateService {
         return new EmailTemplateModel(data);
     }
 
+    async getTemplateByName(name: string): Promise<EmailTemplateModel | null> {
+        const { data, error } = await supabase
+            .from('email_template')
+            .select('*')
+            .eq('name', name)
+            .single();
+        if (error) {
+            console.error('Error fetching template by name:', error.message);
+            return null;
+        }
+        return new EmailTemplateModel(data);
+    }
+
     async updateTemplate(id: string, updatedData: EmailTemplateModel): Promise<EmailTemplateModel | null> {
         const { data, error } = await supabase
             .from('email_template')

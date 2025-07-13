@@ -208,6 +208,31 @@ export const patchCustomer = async (req: Request, res: Response) => {
   }
 };
 
+export const changeCustomerStatus = async (req: Request, res: Response) => {
+
+   try {
+    console.log("changeCustomerStatus called with params:", req.params);
+    
+    const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
+    const detailsForChangeStatus = req.body; // פרטים לשינוי הסטטוס
+    const token = req.headers.authorization?.split(' ')[1] || ''; // טוקן לאימות, לדוגמה מ-Bearer
+
+    if (!id || !detailsForChangeStatus) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+       // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
+    await serviceCustomer.sendStatusChangeEmails(detailsForChangeStatus, id, token);
+
+    res.status(200).json({ message: 'Status change processed and emails sent.' });
+  } catch (error) {
+    console.error('Error in changeCustomerStatus:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+
+
+}
+
 // לשאול את שולמית לגבי זה
 
 // export const getHistoryChanges = async (req: Request, res: Response) => {

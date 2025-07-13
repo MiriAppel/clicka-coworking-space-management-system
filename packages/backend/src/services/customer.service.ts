@@ -10,10 +10,14 @@ import {
   PaginatedResponse,
   PaymentMethodType,
   RecordExitNoticeRequest,
+  StatusChangeRequest,
   UpdateCustomerRequest,
 } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
+import { EmailTemplateService } from "./emailTemplate.service";
+import { EmailTemplateModel } from "../models/emailTemplate.model";
+import { sendEmail } from "./gmail-service";
 
 export class customerService extends baseService<CustomerModel> {
   constructor() {
@@ -159,27 +163,32 @@ export class customerService extends baseService<CustomerModel> {
   };
 
   getCustomersByText = async (text: string): Promise<CustomerModel[]> => {
-  const searchFields = ["name", "phone", "business_name", "business_type", "email"];
-  
-  const filters = searchFields
-    .map((field) => `${field}.ilike.%${text}%`)
-    .join(",");
-  
-  console.log("Filters:", filters);
-  
-  const { data, error } = await supabase
-    .from("customer")
-    .select("*")
-    .or(filters);
-  
-  if (error) {
-    console.error("שגיאה:", error);
-    return [];
-  }
-  
-  return data as CustomerModel[];
-};
+    const searchFields = [
+      "name",
+      "phone",
+      "business_name",
+      "business_type",
+      "email",
+    ];
 
+    const filters = searchFields
+      .map((field) => `${field}.ilike.%${text}%`)
+      .join(",");
+
+    console.log("Filters:", filters);
+
+    const { data, error } = await supabase
+      .from("customer")
+      .select("*")
+      .or(filters);
+
+    if (error) {
+      console.error("שגיאה:", error);
+      return [];
+    }
+
+    return data as CustomerModel[];
+  };
 
   //מחזיר את כל הלקוחות רק של העמוד הראשון
   getCustomersByPage = async (filters: {
@@ -218,6 +227,111 @@ export class customerService extends baseService<CustomerModel> {
 
     const customers = data || [];
     return CustomerModel.fromDatabaseFormatArray(customers);
+  };
+
+  emailService = new EmailTemplateService();
+
+  sendStatusChangeEmails = async (
+    detailsForChangeStatus: StatusChangeRequest,
+    id: ID,
+    token: string
+  ): Promise<void> => {
+    const customer = await this.getById(id);
+
+    // סטטוסים שדורשים התראה לצוות
+    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE"];
+    const shouldNotifyTeam = notifyTeamStatuses.includes(
+      detailsForChangeStatus.newStatus
+    );
+
+    //אם ללקוח יש מייל וזה true אז יש לשלוח התראה ללקוח
+    const shouldNotifyCustomer =
+      detailsForChangeStatus.notifyCustomer && !!customer.email;
+
+    const emailPromises: Promise<any>[] = [];
+
+    // פונקציה לשליחת מייל לצוות
+   const sendTeamEmail = async () => {
+  try {
+    const template = await this.emailService.getTemplateByName("ישיבת צוות");
+
+    if (!template) {
+      console.warn("Team email template not found");
+      return;
+    }
+    const renderedHtml = await this.emailService.renderTemplate(template.bodyHtml, {
+      name: customer.name,
+      status: detailsForChangeStatus.newStatus,
+      reason: detailsForChangeStatus.reason || '',
+      date: detailsForChangeStatus.effectiveDate || new Date().toISOString(),
+    });
+
+    const response = await sendEmail(
+      'me',
+      {
+        to: ["m0534198438@gmail.com"],
+        subject: template.subject,
+        body: renderedHtml,
+        isHtml: true,
+      },
+      token
+    );
+
+    console.log("Team email sent successfully:", response);
+  } catch (err) {
+    console.error("שגיאה בשליחת מייל לצוות:", err);
+  }
+};
+
+
+    // פונקציה לשליחת מייל ללקוח
+    const sendCustomerEmail = async () => {
+      const template = await this.emailService.getTemplateByName(
+        "אסיפת מנהלים"
+      );
+      if (!template) {
+        console.warn("Customer email template not found");
+        return;
+      }
+      const renderedHtml = await this.emailService.renderTemplate(
+        template.bodyHtml,
+        {
+          name: customer.name,
+          status: detailsForChangeStatus.newStatus,
+          date:
+            detailsForChangeStatus.effectiveDate || new Date().toISOString(),
+        }
+      );
+      return sendEmail(
+        "me",
+        {
+          to: [customer.email],
+          subject: template.subject,
+          body: renderedHtml,
+          isHtml: true,
+        },
+        token
+      );
+    };
+
+    //מוסיף למערך הפרומיסים רק אם זה הצליח
+    if (shouldNotifyTeam) {
+      emailPromises.push(
+        sendTeamEmail().catch((err) => {
+          console.error("שגיאה בשליחת מייל לצוות", err);
+        })
+      );
+    }
+    if (shouldNotifyCustomer) {
+      emailPromises.push(
+        sendCustomerEmail().catch((err) => {
+          console.error("שגיאה בשליחת מייל ללקוח", err);
+        })
+      );
+    }
+
+    //אם פרומיס אחד נכשל זה לא מפעיל את השליחה
+    await Promise.all(emailPromises);
   };
 }
 

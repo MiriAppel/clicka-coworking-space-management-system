@@ -24,6 +24,8 @@ routerCstomer.post('/:id/exit-notice', customerController.postExitNotice);
 
 routerCstomer.post('/post-customer', customerController.postCustomer); 
 
+routerCstomer.post('/:id/status-change', customerController.changeCustomerStatus)
+
 //PATCH/PUT)
 routerCstomer.patch('/:id', customerController.patchCustomer); 
 
