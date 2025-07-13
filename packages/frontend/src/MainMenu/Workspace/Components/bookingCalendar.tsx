@@ -1,3 +1,21 @@
+/**
+ * Represents a booking calendar component for managing room bookings.
+ * 
+ * @component
+ * @param {Object} props - Component properties
+ * @param {string} props.roomId - Unique identifier for the room
+ * @param {string} props.roomName - Display name of the room
+ * @param {string} [props.roomType="MEETING_ROOM"] - Type of room (defaults to meeting room)
+ * 
+ * @description
+ * This component provides a comprehensive calendar interface for:
+ * - Viewing existing bookings
+ * - Creating new bookings
+ * - Editing and managing booking statuses
+ * - Displaying booking statistics
+ * 
+ * Uses FullCalendar for rendering and supports Hebrew localization.
+ */
 import React, { useEffect, useState } from 'react';
 import { BookingStatus, UpdateBookingRequest  } from 'shared-types';
 import FullCalendar from '@fullcalendar/react';
@@ -461,42 +479,54 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             direction="rtl"
             height="auto"
             expandRows={true}
-            slotMinTime="07:00"
-            slotMaxTime="22:00"
+            
+            // תיקון זמנים - רק 8-18
+            slotMinTime="08:00"
+            slotMaxTime="18:00"
             slotDuration="01:00"
             slotLabelInterval="01:00"
             snapDuration="00:15"
+            
             slotLabelFormat={{
               hour: '2-digit',
               minute: '2-digit',
               hour12: false
             }}
+            
             allDaySlot={false}
             weekends={true}
+            
+            // שעות עסקים
             businessHours={{
               daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
               startTime: '08:00',
-              endTime: '20:00',
+              endTime: '18:00',
             }}
+            
+            // תיקון כותרת
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
               right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
-            buttonText={{
-              today: 'היום',
-              month: 'חודש',
-              week: 'שבוע',
-              day: 'יום'
+            
+            // הגדרות נוספות לתיקון התצוגה
+            dayHeaderFormat={{ weekday: 'short', day: 'numeric' }}
+            
+            // תיקון לאירועים
+            selectConstraint={{
+              start: '08:00',
+              end: '18:00'
             }}
+            
+            // הגדרות נוספות
+            aspectRatio={1.35}
+            contentHeight="auto"
+            
             events={events}
             selectMirror={true}
             selectable={true}
             selectOverlap={false}
-            selectConstraint={{
-              start: '07:00',
-              end: '22:00'
-            }}
             eventOverlap={false}
             select={handleSelect}
             eventClick={handleEventClick}
@@ -517,7 +547,6 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
               const startTime = new Date(info.event.start!);
               const minutes = startTime.getMinutes();
               
-              // הוספת אטריביוט למיקום האירוע
               if (minutes !== 0) {
                 info.el.setAttribute('data-start-minute', minutes.toString());
                 info.el.style.marginTop = `${(minutes / 60) * 100}%`;
