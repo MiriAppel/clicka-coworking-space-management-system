@@ -16,6 +16,7 @@ import { InteractionForm } from "./Interactions/interactionForm";
 import { addInteraction } from "./Interactions/leadInteractionDetails";
 import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
+import { NewCustomerPage } from "./Customers/newCustomer";
 
 export const LeadAndCustomerRouting = () => {
     const {
@@ -26,6 +27,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="/" element={<LeadAndCustomer />} />
             <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
+            <Route path="customers/new" element={<NewCustomerPage />} />
             <Route path="customers/:customerId" element={<CustomerDetails />} />
             <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />

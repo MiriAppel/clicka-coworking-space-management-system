@@ -47,4 +47,22 @@ export class customerPaymentMethodModel implements CustomerPaymentMethod {
       updated_at: this.updatedAt
     };
   }
+
+  static fromDatabaseFormat(dbData: any): customerPaymentMethodModel {
+    return new customerPaymentMethodModel(
+      dbData.id,
+      dbData.customer_id,
+      dbData.is_active,
+      dbData.created_at,
+      dbData.updated_at,
+      dbData.credit_card_last_4,
+      dbData.credit_card_expiry,
+      dbData.credit_card_holder_id_number,
+      dbData.credit_card_holder_phone
+    );
+  }
+
+  static fromDatabaseFormatArray(dbDataArray: any[]): customerPaymentMethodModel[] {
+    return dbDataArray.map(dbData => customerPaymentMethodModel.fromDatabaseFormat(dbData));
+  }
 }

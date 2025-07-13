@@ -76,24 +76,6 @@ export const CustomersList = () => {
     fetchCustomersByPage()
   }, [fetchCustomersByPage]);
 
-  //צריך בשביל זה גישה
-  //  useEffect(() => {
-  //       const channel = supabase
-  //         .channel('public:customer')
-  //         .on(
-  //           'postgres_changes',
-  //           { event: '*', schema: 'public', table: 'customer' },
-  //           (payload) => {
-  //             console.log('Change detected:', payload); // הוסף לוג כדי לבדוק אם האירועים מתקבלים
-  //             fetchCustomers(page, 20, ""); // ודא שהפונקציה זו מוגדרת
-  //           }
-  //         )
-  //         .subscribe();
-
-  //       return () => {
-  //         supabase.removeChannel(channel);
-  //       };
-  //   }, []);
 
   // הפונקציה שמטפלת בשינוי החיפוש
   const handleSearch = (term: string) => {
@@ -249,6 +231,13 @@ export const CustomersList = () => {
         <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
           לקוחות
         </h2>
+        <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate("new")}
+          >
+          הוספת לקוח חדש
+          </Button><br />
         <ExportToExcel data={customers} fileName="לקוחות" />
         <br />
         <br />

@@ -37,7 +37,7 @@ export class baseService<T> {
 
   
   getAll = async (): Promise<T[]> => {
-    console.log("🧾 טבלה:", this.tableName);
+    // console.log("🧾 טבלה:", this.tableName);
 
     const { data, error } = await supabase
     .from(this.tableName)

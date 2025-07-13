@@ -19,6 +19,8 @@ routerCustomer.get('/search', customerController.searchCustomersByText);
 
 routerCustomer.get('/:id', customerController.getCustomerById); 
 
+routerCustomer.get('/:id/payment-methods', customerController.getCustomerPaymentMethods);
+
 //(POST)
 routerCustomer.post('/:id/exit-notice', customerController.postExitNotice); 
 

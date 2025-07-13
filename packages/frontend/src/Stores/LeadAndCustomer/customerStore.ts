@@ -1,9 +1,9 @@
-import { CreateCustomerRequest, Customer, CustomerStatus, RecordExitNoticeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
+import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
 import { create } from 'zustand';
 
 interface CustomerStore {
-    customersPage: Customer[];
-    customers: Customer[];
+    customersPage: Customer[]; //כל פעם גם משתנה זה מתעדכן עם הלקוחות של העמוד הזה כדי שבחיפוש יחפשו מתוך הרשימה הזו
+    customers: Customer[]; // הנתונים בהם אני משתמשת -  מכיל את הלקוחות של העמוד הזה ואם יש חיפוש את המסונן
     selectedCustomer: Customer | null;
     loading: boolean;
     error?: string;
@@ -21,6 +21,8 @@ interface CustomerStore {
     deleteCustomer: (id: string) => Promise<void>;
     resetSelectedCustomer: () => void;
     recordExitNotice: (id: string, data: RecordExitNoticeRequest) => Promise<void>;
+    getCustomerPaymentMethods: (id: string) => Promise<CustomerPaymentMethod[]>; 
+
 }
 
 const BASE_API_URL = `${process.env.REACT_APP_API_URL}/customers`;
@@ -247,6 +249,24 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     resetSelectedCustomer: () => {
         set({ selectedCustomer: null });
     },
+
+    getCustomerPaymentMethods: async (id: string) => {
+    set({ loading: true, error: undefined });
+    try {
+        const response = await fetch(`${BASE_API_URL}/${id}/payment-methods`);
+        if (!response.ok) {
+            throw new Error("Failed to fetch customer payment methods");
+        }
+        const data = await response.json();
+            console.log("שיטות תשלום שהתקבלו :", data);
+        return data;
+    } catch (error: any) {
+        set({ error: error.message || "שגיאה בקבלת אמצעי תשלום ללקוח", loading: false });
+        return [];
+    } finally {
+        set({ loading: false });
+    }
+},
 }));
 
 const statusLabels: Record<CustomerStatus, string> = {

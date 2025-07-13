@@ -4,7 +4,6 @@ import { SearchLeads } from "./SearchLeads";
 import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { deleteLead } from "../../Service/LeadAndCustomersService";
 import { LeadsTable } from "./LeadsTable"; // 💡 ודאי שהשמות תואמים
 
 export const LeadsHomePage = () => {
@@ -94,7 +93,7 @@ export const LeadsHomePage = () => {
 
   const deleteCurrentLead = async (id: string) => {
     try {
-      await deleteLead(id);
+      // await deleteLead(id);
       setLeads((prev) => prev.filter((l) => l.id !== id));
       allLeadsRef.current = allLeadsRef.current.filter((l) => l.id !== id);
       alert("מתעניין נמחק בהצלחה");

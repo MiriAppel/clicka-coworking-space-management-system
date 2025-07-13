@@ -3,10 +3,10 @@ import { customerService } from "../services/customer.service";
 import {
   CreateCustomerRequest,
   ID,
-  PaymentMethodType,
-  ContractStatus,
+
 } from "shared-types";
 import { contractService } from "../services/contract.service";
+import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.service";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
@@ -33,16 +33,16 @@ export const postCustomer = async (req: Request, res: Response) => {
     console.log("in controller");
     console.log(customer);
 
-        res.status(200).json(customer);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching customers', error });
-    }
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching customers', error });
+  }
 }
 
 export const getCustomerById = async (req: Request, res: Response) => {
-  
+
   const { id } = req.params;
-    console.log("in getCustomerById", id);
+  console.log("in getCustomerById", id);
 
   try {
     const customer = await serviceCustomer.getById(id);
@@ -177,6 +177,16 @@ export const patchCustomer = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error in patchCustomer controller:", error);
     res.status(500).json({ message: "Error patching customer", error });
+  }
+};
+
+export const getCustomerPaymentMethods = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(id);
+    res.status(200).json(paymentMethods);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching customer payment methods", error });
   }
 };
 
