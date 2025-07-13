@@ -10,8 +10,9 @@ import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/Vend
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import MainLayout from './layout/MainLayout';
-// import { WorkspaceMap } from './MainMenu/Workspace/Components/';
-// import { Billing } from './MainMenu/Billing/Components/Billing';
+import { Billing } from './MainMenu/Billing/Components/Billing';
+import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
+
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -54,8 +55,10 @@ export const Routing = () => {
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
-        {/* <Route path="billing/*" element={<Billing />} /> */}
-     
+
+        <Route path="billing/*" element={<Billing />} />
+        <Route path="users" element={< UserTable />} />
+
       </Route>
     </Routes>
   );

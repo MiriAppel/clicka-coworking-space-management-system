@@ -1,8 +1,10 @@
-import express from 'express';
+
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
+import express, { NextFunction } from 'express';
+// import translationRouter from './routes/translation.route';
 // import translationRouter from './routes/translation.route';
 import routerCustomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
@@ -14,7 +16,6 @@ import interactionRouter from './routes/leadInteraction.route';
 import dotenv from 'dotenv';
 import routerPayment from './routes/payment.route';
 dotenv.config();
-
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
@@ -27,12 +28,15 @@ import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/WorkspaceMapRoute';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
+import router from './routes';
+import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
 
 // import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
 // const cookieParser = require("cookie-parser")
 // Create Express app
 const app = express();
+dotenv.config();
 
 
 // Apply middlewares
@@ -53,6 +57,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(json());
 
 app.use(urlencoded({ extended: true }));
+// app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCustomer);
 app.use('/api/book', bookRouter);
@@ -88,7 +93,20 @@ app.use('/api/payment', routerPayment);
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-
+app.use('/api', router);
+// app.use('/translations', translationRouter);
+// Error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(err);
+  res.status(err.status || 500).json({
+    success: false,
+    error: {
+      code: err.code || 'INTERNAL_SERVER_ERROR',
+      message: err.message || 'An unexpected error occurred',
+      details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    }
+  });
+});
 // Placeholder for routes
 // TODO: Add routers for different resources
 // Error handling middleware

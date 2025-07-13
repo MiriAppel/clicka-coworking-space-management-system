@@ -1,16 +1,7 @@
+
 import type { ID, LeadInteraction } from "shared-types";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../db/supabaseClient";
 
-const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_KEY || ""; // שימי לב לשם המדויק
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error(
-    "חסרים ערכים ל־SUPABASE_URL או SUPABASE_SERVICE_KEY בקובץ הסביבה"
-  );
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export class baseService<T> {
   // בשביל שם המחלקה

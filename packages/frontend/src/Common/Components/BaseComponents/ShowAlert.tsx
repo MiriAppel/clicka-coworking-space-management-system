@@ -7,3 +7,4 @@ export const showAlert = (title: string, text: string, icon: 'success' | 'error'
     confirmButtonText: 'Accept',
   });
 };
+
