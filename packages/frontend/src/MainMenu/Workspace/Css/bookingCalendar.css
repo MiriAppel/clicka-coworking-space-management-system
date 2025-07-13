@@ -1,4 +1,4 @@
-/* Container עיקרי */Add commentMore actions
+/* Container עיקרי */
 .booking-calendar-container {
     background: #E0E0E0;
     min-height: 100vh;
@@ -16,6 +16,7 @@
     border-left: 4px solid #007BFF;
     border-top: 1px solid #E0E0E0;
 }
+
 
 .calendar-title {
     color: #007BFF;
@@ -72,7 +73,218 @@
     transition: all 0.2s ease !important;
 }
 
-/* Time Labels of today */
+
+
+/* הגדרות לעובי השעות - כפול מהקודם (40px) - עם כפיית עדיפות מקסימלית */
+.fc-timegrid-slot,
+.fc .fc-timegrid-slot,
+.fc-timegrid .fc-timegrid-slot,
+.fc-timegrid-body .fc-timegrid-slot,
+
+
+
+
+td.fc-timegrid-slot,
+.fc-timegrid-slots table tr,
+.fc-timegrid-slots table td {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  position: relative !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+
+
+  background: #ffffff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* כפיית גובה על כל אלמנט אפשרי */
+.fc-timegrid-slots tr {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+}
+
+.fc-timegrid-slots td {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+}
+
+/* הסרת ההבדל בין שעות עסקים לשעות רגילות */
+.fc-timegrid-slot-minor,
+.fc .fc-timegrid-slot-minor,
+.fc-timegrid .fc-timegrid-slot-minor,
+td.fc-timegrid-slot-minor {
+  border-top: none !important;
+  border-bottom: none !important;
+
+
+
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+
+  background: #ffffff !important;
+}
+
+.fc-timegrid-slot-major,
+.fc .fc-timegrid-slot-major,
+.fc-timegrid .fc-timegrid-slot-major,
+td.fc-timegrid-slot-major {
+  border-bottom: 2px solid #007BFF !important;
+
+
+
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+
+  background: #ffffff !important;
+}
+
+
+
+
+
+
+
+
+/* רקע לבן לכל השעות - כפיית עדיפות מקסימלית */
+.fc .fc-timegrid-col .fc-timegrid-slot,
+.fc-timegrid-col .fc-timegrid-slot,
+.fc-timegrid-body .fc-timegrid-slot,
+.fc-timegrid-slots .fc-timegrid-slot {
+    background: #ffffff !important;
+}
+
+
+
+
+/* הפרדה ברורה בין ימים - גבולות חזקים */
+.fc .fc-timegrid-col,
+.fc-timegrid-col {
+    border-right: 4px solid #007BFF !important;
+    background: #ffffff !important;
+}
+
+/* הפרדה חזקה יותר בין ימים */
+
+
+.fc .fc-timegrid-col:not(:last-child),
+.fc-timegrid-col:not(:last-child) {
+    border-right: 4px solid #007BFF !important;
+}
+
+/* הדגשה מיוחדת ליום הנוכחי */
+
+
+.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot,
+.fc-timegrid-col.fc-day-today .fc-timegrid-slot {
+    background: #a5d8ff !important;
+}
+
+
+.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot-minor,
+.fc-timegrid-col.fc-day-today .fc-timegrid-slot-minor {
+    background: #a5d8ff !important;
+}
+
+
+.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot-major,
+.fc-timegrid-col.fc-day-today .fc-timegrid-slot-major {
+    background: #a5d8ff !important;
+}
+
+/* גבול מיוחד ליום הנוכחי */
+
+
+
+.fc .fc-timegrid-col.fc-day-today,
+.fc-timegrid-col.fc-day-today {
+    border-left: 6px solid #007BFF !important;
+    border-right: 6px solid #007BFF !important;
+    background: #a5d8ff !important;
+}
+
+
+
+
+/* אפקט hover פשוט */
+.fc-timegrid-slot:hover,
+.fc .fc-timegrid-slot:hover,
+.fc-timegrid .fc-timegrid-slot:hover,
+td.fc-timegrid-slot:hover {
+  background: rgba(165, 216, 255, 0.3) !important;
+  cursor: pointer !important;
+
+
+  z-index: 10 !important;
+}
+
+
+/* הסרת האפקט הצבעוני המורכב */
+.fc-timegrid-slot:hover::after {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  display: none !important;
+}
+
+/* כפיית גובה על כל הטבלה */
+.fc-timegrid-body table,
+.fc-timegrid-body tbody,
+.fc-timegrid-body tr {
+  height: auto !important;
+}
+
+.fc-timegrid-body tr {
+
+  height: 40px !important;
+}
+
+.fc-timegrid-slot-label {
+  vertical-align: middle;
+}
+
+/* הבטחה שהלוח לא יגלל */
+.fc-scroller {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+.fc-timegrid-body {
+  overflow: visible !important;
+}
+
+.fc-timegrid-slot-label-cushion {
+  padding: 2px 4px;
+}
+
+
+/* Time Labels של היום הנוכחי */
 .fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot-label {
     background: #a5d8ff !important;
     color: #007BFF !important;
@@ -125,11 +337,11 @@
     border: 2px solid #007BFF !important;
 }
 
-.fc .fc-timegrid-col.fc-day-today {
-    background: #E0E0E0 !important;
-    border-left: 3px solid #007BFF !important;
-    border-right: 3px solid #007BFF !important;
-}
+
+
+
+
+
 
 .fc .fc-day-today .fc-daygrid-day-number {
     background: #007BFF !important;
@@ -145,20 +357,69 @@
     box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
 }
 
-/* Events */
+
+
+/* Events - ללא אינדיקטורים צבעוניים */
 .fc .fc-event {
     background: #a5d8ff !important;
     color: #007BFF !important;
     border: none !important;
-    border-radius: 6px !important;
+    border-radius: 4px !important;
     font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 4px 8px !important;
+
+
+    font-size: 12px !important;
+    padding: 2px 6px !important;
     box-shadow: 0 2px 4px rgba(0,123,255,0.3) !important;
     transition: all 0.2s ease !important;
     cursor: pointer !important;
-    height: 100% !important;
-    min-height: 100% !important;
+
+
+    position: relative !important;
+    overflow: visible !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* הסרת כל האינדיקטורים הצבעוניים */
+.fc .fc-event::before {
+    display: none !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.fc .fc-event[data-start-minute]::before {
+    display: none !important;
 }
 
 .fc .fc-event:hover {
@@ -166,13 +427,16 @@
     box-shadow: 0 4px 8px rgba(0,123,255,0.4) !important;
     background: #007BFF !important;
     color: #fff !important;
+    z-index: 100 !important;
 }
 
-/* Selection Highlight */
+/* Selection Highlight - מיקום מדויק */
 .fc .fc-highlight {
-    background: #a5d8ff !important;
-    border: 2px dashed #007BFF !important;
+    background: linear-gradient(135deg, #007BFF 0%, #42a5f5 100%) !important;
+    border: 2px solid #007BFF !important;
     border-radius: 4px !important;
+    opacity: 0.8 !important;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.3) !important;
 }
 
 /* Grid Styling */
@@ -187,27 +451,9 @@
     border-color: #E0E0E0 !important;
 }
 
-/* Time Slots */
-.fc .fc-timegrid-slot {
-    height: 60px !important;
-    min-height: 60px !important;
-    border-bottom: 1px solid #fff !important;
-}
-
-.fc .fc-timegrid-slot-major {
-    height: 60px !important;
-    min-height: 60px !important;
-    border-bottom: 1px solid #E0E0E0 !important;
-}
-
-.fc .fc-timegrid-slot-minor {
-    height: 60px !important;
-    min-height: 60px !important;
-}
-
 /* Hover Effects */
 .fc .fc-timegrid-col:hover {
-    background: #a5d8ff !important;
+    background: rgba(165, 216, 255, 0.05) !important;
     transition: background-color 0.2s ease !important;
 }
 
@@ -215,6 +461,7 @@
 .fc .fc-button-primary:focus {
     outline: none !important;
 }
+
 /* סטטוס מאושר */
 .fc-event.booking-status-approved {
   background-color: #10B981 !important;
@@ -291,4 +538,34 @@
         padding: 12px 8px !important;
         font-size: 12px !important;
     }
+}
+
+/* כפיית עדיפות מקסימלית לגובה השעות */
+.fc-timegrid-slots table,
+.fc-timegrid-slots tbody,
+.fc-timegrid-slots tr,
+.fc-timegrid-slots td {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+}
+
+/* כפיית רקע לבן עם עדיפות מקסימלית */
+.fc-timegrid-slots .fc-timegrid-slot,
+.fc-timegrid-slots td {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+}
+
+/* הפרדה ברורה בין ימים עם עדיפות מקסימלית */
+.fc-timegrid-axis,
+.fc-timegrid-col {
+    border-right: 4px solid #007BFF !important;
+}
+
+/* הדגשה ליום הנוכחי עם עדיפות מקסימלית */
+.fc-day-today .fc-timegrid-slot,
+.fc-day-today td {
+    background-color: #a5d8ff !important;
+    background: #a5d8ff !important;
 }
