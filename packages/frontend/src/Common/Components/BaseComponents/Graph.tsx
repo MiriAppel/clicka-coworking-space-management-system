@@ -31,13 +31,15 @@ interface ChartDisplayProps {
 // קומפוננטת ChartDisplay – מציגה גרף לפי סוג שנבחר
 export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = true, onClickLabel }) => {
   const { theme: { colors } } = useTheme(); // שליפת צבעים מה־theme (צבעים אחידים לגרפים)
-
+  console.log(data);
+  
   // מערך צבעים לפרוסות גרף עוגה
   const COLORS = [colors.primary, colors.secondary, colors.accent];
 
   return (
     // עטיפת הגרף עם כיוון הטקסט בהתאם ל־RTL
-    <div dir={rtl ? 'rtl' : 'ltr'}>
+    
+    <div dir={rtl ? 'rtl' : 'ltr'} >
       {/* עטיפה רספונסיבית שתתאים את הגרף לגודל האלמנט ההורה */}
       <ResponsiveContainer width="100%" height={300}>
 

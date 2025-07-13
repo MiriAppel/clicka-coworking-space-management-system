@@ -25,13 +25,12 @@ import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/WorkspaceMapRoute';
-import userRouter from './routes/user.route';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 
 // import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
-const cookieParser = require("cookie-parser")
+// const cookieParser = require("cookie-parser")
 // Create Express app
 const app = express();
 

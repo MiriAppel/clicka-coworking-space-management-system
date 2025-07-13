@@ -1,37 +1,23 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChartDisplay, ChartData } from '../Components/BaseComponents/Graph';
 import { ExportButtons } from '../Components/BaseComponents/exportButtons';
 import { Button } from '../Components/BaseComponents/Button';
 // import {formatNumberIL } 
 
+import { useLeadsStore } from '../../Stores/LeadAndCustomer/leadsStore';
+
+
 export const ReportPage = () => {
   const chartRef = useRef<HTMLDivElement>(null);
   //עושים רפרנס לדיו שאחרי זה יעזור לי לייצא לPDF 
-
-  const initialData: ChartData[] = [
-    { label: 'Group A', value: 100, date: '2025-01-15' },
-    { label: 'Group B', value: 150, date: '2025-03-10' },
-    { label: 'Group C', value: 80, date: '2025-04-20' },
-  ];
-  //אלו הדברים הראשונים שרואים אותם בטעינת הקומםוננטה. הנתונים הראשונים שאח"כ מתי 
-  //dynamicDrillDataשלוחצים עלים עובר לנו ל
-
+  const [initialData, setInitialData] = useState<ChartData[]>([]);
+  const [dynamicDrillData, setDynamicDrillData] = useState<Record<string, ChartData[]>>({});
+  const selectedLead = useLeadsStore(state => state.selectedLead);
+  
+  useEffect(()=>{
+    // setInitialData(chartData)
+  },[])
   // האובייקטים האולו לא מחייבים שיהיו כך. אפשר להביא מה שכל אחד צריך מהAPI 
-  const dynamicDrillData: Record<string, ChartData[]> = {
-    'Group A': [
-      { label: 'Element A1', value: 40, date: '2025-02-05' },
-      //Label: השם של הקבוצנ 
-      //value: יכול להיות גגם שמייצג מספר 
-      { label: 'Element A2', value: 60, date: '2025-04-08' },
-    ],
-    //אם אני לוחצת על הGROUP A אז מראה לי את A1-A2 
-    'Group B': [
-      { label: 'Element B1', value: 90, date: '2025-04-15' },
-      { label: 'Element B2', value: 60, date: '2025-07-04' },
-    ],
-    // IMPORTANT: חייב להיות שיהיה נתונים לאחרי הלחיצה שך הCHARTDATA אם לא הDRILL לא יעבוד 
-  };
-
   // ✅ Estados
   const [data, setData] = useState<ChartData[]>(initialData);
   //מאחסן מה שהולכים לראות בגרף GROUP A או GROUP B 
@@ -101,7 +87,7 @@ export const ReportPage = () => {
     return Object.entries(groups).map(([label, value]) => ({
       label,
       value,
-      date: label 
+      date: label
     }));
     //ואז כבר מתי שיש לנו את מה שאנחנו רוצים לפי מה שבחרנו אנו רותים לשנות את זה לאובייקט עם תבנית של יום חודש שנה 
   }
@@ -121,7 +107,6 @@ export const ReportPage = () => {
       <h1 className="text-2xl font-bold mb-4">
         {isDrillDown ? `Details of "${selectedLabel}"` : 'General Report'}
       </h1>
-
       {/* ⬇️ Select to change the graph type */}
       <div className="mb-4">
         {/* מאפשר לבחור בין שלושה סוגים של גרפים */}

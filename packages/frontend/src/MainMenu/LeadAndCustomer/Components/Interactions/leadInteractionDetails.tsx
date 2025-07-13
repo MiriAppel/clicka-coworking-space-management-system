@@ -5,6 +5,7 @@ import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { InteractionType, Lead, LeadInteraction } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
+import { ChartData, ChartDisplay } from "../../../../Common/Components/BaseComponents/Graph";
 
 const getInteractionIcon = (type: InteractionType) => {
   switch (type) {
@@ -68,6 +69,24 @@ export const LeadInteractionDetails = () => {
     await handleDeleteInteraction(interactionId);
   };
 
+  const generateChartData = (): ChartData[] => {
+    if (!selectedLead?.interactions) return [];
+
+    const grouped: Record<string, number> = {};
+
+    selectedLead.interactions.forEach(interaction => {
+      const date = new Date(interaction.updatedAt).toISOString().split("T")[0]; // YYYY-MM-DD
+      grouped[date] = (grouped[date] || 0) + 1;
+    });
+
+    return Object.entries(grouped).map(([date, count]) => ({
+      label: date,
+      value: count,
+      date: date,
+    }));
+  };
+  console.log(generateChartData());
+  
   return (
     <div className="bg-blue-50 mt-2 p-4 rounded-lg border border-blue-200">
       <div className="text-sm text-gray-700 mb-2">
@@ -85,8 +104,8 @@ export const LeadInteractionDetails = () => {
           <div className="flex flex-wrap gap-4 mt-4">
             {
               showGraph ? (
-                <div className="mt-4" >
-                  {/* הגרף כאן */}
+                <div className="w-full min-w-[300px]">
+                  <ChartDisplay title="אינטרקציות" type="line" data={generateChartData()}></ChartDisplay>
                 </div>
               ) : selectedLead?.interactions?.map((interaction) => {
                 console.log(interaction); // הוספת השורה כאן
