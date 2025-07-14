@@ -207,7 +207,16 @@ export class UserService {
         // שמירת ה-cookie עם ה-role
         res.cookie('role', role, {
             expires: date,
-            httpOnly: true // httpOnly כדי למנוע גישה דרך JavaScript
+            httpOnly: true ,// httpOnly כדי למנוע גישה דרך JavaScript
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
         });
     }
+    clearRoleCookie = (res: Response): void => {
+    res.clearCookie('role', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    });
+};
 }

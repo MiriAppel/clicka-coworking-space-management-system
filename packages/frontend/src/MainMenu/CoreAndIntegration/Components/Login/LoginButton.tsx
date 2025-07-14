@@ -1,10 +1,10 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { googleAuthConfig } from '../../Config/googleAuth';
 import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import { axiosInstance } from '../../../../Services/Axios';
 import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
+import { googleAuthConfig } from '../../../../Config/googleAuth';
 
 
 export const LoginWithGoogle = () => {
