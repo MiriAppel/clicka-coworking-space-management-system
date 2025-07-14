@@ -69,13 +69,6 @@ export const ReportPage = () => {
         {isDrillDown ? `Details of "${selectedLabel}"` : 'General Report'}
       </h1>
 
-      {/* Export Buttons */}
-      <ExportButtons
-        title={isDrillDown ? `Details${selectedLabel}` : 'General Report'}
-        exportData={data}
-        refContent={chartRef}
-      />
-
       {/* מה שיש בתוך הגרף*/}
       <div
         ref={chartRef}

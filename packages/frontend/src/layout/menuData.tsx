@@ -63,7 +63,7 @@ export const menus: Menu[] = [
     icon: <FileBarChart2 size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'דוח תפוסה', path: '/occupancyReports' },
-      { label: 'דוח כספי', path: '/financeReports' },
+      { label: 'דוח כספי', path: 'billing/financeReports' },
       { label: 'פעילות לקוחות', path: '/customerReports' }
     ]
   },

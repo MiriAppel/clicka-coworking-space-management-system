@@ -1,6 +1,6 @@
 // report-types.d.ts
 
-import { ApiResponse, DateRangeFilter } from './core';
+import { ApiResponse, DateISO, DateRangeFilter, ID } from './core';
 import { WorkspaceType } from './customer';
 import { ExpenseCategory } from './expense';
 import { BillingItemType } from './billing';
@@ -13,6 +13,18 @@ export enum TimePeriod {
   QUARTERLY = 'QUARTERLY',
   YEARLY = 'YEARLY'
 }
+export enum ReportType {
+  REVENUE = 'REVENUE',
+  EXPENSES = 'EXPENSES',
+  PROFIT_LOSS = 'PROFIT_LOSS',
+  CASH_FLOW = 'CASH_FLOW',
+  CUSTOMER_AGING = 'CUSTOMER_AGING',
+  OCCUPANCY_REVENUE = 'OCCUPANCY_REVENUE'
+}
+
+
+
+
 
 // Export format
 export enum ExportFormat {
@@ -20,7 +32,37 @@ export enum ExportFormat {
   PDF = 'PDF',
   EXCEL = 'EXCEL'
 }
+export interface RevenueReportData {
+totalRevenue: number;
+membershipRevenue: number;
+meetingRoomRevenue: number;
+loungeRevenue: number;
+otherRevenue: number;
+breakdown: {
+date: string;
+totalRevenue: number;
+membershipRevenue: number;
+meetingRoomRevenue: number;
+loungeRevenue: number;
+}[];
+}
+export interface ExpenseReportData {
+totalExpenses: number;
+expensesByCategory: {
+category: ExpenseCategory;
+amount: number;
+percentage: number;
+}[];
+monthlyTrend: {
+month: string;
 
+totalExpenses: number;
+topCategories: {
+category: ExpenseCategory;
+amount: number;
+}[];
+}[];
+}
 // Occupancy report request
 export interface OccupancyReportRequest {
   period: TimePeriod;
@@ -88,7 +130,14 @@ export interface RevenueReportResponse {
     percentOfTotal: number;
   }[];
 }
-
+export interface ReportData {
+revenueData: RevenueReportData;
+expenseData: ExpenseReportData;
+// profitLossData: ProfitLossReportData;
+// cashFlowData: CashFlowReportData;
+// customerAgingData: CustomerAgingReportData;
+// occupancyRevenueData: OccupancyRevenueReportData;
+}
 // Expense report request
 export interface ExpenseReportRequest {
   period: TimePeriod;
@@ -96,7 +145,24 @@ export interface ExpenseReportRequest {
   categories?: ExpenseCategory[];
   format?: ExportFormat;
 }
+export interface FinancialReport {
+id: ID;
+type: ReportType;
+title: string;
+description?: string;
+parameters: ReportParameters;
+data: ReportData;
+generatedAt: DateISO;
+generatedBy: ID;
 
+}
+export interface ReportParameters {
+dateRange: DateRangeFilter;
+groupBy?: 'month' | 'quarter' | 'year';
+categories?: string[];
+customerIds?: ID[];
+includeProjections?: boolean;
+}
 // Expense report response
 export interface ExpenseReportResponse {
   period: TimePeriod;
