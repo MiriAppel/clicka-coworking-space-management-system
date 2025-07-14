@@ -140,7 +140,7 @@ export const UpdateEmailTemplate = ({ emailTemplate, onClose, onEmailTemplateUpd
                     minHeight={100}
                 />
                 <SelectField name="language" label="שפה" options={languageOptions} required dir={textDirection} />
-                <InputField name="variables" label="משתנים - יש לכתוב את כל המשתנים הדרושים עם פסיק בין אחד לשני" required dir={textDirection} />
+                <InputField name="variables" label="משתנים - יש לכתוב את כל המשתנים הדרושים בשמם המדויק עם פסיק בין אחד לשני" required dir={textDirection} />
                 <div className="flex gap-4 pt-4">
                     <Button
                         type="submit"

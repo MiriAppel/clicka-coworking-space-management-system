@@ -7,6 +7,10 @@ import { UpdateEmailTemplate } from './UpdateEmailTemplate';
 import { AddEmailTemplate } from './AddEmailTemplate';
 import { useEmailTemplateStore } from '../../../../Stores/CoreAndIntegration/emailTemplateStore';
 import { PreviewEmailTemplate } from './PreviewEmailTemplate';
+/////////////////////
+import { WithPermission } from "../../../../Common/Components/WithPermission";
+import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
+/////////////////////
 
 export const EmailTemplateTable = () => {
   const {
@@ -23,6 +27,9 @@ export const EmailTemplateTable = () => {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [selectedTemplateForPreview, setSelectedTemplateForPreview] = useState<EmailTemplate | null>(null);
   const [renderedHtml, setRenderedHtml] = useState<string | null>(null);
+  /////////////////////
+  const { user } = useAuthStore();
+  /////////////////////
 
   useEffect(() => {
     const fetchEmailTemplates = async () => {
@@ -30,6 +37,13 @@ export const EmailTemplateTable = () => {
     };
     fetchEmailTemplates();
   }, [getEmailTemplates]);
+
+  /////////////////////
+  if (!user) {
+    return <div>בטעינה...</div>;
+  }
+  const userRole = user.role;
+  /////////////////////
 
   const sortedEmailTemplates = [...emailTemplates].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -39,6 +53,12 @@ export const EmailTemplateTable = () => {
   };
 
   const handleDelete = async (emailTemplate: EmailTemplate) => {
+    /////////////////////
+    if (userRole !== "ADMIN") {
+      showAlert("שגיאה", "אין לך הרשאה למחוק תבנית", "error");
+      return;
+    }
+    /////////////////////
     if (window.confirm(`האם אתה בטוח שברצונך למחוק את ${emailTemplate.name}?`)) {
       try {
         await deleteEmailTemplate(emailTemplate.id as string);
@@ -138,7 +158,11 @@ export const EmailTemplateTable = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">ניהול תבניות דוא"ל</h2>
-        <Button onClick={handleAddEmailTemplate}>+ הוסף תבנית דוא"ל</Button>
+        {/* ///////////////////// */}
+        <WithPermission userRole={userRole} allowedRoles={["SYSTEM_ADMIN"]}>
+          <Button onClick={handleAddEmailTemplate}>+ הוסף תבנית דוא"ל</Button>
+        </WithPermission>
+        {/* ///////////////////// */}
       </div>
 
       <Table<EmailTemplate>
@@ -147,10 +171,20 @@ export const EmailTemplateTable = () => {
         dir="rtl"
         onUpdate={handleUpdate}
         onDelete={handleDelete}
+        // renderActions={(emailTemplate: EmailTemplate) => (
+        //   <Button onClick={() => handlePreview(emailTemplate)}>תצוגה מקדימה</Button>
+        // )}
+      /////////////////////
         renderActions={(emailTemplate: EmailTemplate) => (
-          <Button onClick={() => handlePreview(emailTemplate)}>תצוגה מקדימה</Button>
+          <>
+            <WithPermission userRole={userRole} allowedRoles={["MANAGER"]}>
+              <Button onClick={() => handleUpdate(emailTemplate)}>עדכן</Button>
+            </WithPermission>
+            <Button onClick={() => handlePreview(emailTemplate)}>תצוגה מקדימה</Button>
+          </>
         )}
+      /////////////////////
       />
-    </div>
+    </div >
   );
 };
