@@ -14,7 +14,6 @@ import { Table } from '../../../../Common/Components/BaseComponents/Table';
 import { ExportButtons } from '../../../../Common/Components/BaseComponents/ExportButtons';
 import axios from 'axios'; // ספריית קריאות HTTP
 
-
 // טיפוס המרחיב את פרמטרי הדוח וכולל מזהה ספק
 type ExtendedReportParameters = ReportParameters & {
   vendorId?: string;

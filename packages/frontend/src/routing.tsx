@@ -58,7 +58,8 @@ export const Routing = () => {
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
-        <Route path="meetingRooms" element={<RoomReservations />} />   <Route path="emailTemplate" element={< EmailTemplateTable />} />
+        <Route path="meetingRooms" element={<RoomReservations />} />  
+        <Route path="emailTemplate" element={< EmailTemplateTable />} />
       </Route>
     </Routes>
   );
