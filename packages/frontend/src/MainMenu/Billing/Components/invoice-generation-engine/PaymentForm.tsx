@@ -11,162 +11,200 @@ import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { usePaymentStore } from "./paymentStore";
 
 interface FormFields {
-    amount: number;
-    reference?: string;
-    invoiceId: string;
-    paymentMethod: PaymentMethodType;
+  amount: number;
+  reference?: string;
+  invoiceId: string;
+  paymentMethod: PaymentMethodType;
 }
 
 async function sendPaymentToApi(payment: any) {
-    try {
-        const response = await axios.post("http://localhost:3000/payments", payment);
-        return response.data;
-    } catch (error) {
-        console.error("שגיאה בשליחת תשלום לשרת:", error);
-        throw error;
-    }
+  try {
+    const response = await axios.post("http://localhost:3001/payments", payment);
+    return response.data;
+  } catch (error) {
+    console.error("שגיאה בשליחת תשלום לשרת:", error);
+    throw error;
+  }
+}
+
+async function fetchCustomerById(customerId: string) {
+  try {
+    const response = await axios.get(`http://localhost:3001/customers/${customerId}`);
+    return response.data;
+  } catch (error) {
+    console.error("שגיאה בשליפת לקוח:", error);
+    return null;
+  }
 }
 
 export default function PaymentForm() {
-    const { invoices, fetchInvoices, updateInvoiceStatus } = useInvoiceStore();
-    const { payments, addPayment } = usePaymentStore();
+  const { invoices, getAllInvoices, updateInvoiceStatus, loading } = useInvoiceStore();
+  const { payments, addPayment } = usePaymentStore();
 
-    const methods = useForm<FormFields>({
-        mode: "onSubmit",
-        defaultValues: {
-            amount: 0,
-            paymentMethod: PaymentMethodType.CASH,
-            invoiceId: "",
-            reference: "",
-        },
-    });
+  const methods = useForm<FormFields>({
+    mode: "onSubmit",
+    defaultValues: {
+      amount: 0,
+      paymentMethod: PaymentMethodType.CASH,
+      invoiceId: "",
+      reference: "",
+    },
+  });
 
-    useEffect(() => {
-        fetchInvoices();
-    }, [fetchInvoices]);
+  useEffect(() => {
+    getAllInvoices();
+  }, [getAllInvoices]);
 
-    const onSubmit: SubmitHandler<FormFields> = async (data) => {
-        const { amount, invoiceId, paymentMethod, reference } = data;
+  const onSubmit: SubmitHandler<FormFields> = async (data) => {
+    const { amount, invoiceId, paymentMethod, reference } = data;
 
-        const invoice = invoices.find((inv) => inv.id === invoiceId);
-        if (!invoice) return;
+    const invoice = invoices.find((inv) => inv.id === invoiceId);
+    if (!invoice) return;
 
-        const paid = payments
-            .filter((p) => p.invoice_id === invoiceId)
-            .reduce((sum, p) => sum + p.amount, 0);
-        const remaining = invoice.subtotal - paid;
+    const paid = payments
+      .filter((p) => p.invoice_id === invoiceId)
+      .reduce((sum, p) => sum + p.amount, 0);
 
-        if (amount <= 0) {
-            alert("אנא הזן סכום תקין.");
-            return;
-        }
+    const remaining = invoice.subtotal - paid;
 
-        if (amount > remaining) {
-            alert("לא ניתן לשלם יותר מהיתרה!");
-            return;
-        }
+    if (amount <= 0) {
+      alert("אנא הזן סכום תקין.");
+      return;
+    }
 
-        const paymentObj = {
-            id: Math.random().toString(36).substr(2, 9),
-            customer_id: invoice.customer_id,
-            customer_name: invoice.customer_name,
-            invoice_id: invoiceId,
-            amount,
-            method: paymentMethod,
-            date: new Date().toISOString().slice(0, 10),
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            transaction_reference: reference || "",
-        };
+    if (amount > remaining) {
+      alert("לא ניתן לשלם יותר מהיתרה!");
+      return;
+    }
 
-        await sendPaymentToApi(paymentObj);
-        addPayment(paymentObj);
-
-        const paidAfter = paid + amount;
-        const remainingAfter = invoice.subtotal - paidAfter;
-        if (remainingAfter === 0) {
-            updateInvoiceStatus(invoiceId, InvoiceStatus.PAID);
-        }
-
-        methods.reset();
+    const paymentObj = {
+      id: Math.random().toString(36).substr(2, 9),
+      customer_id: invoice.customer_id,
+      customer_name: invoice.customer_name,
+      invoice_id: invoiceId,
+      amount,
+      method: paymentMethod,
+      date: new Date().toISOString().slice(0, 10),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      transaction_reference: reference || "",
     };
 
-    return (
-        <div className="p-6 max-w-2xl mx-auto bg-white rounded-lg shadow" dir="rtl">
-            <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">טופס תשלום</h2>
+    await sendPaymentToApi(paymentObj);
+    addPayment(paymentObj);
 
-            <Form onSubmit={onSubmit} methods={methods}>
-                <SelectField
-                    name="paymentMethod"
-                    label="שיטת תשלום"
-                    options={[
-                        { value: PaymentMethodType.CASH, label: "מזומן" },
-                        { value: PaymentMethodType.CREDIT_CARD, label: "כרטיס אשראי" },
-                        { value: PaymentMethodType.BANK_TRANSFER, label: "העברה בנקאית" },
-                    ]}
-                    required
-                />
+    const paidAfter = paid + amount;
+    const remainingAfter = invoice.subtotal - paidAfter;
+    if (remainingAfter === 0) {
+      updateInvoiceStatus(invoiceId, InvoiceStatus.PAID);
+    }
 
-                <NumberInputField
-                    name="amount"
-                    label="סכום"
-                    required
-                    min={0}
-                    step={0.01}
-                />
+    const customer = await fetchCustomerById(invoice.customer_id);
+    if (customer?.email) {
+      try {
+        await axios.post("/api/gmail/v1/users/me/messages/send", {
+          to: [customer.email],
+          subject: `אישור תשלום עבור חשבונית ${invoice.invoice_number}`,
+          body: `
+            <p>שלום ${invoice.customer_name},</p>
+            <p>אנו מאשרים את קבלת התשלום על סך <strong>${amount} ₪</strong> עבור חשבונית <strong>${invoice.invoice_number}</strong>.</p>
+            <p>תודה רבה,</p>
+            <p>הצוות</p>
+          `,
+          isHtml: true,
+        });
+      } catch (err) {
+        console.error("שגיאה בשליחת מייל:", err);
+      }
+    } else {
+      console.warn("לא נמצא מייל ללקוח");
+    }
 
-                <InputField name="reference" label="רפרנס" />
+    methods.reset();
+  };
 
-                <SelectField
-                    name="invoiceId"
-                    label="חשבונית"
-                    options={[
-                        { value: "", label: "בחר חשבונית" },
-                        ...invoices.map((inv) => ({
-                            value: inv.id,
-                            label: `${inv.invoice_number} - ${inv.customer_name}`,
-                        })),
-                    ]}
-                    required
-                />
+  return (
+    <div className="p-6 max-w-2xl mx-auto bg-white rounded-lg shadow" dir="rtl">
+      <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">טופס תשלום</h2>
 
-                {methods.watch("invoiceId") && (
-                    <div className="bg-gray-50 border rounded p-4 space-y-2">
-                        <div>
-                            <strong>סטטוס חשבונית:</strong>{" "}
-                            {invoices.find((inv) => inv.id === methods.watch("invoiceId"))?.status}
-                        </div>
+      <Form onSubmit={onSubmit} methods={methods}>
+        <SelectField
+          name="paymentMethod"
+          label="שיטת תשלום"
+          options={[
+            { value: PaymentMethodType.CASH, label: "מזומן" },
+            { value: PaymentMethodType.CREDIT_CARD, label: "כרטיס אשראי" },
+            { value: PaymentMethodType.BANK_TRANSFER, label: "העברה בנקאית" },
+          ]}
+          required
+        />
 
-                        <div>
-                            <strong>תשלומים לחשבונית:</strong>
-                            {payments.filter((p) => p.invoice_id === methods.watch("invoiceId")).length === 0 ? (
-                                <div>אין תשלומים לחשבונית זו.</div>
-                            ) : (
-                                payments
-                                    .filter((p) => p.invoice_id === methods.watch("invoiceId"))
-                                    .map((p) => (
-                                        <div key={p.id}>
-                                            {p.amount} ש"ח - {p.method} - {new Date(p.date).toLocaleDateString()}
-                                        </div>
-                                    ))
-                            )}
-                        </div>
+        <NumberInputField
+          name="amount"
+          label="סכום"
+          required
+          min={0}
+          step={0.01}
+        />
 
-                        <div>
-                            <strong>יתרה לתשלום:</strong>{" "}
-                            {(() => {
-                                const invoice = invoices.find((inv) => inv.id === methods.watch("invoiceId"));
-                                const paid = payments
-                                    .filter((p) => p.invoice_id === methods.watch("invoiceId"))
-                                    .reduce((sum, p) => sum + p.amount, 0);
-                                return invoice ? invoice.subtotal - paid : 0;
-                            })()} ש"ח
-                        </div>
+        <InputField name="reference" label="רפרנס" />
+
+        {loading ? (
+          <p className="text-gray-500 text-sm">טוען חשבוניות...</p>
+        ) : (
+          <SelectField
+            name="invoiceId"
+            label="חשבונית"
+            options={[
+              { value: "", label: "בחר חשבונית" },
+              ...invoices
+                .filter((inv) => inv.id) // מסנן כאלו שאין להם id
+                .map((inv) => ({
+                  value: inv.id!,
+                  label: `${inv.invoice_number} - ${inv.customer_name}`,
+                })),
+            ]}
+            required
+          />
+        )}
+
+        {methods.watch("invoiceId") && (
+          <div className="bg-gray-50 border rounded p-4 space-y-2 mt-4">
+            <div>
+              <strong>סטטוס חשבונית:</strong>{" "}
+              {invoices.find((inv) => inv.id === methods.watch("invoiceId"))?.status}
+            </div>
+
+            <div>
+              <strong>תשלומים לחשבונית:</strong>
+              {payments.filter((p) => p.invoice_id === methods.watch("invoiceId")).length === 0 ? (
+                <div>אין תשלומים לחשבונית זו.</div>
+              ) : (
+                payments
+                  .filter((p) => p.invoice_id === methods.watch("invoiceId"))
+                  .map((p) => (
+                    <div key={p.id}>
+                      {p.amount} ש"ח - {p.method} - {new Date(p.date).toLocaleDateString()}
                     </div>
-                )}
+                  ))
+              )}
+            </div>
 
-                <Button type="submit">רשום תשלום</Button>
-            </Form>
-        </div>
-    );
+            <div>
+              <strong>יתרה לתשלום:</strong>{" "}
+              {(() => {
+                const invoice = invoices.find((inv) => inv.id === methods.watch("invoiceId"));
+                const paid = payments
+                  .filter((p) => p.invoice_id === methods.watch("invoiceId"))
+                  .reduce((sum, p) => sum + p.amount, 0);
+                return invoice ? invoice.subtotal - paid : 0;
+              })()} ש"ח
+            </div>
+          </div>
+        )}
+
+        <Button type="submit">רשום תשלום</Button>
+      </Form>
+    </div>
+  );
 }

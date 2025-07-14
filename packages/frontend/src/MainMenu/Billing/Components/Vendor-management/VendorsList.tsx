@@ -1,3 +1,4 @@
+// ייבוא רכיבים וספריות רלוונטיות
 import { useNavigate, Link } from "react-router-dom";
 import { Vendor } from "shared-types";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
@@ -6,11 +7,13 @@ import { deleteVendor } from "../../../../Api/vendor-api";
 import { FaTrash, FaPen, FaEye } from "react-icons/fa";
 import VendorSummary from "./VendorSummary";
 
+// טיפוס עבור פרופס שמקבל הקומפוננטה
 type VendorsListProps = {
   vendors: Vendor[];
   setVendors: React.Dispatch<React.SetStateAction<Vendor[]>>;
 };
 
+// פונקציה לשליפת רשימת ספקים מהשרת
 async function fetchVendors(): Promise<Vendor[]> {
   const response = await fetch("http://localhost:3001/vendor/", {
     method: "GET",
@@ -20,13 +23,15 @@ async function fetchVendors(): Promise<Vendor[]> {
   return response.json();
 }
 
+// קומפוננטת רשימת ספקים
 export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
   const navigate = useNavigate();
   const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
 
-  // 🔍 סטייט לטקסט החיפוש
+  // סטייט לחיפוש טקסט
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // טוען ספקים מהשרת בעת טעינת הקומפוננטה
   useEffect(() => {
     fetchVendors()
       .then(setVendors)
@@ -36,6 +41,7 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
       });
   }, [setVendors]);
 
+  // פונקציה למחיקת ספק
   const handleDelete = async (vendorId: string) => {
     if (window.confirm("האם למחוק את הספק?")) {
       try {
@@ -51,15 +57,16 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
     }
   };
 
-  // 🔍 מסנן ספקים לפי החיפוש
+  // מסנן ספקים לפי שורת החיפוש
   const filteredVendors = vendors.filter((vendor) =>
     [vendor.name, vendor.phone, vendor.email, vendor.address, vendor.category]
       .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  // תצוגת ממשק המשתמש
   return (
     <div className="p-4">
-
+      {/* כותרת עליונה וכפתור להוספת ספק */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">רשימת ספקים</h2>
         <Link to="/vendors/new">
@@ -67,7 +74,7 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
         </Link>
       </div>
 
-      {/* 🔍 שדה חיפוש */}
+      {/* שדה חיפוש */}
       <div className="mb-4">
         <input
           type="text"
@@ -78,6 +85,7 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
         />
       </div>
 
+      {/* רשימת כרטיסי ספקים */}
       <div className="flex flex-wrap gap-4">
         {filteredVendors.length > 0 ? (
           filteredVendors.map((vendor) => (
@@ -87,12 +95,14 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
                 selectedVendorId === vendor.id ? "w-full" : "w-64"
               }`}
             >
+              {/* פרטי הספק */}
               <p className="font-semibold">שם: {vendor.name}</p>
               <p className="font-semibold">קטגוריה: {vendor.category}</p>
               <p className="font-semibold">טלפון: {vendor.phone}</p>
               <p className="font-semibold">אימייל: {vendor.email}</p>
               <p className="font-semibold">כתובת: {vendor.address}</p>
 
+              {/* כפתורי פעולה: צפייה, עריכה, מחיקה */}
               <div className="flex gap-2 mt-4 justify-center">
                 <button
                   onClick={() => setSelectedVendorId(selectedVendorId === vendor.id ? null : vendor.id)}
@@ -117,6 +127,7 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
                 </button>
               </div>
 
+              {/* תצוגה מורחבת של הספק במקרה של צפייה */}
               {selectedVendorId === vendor.id && (
                 <VendorSummary vendor={vendor} />
               )}

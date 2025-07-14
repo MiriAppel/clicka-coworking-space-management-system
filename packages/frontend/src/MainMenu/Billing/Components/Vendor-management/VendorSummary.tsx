@@ -1,3 +1,4 @@
+// ייבוא ספריות ורכיבים נדרשים
 import { useEffect } from "react";
 import { Table } from "../../../../Common/Components/BaseComponents/Table";
 import VendorDocuments from "./VendorDocuments";
@@ -5,24 +6,29 @@ import { useNavigate } from "react-router-dom";
 import { useVendorsStore } from "../../../../Stores/Billing/vendorsStore";
 import { Vendor } from "shared-types";
 
+// טיפוס לפרופס שהקומפוננטה מקבלת
 type VendorSummaryProps = {
   vendor: Vendor;
 };
 
+// קומפוננטה להצגת סיכום של ספק מסוים
 export default function VendorSummary({ vendor }: VendorSummaryProps) {
   const navigate = useNavigate();
   const { fetchExpensesByVendorId, expenses, deleteVendor } = useVendorsStore();
 
+  // מבצע שליפת הוצאות לפי מזהה הספק כאשר הקומפוננטה נטענת
   useEffect(() => {
     fetchExpensesByVendorId(vendor.id);
   }, [vendor.id, fetchExpensesByVendorId]);
 
+  // חישוב נתונים סטטיסטיים על ההוצאות של הספק
   const vendorExpenses = expenses.filter((e) => e.vendor_id === vendor.id);
   const expenseCount = vendorExpenses.length;
   const totalExpenses = vendorExpenses.reduce((sum, e) => sum + e.amount, 0);
   const averageExpense = expenseCount > 0 ? parseFloat((totalExpenses / expenseCount).toFixed(2)) : 0;
   const lastExpenseDate = expenseCount > 0 ? vendorExpenses[expenseCount - 1].date : '-';
 
+  // פונקציה למחיקת הספק מהמערכת
   const handleDeleteVendor = async () => {
     if (window.confirm('האם למחוק את הספק?')) {
       await deleteVendor(vendor.id);
@@ -30,8 +36,10 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
     }
   };
 
+  // ממשק משתמש להצגת פרטי הספק והוצאותיו
   return (
     <div className="p-4 border-t mt-4 text-sm">
+      {/* פרטי הספק */}
       <div className="grid grid-cols-2 gap-4">
         <div><strong>שם:</strong> {vendor.name}</div>
         <div><strong>קטגוריה:</strong> {vendor.category}</div>
@@ -40,8 +48,10 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
         <div><strong>כתובת:</strong> {vendor.address}</div>
       </div>
 
+      {/* קומפוננטת מסמכים של הספק */}
       <VendorDocuments vendorId={vendor.id} />
 
+      {/* סיכום הוצאות */}
       <div className="mt-4 space-y-2">
         <div><strong>סך הוצאות:</strong> {totalExpenses} ₪</div>
         <div><strong>מספר הוצאות:</strong> {expenseCount}</div>
@@ -49,6 +59,7 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
         <div><strong>תאריך הוצאה אחרונה:</strong> {lastExpenseDate}</div>
       </div>
 
+      {/* טבלת הוצאות */}
       {vendorExpenses.length > 0 && (
         <div className="mt-4">
           <Table

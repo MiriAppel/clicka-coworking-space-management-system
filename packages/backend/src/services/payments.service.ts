@@ -135,4 +135,37 @@ export class PaymentService {
       return [];
     }
   }
+  static async getPaymentByDateAndCIds(params: {
+    dateFrom: string;
+    dateTo: string;
+    customerIds?: ID[];
+  }): Promise<Payment[]> {
+    try {
+      let query = supabase.from('payment').select('*');
+
+      if (params.customerIds?.length) {
+        query = query.in('customer_id', params.customerIds);
+      }
+      if (params.dateFrom) {
+        query = query.gte('date', params.dateFrom);
+      }
+      if (params.dateTo) {
+        query = query.lte('date', params.dateTo);
+      }
+
+      query = query.order('date', { ascending: false });
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching payments:', error);
+        return [];
+      }
+
+      return data as Payment[];
+    } catch (err) {
+      console.error('Unexpected error fetching payments:', err);
+      return [];
+    }
+  }
 }

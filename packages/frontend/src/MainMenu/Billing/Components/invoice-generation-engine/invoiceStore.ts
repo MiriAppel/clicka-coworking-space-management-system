@@ -2,33 +2,36 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import axios from 'axios';
-import type{ Invoice } from 'shared-types';
+import {
+  CreateInvoiceRequest,
+  Invoice,
+} from 'shared-types';
 import { InvoiceStatus } from 'shared-types';
-
-
+import { UUID } from 'crypto';
 interface InvoiceState {
-  // ===== STATE =====
+  //  STATE 
   invoices: Invoice[];
   loading: boolean;
   error: string | null;
 
-  // ===== פעולות בסיסיות =====
-  fetchInvoices: () => Promise<void>;
-  createInvoice: (invoice: Omit<Invoice, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Invoice>;
-  updateInvoice: (id: string, updates: Partial<Invoice>) => Promise<Invoice>;
-  deleteInvoice: (id: string) => Promise<void>;
+  //  פעולות בסיסיות 
+  getAllInvoices: () => Promise<void>;
+  getAllInvoiceItems: (invoiceId: UUID) => Promise<void>;
+  createInvoice: (invoice: CreateInvoiceRequest) => Promise<Invoice>;
+  updateInvoice: (invoiceNumber: string, updates: Partial<Invoice>) => Promise<Invoice>; // שינוי מ-id ל-invoiceNumber
+  deleteInvoice: (invoiceNumber: string) => Promise<void>; // שינוי מ-id ל-invoiceNumber
 
-  // ===== פעולות מתקדמות =====
+  // פעולות מתקדמות
   generateMonthlyInvoices: () => Promise<Invoice[]>;
-  updateInvoiceStatus: (id: string, status: InvoiceStatus) => Promise<Invoice>;
-  sendInvoiceByEmail: (invoiceId: string, email: string) => Promise<void>;
+  updateInvoiceStatus: (invoiceNumber: string, status: InvoiceStatus) => Promise<Invoice>; // שינוי מ-id ל-invoiceNumber
+  sendInvoiceByEmail: (invoiceNumber: string, email: string) => Promise<void>; // שינוי מ-invoiceId ל-invoiceNumber
 
-  // ===== חישובים ושאילתות =====
+  //  חישובים ושאילתות 
   getOverdueInvoices: () => Invoice[];
   getInvoicesByStatus: (status: InvoiceStatus) => Invoice[];
   calculateOpenInvoicesTotal: () => number;
 
-  // ===== עזר =====
+  //  עזר 
   clearError: () => void;
 }
 
@@ -36,57 +39,71 @@ export const useInvoiceStore = create<InvoiceState>()(
   devtools(
     persist(
       (set, get) => ({
-       invoices: [
-    ],
+        //מצב התחלתי 
+        invoices: [],
         loading: false,
         error: null,
-
         // שליפת כל החשבוניות מהשרת
-        // fetchInvoices: async () => {
+        // getAllInvoices: async () => {
         //   set({ loading: true, error: null });
         //   try {
-        //     const response = await axios.get('http://localhost:3000/api/invoices');
-        //     set({ invoices: response.data, loading: false });
+        //     console.log(' מתחיל לשלוף חשבוניות...');
+        //     const response = await axios.get('http://localhost:3001/api/invoices/');
+        //     console.log(' תגובה מהשרת:', response);
+        //     console.log(' נתונים:', response.data);
+
+        //     // השרת מחזיר אובייקט עם message ו-invoices
+        //     // צריך לגשת ל-response.data.invoices במקום response.data
+        //     const invoicesData = Array.isArray(response.data.invoices) ? response.data.invoices : [];
+        //     console.log(' נתונים מעובדים:', invoicesData);
+        //     console.log(' כמות חשבוניות:', invoicesData.length);
+
+        //     set({ invoices: invoicesData, loading: false });
         //   } catch (error) {
-        //     set({ 
-        //       error: 'Error fetching invoices', 
-        //       loading: false 
+        //     console.error(' שגיאה בשליפת חשבוניות:', error);
+        //     set({
+        //       error: 'Error fetching invoices',
+        //       loading: false,
+        //       invoices: []
         //     });
-        //     console.error('Error fetching invoices:', error);
         //     throw error;
         //   }
         // },
-        fetchInvoices: async () => {
-  set({ loading: true, error: null });
-  set({
-    invoices: [
-      {
-        id: '1',
-        invoice_number: '1001',
-        customer_id: 'c1',
-        customer_name: 'לקוח א',
-        status: InvoiceStatus.ISSUED,
-        issue_date: '2024-06-01',
-        due_date: '2024-06-30',
-        items: [],
-        subtotal: 100,
-        taxtotal: 17,
-        createdAt: '2024-06-01',
-        updatedAt: '2024-06-01'
-      }
-    ],
-    loading: false
-  });
-},
+        getAllInvoices: async () => {
+          set({ loading: true, error: null });
+          try {
+            const response = await axios.get('http://localhost:3001/api/invoices/');
+            // השרת מחזיר אובייקט עם message ו-invoices
+            const invoicesData = Array.isArray(response.data.invoices) ? response.data.invoices : [];
+          
+            
+            const processedInvoices = invoicesData.map((invoice: any) => {
+              return {
+                ...invoice,
+                // וודא שהפריטים נמצאים בשדה הנכון
+                items: invoice.items || invoice.invoice_item || []
+              };
+            });
 
+            set({ invoices: processedInvoices, loading: false });
+          } catch (error) {
+            console.error(' שגיאה בשליפת חשבוניות:', error);
+            set({
+              error: 'Error fetching invoices',
+              loading: false,
+              invoices: []
+            });
+            throw error;
+          }
+        },
 
         // יצירת חשבונית חדשה
         createInvoice: async (newInvoice) => {
           set({ loading: true, error: null });
           try {
-            const response = await axios.post('http://localhost:3000/api/invoices/create', newInvoice);
+            const response = await axios.post('http://localhost:3001/api/invoices', newInvoice);
             set((state) => ({
-              invoices: [...state.invoices, response.data],
+              invoices: Array.isArray(state.invoices) ? [...state.invoices, response.data] : [response.data],
               loading: false
             }));
             return response.data;
@@ -96,34 +113,79 @@ export const useInvoiceStore = create<InvoiceState>()(
             throw error;
           }
         },
-
+        getAllInvoiceItems: async (invoiceId) => {
+          try {
+            const response = await axios.get(`http://localhost:3001/api/invoices/${invoiceId}/items`);
+            return response.data;
+          } catch (error) {
+            console.error('Error fetching invoice items:', error);
+            throw error;
+          }
+        },
         // עדכון חשבונית קיימת
-        updateInvoice: async (id, updates) => {
-  let updatedInvoice: Invoice | undefined;
-  set((state) => {
-    const invoices = state.invoices.map(invoice => {
-      if (invoice.id === id) {
-        updatedInvoice = { ...invoice, ...updates };
-        return updatedInvoice;
-      }
-      return invoice;
-    });
-    return { invoices };
-  });
-  // אם לא נמצא, אפשר להחזיר שגיאה או undefined
-  if (!updatedInvoice) throw new Error('Invoice not found');
-  return updatedInvoice;
-},
+        updateInvoice: async (invoiceId, updates) => {
+          try {
+            console.log('Store - Invoice Number:', invoiceId);
+            console.log('Store - Updates:', JSON.stringify(updates, null, 2));
+            const response = await axios.put(`http://localhost:3001/api/invoices/${invoiceId}`, updates);
+            console.log('Store - Response:', response.data);
+            set((state) => ({
+              invoices: state.invoices.map(invoice =>
+                invoice.id === invoiceId ? { ...invoice, ...response.data.invoice } : invoice
+              )
+            }));
+            return response.data.invoice;
+          } catch (error: any) {
+            console.error('Store - Error updating invoice:', error);
+            console.error('Store - Error response:', error.response?.data);
+            set({ error: 'Error updating invoice' });
+            throw error;
+          }
+        },
+        // updateInvoice: async (invoiceNumber, updates) => {
+        //   try {
+        //     const response = await axios.put(`http://localhost:3001/api/invoices/${invoiceNumber}`, updates);
+        //     set((state) => ({
+        //       invoices: state.invoices.map(invoice =>
+        //         invoice.invoice_number === invoiceNumber ? { ...invoice, ...response.data } : invoice
+        //       )
+        //     }));
+        //     return response.data;
+        //   } catch (error) {
+        //     set({ error: 'Error updating invoice' });
+        //     console.error('Error updating invoice:', error);
+        //     throw error;
+        //   }
+        // },
+
         // מחיקת חשבונית
         deleteInvoice: async (id) => {
           try {
-            await axios.delete(`http://localhost:3000/api/invoices/delete/${id}`);
-            set((state) => ({
-              invoices: state.invoices.filter(invoice => invoice.id !== id)
-            }));
-          } catch (error) {
-            set({ error: 'Error deleting invoice' });
-            console.error('Error deleting invoice:', error);
+            console.log('מוחק חשבונית:', id);
+            console.log('URL:', `http://localhost:3001/api/invoices/${id}`);
+
+            const response = await axios.delete(`http://localhost:3001/api/invoices/${id}`);
+            console.log('תגובה מהשרת:', response);
+
+            set((state) => {
+              const filteredInvoices = state.invoices.filter(invoice => {
+                console.log('בודק חשבונית:', invoice.id, 'נגד:', id);
+                return invoice.id !== id;
+              });
+              console.log('חשבוניות לפני מחיקה:', state.invoices.length);
+              console.log('חשבוניות אחרי מחיקה:', filteredInvoices.length);
+
+              return {
+                invoices: filteredInvoices
+              };
+            });
+          } catch (error: any) {
+            console.error('שגיאה במחיקת חשבונית:', error);
+            console.error('פרטי השגיאה:', error.response?.data);
+            console.error('סטטוס קוד:', error.response?.status);
+            console.error('הודעת השגיאה מהשרת:', error.response?.data?.message);
+            console.error('פרטים נוספים:', error.response?.data?.error);
+            set({ error: `Error deleting invoice: ${error.response?.data?.message || error.message}` });
             throw error;
           }
         },
@@ -132,7 +194,7 @@ export const useInvoiceStore = create<InvoiceState>()(
         generateMonthlyInvoices: async () => {
           set({ loading: true, error: null });
           try {
-            const response = await axios.post('http://localhost:3000/api/invoices/generateMonthly');
+            const response = await axios.post('http://localhost:3001/api/invoices/generateMonthly');
             set({ invoices: response.data, loading: false });
             return response.data;
           } catch (error) {
@@ -144,14 +206,14 @@ export const useInvoiceStore = create<InvoiceState>()(
 
         // שינוי סטטוס חשבונית (שולח, שולם, בוטל וכו')
         updateInvoiceStatus: async (id, status) => {
-          return get().updateInvoice(id, { status });
+          return get().updateInvoice(id, {});
         },
 
         // שליחת חשבונית למייל הלקוח
         sendInvoiceByEmail: async (invoiceId, email) => {
           try {
-            await axios.post(`http://localhost:3000/api/invoices/${invoiceId}/send`, { email });
-            await get().updateInvoiceStatus(invoiceId, InvoiceStatus.SENT);
+            await axios.post(`http://localhost:3001/api/invoices/${invoiceId}/send`, { email });
+            await get().updateInvoiceStatus(invoiceId, InvoiceStatus.DRAFT);
           } catch (error) {
             set({ error: 'Error sending invoice by email' });
             console.error('Error sending invoice by email:', error);
@@ -165,7 +227,7 @@ export const useInvoiceStore = create<InvoiceState>()(
           const today = new Date().toISOString().split('T')[0];
           return invoices.filter(invoice =>
             invoice.status !== InvoiceStatus.PAID &&
-            invoice.status !== InvoiceStatus.CANCELED &&
+            invoice.status !== InvoiceStatus.DRAFT &&
             invoice.due_date < today
           );
         },
@@ -180,9 +242,9 @@ export const useInvoiceStore = create<InvoiceState>()(
         calculateOpenInvoicesTotal: () => {
           const { invoices } = get();
           return invoices
-            .filter(invoice => 
-              invoice.status !== InvoiceStatus.PAID && 
-              invoice.status !== InvoiceStatus.CANCELED
+            .filter(invoice =>
+              invoice.status !== InvoiceStatus.PAID &&
+              invoice.status !== InvoiceStatus.DRAFT
             )
             .reduce((total, invoice) => total + invoice.subtotal, 0);
         },

@@ -1,12 +1,10 @@
 import cron from 'node-cron';
-import { createInvoice } from '../models/invoice.model';
-import { customerService } from '../services/customer.service';
-import { CustomerModel } from '../models/customer.model'; // מבנה לקוח
-import { VAT_RATE } from '../constants';
 import { calculateBillingForCustomer } from '../services/billingCalcullation.services';
-import { validateInvoice } from '../utils/invoiceValidation';
-
-// שירות לשליפת לקוחות
+import { serviceCreateInvoice } from '../services/invoice.service'; // ייבוא השירות
+import { customerService } from '../services/customer.service';
+import { VAT_RATE } from '../constants'; // אחוז המע"מ
+import { CustomerModel } from '../models/customer.model'; // מבנה לקוח
+import { createInvoice } from '../controllers/invoice.controller'; // בקר יצירת חשבונית
 const serviceCustomer = new customerService();
 // פונקציות עזר לחישוב תאריכים
 function getFirstDayOfNextMonth(date = new Date()): string {
@@ -24,44 +22,57 @@ function getDueDate(startDate: string): string {
   d.setDate(10);
   return d.toISOString().slice(0, 10);
 }
-// תריץ כל 1 לחודש ב-02:00 בלילה
-cron.schedule('0 2 1 * *', async () => {
-  const allCustomers: CustomerModel[] = await serviceCustomer.getAll();
-  // חישוב תאריכי חיוב לחודש הבא
-  const startDate = getFirstDayOfNextMonth();
-  const endDate = getLastDayOfNextMonth();
-  const dueDate = getDueDate(startDate);
-  for (const customer of allCustomers) {
-    // ודא שללקוח יש מזהה
-    if (!customer.id) {
-      console.warn(`Customer without id found: ${JSON.stringify(customer)}`);
-      continue;
+// תריץ כל 5 דקות
+cron.schedule('*/5 * * * *', async () => {
+  console.log('Cron job started: Fetching all customers...');
+  try {
+    const allCustomers: CustomerModel[] = await serviceCustomer.getAll();
+    console.log(`Found ${allCustomers.length} customers.`);
+    const startDate = getFirstDayOfNextMonth();
+    const endDate = getLastDayOfNextMonth();
+    const dueDate = getDueDate(startDate);
+    console.log(`Billing period: ${startDate} to ${endDate}, Due date: ${dueDate}`);
+    for (const customer of allCustomers) {
+      if (!customer.id) {
+        console.warn(`Customer without id found: ${JSON.stringify(customer)}`);
+        continue;
+      }
+      console.log(`Calculating billing for customer ID: ${customer.id}`);
+      const billingResult = await calculateBillingForCustomer(
+        customer.id,
+        { startDate, endDate },
+        dueDate,
+        VAT_RATE
+      );
+      console.log(`Billing result for customer ID ${customer.id}:`, billingResult);
+      try {
+        const invoiceData = {
+          invoice_number: '', // אם יש מספר חשבונית, נכניס כאן
+          customer_id: billingResult.invoice.customer_id,
+          customer_name: billingResult.invoice.customer_name,
+          status: billingResult.invoice.status,
+          issue_date: billingResult.invoice.issue_date,
+          due_date: billingResult.invoice.due_date,
+          items: billingResult.invoice.items,
+          subtotal: billingResult.invoice.subtotal,
+          tax_total: billingResult.invoice.tax_total,
+          payment_due_reminder: billingResult.invoice.payment_due_reminder,
+          payment_dueReminder_sentAt: billingResult.invoice.payment_dueReminder_sentAt,
+        };
+        console.log(`Creating invoice for customer ID: ${customer.id}`);
+        console.log(`inoviceData: ${invoiceData}`);
+        await serviceCreateInvoice(invoiceData); // שמירת החשבונית במסד הנתונים
+        console.log(`Invoice created for customer ID: ${customer.id}`);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(`Error creating invoice for customer ${customer.id}: ${error.message}`);
+        } else {
+          console.error(`Unexpected error creating invoice for customer ${customer.id}:`, error);
+        }
+      }
     }
-    // שולח רק מזהה לקוח + טווח תאריכים
-    const billingResult = await calculateBillingForCustomer(
-      customer.id,
-      { startDate, endDate },
-      dueDate,
-      VAT_RATE
-    );
-    validateInvoice(billingResult.invoice);
-
-    // יצירת חשבונית בפועל-שמירה במסד הנתונים
-    await createInvoice({
-      invoice_number: '', // אם יש מספר חשבונית, נכניס כאן
-      customer_id: billingResult.invoice.customer_id,
-      customer_name: billingResult.invoice.customer_name,
-      status: billingResult.invoice.status,
-      issue_date: billingResult.invoice.issue_date,
-      due_date: billingResult.invoice.due_date,
-      items: billingResult.invoice.items,
-      subtotal: billingResult.invoice.subtotal,
-      tax_total: billingResult.invoice.tax_total,
-      payment_due_reminder: billingResult.invoice.payment_due_reminder,
-      payment_dueReminder_sentAt: billingResult.invoice.payment_dueReminder_sentAt,
-      createdAt: billingResult.invoice.createdAt,
-      updatedAt: billingResult.invoice.updatedAt
-    });
+    console.log('Cron job completed successfully.');
+  } catch (error) {
+    console.error('Error in cron job:', error);
   }
-  console.log('Monthly billing calculation and invoice creation completed');
 });
