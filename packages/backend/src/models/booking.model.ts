@@ -83,7 +83,16 @@ export class BookingModel implements Booking {
       end_time: this.endTime,
       status: this.status,
       notes: this.notes,
-      is_paid:this.isPaid,
+    //   google_calendar_event_id: this.googleCalendarEventId,
+    // total_hours: this.totalHours,
+    // chargeable_hours: this.chargeableHours,
+    // total_charge: this.totalCharge,
+    is_paid: this.isPaid,
+    // approved_by: this.approvedBy,
+    // approved_at: this.approvedAt,
+    // created_at: this.createdAt,
+    // updated_at: this.updatedAt,
+    
 }}
      static fromDatabaseFormat(dbData: any): BookingModel {
         return new BookingModel({

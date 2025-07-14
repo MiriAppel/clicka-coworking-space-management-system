@@ -3,41 +3,80 @@ import { useForm } from "react-hook-form";
 import { useAssignmentStore } from "../../../Stores/Workspace/assigmentStore";
 
 interface AssignmentFormProps {
-  initialValues?: any;
-  customers?: { id: string; name: string }[];
   onSubmit?: (data: any) => Promise<void>;
+  title?: string;
+  
+  // Props פשוטים וישירים
+  workspaceId?: string | number;
+  workspaceName?: string;
+  customerId?: string | number;
+  customerName?: string;
+  roomId?: string | number;
+  roomName?: string;
+  assignedDate?: string;
+  unassignedDate?: string;
+  notes?: string;
+  assignedBy?: string;
+  status?: 'ACTIVE' | 'INACTIVE' | 'ENDED';
 }
 
 export const AssignmentForm: React.FC<AssignmentFormProps> = ({
-  initialValues = {},
-  customers = [],
   onSubmit,
+  title = "הקצאת חלל עבודה",
+  workspaceId,
+  workspaceName,
+  customerId,
+  customerName,
+  roomId,
+  roomName,
+  assignedDate,
+  unassignedDate,
+  notes,
+  assignedBy,
+  status = 'ACTIVE',
 }) => {
   const {
     spaces,
+    customers,
+    rooms,
     loading,
     error,
     getAllSpaces,
+    getAllCustomers,
+    getAllRooms,
     createAssignment,
     clearError,
   } = useAssignmentStore();
 
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
-      ...initialValues,
-      assignedDate: initialValues.assignedDate
-        ? initialValues.assignedDate.slice(0, 10)
-        : "",
-      unassignedDate: initialValues.unassignedDate
-        ? initialValues.unassignedDate.slice(0, 10)
-        : "",
+      workspaceId: workspaceId || "",
+      customerId: customerId || "",
+      roomId: roomId || "",
+      assignedDate: assignedDate || "",
+      unassignedDate: unassignedDate || "",
+      notes: notes || "",
+      assignedBy: assignedBy || "",
+      status: status,
     },
   });
 
   useEffect(() => {
-    getAllSpaces();
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          getAllSpaces(),
+          getAllCustomers(),
+          getAllRooms()
+        ]);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+
+    loadData();
     return () => clearError();
-  }, [getAllSpaces, clearError]);
+  }, [getAllSpaces, getAllCustomers, getAllRooms, clearError]);
 
   const handleFormSubmit = async (data: any) => {
     try {
@@ -53,106 +92,180 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   };
 
   if (loading) {
-    return <div className="p-4 text-center">טוען...</div>;
+    return (
+      <div className="p-4 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-2">טוען נתונים...</p>
+      </div>
+    );
   }
 
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="p-4 bg-white rounded shadow max-w-md mx-auto"
+      className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto"
     >
-      <h2 className="text-lg font-bold mb-4">הקצאת חלל עבודה</h2>
+      <h2 className="text-xl font-bold mb-6 text-gray-800">{title}</h2>
 
       {error && (
-        <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
-          שגיאה: {error}
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <strong>שגיאה:</strong> {error}
         </div>
       )}
 
-      <label className="block mb-2">
-        חלל עבודה:
-        <select
-          {...register("workspaceId", { required: true })}
-          className="block w-full mt-1 border rounded"
-          disabled={!!initialValues.workspaceId || loading}
-        >
-          <option value="">בחר חלל</option>
-          {spaces.map((w: any) => (
-            <option key={w.id} value={w.id}>
-              {w.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      {/* חלל עבודה */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          חלל עבודה: <span className="text-red-500">*</span>
+        </label>
+        {workspaceId ? (
+          <div className="block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">
+            ✅ {workspaceName || `חלל ${workspaceId}`}
+            <input
+              type="hidden"
+              {...register("workspaceId", { required: "חובה לבחור חלל עבודה" })}
+            />
+          </div>
+        ) : (
+          <select
+            {...register("workspaceId", { required: "חובה לבחור חלל עבודה" })}
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">בחר חלל עבודה</option>
+            {spaces.map((space) => (
+              <option key={space.id} value={space.id}>
+                {space.name} {space.capacity && `(${space.capacity} מקומות)`}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
 
-      <label className="block mb-2">
-        לקוח:
-        <select
-          {...register("customerId", { required: true })}
-          className="block w-full mt-1 border rounded"
-        >
-          <option value="">בחר לקוח</option>
-          {customers.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      {/* לקוח */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          לקוח: <span className="text-red-500">*</span>
+        </label>
+        {customerId ? (
+          <div className="block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">
+            ✅ {customerName || `לקוח ${customerId}`}
+            <input
+              type="hidden"
+              {...register("customerId", { required: "חובה לבחור לקוח" })}
+            />
+          </div>
+        ) : (
+          <select
+            {...register("customerId", { required: "חובה לבחור לקוח" })}
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">בחר לקוח</option>
+            {customers.map((customer) => (
+              <option key={customer.id} value={customer.id}>
+                {customer.name} {customer.email && `(${customer.email})`}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
 
-      <label className="block mb-2">
-        תאריך הקצאה:
+      {/* חדר */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          חדר (אופציונלי):
+        </label>
+        {roomId ? (
+          <div className="block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">
+            ✅ {roomName || `חדר ${roomId}`}
+            <input
+              type="hidden"
+              {...register("roomId")}
+            />
+          </div>
+        ) : (
+          <select
+            {...register("roomId")}
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">בחר חדר</option>
+            {rooms.map((room) => (
+              <option key={room.id} value={room.id}>
+                {room.name} - {room.type} (עד {room.capacity} אנשים)
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      {/* תאריך הקצאה */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          תאריך הקצאה: <span className="text-red-500">*</span>
+        </label>
         <input
           type="date"
-          {...register("assignedDate", { required: true })}
-          className="block w-full mt-1 border rounded"
+          {...register("assignedDate", { required: "חובה להזין תאריך הקצאה" })}
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </label>
+      </div>
 
-      <label className="block mb-2">
-        תאריך סיום (לא חובה):
+      {/* תאריך סיום */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          תאריך סיום (לא חובה):
+        </label>
         <input
           type="date"
           {...register("unassignedDate")}
-          className="block w-full mt-1 border rounded"
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </label>
+      </div>
 
-      <label className="block mb-2">
-        הערות:
+      {/* הערות */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          הערות:
+        </label>
         <textarea
           {...register("notes")}
-          className="block w-full mt-1 border rounded"
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          rows={3}
         />
-      </label>
+      </div>
 
-      <label className="block mb-2">
-        מוקצה ע"י:
+      {/* מוקצה ע"י */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          מוקצה ע"י: <span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
-          {...register("assignedBy", { required: true })}
-          className="block w-full mt-1 border rounded"
+          {...register("assignedBy", { required: "חובה להזין מי מקצה" })}
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </label>
+      </div>
 
-      <label className="block mb-2">
-        סטטוס:
+      {/* סטטוס */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          סטטוס: <span className="text-red-500">*</span>
+        </label>
         <select
-          {...register("status", { required: true })}
-          className="block w-full mt-1 border rounded"
+          {...register("status", { required: "חובה לבחור סטטוס" })}
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="ACTIVE">פעיל</option>
           <option value="INACTIVE">לא פעיל</option>
           <option value="ENDED">הסתיים</option>
         </select>
-      </label>
+      </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded mt-4 disabled:opacity-50"
+        className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
       >
-        {loading ? "שומר..." : "שמור"}
+        {loading ? "שומר..." : "שמור הקצאה"}
       </button>
     </form>
   );
