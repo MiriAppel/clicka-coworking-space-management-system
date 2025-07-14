@@ -84,15 +84,11 @@
 
 
 
-/* הגדרות לעובי השעות - כפול מהקודם (40px) - עם כפיית עדיפות מקסימלית */
+/* הגדרות לעובי השעות  (40px) - עם כפיית עדיפות מקסימלית */
 .fc-timegrid-slot,
 .fc .fc-timegrid-slot,
 .fc-timegrid .fc-timegrid-slot,
 .fc-timegrid-body .fc-timegrid-slot,
-
-
-
-
 td.fc-timegrid-slot,
 .fc-timegrid-slots table tr,
 .fc-timegrid-slots table td {
@@ -101,8 +97,6 @@ td.fc-timegrid-slot,
   max-height: 40px !important;
   position: relative !important;
   border-bottom: 1px solid #f0f0f0 !important;
-
-
   background: #ffffff !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -128,14 +122,10 @@ td.fc-timegrid-slot,
 td.fc-timegrid-slot-minor {
   border-top: none !important;
   border-bottom: none !important;
-
-
-
   height: 40px !important;
   min-height: 40px !important;
   max-height: 40px !important;
-
-  background: #ffffff !important;
+  /* background: #ffffff !important; */
 }
 
 .fc-timegrid-slot-major,
@@ -143,33 +133,11 @@ td.fc-timegrid-slot-minor {
 .fc-timegrid .fc-timegrid-slot-major,
 td.fc-timegrid-slot-major {
   border-bottom: 2px solid #007BFF !important;
-
-
-
   height: 40px !important;
   min-height: 40px !important;
   max-height: 40px !important;
-
-  background: #ffffff !important;
+  /* background: #ffffff !important; */
 }
-
-
-
-
-
-
-
-
-/* רקע לבן לכל השעות - כפיית עדיפות מקסימלית */
-.fc .fc-timegrid-col .fc-timegrid-slot,
-.fc-timegrid-col .fc-timegrid-slot,
-.fc-timegrid-body .fc-timegrid-slot,
-.fc-timegrid-slots .fc-timegrid-slot {
-    background: #ffffff !important;
-}
-
-
-
 
 /* הגישה חדשה - כפיית גבולות חזקים בין ימים */
 .fc-timegrid-body .fc-timegrid-col,
@@ -209,16 +177,6 @@ td.fc-timegrid-col {
     border-left: 1px solid #007BFF !important;
     border-bottom: 3px solid #007BFF !important;
     min-width: 150px !important;
-}
-
-/* תיקון צבע היום הנוכחי - תכלת */
-.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot,
-.fc-timegrid-col.fc-day-today .fc-timegrid-slot,
-.fc-day-today .fc-timegrid-slot,
-td.fc-day-today {
-    background: #a5d8ff !important;
-    border-right: 4px solid #007BFF !important;
-    border-left: 4px solid #007BFF !important;
 }
 
 /* כותרת היום הנוכחי */
@@ -273,38 +231,12 @@ td.fc-day-today {
 td.fc-timegrid-slot:hover {
   background: rgba(165, 216, 255, 0.3) !important;
   cursor: pointer !important;
-
-
   z-index: 10 !important;
 }
 
 
 /* הסרת האפקט הצבעוני המורכב */
 .fc-timegrid-slot:hover::after {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   display: none !important;
 }
 
@@ -316,7 +248,6 @@ td.fc-timegrid-slot:hover {
 }
 
 .fc-timegrid-body tr {
-
   height: 40px !important;
 }
 
@@ -392,12 +323,6 @@ td.fc-timegrid-slot:hover {
     border: 2px solid #007BFF !important;
 }
 
-
-
-
-
-
-
 .fc .fc-day-today .fc-daygrid-day-number {
     background: #007BFF !important;
     color: #fff !important;
@@ -428,8 +353,6 @@ td.fc-timegrid-slot:hover {
     box-shadow: 0 2px 4px rgba(0,123,255,0.3) !important;
     transition: all 0.2s ease !important;
     cursor: pointer !important;
-
-
     position: relative !important;
     overflow: visible !important;
 }
