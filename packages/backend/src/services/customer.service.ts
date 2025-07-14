@@ -250,6 +250,10 @@ export class customerService extends baseService<CustomerModel> {
 
     const emailPromises: Promise<any>[] = [];
 
+    function encodeSubject(subject: string): string {
+      return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+    }
+
     // תרגום הסטטוס לעברית
     const statusTranslations: Record<string, string> = {
       NOTICE_GIVEN: "ניתנה הודעה",
@@ -294,13 +298,15 @@ export class customerService extends baseService<CustomerModel> {
         const response = await sendEmail(
           "me",
           {
-            to: ["m0534198438@gmail.com"],
-            subject: template.subject,
+            to: ["diversitech25clicka@gmail.com"],
+            subject: encodeSubject(template.subject),
             body: renderedHtml,
             isHtml: true,
           },
           token,
         );
+        console.log(template.subject);
+
         console.log("HTML before sending:\n", renderedHtml);
         console.log(
           customer.name,
@@ -343,7 +349,7 @@ export class customerService extends baseService<CustomerModel> {
         "me",
         {
           to: [customer.email],
-          subject: template.subject,
+          subject: encodeSubject(template.subject),
           body: renderedHtml,
           isHtml: true,
         },
