@@ -1,63 +1,43 @@
-import type{ DateISO, ID } from "shared-types";
+import { ID, DateISO } from  "shared-types/core";
+import { CalendarSync,CalendarSyncStatus} from "shared-types/calendarSync";
 
 // מחלקה לסינכרון קלנדר
-export class CalendarSync {
+export class CalendarSyncModel implements CalendarSync {
+  id?: ID;
   bookingId: ID;
-  googleEventId: string;
   calendarId: string;
   lastSyncAt: DateISO;
   syncStatus: CalendarSyncStatus;
   syncErrors?: string[];
 
   constructor(params: {
+    id: ID;
     bookingId: ID;
-    googleEventId: string;
     calendarId: string;
     lastSyncAt: DateISO;
     syncStatus: CalendarSyncStatus;
     syncErrors?: string[];
   }) {
+    this.id = params.id|| undefined;
     this.bookingId = params.bookingId;
-    this.googleEventId = params.googleEventId;
     this.calendarId = params.calendarId;
     this.lastSyncAt = params.lastSyncAt;
     this.syncStatus = params.syncStatus;
     this.syncErrors = params.syncErrors;
   }
+  
+ 
 
   toDatabaseFormat() {
     return {
-      bookingId: this.bookingId,
-      googleEventId: this.googleEventId,
-      calendarId: this.calendarId,
-      lastSyncAt: this.lastSyncAt,
-      syncStatus: this.syncStatus,
-      syncErrors: this.syncErrors,
+      booking_id: this.bookingId,
+      calendar_id: this.calendarId,
+      last_sync_at: this.lastSyncAt,
+      sync_status: this.syncStatus,
+      sync_errors: this.syncErrors,
     };
   }
 }
 
-// סטטוס סינכרון קלנדר
-export enum CalendarSyncStatus {
-  SYNCED = 'SYNCED',
-  PENDING = 'PENDING',
-  FAILED = 'FAILED',
-  CONFLICT = 'CONFLICT'
-}
-
-export interface SyncBookingsWithGoogleRequest {
-  roomId?: ID;
-  startDate?: DateISO;
-  endDate?: DateISO;
-  forceSync?: boolean;
-}
-
-export interface CalendarConflict {
-  bookingId: ID;
-  googleEventId: string;
-  conflictType: 'TIME_OVERLAP' | 'ROOM_CONFLICT' | 'PERMISSION_ERROR';
-  description: string;
-  suggestedResolution: string;
-}
 
 

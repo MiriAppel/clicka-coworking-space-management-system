@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import { LeadAndCustomer } from "./leadAndCustomer";
-import { CustomerDetails } from "./Customers/customerDetails";
 import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
@@ -28,7 +27,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
             <Route path="customers/new" element={<NewCustomerPage />} />
-            <Route path="customers/:customerId" element={<CustomerDetails />} />
+            {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
             <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />

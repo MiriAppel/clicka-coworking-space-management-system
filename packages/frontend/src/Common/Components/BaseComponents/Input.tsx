@@ -2,21 +2,20 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
-
 interface InputFieldProps {
-  name: string; 
+  name: string;
   label: string;
   required?: boolean;
+  value?: string | number;
   disabled?: boolean;
   dir?: 'rtl' | 'ltr';
   className?: string;
   "data-testid"?: string;
-  type?: React.HTMLInputTypeAttribute; // טיפוס של הכנסת נתונים שיעזור לנו להעלות קבצים 
-  defaultValue?: string | number; //שיהיה ערך התחלתי להגדרות 
-  placeholder?: string; //שיראי משהו לפני שמכניסים כיתוב 
-  // multiple?: boolean; //הוספת הרבה קבצים 
+  type?: React.HTMLInputTypeAttribute; // טיפוס של הכנסת נתונים שיעזור לנו להעלות קבצים
+  defaultValue?: string | number; //שיהיה ערך התחלתי להגדרות
+  placeholder?: string; //שיראי משהו לפני שמכניסים כיתוב
+  // multiple?: boolean; //הוספת הרבה קבצים
 }
-
 export const InputField: React.FC<InputFieldProps> = ({
   name,
   label,
@@ -32,14 +31,12 @@ export const InputField: React.FC<InputFieldProps> = ({
 }) => {
   const {theme} = useTheme();
   const {
-    register, //ה מה שמקשר את הINPUT ונותן את האפשרות לעשות ולידציות, לבדוק שינויים, מכניס את זה לתוך הסובמיט 
-    formState: { errors }, //מגדיר את כל השדיעות לדוג אם יש לי שגיעה בשם אז יעשה לי ERROR.NAME.MESSAGE ויזרוק את השגיעה 
-    // זה השימוש של REACT-HOOK כדי שאני לא יצטרך להעביר את כל הPROPS בצורה ידיני מביא לי אותם ככה 
+    register, //ה מה שמקשר את הINPUT ונותן את האפשרות לעשות ולידציות, לבדוק שינויים, מכניס את זה לתוך הסובמיט
+    formState: { errors }, //מגדיר את כל השדיעות לדוג אם יש לי שגיעה בשם אז יעשה לי ERROR.NAME.MESSAGE ויזרוק את השגיעה
+    // זה השימוש של REACT-HOOK כדי שאני לא יצטרך להעביר את כל הPROPS בצורה ידיני מביא לי אותם ככה
   } = useFormContext();
-
   const error = errors[name]?.message as string | undefined;
   const effectiveDir = dir || theme.direction;
-
   return (
     <div className="space-y-1 w-full" dir={effectiveDir}>
       <label
@@ -56,7 +53,7 @@ export const InputField: React.FC<InputFieldProps> = ({
       </label>
       <input
         {...register(name)}
-        //זה אופציה של HOOK שבא מחזיר את כל הPROPS הפנימיים שיש לINPUT לדוג ONCHANGE,ONBLUR ועוד  
+        //זה אופציה של HOOK שבא מחזיר את כל הPROPS הפנימיים שיש לINPUT לדוג ONCHANGE,ONBLUR ועוד
         disabled={disabled}
         aria-required={required}
         aria-invalid={!!error}
@@ -94,4 +91,4 @@ export const InputField: React.FC<InputFieldProps> = ({
     </div>
   );
 };
-//הסבר מפורש בבקומפוננטה של הFORM---הכל כמעט אותו דבר, אם יש שאלות אפשר לבדוק שם 
+//הסבר מפורש בבקומפוננטה של הFORM---הכל כמעט אותו דבר, אם יש שאלות אפשר לבדוק שם

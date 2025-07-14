@@ -1,4 +1,10 @@
-import type{ DateISO, FileReference, ID, Payment, PaymentMethodType } from "shared-types";
+import type {
+  DateISO,
+  FileReference,
+  ID,
+  Payment,
+  PaymentMethodType,
+} from "shared-types";
 
 export class PaymentModel implements Payment{
  
@@ -42,9 +48,9 @@ export class PaymentModel implements Payment{
         this.notes=notes;
         this.receipt_file=receipt_file;
         this.createdAt=createdAt;
-        this.updatedAt=updatedAt;
+        this.updatedAt=updatedAt;}
 
-    }
+  
      toDatabaseFormat(): Payment {
         return {
             id: this.id,
