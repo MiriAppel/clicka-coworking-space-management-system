@@ -43,7 +43,31 @@ export interface CalendarEventInput {
   recurrence?: string[]; // ← זה השדה החשוב לאירועים חוזרים!
   [key: string]: any; // שדה פתוח לשדות נוספים
 }
+export interface Event {
+  id?: string;
+  calendarId: string;
+  summary: string;
+  description?: string;
+  location?: string;
+  start: {
+    dateTime: string; // ISO date string
+    timeZone?: string;
+  };
+  end: {
+    dateTime: string; // ISO date string
+    timeZone?: string;
+  };
+  attendees?: {
+    email: string;
+    displayName?: string;
+    // responseStatus?: 'needsAction' | 'declined' | 'tentative' | 'accepted';
+  }[];
+  // status: 'confirmed' | 'tentative' | 'cancelled';
+  created: string; // ISO date string
+  updated: string; // ISO date string
+  htmlLink: string; // URL to the event in Google Calendar
 
+}
 // Google Calendar event
 export interface GoogleCalendarEvent {
   id: string;

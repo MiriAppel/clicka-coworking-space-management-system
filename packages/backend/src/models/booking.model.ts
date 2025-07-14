@@ -47,7 +47,7 @@ export class BookingModel implements Booking {
     createdAt?: DateISO;
     updatedAt?: DateISO;
   }) {
-    this.id = params.id;
+    this.id = params.id || undefined;
     this.roomId = params.roomId;
     this.roomName = params.roomName;
     this.customerId = params.customerId;

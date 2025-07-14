@@ -10,6 +10,7 @@ import { BookingModel } from "../models/booking.model";
 import * as syncController from "../controllers/googleCalendarBookingIntegration.controller";
 import {BookingService} from "./booking.service"
 import { log } from "util";
+import { Event } from "shared-types/google";
 // טוען את משתני הסביבה מקובץ .env
 dotenv.config();
 
@@ -17,13 +18,38 @@ const supabaseUrl = process.env.SUPABASE_URL || ''; // החלף עם ה-URL של
 const supabaseAnonKey = process.env.SUPABASE_KEY || ''; // החלף עם ה-Anon Key שלך
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export const getGoogleCalendarEvents = async (calendarId: string, token: string): Promise<GoogleCalendarEvent[] | null> => {
+export const getGoogleCalendarEvents = async (calendarId: string, token: string): Promise<Event[] | null> => {
     //שליפת כל האירועים לפי לוח
-    const events = getEvents(calendarId, token);
-    {
+     const events = await getEvents(calendarId, token);
+     console.log(events); // הדפס את האירועים המתקבלים
 
-    }
-    return null;
+    // המרת האירועים לאובייקטים מסוג GoogleCalendarEvent
+    const newEvents: Event[] = events.map(event => ({
+    id: event.id || '',  // או זרוק שגיאה אם id לא קיים
+    calendarId: calendarId,
+    summary: event.summary || '',
+    description: event.description || '',
+    location: event.location || '',
+    start: {
+        dateTime: event.start?.dateTime || '',
+        timeZone: event.start?.timeZone || '',
+    },
+    end: {
+        dateTime: event.end?.dateTime || '',
+        timeZone: event.end?.timeZone || '',
+    },
+    attendees: event.attendees ? event.attendees.map(attendee => ({
+        email: attendee.email || '',
+        displayName: attendee.displayName || '',
+        // responseStatus: attendee.responseStatus,
+    })) : [],
+    // status: event.status || '',
+    created: event.created || '',
+    updated: event.updated || '',
+    htmlLink: event.htmlLink || '',
+}));
+
+    return newEvents;
 }
 
 export const createCalendarSync = async (sync: CalendarSyncModel): Promise<CalendarSyncModel | null> => {

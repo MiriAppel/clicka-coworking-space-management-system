@@ -105,6 +105,16 @@ export const LoginWithGoogle = () => {
                         .then(res => res.json())
                         .then(data => console.log('GET events:', data))
                         .catch(err => console.error(err))
+                        // עם המרות לריאקט בדיקת GET calendar
+                    fetch('http://localhost:3001/api/calendar-sync/all/primary', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${googleAccessToken}`,
+                        },
+                    })
+                        .then(res => res.json())
+                        .then(data => console.log('GET events:', data))
+                        .catch(err => console.error(err))
                     // בדיקת PATCH calendar
                     // const eventId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
                     // fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${eventId}`, {

@@ -63,26 +63,26 @@ export const createCalendarEvent = async (req: Request, res: Response, next: Nex
 //         res.status(500).json({ message: 'Failed to create calendar sync', error: error });
 //     }
 // }
-export async function getAllCalendarSync(req: Request, res: Response) {
+export async function getAllCalendarSync(req: Request, res: Response, next: NextFunction) {
+    const token = extractToken(req);
+      if (!token) return next({ status: 401, message: 'Missing token' });
+        const calendarId: string = req.params.calendarId;
     try {
-        const result = await CalendarService.gatAllCalendarSync()
+        const result = await CalendarService.getGoogleCalendarEvents(calendarId, token);
         res.json(result)
     } catch (error) {
         res.status(500).json({ error: (error as Error).message })
     }
 }
 export async function getCalendarSyncById(req: Request, res: Response) {
-    const syncId = req.params.id;
-    const result = await CalendarService.getCalendarSyncById(syncId)
+    const syncId: string = req.params.id;
+    const result = await CalendarService.getCalendarSyncById(syncId);
     if (result) {
-        res.status(200).json(result)
+        res.status(200).json(result);
     }
     else {
-        res.status(404).json({ error: 'Calendar sync not found' })
+        res.status(404).json({ error: 'Calendar sync not found' });
     }
-
-
-
 }
 // export const createCalendarEvent = async (req: Request, res: Response) => {
 //     try {
