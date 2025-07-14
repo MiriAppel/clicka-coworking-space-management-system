@@ -1,4 +1,3 @@
-// src/store/booking.store.ts
 import { create } from 'zustand';
 import { Booking } from 'shared-types/booking';
 import { axiosInstance } from '../../Services/Axios';
@@ -13,6 +12,7 @@ interface BookingState {
   getAllBookings: () => Promise<void>;
   getBookingById: (id: string) => Promise<Booking | null>;
   createBooking: (booking: Booking) => Promise<Booking | null>;
+  createBookingInCalendar: (booking: Booking,calendarId:string) => Promise<Booking | null>;
   updateBooking: (id: string, updated: Booking) => Promise<Booking | null>;
   deleteBooking: (id: string) => Promise<boolean>;
   setCurrentBooking: (booking: Booking | null) => void;
@@ -67,6 +67,25 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     } catch (error) {
       console.error('Error creating booking:', error);
       set({ error: 'שגיאה ביצירת הזמנה', loading: false });
+      return null;
+    }
+  },
+  createBookingInCalendar: async (booking: Booking,calendarId:string) => {
+    set({ loading: true, error: null });
+    try {
+      // מוודאים שה־payload נכון
+      const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, booking);
+      const created = response.data;
+
+      set(state => ({
+        bookings: [...state.bookings, created],
+        loading: false,
+      }));
+
+      return created;
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      set({ error: 'בcalenar שגיאה ביצירת הזמנה', loading: false });
       return null;
     }
   },
@@ -140,7 +159,4 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return [];
     }
   },
-  
-  
-  
 }));
