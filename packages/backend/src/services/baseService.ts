@@ -70,7 +70,7 @@ export class baseService<T> {
       } catch (error) {
         console.error("שגיאה בהמרה", error)
       }
-    }
+    }    
 
     const { data, error } = await supabase
       .from(this.tableName)

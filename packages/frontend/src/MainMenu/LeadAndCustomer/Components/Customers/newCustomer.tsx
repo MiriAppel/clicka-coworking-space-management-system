@@ -34,7 +34,7 @@ export const NewCustomerPage: React.FC = () => {
             idNumber: data.idNumber,
             businessName: data.businessName,
             businessType: data.businessType,
-            workspaceType: data.workspaceType,
+            currentWorkspaceType: data.currentWorkspaceType,
             workspaceCount: data.workspaceCount,
             contractSignDate: data.contractSignDate,
             contractStartDate: data.contractStartDate,

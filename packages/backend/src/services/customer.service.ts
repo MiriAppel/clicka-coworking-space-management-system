@@ -28,7 +28,18 @@ export class customerService extends baseService<CustomerModel> {
 
     getAllCustomers = async (): Promise<CustomerModel[] | null> => {
         const customers = await this.getAll();
-        return CustomerModel.fromDatabaseFormatArray(customers); // המרה לסוג UserModel
+
+        const customersWithPayments = await Promise.all(
+            customers.map(async (customer) => {
+                if (customer.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
+                    const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(customer.id!);
+                    customer.paymentMethods = paymentMethods || [];
+                }
+                return customer;
+            })
+        );
+
+        return CustomerModel.fromDatabaseFormatArray(customersWithPayments); // המרה לסוג UserModel
     };
     //מחזיר את כל הסטטוסים של הלקוח
     getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
@@ -41,6 +52,8 @@ export class customerService extends baseService<CustomerModel> {
     ): Promise<GetCustomersRequest[] | null> => {
         return [];
     };
+
+
 
     createCustomer = async (
         newCustomer: CreateCustomerRequest
@@ -58,7 +71,7 @@ export class customerService extends baseService<CustomerModel> {
             businessName: newCustomer.businessName,
             businessType: newCustomer.businessType,
             status: CustomerStatus.ACTIVE,
-            currentWorkspaceType: newCustomer.workspaceType,
+            currentWorkspaceType: newCustomer.currentWorkspaceType,
             workspaceCount: newCustomer.workspaceCount,
             contractSignDate: newCustomer.contractSignDate,
             contractStartDate: newCustomer.contractStartDate,
@@ -106,7 +119,7 @@ export class customerService extends baseService<CustomerModel> {
             startDate: newCustomer.contractStartDate,
             //   endDate?: string;
             terms: {  //ערכים התחלתיים לבנתיים
-                workspaceType: newCustomer.workspaceType,
+                workspaceType: newCustomer.currentWorkspaceType,
                 workspaceCount: newCustomer.workspaceCount,
                 duration: 1,
                 monthlyRate: 0,
@@ -183,8 +196,57 @@ export class customerService extends baseService<CustomerModel> {
     };
 
     updateCustomer = async (dataToUpdate: Partial<CustomerModel>, id: ID) => {
+        console.log("updateCustomer called with data:", dataToUpdate);
+        
         try {
             await this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id); // תפס את השגיאה
+            if (dataToUpdate.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
+                // אם סוג התשלום הוא כרטיס אשראי, נעדכן את שיטת התשלום
+                //אם כבר היה שיטת תשלום אז נעדכן, אחרת ניצור
+                const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(id);
+                console.log("paymentMethods in updateCustomer", paymentMethods);
+                if (paymentMethods && paymentMethods.length > 0) {
+                    // אם יש כבר שיטת תשלום, נעדכן אותה
+                    const paymentMethodData = {
+                        ...paymentMethods[0], // נשתמש בנתונים הקיימים
+                        isActive: true,
+                        creditCardLast4: dataToUpdate.paymentMethods?.[0]?.creditCardLast4,
+                        creditCardExpiry: dataToUpdate.paymentMethods?.[0]?.creditCardExpiry,
+                        creditCardHolderIdNumber: dataToUpdate.paymentMethods?.[0]?.creditCardHolderIdNumber,
+                        creditCardHolderPhone: dataToUpdate.paymentMethods?.[0]?.creditCardHolderPhone,
+                        updatedAt: new Date().toISOString(),
+                    };
+                    await serviceCustomerPaymentMethod.patch(customerPaymentMethodModel.partialToDatabaseFormat(paymentMethodData), paymentMethods[0].id!);
+                } else {
+                    // אם אין שיטת תשלום, ניצור חדשה
+                    const newPaymentMethod: customerPaymentMethodModel = {
+                        customerId: id,
+                        isActive: true,
+                        creditCardExpiry: dataToUpdate.paymentMethods?.[0]?.creditCardExpiry,
+                        creditCardHolderIdNumber: dataToUpdate.paymentMethods?.[0]?.creditCardHolderIdNumber,
+                        creditCardHolderPhone: dataToUpdate.paymentMethods?.[0]?.creditCardHolderPhone,
+                        creditCardLast4: dataToUpdate.paymentMethods?.[0]?.creditCardLast4,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        toDatabaseFormat() {
+                            return {
+                                customer_id: this.customerId,
+                                credit_card_last_4: this.creditCardLast4,
+                                credit_card_expiry: this.creditCardExpiry,
+                                credit_card_holder_id_number: this.creditCardHolderIdNumber,
+                                credit_card_holder_phone: this.creditCardHolderPhone,
+                                is_active: this.isActive,
+                                created_at: this.createdAt,
+                                updated_at: this.updatedAt
+                            };
+                        }
+                    }
+
+
+                    await serviceCustomerPaymentMethod.post(newPaymentMethod)
+                }
+
+            }
         } catch (error) {
             console.error("שגיאה בעדכון הלקוח:", error);
             throw error; // זרוק את השגיאה הלאה
@@ -306,8 +368,20 @@ export class customerService extends baseService<CustomerModel> {
             );
         }
 
+
         const customers = data || [];
-        return CustomerModel.fromDatabaseFormatArray(customers);
+
+        const customersWithPayments = await Promise.all(
+            customers.map(async (customer) => {
+                if (customer.payment_methods_type === PaymentMethodType.CREDIT_CARD) {
+                    const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(customer.id!);
+                    customer.paymentMethods = paymentMethods || [];
+                }
+                return customer;
+            })
+        );
+
+        return CustomerModel.fromDatabaseFormatArray(customersWithPayments);
     };
 }
 const serviceCustomer = new customerService();

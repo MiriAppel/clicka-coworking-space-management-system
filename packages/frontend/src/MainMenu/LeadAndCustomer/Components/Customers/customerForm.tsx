@@ -1,18 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useEffect, useState } from "react";
+import { useForm } from 'react-hook-form';
+import { PaymentMethodType, WorkspaceType } from "shared-types";
+import { z } from "zod";
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { CreateCustomerRequest, WorkspaceType, Lead, PaymentMethodType, LeadStatus } from "shared-types";
+import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
-import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
-import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
-import { z } from "zod";
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
-import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
-import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
+import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
 
 //האם להכניס עוד שדות שקשורים לחוזה????
 
@@ -39,7 +35,7 @@ const schema = z.object({
     idNumber: z.string().nonempty("חובה למלא ת\"ז").refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // לא אופציונלי
     businessName: z.string().nonempty("חובה למלא שם עסק"), // לא אופציונלי
     businessType: z.string().nonempty("חובה למלא סוג עסק"), // לא אופציונלי
-    workspaceType: z.nativeEnum(WorkspaceType).refine(val => !!val, { message: "חובה למלא סוג חלל עבודה" }),
+    currentWorkspaceType: z.nativeEnum(WorkspaceType).refine(val => !!val, { message: "חובה למלא סוג חלל עבודה" }),
     workspaceCount: z.number().positive("כמות חללי עבודה חובה מספר חיובי"), // חובה
     contractSignDate: z.string().nonempty("חובה למלא תאריך חתימת חוזה"), // חובה
     contractStartDate: z.string().nonempty("חובה למלא תאריך תחילת חוזה"), // חובה
@@ -114,12 +110,6 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
         defaultValues: { ...defaultValues, workspaceCount: 1, notes: defaultValues?.notes || "" }
     });
 
-    useEffect(() => {
-        if (defaultValues) {
-            methods.reset({ ...defaultValues, workspaceCount: 1, notes: defaultValues?.notes || "" });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [defaultValues]);
 
     //אם רואים שלא מתעדכן הערכים עבור מתעניין חדש יש לשים את זה
     // useEffect(() => {
@@ -150,7 +140,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
 
     const stepFieldNames = [
         ["name", "phone", "email", "idNumber", "businessName", "businessType", "notes", "ProfilePicture"] as const,
-        ["workspaceType", "workspaceCount", "contractSignDate", "contractStartDate", "billingStartDate", "contractDocuments"] as const,
+        ["currentWorkspaceType", "workspaceCount", "contractSignDate", "contractStartDate", "billingStartDate", "contractDocuments"] as const,
         ["paymentMethodType", "invoiceName", "creditCardLast4", "creditCardExpiry", "creditCardHolderIdNumber", "creditCardHolderPhone"] as const,
 
     ];
@@ -181,10 +171,11 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
             content: (
                 <>
                     <SelectField
-                        name="workspaceType"
+                        name="currentWorkspaceType"
                         label="בחר סוג חלל עבודה"
                         options={workspaceTypeOptions}
                         required
+
                     />
                     <NumberInputField
                         name="workspaceCount"
@@ -256,7 +247,6 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
         stepFieldNames[currentStep].forEach((field) => {
             methods.clearErrors(field as any);
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentStep]);
 
 

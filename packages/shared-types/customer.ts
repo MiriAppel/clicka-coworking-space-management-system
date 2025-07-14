@@ -121,6 +121,7 @@ export interface Customer {
   invoiceName?: string;
   contractDocuments?: FileReference[];
   paymentMethods?: CustomerPaymentMethod[];
+  paymentMethodType: PaymentMethodType;
   periods?: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -135,7 +136,7 @@ export interface CreateCustomerRequest {
   idNumber: string;
   businessName: string;
   businessType: string;
-  workspaceType: WorkspaceType;
+  currentWorkspaceType: WorkspaceType;
   workspaceCount: number;
   contractSignDate: DateISO;
   contractStartDate: DateISO;
@@ -148,7 +149,7 @@ export interface CreateCustomerRequest {
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;
   };
-    paymentMethodType: PaymentMethodType;
+  paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
 

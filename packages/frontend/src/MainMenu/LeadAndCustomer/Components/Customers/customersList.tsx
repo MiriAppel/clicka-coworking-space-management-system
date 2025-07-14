@@ -53,10 +53,8 @@ export const CustomersList = () => {
   const navigate = useNavigate();
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
-  const [usedCustomers, setUsedCustomers] = useState<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [term, setTerm] = useState("");
-  const [hasMore, setHasMore] = useState(true);
 
   const {
     customers,
@@ -73,7 +71,7 @@ export const CustomersList = () => {
   } = useCustomerStore();
 
   useEffect(() => {
-    fetchCustomersByPage()
+    fetchCustomersByPage()    
   }, [fetchCustomersByPage]);
 
 
@@ -207,20 +205,20 @@ export const CustomersList = () => {
   }
 
 
-  const searchInApi = (e: { key: string; }) => {
+  const searchInApi = async(e: { key: string; }) => {
+    //איך ידעו שבלחיצה על אנטר זה מחפש בשרת?...
     if (
       (e.key === "Enter" && searchTerm.trim())
-      || usedCustomers.length === 0 // אין תוצאות בדף הנוכחי
+      || customers.length === 0 // אין תוצאות בדף הנוכחי
     ) {
       console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
 
-      searchCustomersByText(searchTerm)
-        .then(() => {
-          setUsedCustomers(customers)
-          console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
-        }).catch((error) => {
-          console.error("שגיאה בחיפוש מהשרת:", error);
-        });
+      await searchCustomersByText(searchTerm)
+        // .then(() => {
+        //   console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
+        // }).catch((error) => {
+        //   console.error("שגיאה בחיפוש מהשרת:", error);
+        // });
     }
   }
 

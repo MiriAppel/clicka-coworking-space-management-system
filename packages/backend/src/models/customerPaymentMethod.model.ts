@@ -65,4 +65,18 @@ export class customerPaymentMethodModel implements CustomerPaymentMethod {
   static fromDatabaseFormatArray(dbDataArray: any[]): customerPaymentMethodModel[] {
     return dbDataArray.map(dbData => customerPaymentMethodModel.fromDatabaseFormat(dbData));
   }
+
+  static partialToDatabaseFormat(data: Partial<customerPaymentMethodModel>) {
+    const dbObj: any = {};
+    if (data.customerId !== undefined) dbObj.customer_id = data.customerId;
+    if (data.creditCardLast4 !== undefined) dbObj.credit_card_last_4 = data.creditCardLast4;
+    if (data.creditCardExpiry !== undefined) dbObj.credit_card_expiry = data.creditCardExpiry;
+    if (data.creditCardHolderIdNumber !== undefined) dbObj.credit_card_holder_id_number = data.creditCardHolderIdNumber;
+    if (data.creditCardHolderPhone !== undefined) dbObj.credit_card_holder_phone = data.creditCardHolderPhone;
+    if (data.isActive !== undefined) dbObj.is_active = data.isActive;
+    if (data.createdAt !== undefined) dbObj.created_at = data.createdAt;
+    if (data.updatedAt !== undefined) dbObj.updated_at = data.updatedAt;
+    // הוסיפי כאן שדות נוספים במידת הצורך
+    return dbObj;
+}
 }

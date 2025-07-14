@@ -169,6 +169,7 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
 export const patchCustomer = async (req: Request, res: Response) => {
   const { id } = req.params;
   const updateData = req.body; // נתוני העדכון החלקיים
+  console.log("Update data received in patchCustomer controller:", updateData);
 
   try {
     // await serviceCustomer.patch(updateData, id)

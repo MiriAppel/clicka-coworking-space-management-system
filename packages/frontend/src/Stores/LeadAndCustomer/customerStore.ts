@@ -57,7 +57,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
             if (!response.ok) {
                 throw new Error("Failed to fetch customers by page");
             }
-            const data: Customer[] = await response.json();
+            const data: Customer[] = await response.json();            
             set({ customers: data, customersPage: data, loading: false });
 
         } catch (error: any) {
@@ -171,6 +171,8 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     },
 
     updateCustomer: async (id: string, customer: Partial<Customer>) => {
+        console.log("עדכון לקוח עם מזהה:", id, "פרטי הלקוח:", customer);
+        
         set({ loading: true, error: undefined });
         try {
             const response = await fetch(`${BASE_API_URL}/${id}`, {
