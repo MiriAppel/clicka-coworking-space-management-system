@@ -17,6 +17,7 @@ import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAll
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 // import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
+import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -57,6 +58,7 @@ export const Routing = () => {
         <Route path="users" element={< UserTable />} />
         {/* <Route path="expense-form" element={<CreateExpenseForm />} /> */}
         <Route path="/expenses" element={< ExpensesPage/>} />
+        <Route path="meetingRooms" element={<RoomReservations />} />
       </Route>
     </Routes>
   );
