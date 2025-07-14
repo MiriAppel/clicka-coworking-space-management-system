@@ -88,7 +88,6 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
 
 
   } catch (error:any) {
-    //console.error('error in exchange code and fetch user', error);
     throw error;
   }
 };

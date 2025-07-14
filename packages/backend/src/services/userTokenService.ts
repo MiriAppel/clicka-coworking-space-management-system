@@ -5,6 +5,7 @@ import { UserTokens } from "../models/userTokens.models";
 import { randomUUID } from "crypto";
 import { User } from "shared-types";
 import { refreshAccessToken } from "./googleAuthService";
+import { UserService } from "./user.service";
 
 
 export class UserTokenService {
@@ -91,7 +92,7 @@ export class UserTokenService {
                 return null;
             }
             return {
-                userId: data.user_id, accessToken: decrypt(data.access_token) , accessTokenExpiry: data.access_token_expiry,
+                userId: data.user_id, accessToken: decrypt(data.access_token), accessTokenExpiry: data.access_token_expiry,
                 refreshToken: decrypt(data.refresh_token), activeSessionId: data.active_session_id,
                 createdAt: data.created_at, updatedAt: data.updated_at
             } as UserTokens
@@ -146,10 +147,25 @@ export class UserTokenService {
         const expiryDate = new Date(data.access_token_expiry);
         return now >= expiryDate;
     }
+    async getSystemAccessToken(): Promise<string | null> {
+        try {
+            const systemEmail = process.env.SYSTEM_EMAIL || '';
+            const userService = new UserService();
+            const system = await userService.getUserByEmail(systemEmail);
+            if (system) {
+                const systemAccessToken = await this.getAccessTokenByUserId(system.id || system.googleId);
+                return systemAccessToken;
+            }
+        } catch (error) {
+            console.error('Error fetching system access token:', error);
+            return null;
+        }
+        return null;
+    }
     async getAccessTokenByUserId(userId: string): Promise<string | null> {
         if (await this.checkIfExpiredAccessToken(userId)) {
             //if access token is expired, we need to refresh it
-            const refreshToken=await this.getRefreshTokenByUserId(userId)
+            const refreshToken = await this.getRefreshTokenByUserId(userId)
             const data = await refreshAccessToken(refreshToken)
             this.updateTokens(userId, encrypt(data.access_token));
             return data.access_token;

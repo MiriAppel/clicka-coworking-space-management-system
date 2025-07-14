@@ -66,11 +66,7 @@ export const refreshUserToken = async (sessionToken: string, sessionId: string):
     if (!isValidSession) {
         throw new Error('INVALID_SESSION');
     }
-    // שליפת refresh token
-    //need to access DB to get the refresh token
-    // const record = await userTokensService.findByUserId(userId);
     const UserTokenRecord = await userTokenService.findByUserId(userId);
-    //------------------------------------------------------------------
     //if userTokenRecord is null, then the user is not logged in
     if (!UserTokenRecord)
         throw new Error('TOKEN_NOT_FOUND');

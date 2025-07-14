@@ -8,7 +8,8 @@ export const LogoutButton = () => {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/auth/logout', {}, { withCredentials: true });
+      await axiosInstance.post('/auth/logout'); // Adjust the endpoint as necessary
+      console.log('Logout successful');
       clearAuth();
       navigate('/'); // // Or any other page
     } catch (error) {

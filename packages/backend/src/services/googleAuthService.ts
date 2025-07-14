@@ -16,12 +16,10 @@ export const oauth2Client = new google.auth.OAuth2(
 );
 
 // function to generate the authentication URL for Google OAuth2
-
 //function to replace the code with the tokens received from Google
 export async function getTokens(code: string) {
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
-  log('Tokens received:', tokens.scope);
   return {
     access_token: tokens.access_token!,
     refresh_token: tokens.refresh_token, // חשוב - שומר אותו אם גוגל החזירה

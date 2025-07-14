@@ -4,14 +4,9 @@ import { logUserActivity } from '../utils/logger';
 import dotenv from 'dotenv';
 import { LoginResponse, UserRole } from 'shared-types';
 import { Response } from 'express';
+import { supabase } from '../db/supabaseClient';
 //טוען את משתני הסביבה מהקובץ .env
 dotenv.config();
-
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_KEY || '';
-console.log(supabaseUrl, supabaseAnonKey);
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 
 export class UserService {
 
@@ -200,13 +195,7 @@ export class UserService {
         // שליפת ה-role מתוך ה-resulte
         const role = roleUser;
         // הגדרת cookie עם ה-role
-        const expirationDays = 7; // מספר הימים שהעוגיה תהיה זמינה
-        const date = new Date();
-        date.setTime(date.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
-
-        // שמירת ה-cookie עם ה-role
         res.cookie('role', role, {
-            expires: date,
             httpOnly: true ,// httpOnly כדי למנוע גישה דרך JavaScript
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
