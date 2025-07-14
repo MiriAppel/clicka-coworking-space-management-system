@@ -7,6 +7,7 @@ import {
   ContractStatus,
 } from "shared-types";
 import { contractService } from "../services/contract.service";
+import { UserTokenService } from "../services/userTokenService";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
@@ -209,29 +210,44 @@ export const patchCustomer = async (req: Request, res: Response) => {
 };
 
 export const changeCustomerStatus = async (req: Request, res: Response) => {
-
-   try {
+  try {
     console.log("changeCustomerStatus called with params:", req.params);
-    
+    const userTokenService = new UserTokenService();
     const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
     const detailsForChangeStatus = req.body; // פרטים לשינוי הסטטוס
-    const token = req.headers.authorization?.split(' ')[1] || ''; // טוקן לאימות, לדוגמה מ-Bearer
+    const token = await userTokenService.getAccessTokenByUserId(
+      "5a67953d-bfd5-4c37-88b3-1059f07a47cd"
+    );
 
-    if (!id || !detailsForChangeStatus) {
-      return res.status(400).json({ error: 'Missing required parameters' });
+    console.log("changeCustomerStatus called with token:", token);
+    
+    
+    // הנחת שהמשתמש מחובר ויש לו מזהה
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing access token" });
     }
 
-       // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
-    await serviceCustomer.sendStatusChangeEmails(detailsForChangeStatus, id, token);
+    if (!id || !detailsForChangeStatus) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
 
-    res.status(200).json({ message: 'Status change processed and emails sent.' });
+    // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
+    await serviceCustomer.sendStatusChangeEmails(
+      detailsForChangeStatus,
+      id,
+      token
+    );
+
+    res
+      .status(200)
+      .json({ message: "Status change processed and emails sent." });
   } catch (error) {
-    console.error('Error in changeCustomerStatus:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error in changeCustomerStatus:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-
-}
+};
 
 // לשאול את שולמית לגבי זה
 

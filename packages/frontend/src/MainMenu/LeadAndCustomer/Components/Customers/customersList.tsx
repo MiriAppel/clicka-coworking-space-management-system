@@ -159,13 +159,13 @@ import {
   TableColumn,
 } from "../../../../Common/Components/BaseComponents/Table";
 import { Customer, CustomerStatus } from "shared-types";
-import { deleteCustomer } from "../../service/LeadAndCustomersService";
 import { Stack, TextField } from "@mui/material";
 import axios from "axios";
 import debounce from "lodash/debounce";
 import { Pencil, Trash } from "lucide-react";
 import { set } from "lodash";
 import { text } from "body-parser";
+import { deleteCustomer } from "../../Service/LeadAndCustomersService";
 // import { supabase } from "../../../../Services/supabaseClient";
 
 interface ValuesToTable {

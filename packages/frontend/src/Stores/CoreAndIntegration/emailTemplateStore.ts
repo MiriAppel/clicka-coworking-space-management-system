@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { EmailTemplate } from 'shared-types';
-import { axiosInstance } from '../../service/Axios';
+import { axiosInstance } from '../../Services/Axios';
 
 interface EmailTemplateState {
   emailTemplates: EmailTemplate[];

@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
-import { patchCustomer } from "../../service/LeadAndCustomersService"
+import { patchCustomer } from "../../Service/LeadAndCustomersService";
 
 const schema = z.object({
     name: z.string().optional(),

@@ -11,11 +11,7 @@ import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { CheckboxField } from '../../../../Common/Components/BaseComponents/CheckBox';
 import { useCustomerFormData } from '../../Hooks/useCustomerFormData';
-import {
-  getCustomerById,
-  patchCustomer,
-  recordExitNotice,
-} from '../../service/LeadAndCustomersService';
+import { getCustomerById, patchCustomer, recordExitNotice } from '../../Service/LeadAndCustomersService';
 
 // interface Props {
 //   open: boolean;

@@ -35,13 +35,13 @@ export class customerService extends baseService<CustomerModel> {
 
   //לא הבנתי מה היא צריכה לעשות
   getCustomersToNotify = async (
-    id: ID
+    id: ID,
   ): Promise<GetCustomersRequest[] | null> => {
     return [];
   };
 
   createCustomer = async (
-    newCustomer: CreateCustomerRequest
+    newCustomer: CreateCustomerRequest,
   ): Promise<CustomerModel> => {
     console.log("in servise");
     console.log(newCustomer);
@@ -109,7 +109,7 @@ export class customerService extends baseService<CustomerModel> {
   // יצרית הודעת עזיבה של לקוח
   postExitNotice = async (
     exitNotice: RecordExitNoticeRequest,
-    id: ID
+    id: ID,
   ): Promise<void> => {
     const updateStatus: UpdateCustomerRequest = {
       status: CustomerStatus.PENDING,
@@ -221,7 +221,7 @@ export class customerService extends baseService<CustomerModel> {
     if (error) {
       console.error("❌ Supabase error:", error.message || error);
       return Promise.reject(
-        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`),
       );
     }
 
@@ -234,60 +234,91 @@ export class customerService extends baseService<CustomerModel> {
   sendStatusChangeEmails = async (
     detailsForChangeStatus: StatusChangeRequest,
     id: ID,
-    token: string
+    token: any,
   ): Promise<void> => {
     const customer = await this.getById(id);
 
     // סטטוסים שדורשים התראה לצוות
     const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE"];
     const shouldNotifyTeam = notifyTeamStatuses.includes(
-      detailsForChangeStatus.newStatus
+      detailsForChangeStatus.newStatus,
     );
 
     //אם ללקוח יש מייל וזה true אז יש לשלוח התראה ללקוח
-    const shouldNotifyCustomer =
-      detailsForChangeStatus.notifyCustomer && !!customer.email;
+    const shouldNotifyCustomer = detailsForChangeStatus.notifyCustomer &&
+      !!customer.email;
 
     const emailPromises: Promise<any>[] = [];
 
-    // פונקציה לשליחת מייל לצוות
-   const sendTeamEmail = async () => {
-  try {
-    const template = await this.emailService.getTemplateByName("ישיבת צוות");
+    // תרגום הסטטוס לעברית
+    const statusTranslations: Record<string, string> = {
+      NOTICE_GIVEN: "ניתנה הודעה",
+      TERMINATED: "סיום העסקה",
+      ACTIVE: "פעיל",
+    };
 
-    if (!template) {
-      console.warn("Team email template not found");
-      return;
-    }
-    const renderedHtml = await this.emailService.renderTemplate(template.bodyHtml, {
-      name: customer.name,
-      status: detailsForChangeStatus.newStatus,
-      reason: detailsForChangeStatus.reason || '',
-      date: detailsForChangeStatus.effectiveDate || new Date().toISOString(),
+    const effectiveDate = new Date(detailsForChangeStatus.effectiveDate);
+    const formattedDate = effectiveDate.toLocaleString("he-IL", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
-    const response = await sendEmail(
-      'me',
-      {
-        to: ["m0534198438@gmail.com"],
-        subject: template.subject,
-        body: renderedHtml,
-        isHtml: true,
-      },
-      token
-    );
+    detailsForChangeStatus.effectiveDate = formattedDate;
+    const status = statusTranslations[detailsForChangeStatus.newStatus] ||
+      detailsForChangeStatus.newStatus;
 
-    console.log("Team email sent successfully:", response);
-  } catch (err) {
-    console.error("שגיאה בשליחת מייל לצוות:", err);
-  }
-};
+    // פונקציה לשליחת מייל לצוות
+    const sendTeamEmail = async () => {
+      try {
+        const template = await this.emailService.getTemplateByName(
+          "שינוי סטטוס - צוות",
+        );
 
+        if (!template) {
+          console.warn("Team email template not found");
+          return;
+        }
+        const renderedHtml = await this.emailService.renderTemplate(
+          template.bodyHtml,
+          {
+            "שם": customer.name,
+            "סטטוס": status,
+            "תאריך": formattedDate,
+            "סיבה": detailsForChangeStatus.reason || "ללא סיבה מצוינת",
+          },
+        );
+
+        const response = await sendEmail(
+          "me",
+          {
+            to: ["m0534198438@gmail.com"],
+            subject: template.subject,
+            body: renderedHtml,
+            isHtml: true,
+          },
+          token,
+        );
+        console.log("HTML before sending:\n", renderedHtml);
+        console.log(
+          customer.name,
+          detailsForChangeStatus.newStatus,
+          detailsForChangeStatus.effectiveDate,
+          detailsForChangeStatus.reason,
+        );
+
+        console.log("Team email sent successfully:", response);
+      } catch (err) {
+        console.error("שגיאה בשליחת מייל לצוות:", err);
+      }
+    };
 
     // פונקציה לשליחת מייל ללקוח
     const sendCustomerEmail = async () => {
       const template = await this.emailService.getTemplateByName(
-        "אסיפת מנהלים"
+        "שינוי סטטוס - לקוח",
       );
       if (!template) {
         console.warn("Customer email template not found");
@@ -296,12 +327,18 @@ export class customerService extends baseService<CustomerModel> {
       const renderedHtml = await this.emailService.renderTemplate(
         template.bodyHtml,
         {
-          name: customer.name,
-          status: detailsForChangeStatus.newStatus,
-          date:
-            detailsForChangeStatus.effectiveDate || new Date().toISOString(),
-        }
+          "שם": customer.name,
+          "סטטוס": status,
+          "תאריך": formattedDate,
+        },
       );
+      console.log("HTML before sending:\n", renderedHtml);
+      console.log(
+        customer.name,
+        detailsForChangeStatus.newStatus,
+        detailsForChangeStatus.effectiveDate,
+      );
+
       return sendEmail(
         "me",
         {
@@ -310,7 +347,7 @@ export class customerService extends baseService<CustomerModel> {
           body: renderedHtml,
           isHtml: true,
         },
-        token
+        token,
       );
     };
 
@@ -319,14 +356,14 @@ export class customerService extends baseService<CustomerModel> {
       emailPromises.push(
         sendTeamEmail().catch((err) => {
           console.error("שגיאה בשליחת מייל לצוות", err);
-        })
+        }),
       );
     }
     if (shouldNotifyCustomer) {
       emailPromises.push(
         sendCustomerEmail().catch((err) => {
           console.error("שגיאה בשליחת מייל ללקוח", err);
-        })
+        }),
       );
     }
 
