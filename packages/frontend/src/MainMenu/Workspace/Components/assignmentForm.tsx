@@ -5,14 +5,11 @@ import { useAssignmentStore } from "../../../Stores/Workspace/assigmentStore";
 interface AssignmentFormProps {
   onSubmit?: (data: any) => Promise<void>;
   title?: string;
-  
   // Props פשוטים וישירים
   workspaceId?: string | number;
   workspaceName?: string;
   customerId?: string | number;
   customerName?: string;
-  roomId?: string | number;
-  roomName?: string;
   assignedDate?: string;
   unassignedDate?: string;
   notes?: string;
@@ -27,8 +24,6 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   workspaceName,
   customerId,
   customerName,
-  roomId,
-  roomName,
   assignedDate,
   unassignedDate,
   notes,
@@ -38,12 +33,10 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   const {
     spaces,
     customers,
-    rooms,
     loading,
     error,
     getAllSpaces,
     getAllCustomers,
-    getAllRooms,
     createAssignment,
     clearError,
   } = useAssignmentStore();
@@ -52,7 +45,6 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
     defaultValues: {
       workspaceId: workspaceId || "",
       customerId: customerId || "",
-      roomId: roomId || "",
       assignedDate: assignedDate || "",
       unassignedDate: unassignedDate || "",
       notes: notes || "",
@@ -61,22 +53,33 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
     },
   });
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        await Promise.all([
-          getAllSpaces(),
-          getAllCustomers(),
-          getAllRooms()
-        ]);
-      } catch (error) {
-        console.error("Error loading data:", error);
-      }
-    };
+ useEffect(() => { 
+  const loadData = async () => {
+    try {
+      console.log('Loading data...'); // debug
+      await getAllSpaces();
+      await getAllCustomers();
+      console.log('Data loaded successfully'); // debug
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+  };
 
-    loadData();
-    return () => clearError();
-  }, [getAllSpaces, getAllCustomers, getAllRooms, clearError]);
+  loadData();
+  
+  // cleanup
+  return () => {
+    clearError();
+  };
+}, []); // ← רק פעם אחת בטעינה
+
+// הוספת useEffect נפרד לdebug
+useEffect(() => {
+  console.log('Customers updated:', customers);
+  console.log('Spaces updated:', spaces);
+  console.log('Loading:', loading);
+  console.log('Error:', error);
+}, [customers, spaces, loading, error]);
 
   const handleFormSubmit = async (data: any) => {
     try {
@@ -99,7 +102,20 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
       </div>
     );
   }
+console.log('Render - customers:', customers.length);
+console.log('Render - spaces:', spaces.length);
+console.log('Render - loading:', loading);
+console.log('Render - error:', error);
 
+if (loading) {
+  return (
+    <div className="p-4 text-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+      <p className="mt-2">טוען נתונים...</p>
+      <p className="text-xs text-gray-500">Customers: {customers.length}, Spaces: {spaces.length}</p>
+    </div>
+  );
+}
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
@@ -132,7 +148,7 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
             className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">בחר חלל עבודה</option>
-            {spaces.map((space) => (
+            {spaces.length > 0 && spaces.map((space) => (
               <option key={space.id} value={space.id}>
                 {space.name} {space.capacity && `(${space.capacity} מקומות)`}
               </option>
@@ -168,35 +184,6 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
           </select>
         )}
       </div>
-
-      {/* חדר */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          חדר (אופציונלי):
-        </label>
-        {roomId ? (
-          <div className="block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">
-            ✅ {roomName || `חדר ${roomId}`}
-            <input
-              type="hidden"
-              {...register("roomId")}
-            />
-          </div>
-        ) : (
-          <select
-            {...register("roomId")}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">בחר חדר</option>
-            {rooms.map((room) => (
-              <option key={room.id} value={room.id}>
-                {room.name} - {room.type} (עד {room.capacity} אנשים)
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-
       {/* תאריך הקצאה */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
