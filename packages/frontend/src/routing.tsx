@@ -14,7 +14,7 @@ import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { Billing } from './MainMenu/Billing/Components/Billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
-
+import { EmailTemplateRouting } from './MainMenu/CoreAndIntegration/Components/EmailTemplate/EmailTamplateRouting';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -58,7 +58,8 @@ export const Routing = () => {
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
-        <Route path="meetingRooms" element={<RoomReservations />} />   <Route path="emailTemplate" element={< EmailTemplateTable />} />
+        <Route path="meetingRooms" element={<RoomReservations />} />
+        <Route path="emailTemplate" element={<EmailTemplateTable />} />
       </Route>
     </Routes>
   );
