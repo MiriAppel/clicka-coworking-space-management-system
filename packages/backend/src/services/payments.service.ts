@@ -104,7 +104,7 @@ export class PaymentService {
    * שליפת תשלומים לפי טווח תאריכים
    * @param params - אובייקט עם תאריך התחלה ותאריך סיום
    * @returns רשימת תשלומים
-   */
+   */ 
   async getPaymentByDate(params: { dateFrom: string; dateTo: string; customerId?: ID }): Promise<Payment[]> {
     try {
       let query = supabase.from('payment').select('*');

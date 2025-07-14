@@ -9,7 +9,7 @@ export const LogoutButton = () => {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/auth/logout', {}, { withCredentials: true });
+      await axiosInstance.post('api/auth/logout', {}, { withCredentials: true });
       clearAuth();
       navigate('/'); // // Or any other page
     } catch (error) {
