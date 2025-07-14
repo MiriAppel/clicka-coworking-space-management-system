@@ -4,7 +4,7 @@ export interface AuditLog {
   id?: ID;
   userEmail: string;           // אמייל של המשתמש שביצע את הפעולה
   timestamp: DateISO;          // תאריך ושעה
-  action: 'POST' | 'PUT' | 'DELETE';  // פעולה
+  action: 'POST' | 'PUT' | 'DELETE' | 'PATCH';  // פעולה
   functionName: string;        // איזה פונקציה
   targetInfo: string;    // אמייל של המשתמש שעליו ביצעו את הפעולה
   createdAt: DateISO;
@@ -15,7 +15,7 @@ export class AuditLogModel implements AuditLog {
   id?: ID;
   userEmail: string;
   timestamp: DateISO;
-  action: 'POST' | 'PUT' | 'DELETE';
+  action: 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   functionName: string;
   targetInfo: string;
   createdAt: DateISO;
@@ -25,7 +25,7 @@ export class AuditLogModel implements AuditLog {
     id?: ID;
     userEmail: string;
     timestamp: DateISO;
-    action: 'POST' | 'PUT' | 'DELETE';
+    action: 'POST' | 'PUT' | 'DELETE' | 'PATCH';
     functionName: string;
     targetInfo: string;
     createdAt: DateISO;
@@ -62,7 +62,7 @@ export class AuditLogModel implements AuditLog {
       timestamp: dbData.timestamp,
       action: dbData.action,
       functionName: dbData.function_name,
-      targetInfo: dbData.target_user_email,
+      targetInfo: dbData.target_info,
       createdAt: dbData.created_at,
       updatedAt: dbData.updated_at,
     });

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { ChartDisplay, ChartData } from '../Components/BaseComponents/Graph';
-import { ExportButtons } from '../Components/BaseComponents/ExportButtons';
+import { ExportButtons } from './BaseComponents/ExportButtons';
+
 import { Button } from '../Components/BaseComponents/Button';
 
 export const ReportPage = () => {
