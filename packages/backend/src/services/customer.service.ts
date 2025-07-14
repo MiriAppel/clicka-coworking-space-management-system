@@ -195,7 +195,7 @@ export class customerService extends baseService<CustomerModel> {
         return customerData;
     };
 
-    updateCustomer = async (dataToUpdate: Partial<CustomerModel>, id: ID) => {
+    updateCustomer = async (dataToUpdate: any, id: ID) => {
         console.log("updateCustomer called with data:", dataToUpdate);
         
         try {
@@ -210,22 +210,24 @@ export class customerService extends baseService<CustomerModel> {
                     const paymentMethodData = {
                         ...paymentMethods[0], // נשתמש בנתונים הקיימים
                         isActive: true,
-                        creditCardLast4: dataToUpdate.paymentMethods?.[0]?.creditCardLast4,
-                        creditCardExpiry: dataToUpdate.paymentMethods?.[0]?.creditCardExpiry,
-                        creditCardHolderIdNumber: dataToUpdate.paymentMethods?.[0]?.creditCardHolderIdNumber,
-                        creditCardHolderPhone: dataToUpdate.paymentMethods?.[0]?.creditCardHolderPhone,
+                        creditCardLast4: dataToUpdate.creditCardLast4,
+                        creditCardExpiry: dataToUpdate.creditCardExpiry,
+                        creditCardHolderIdNumber: dataToUpdate.creditCardHolderIdNumber,
+                        creditCardHolderPhone: dataToUpdate.creditCardHolderPhone,
                         updatedAt: new Date().toISOString(),
                     };
+                    console.log("paymentMethodData in updateCustomer", paymentMethodData);
+                    
                     await serviceCustomerPaymentMethod.patch(customerPaymentMethodModel.partialToDatabaseFormat(paymentMethodData), paymentMethods[0].id!);
                 } else {
                     // אם אין שיטת תשלום, ניצור חדשה
                     const newPaymentMethod: customerPaymentMethodModel = {
                         customerId: id,
                         isActive: true,
-                        creditCardExpiry: dataToUpdate.paymentMethods?.[0]?.creditCardExpiry,
-                        creditCardHolderIdNumber: dataToUpdate.paymentMethods?.[0]?.creditCardHolderIdNumber,
-                        creditCardHolderPhone: dataToUpdate.paymentMethods?.[0]?.creditCardHolderPhone,
-                        creditCardLast4: dataToUpdate.paymentMethods?.[0]?.creditCardLast4,
+                        creditCardExpiry: dataToUpdate.creditCardExpiry,
+                        creditCardHolderIdNumber: dataToUpdate.creditCardHolderIdNumber,
+                        creditCardHolderPhone: dataToUpdate.creditCardHolderPhone,
+                        creditCardLast4: dataToUpdate.creditCardLast4,
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         toDatabaseFormat() {

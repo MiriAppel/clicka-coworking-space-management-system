@@ -3,11 +3,9 @@ import axios from 'axios';
 import { googleAuthConfig } from '../../Config/googleAuth';
 import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
+import { axiosInstance } from '../../../../Service/Axios';
 
-const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3001',
-    withCredentials: true, // Ensure cookies are sent with requests
-});
+
 export const LoginWithGoogle = () => {
     // const setUser = useAuthStore((state) => state.setUser);
     const {setUser, setSessionId}=useAuthStore();
@@ -18,7 +16,7 @@ export const LoginWithGoogle = () => {
                 console.log('Code received from Google:', codeResponse);
 
                 const response = await axiosInstance.post<LoginResponse>(
-                    '/api/auth/google',
+                    '/auth/google',
                     { code: codeResponse.code },
                     {
                         headers: {
