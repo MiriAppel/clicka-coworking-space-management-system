@@ -13,6 +13,7 @@ function logUserActivity(userId: string, action: string) {
 }
 
 export class BookingService {
+   
   async createBooking(book: BookingModel): Promise<BookingModel | null> {
     console.log('📦 Inserting booking:', book.toDatabaseFormat());
     const { data, error } = await supabase
@@ -48,7 +49,7 @@ throw new Error(`Failed to create booking: ${error.message}`);
       return null;
     }
   }
-      async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
+     static async  updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
       
           const { data, error } = await supabase
               .from('booking')

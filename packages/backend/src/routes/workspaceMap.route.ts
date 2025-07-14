@@ -6,7 +6,7 @@ routerMap.get('/all', workspaceMapController.getAllWorkspacesMap.bind(workspaceM
 routerMap.get('/get/:id', workspaceMapController.getWorkspaceMapById.bind(workspaceMapController))
 routerMap.get('/by-name/:name', workspaceMapController.getWorkspaceMapByName.bind(workspaceMapController))
 routerMap.post('/post-map', workspaceMapController.createWorkspaceMap.bind(workspaceMapController))
-routerMap.put('/update/:id', workspaceMapController.updateWorkspaceMap.bind(workspaceMapController))
+routerMap.patch('/update/:id', workspaceMapController.updateWorkspaceMap.bind(workspaceMapController))
 routerMap.delete('/delete/:id', workspaceMapController.deleteWorkspaceMap.bind(workspaceMapController))
 
 

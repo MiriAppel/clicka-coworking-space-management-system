@@ -9,4 +9,5 @@ bookRouter.post("/", bookController.createBook.bind(bookController));
 bookRouter.get("/getBookingById/:id", bookController.getBookingById.bind(bookController));
 bookRouter.put("/updateBooking/:id", bookController.updateBooking.bind(bookController));
 bookRouter.delete("/deleteBooking/:id", bookController.deleteRoom.bind(bookController));
+
 export default bookRouter;

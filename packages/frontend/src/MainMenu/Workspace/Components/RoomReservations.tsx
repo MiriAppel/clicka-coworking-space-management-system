@@ -4,6 +4,7 @@ import { InputField } from "../../../Common/Components/BaseComponents/Input";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
 import { SelectField } from "../../../Common/Components/BaseComponents/Select";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
+import {useCustomerStore} from "../../../Stores/LeadAndCustomer/customerStore"
 import { v4 as uuidv4 } from "uuid";
 import "../Css/roomReservations.css";
 

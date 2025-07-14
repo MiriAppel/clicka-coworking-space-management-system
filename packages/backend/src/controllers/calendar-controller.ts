@@ -12,6 +12,7 @@ export async function postEvent(req: Request, res: Response, next: NextFunction)
   const event: CalendarEventInput = req.body;
   try {
     validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
+
     const createdEvent = await calendarService.createEvent(calendarId, event, token);
     res.status(201).json(createdEvent);
   } catch (err: any) {

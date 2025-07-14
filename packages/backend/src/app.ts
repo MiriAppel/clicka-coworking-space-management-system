@@ -15,18 +15,20 @@ import dotenv from 'dotenv';
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
-import bookRouter from './routes/booking.route';
 import workspaceRouter from './routes/workspace.route';
 import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
-import routerMap from './routes/WorkspaceMapRoute';
 import userRouter from './routes/user.route';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import router from './routes';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
+import routerLayout from './routes/mapLayout.route';
+import routerCalendarSync from './routes/googleCalendarBookingIntegration.route';
+import bookRouter from './routes/booking.route';
+import routerMap from './routes/workspaceMap.route'
 
 // Create Express app
 const app = express();
@@ -54,7 +56,7 @@ app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
 app.use('/api/space', spaceRouter);
-app.use('/api/map',routerMap);
+
  // User routes
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
@@ -71,7 +73,11 @@ app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 
 // app.use('/api/leadInteraction', routerCstomer);
-
+app.use('/api/map',routerMap);
+app.use('/api/layout',routerLayout);
+app.use('/api/calendar-sync',routerCalendarSync)
+app.use('/api',router)
+app.use('/api/book', bookRouter);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
