@@ -2,6 +2,7 @@ import { Children, ReactNode, useEffect } from "react";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
 import { axiosInstance } from "../../../../Services/Axios";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -48,7 +49,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         if (axios.isAxiosError(err) && err.response?.status === 409) {
           console.warn("Session ID mismatch - logging out.");
-          alert("you logged in in another device -please log in again")
+          showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
           clearUser();
         }
 
@@ -70,7 +71,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         } catch (err: any) {
           if (axios.isAxiosError(err) && err.response?.status === 409) {
             console.warn("Session ID mismatch - logging out.");
-            alert("you logged in in another device -logging out")
+            showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
             clearUser();
           }
           console.error("Failed session check", err);
