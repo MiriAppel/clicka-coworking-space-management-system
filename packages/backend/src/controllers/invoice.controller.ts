@@ -1,97 +1,156 @@
-import { Request, Response } from "express";
-import { createManualInvoice, customizeInvoiceTemplate } from "../services/invoice.service";
-import type{ CreateInvoiceRequest } from "shared-types";
-import { CustomerModel } from "../models/customer.model";
-import { customerService } from "../services/customer.service";
-//crud functions
+import { Request, Response } from 'express';
+import {
+  serviceCreateInvoice,
+  serviceGetAllInvoices,
+  serviceGetAllInvoiceItems,
+  serviceGetInvoiceById,
+  serviceUpdateInvoice,
+  serviceDeleteInvoice
+} from "../services/invoice.service";
+import { BillingItem, ID } from "shared-types";
+import { InvoiceModel } from '../models/invoice.model';
+import { UUID } from 'crypto';
 
 /**
  * בקר ליצירת חשבונית ידנית
  */
-export const createInvoice = async (req: Request, res: Response) => {
+// יצירת חשבונית חדשה
+export async function createInvoice(req: Request, res: Response): Promise<void> {
   try {
-    const invoice = await createManualInvoice(req.body); // יצירת חשבונית ידנית
-    res.status(201).json(invoice);
+    const invoiceData: Partial<InvoiceModel> = req.body;
+    const newInvoice = await serviceCreateInvoice(invoiceData);
+    res.status(201).json({
+      success: true,
+      message: 'חשבונית נוצרה בהצלחה',
+      data: newInvoice
+    });
   } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
+    res.status(500).json({
+      success: false,
+      message: 'שגיאה ביצירת החשבונית',
+      error: error instanceof Error ? error.message : 'שגיאה לא ידועה'
+    });
+  }
+}
+
+
+
+// /**
+//  * בקר לקבלת כל החשבוניות
+//  */
+export const getAllInvoices = async (_req: Request, res: Response) => {
+  try {
+    const invoices = await serviceGetAllInvoices();
+    res.status(200).json({
+      message: `נמצאו ${invoices.length} חשבוניות`,
+      invoices
+    });
+  } catch (error) {
+    console.error(' CONTROLLER: שגיאה:', error);
+    res.status(500).json({ message: (error as Error).message });
+  }
+};
+//  * בקר לקבלת כל פרטי החשבוניות
+//  */
+export const getAllInvoiceItems = async (req: Request, res: Response) => {
+  console.log('=== getAllInvoiceItems CALLED ===*****');
+  console.log('Full URL:', req.url);
+  try {
+    const invoiceId = req.params.invoice_id as UUID;
+    const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
+    //const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
+    res.status(200).json({
+      message: `נמצאו ${invoiceItems.length} חשבוניות`,
+      invoiceItems
+    });
+  } catch (error) {
+    console.error(' CONTROLLER: שגיאה:', error);
+    res.status(500).json({ message: (error as Error).message });
   }
 };
 
 /**
- * בקר ליצירת חשבוניות אוטומטיות (למשל ללקוחות חוזיים)
+ * בקר לקבלת חשבונית לפי מזהה
  */
-export const generateInvoices = async (_req: Request, res: Response) => {
-  // try {
-  //   const customers = await getAllActiveCustomers(); // דוגמה: שליפה מבסיס נתונים
-  //   const generatedInvoices = [];
+export const getInvoiceById = async (req: Request, res: Response): Promise<void> => {
+  console.log('=== getInvoiceById CALLED ===');
+  console.log('Full URL:', req.url);
+  console.log('Params:', req.params);
+  try {
+    const id = req.params.id as ID;
+    const invoice = await serviceGetInvoiceById(id);
 
-    // for (const customer of customers) {
-    //   const items = await getItemsForCustomer(customer.id);
-
-    //   if (!items.length) continue;
-
-    //   const invoiceRequest: CreateInvoiceRequest = {
-    //     customerId: customer.id,
-    //     billingPeriod: {
-    //       startDate: getStartOfMonth(),
-    //       endDate: getEndOfMonth(),
-    //     },
-    //     due_Date: getEndOfMonth(),
-    //     items,
-    //     notes: "", // אופציונלי
-    //   };
-
-      // const invoice = await createInvoice(invoiceRequest, { auto: true });
-      // generatedInvoices.push(invoice);
+    if (!invoice) {
+      res.status(404).json({ message: "חשבונית לא נמצאה" });
+      return;
     }
 
-//     res.status(201).json({
-//       // message:` נוצרו ${generatedInvoices.length} חשבוניות`,
-//       // invoices: generatedInvoices,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: (error as Error).message });
-//   }
-// };
-//לרחל
-// יצירת חשבונית ידנית
-export const createManualInvoiceController = (req: Request, res: Response) => {
-  try {
-    // req.body צריך להכיל את כל שדות החשבונית
-    const invoice = createManualInvoice(req.body);
-    res.status(201).json(invoice);
-  } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
-  }
-};
-//לנחמה
-// התאמה אישית של תבנית החשבונית
-export const customizeInvoiceTemplateController = (req: Request, res: Response) => {
-  try {
-    // req.body.invoice - החשבונית המקורית
-    // req.body.customTemplateId - מזהה/HTML של התבנית החדשה
-    const invoice = customizeInvoiceTemplate(req.body.invoice, req.body.customTemplateId);
     res.status(200).json(invoice);
   } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
+    res.status(500).json({ message: (error as Error).message });
   }
 };
 
-function getAllActiveCustomers() {
+/**
+ * בקר לעדכון חשבונית
+ */
+export const updateInvoice = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id as ID;
+    const updateData = req.body;
+    const updatedInvoice = await serviceUpdateInvoice(id, updateData);
+    if (!updatedInvoice) {
+      res.status(404).json({ message: "חשבונית לא נמצאה" });
+      return;
+    }
+    res.status(200).json({
+      message: "חשבונית עודכנה בהצלחה",
+      invoice: updatedInvoice
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: (error as Error).message,
+      details: error instanceof Error ? error.stack : 'Unknown error'
+    });
+  }
+};
 
-  throw new Error("Function not implemented.");
-}
+// export const updateInvoice = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const id = req.params.id as ID;
+//     const updateData = req.body;
 
-function getItemsForCustomer(id: any) {
+//     const updatedInvoice = await serviceUpdateInvoice(id, updateData);
 
-  throw new Error("Function not implemented.");
-}
+//     if (!updatedInvoice) {
+//       res.status(404).json({ message: "חשבונית לא נמצאה" });
+//       return; 
+//     }
 
-function getStartOfMonth() {
-  throw new Error("Function not implemented.");
-}
+//     res.status(200).json({
+//       message: "חשבונית עודכנה בהצלחה",
+//       invoice: updatedInvoice
+//     });
+//   } catch (error) {
+//     res.status(400).json({ message: (error as Error).message });
+//   }
+// };
 
-function getEndOfMonth() {
-  throw new Error("Function not implemented.");
-}
 
+/**
+ * בקר למחיקת חשבונית
+ */
+export const deleteInvoice = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const number = req.params.invoice_number as string;
+    const isDeleted = await serviceDeleteInvoice(number);
+
+    if (!isDeleted) {
+      res.status(404).json({ message: "חשבונית לא נמצאה" });
+      return;
+    }
+    res.status(200).json({ message: "חשבונית נמחקה בהצלחה" });
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message });
+  }
+};

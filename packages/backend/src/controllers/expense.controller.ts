@@ -94,20 +94,22 @@ async getAllExpenses1(req: Request, res: Response) {
         }
     }
 
-async getExpensesByVendorId(req: Request, res: Response) {
-  const { vendorId } = req.params;  // לשנות מ-query ל-params
-
+async getExpensesByVendorId(req: Request, res: Response): Promise<void> {
+  const { vendorId } = req.params;
+  
   try {
     if (!vendorId) {
-      return res.status(400).json({ message: 'חסר מזהה ספק' });
+      res.status(400).json({ message: 'חסר מזהה ספק' });
+      return; // חשוב! return בלי value
     }
-
+    
     const expenses = await this.expenseService.getExpensesByVendorId(vendorId as string);
     res.status(200).json(expenses);
-  } 
-  catch (err) {
+    // אל תכתוב return כאן!
+  } catch (err) {
     console.error('שגיאה בשליפת הוצאות:', err);
     res.status(500).json({ message: 'שגיאה בשרת' });
+    // אל תכתוב return כאן!
   }
 }
 }
