@@ -10,9 +10,9 @@ import { Button } from '../../../../Common/Components/BaseComponents/Button'; //
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1'; // חיבור ל־store של דוחות
 import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types'; // טיפוסים משותפים
 import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph'; // קומפוננטת גרף
-import { Table } from '../../../../Common/Components/BaseComponents/Table'; // טבלה כללית
+import { Table } from '../../../../Common/Components/BaseComponents/Table'; 
+import { ExportButtons } from '../../../../Common/Components/BaseComponents/ExportButtons';
 import axios from 'axios'; // ספריית קריאות HTTP
-import { ExportButtons } from '../../../../Common/Components/BaseComponents/ExportButtons'; // כפתורי ייצוא
 
 // טיפוס המרחיב את פרמטרי הדוח וכולל מזהה ספק
 type ExtendedReportParameters = ReportParameters & {
