@@ -52,7 +52,7 @@ export const menus: Menu[] = [
     title: 'חשבוניות',
     icon: <FileText size={18} style={{ marginLeft: 8 }} />,
     items: [
-      { label: 'חשבוניות', path: '/billing' },
+      { label: 'חשבוניות', path: '/billing/invoiceManagement' },
       { label: 'תשלומים', path: '/payments' },
       { label: 'הוצאות', path: '/expenses' }
     ]

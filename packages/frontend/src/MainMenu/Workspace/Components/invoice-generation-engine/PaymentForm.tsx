@@ -57,8 +57,8 @@ export default function PaymentForm() {
         amount: Number(amount),
         method: method as PaymentMethodType,
         date: new Date().toISOString().slice(0, 10),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         transaction_reference: reference || '',
     };
 
