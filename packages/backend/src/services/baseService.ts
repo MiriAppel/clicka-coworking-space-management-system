@@ -83,6 +83,9 @@ export class baseService<T> {
       console.log(dataForInsert);
     }
 
+    // if (this.tableName === "customer")
+    //  await CustomerAuthentication((dataForInsert as any).email);
+
     const { data, error } = await supabase
       .from(this.tableName)
       .insert([dataForInsert])

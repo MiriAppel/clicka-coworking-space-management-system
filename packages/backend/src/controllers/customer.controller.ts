@@ -215,10 +215,7 @@ export const changeCustomerStatus = async (req: Request, res: Response) => {
     const userTokenService = new UserTokenService();
     const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
     const detailsForChangeStatus = req.body; // פרטים לשינוי הסטטוס
-    const token = await userTokenService.getAccessTokenByUserId(
-      "5a67953d-bfd5-4c37-88b3-1059f07a47cd"
-    );
-
+    const token = await userTokenService.getSystemAccessToken();
     console.log("changeCustomerStatus called with token:", token);
     
     
