@@ -26,7 +26,6 @@ import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import emailTemplateRouter from './routes/emailTemplate.route';
-import router from './routes';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 
 // Create Express app
