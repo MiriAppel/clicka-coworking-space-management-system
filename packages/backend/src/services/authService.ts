@@ -1,4 +1,4 @@
-import { LoginResponse, User } from "shared-types";
+import { LoginResponse, User, UserRole } from "shared-types";
 import { getTokens, getGoogleUserInfo } from './googleAuthService';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
@@ -6,12 +6,13 @@ import { randomUUID } from 'crypto';
 import { UserService } from "./user.service";
 
 
-export const generateJwtToken = (payload: { userId: string; email: string; googleId: string }): string => {
+export const generateJwtToken = (payload: { userId: string; email: string; googleId: string ;role :UserRole }): string => {
   return jwt.sign(
     {
       userId: payload.userId,
       email: payload.email,
-      googleId: payload.googleId
+      googleId: payload.googleId,
+      role: payload.role
     },
     process.env.JWT_SECRET!,
     { expiresIn: '8h' } // 8 hours
@@ -19,7 +20,7 @@ export const generateJwtToken = (payload: { userId: string; email: string; googl
 };
 
 export const verifyJwtToken = (token: string) => {
-  return jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string };
+  return jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string; role: UserRole };
 };
 
 export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse> => {
@@ -75,7 +76,8 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     const jwtToken = generateJwtToken({
       userId: checkUser.id?? userInfo.id,
       email: user.email,
-      googleId: user.googleId!
+      googleId: user.googleId!,
+      role: user.role,
     });
     return {
       user,
