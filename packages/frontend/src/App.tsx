@@ -6,7 +6,6 @@ import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/L
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 
-
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
   const [loading, setLoading] = useState(true);
