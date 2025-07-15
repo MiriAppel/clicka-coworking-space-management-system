@@ -13,4 +13,4 @@ export * from './lead';
 export * from './pricing';
 export * from './translation';
 export * from './person'
-export * from './document';
+export * from './template';
