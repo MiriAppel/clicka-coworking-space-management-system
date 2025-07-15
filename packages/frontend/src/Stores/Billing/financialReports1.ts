@@ -23,22 +23,22 @@ export const useFinancialReportsStore = create<FinancialReportsState>((set) => (
 
     try {
       const data = await fetchReportData(type, parameters);
-      console.log('✅ התקבלה תשובה מהשרת:', data);
+      console.log(' התקבלה תשובה מהשרת:', data);
 
       set({ reportData: data });
 
       // לוודא שה־state מתעדכן באמת
       set((state) => {
-        console.log('🧠 סטור לאחר עדכון:', { ...state, reportData: data });
+        console.log(' סטור לאחר עדכון:', { ...state, reportData: data });
         return { reportData: data };
       });
 
     } catch (error) {
-      console.error('❌ שגיאה בקבלת הדוח:', error);
+      console.error(' שגיאה בקבלת הדוח:', error);
       set({ error: error as Error });
     } finally {
       set({ loading: false });
-      console.log('✅ סיום fetchReport');
+      console.log(' סיום fetchReport');
     }
   },
 }));

@@ -112,12 +112,28 @@ export async function generateExpenseData(parameters: ReportParameters): Promise
   },
   };
 }
+import { parseISO, format } from 'date-fns';
 
+function getPeriodKey(dateStr: string, groupBy: 'month' | 'quarter' | 'year'): string {
+  const date = parseISO(dateStr);
+  switch (groupBy) {
+    case 'month':
+      return format(date, 'yyyy-MM');
+    case 'quarter': {
+      const quarter = Math.floor(date.getMonth() / 3) + 1;
+      return `${date.getFullYear()}-Q${quarter}`;
+    }
+    case 'year':
+      return `${date.getFullYear()}`;
+  }
+}
 export async function generateRevenueDataFromPayments(parameters: ReportParameters): Promise<ReportData> {
   const paymentService = new PaymentService();
-  const payments: Payment[] = await paymentService.getPaymentByDate({
+
+  const payments: Payment[] = await paymentService.getPaymentByDateAndCIds({
     dateFrom: parameters.dateRange.startDate,
     dateTo: parameters.dateRange.endDate,
+    customerIds: parameters.customerIds,
   });
 
   let membershipRevenue = 0;
@@ -129,18 +145,28 @@ export async function generateRevenueDataFromPayments(parameters: ReportParamete
 
   for (const payment of payments) {
     let type: BillingItemType = BillingItemType.OTHER;
+    let effectiveDate = payment.date;
 
     if (payment.invoice_id) {
       const invoice: Invoice | null = await serviceGetInvoiceById(payment.invoice_id);
+
+      // אם יש תאריך חשבונית – השתמש בו במקום בתאריך התשלום
+      if (invoice?.issue_date) {
+        effectiveDate = invoice.issue_date;
+      }
+
+      // קביעת הסוג לפי פריטי החשבונית
       if (invoice?.items?.length) {
-        const typeCounts: Record<BillingItemType, number> = {} as any;
+        const typeTotals: Record<BillingItemType, number> = {} as any;
         for (const item of invoice.items) {
-          typeCounts[item.type] = (typeCounts[item.type] || 0) + item.total_price;
+          typeTotals[item.type] = (typeTotals[item.type] || 0) + item.total_price;
         }
-        type = Object.entries(typeCounts).sort((a, b) => b[1] - a[1])[0][0] as BillingItemType;
+        // הסוג עם הסכום הכי גבוה
+        type = Object.entries(typeTotals).sort((a, b) => b[1] - a[1])[0][0] as BillingItemType;
       }
     }
 
+    // סכימה כוללת
     switch (type) {
       case BillingItemType.WORKSPACE:
         membershipRevenue += payment.amount;
@@ -156,18 +182,47 @@ export async function generateRevenueDataFromPayments(parameters: ReportParamete
         break;
     }
 
-    groupedRaw.push({ date: payment.date, amount: payment.amount, type });
+    groupedRaw.push({ date: effectiveDate, amount: payment.amount, type });
   }
 
   const grouped = groupByPeriod(groupedRaw, parameters.groupBy ?? 'month', 'date', 'amount');
 
-  const breakdown = grouped.map((g) => ({
-    date: g.label,
-    totalRevenue: g.value,
-    membershipRevenue: 0,  // ניתן להוסיף חישוב מפורט יותר אם צריך
-    meetingRoomRevenue: 0,
-    loungeRevenue: 0,
-  }));
+  // מפת סוגים לכל תקופה
+  const detailedMap: Record<string, Record<BillingItemType, number>> = {};
+
+  function createEmptyTypeCounts(): Record<BillingItemType, number> {
+    return {
+      [BillingItemType.WORKSPACE]: 0,
+      [BillingItemType.MEETING_ROOM]: 0,
+      [BillingItemType.LOUNGE]: 0,
+      [BillingItemType.SERVICE]: 0,
+      [BillingItemType.DISCOUNT]: 0,
+      [BillingItemType.OTHER]: 0,
+    };
+  }
+
+  for (const item of groupedRaw) {
+    const period = getPeriodKey(item.date, parameters.groupBy ?? 'month');
+
+    if (!detailedMap[period]) {
+      detailedMap[period] = createEmptyTypeCounts();
+    }
+
+    detailedMap[period][item.type] += item.amount;
+  }
+
+  const breakdown = grouped.map((g) => {
+    const periodTypes = detailedMap[g.label] ?? createEmptyTypeCounts();
+
+    return {
+      date: g.label,
+      totalRevenue: g.value,
+      membershipRevenue: periodTypes[BillingItemType.WORKSPACE] ?? 0,
+      meetingRoomRevenue: periodTypes[BillingItemType.MEETING_ROOM] ?? 0,
+      loungeRevenue: periodTypes[BillingItemType.LOUNGE] ?? 0,
+      otherRevenue: periodTypes[BillingItemType.OTHER] ?? 0,
+    };
+  });
 
   const totalRevenue = membershipRevenue + meetingRoomRevenue + loungeRevenue + otherRevenue;
 
@@ -192,24 +247,23 @@ export async function generateRevenueDataFromPayments(parameters: ReportParamete
       breakdown: [],
     },
     occupancyRevenueData: {
-    occupancyData: [],
-    summary: {
-      averageOccupancyRate: 0,
-      maxOccupancyRate: 0,
-      minOccupancyRate: 0,
-      totalCustomerCount: 0,
+      occupancyData: [],
+      summary: {
+        averageOccupancyRate: 0,
+        maxOccupancyRate: 0,
+        minOccupancyRate: 0,
+        totalCustomerCount: 0,
+      },
     },
-  },
-   cashFlowData: {
-    totalPayments: 0,   // סה"כ תשלומים שהתקבלו
-    totalExpenses: 0,   // סה"כ הוצאות
-    cashFlow: 0,        // תזרים מזומנים נטו (תשלומים - הוצאות)
-    breakdown: [],      // מערך של פרטי התזרים לפי תקופות או תאריכים
-    revenueByCategory: [], // סיכום הכנסות לפי קטגוריה
-  },
+    cashFlowData: {
+      totalPayments: 0,
+      totalExpenses: 0,
+      cashFlow: 0,
+      breakdown: [],
+      revenueByCategory: [],
+    },
   };
 }
-
 export async function generateProfitLossData1(parameters: ReportParameters): Promise<ReportData | null> {
   const groupBy = parameters.groupBy ?? 'month';
 
@@ -508,9 +562,10 @@ export async function generateCashFlowData(parameters: ReportParameters): Promis
   const paymentService = new PaymentService();
   const expenseService = new ExpenseService();
 
-  const payments: Payment[] = await paymentService.getPaymentByDate({
+  const payments: Payment[] = await paymentService.getPaymentByDateAndCIds({
     dateFrom: parameters.dateRange?.startDate,
     dateTo: parameters.dateRange?.endDate,
+    // customerIds: parameters.customerIds,
   });
 
   const expenses: Expense[] = (await expenseService.getExpenses({

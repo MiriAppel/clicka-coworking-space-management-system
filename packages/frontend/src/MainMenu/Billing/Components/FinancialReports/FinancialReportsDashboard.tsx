@@ -1,3 +1,6 @@
+// קובץ React: FinancialReportsDashboard.tsx
+// כולל הסרה של האפשרות לבחור בדוח "הכנסות תפוסה" ללא שינוי ב־ReportType
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -8,29 +11,28 @@ import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph';
 import { ExportButtons } from '../../../../Common/Components/BaseComponents/exportButtons';
+import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
 
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1';
 import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types';
 import axios from 'axios';
 
-// הרחבת סוג הדוחות עם פרמטר נוסף עבור vendorId
+// טיפוס כולל vendorId רק בצד הקליינט
 type ExtendedReportParameters = ReportParameters & {
   vendorId?: string;
 };
 
-// הגדרת מבנה הטופס והוולידציה בעזרת zod
 const ReportFormSchema = z.object({
   dateRange: z.object({
-    startDate: z.string().min(1, 'יש להזין תאריך התחלה'),  // וולידציה לתאריך התחלה
-    endDate: z.string().min(1, 'יש להזין תאריך סיום'),    // וולידציה לתאריך סיום
+    startDate: z.string().min(1, 'יש להזין תאריך התחלה'),
+    endDate: z.string().min(1, 'יש להזין תאריך סיום'),
   }),
-  groupBy: z.enum(['month', 'quarter', 'year']).optional(),  // קיבוץ לפי תקופה (חודשי, רבעוני, שנתי)
-  categories: z.array(z.nativeEnum(ExpenseCategory)).optional(),  // קיבוץ לפי קטגוריות הוצאה
-  customerIds: z.array(z.string()).optional(),  // בחירת לקוחות
-  includeProjections: z.boolean().optional(),  // אפשרות להוסיף תחזיות
+  groupBy: z.enum(['month', 'quarter', 'year']).optional(),
+  categories: z.array(z.nativeEnum(ExpenseCategory)).optional(),
+  customerIds: z.array(z.string()).optional(),
+  includeProjections: z.boolean().optional(),
 });
 
-// תיאורים עבור כל קטגוריית הוצאה
 const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   RENT: 'שכירות',
   UTILITIES: 'חשבונות',
@@ -51,7 +53,6 @@ const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   OTHER: 'אחר',
 };
 
-// תיאורים עבור סוגי הדוחות השונים
 const reportTypeLabels: Record<ReportType, string> = {
   REVENUE: 'הכנסות',
   EXPENSES: 'הוצאות',
@@ -62,7 +63,6 @@ const reportTypeLabels: Record<ReportType, string> = {
 };
 
 export const FinancialReportsDashboard: React.FC = () => {
-  // שימוש ב-react-hook-form כדי לטפל בטופס ובוולידציה
   const methods = useForm<ExtendedReportParameters>({
     resolver: zodResolver(ReportFormSchema),
     defaultValues: {
@@ -72,20 +72,17 @@ export const FinancialReportsDashboard: React.FC = () => {
     },
   });
 
-  // קריאה למצב הדוחות דרך ה-store
   const fetchReport = useFinancialReportsStore((s) => s.fetchReport);
   const reportData = useFinancialReportsStore((s) => s.reportData);
   const loading = useFinancialReportsStore((s) => s.loading);
   const error = useFinancialReportsStore((s) => s.error);
 
-  // ניהול סטייט עבור סוג הדוח והגרף
   const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE);
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'pie' | 'line'>('bar');
   const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]);
   const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
-  const exportContentRef = useRef<HTMLDivElement>(null);  // Ref עבור הייצוא
+  const exportContentRef = useRef<HTMLDivElement>(null);
 
-  // ביצוע קריאה ל-API עבור לקוחות וספקים
   useEffect(() => {
     async function fetchEntities() {
       try {
@@ -100,54 +97,61 @@ export const FinancialReportsDashboard: React.FC = () => {
     fetchEntities();
   }, []);
 
-  // שליחה של הנתונים מהטופס
   const onSubmit = async (data: ExtendedReportParameters) => {
     const transformed = {
       ...data,
       vendorId: selectedType === ReportType.EXPENSES ? data.customerIds?.[0] : undefined,
     };
-    await fetchReport(selectedType, transformed);  // קריאה לפונקציה ל-fetch את הדוח
+    await fetchReport(selectedType, transformed);
   };
 
-  // קבלת נתוני הגרף בהתאמה לסוג הדוח
   const getChartData = () => {
     switch (selectedType) {
       case ReportType.REVENUE:
-        return reportData?.revenueData?.breakdown?.map((item) => ({
-          label: item.date,
-          value: item.totalRevenue,
-        })) || [];
-
+        return reportData?.revenueData?.breakdown?.map((i) => ({ label: i.date, value: i.totalRevenue })) || [];
       case ReportType.EXPENSES:
-        return reportData?.expenseData?.monthlyTrend?.map((item) => ({
-          label: item.month,
-          value: item.totalExpenses,
-        })) || [];
-
+        return reportData?.expenseData?.monthlyTrend?.map((i) => ({ label: i.month, value: i.totalExpenses })) || [];
       case ReportType.PROFIT_LOSS:
-        return reportData?.profitLossData?.breakdown?.map((item) => ({
-          label: item.date,
-          value: item.profit,
-        })) || [];
-
+        return reportData?.profitLossData?.breakdown?.map((i) => ({ label: i.date, value: i.profit })) || [];
       case ReportType.CASH_FLOW:
-        return reportData?.cashFlowData?.breakdown?.map((item) => ({
-          label: item.date,
-          value: item.totalPayments,
-        })) || [];
-
-      case ReportType.OCCUPANCY_REVENUE:
-        return reportData?.occupancyRevenueData?.occupancyData?.map((item) => ({
-          label: item.date,
-          value: item.revenue,  // הכנסה מתפוסה
-        })) || [];
-
+        return reportData?.cashFlowData?.breakdown?.map((i) => ({ label: i.date, value: i.totalPayments })) || [];
       default:
         return [];
     }
   };
 
-  // קיבוץ נתוני הדוח וטיפול בפרטי הטבלה
+  const getReportTitle = (): string => {
+    const values = methods.getValues();
+    const typeLabel = reportTypeLabels[selectedType];
+    const from = values.dateRange?.startDate;
+    const to = values.dateRange?.endDate;
+
+    const parts: string[] = [];
+    if (from && to) parts.push(`בתקופה ${from} עד ${to}`);
+
+    const customerIds = values.customerIds ?? [];
+    if (selectedType === ReportType.REVENUE && customerIds.length) {
+      const selectedNames = customers.filter((c) => customerIds.includes(c.id)).map((c) => c.name);
+      parts.push(`ללקוחות: ${selectedNames.join(', ')}`);
+    }
+
+    if (selectedType === ReportType.EXPENSES) {
+      const vendorIds = values.customerIds ?? [];
+      if (vendorIds.length) {
+        const vendorNames = vendors.filter((v) => vendorIds.includes(v.id)).map((v) => v.name);
+        parts.push(`עבור ספקים: ${vendorNames.join(', ')}`);
+      }
+      if (values.categories?.length) {
+        const categoryNames = values.categories.map((cat) => expenseCategoryLabels[cat as ExpenseCategory]);
+        parts.push(`סוגי הוצאה: ${categoryNames.join(', ')}`);
+      }
+    }
+
+    return `דוח ${typeLabel} ${parts.length ? '— ' + parts.join(' | ') : ''}`;
+  };
+
+  const formatNumber = (value: number): string => (value < 0 ? `${Math.abs(value)}-` : value.toString());
+
   const { data: fullTableData, columns: fullTableColumns } = (() => {
     let data: any[] = [];
     let columns: { header: string; accessor: string }[] = [];
@@ -156,10 +160,7 @@ export const FinancialReportsDashboard: React.FC = () => {
 
     if (selectedType === ReportType.REVENUE && reportData.revenueData?.breakdown?.length) {
       data = reportData.revenueData.breakdown;
-      columns = Object.keys(data[0]).map((key) => ({
-        header: key === 'date' ? 'תאריך' : key,
-        accessor: key,
-      }));
+      columns = Object.keys(data[0]).map((key) => ({ header: key === 'date' ? 'תאריך' : key, accessor: key }));
     } else if (selectedType === ReportType.EXPENSES && reportData.expenseData?.monthlyTrend?.length) {
       data = reportData.expenseData.monthlyTrend.map((item) => {
         const top = item.topCategories || [];
@@ -181,19 +182,6 @@ export const FinancialReportsDashboard: React.FC = () => {
     } else if (selectedType === ReportType.CASH_FLOW && reportData.cashFlowData?.breakdown?.length) {
       data = reportData.cashFlowData.breakdown;
       columns = Object.keys(data[0]).map((key) => ({ header: key, accessor: key }));
-    } else if (selectedType === ReportType.OCCUPANCY_REVENUE && reportData.occupancyRevenueData?.occupancyData?.length) {
-      data = reportData.occupancyRevenueData.occupancyData;
-      columns = [
-        { header: 'תאריך', accessor: 'date' },
-        { header: 'סה"כ מקומות', accessor: 'totalSpaces' },
-        { header: 'מקומות תפוסים', accessor: 'occupiedSpaces' },
-        { header: 'מקומות פתוחים', accessor: 'openSpaceCount' },
-        { header: 'שולחנות בחדר', accessor: 'deskInRoomCount' },
-        { header: 'חדרים פרטיים', accessor: 'privateRoomCount' },
-        { header: 'כרטיסי קליקה', accessor: 'klilahCardCount' },
-        { header: 'אחוז תפוסה', accessor: 'occupancyRate' },
-        { header: 'הכנסות תפוסה', accessor: 'revenue' },  // הוספת הכנסות תפוסה
-      ];
     }
 
     return { data, columns };
@@ -202,25 +190,34 @@ export const FinancialReportsDashboard: React.FC = () => {
   return (
     <Form label="טופס דוחות פיננסיים" schema={ReportFormSchema} onSubmit={onSubmit} methods={methods}>
       <div className="flex flex-col gap-4">
-        <select value={selectedType} onChange={(e) => setSelectedType(e.target.value as ReportType)} className="w-full px-2 py-1 border rounded">
-          {Object.values(ReportType).map((type) =>
-            reportTypeLabels[type] ? (
-              <option key={type} value={type}>
-                {reportTypeLabels[type]}
-              </option>
-            ) : null
-          )}
+        <select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value as ReportType)}
+          className="w-full px-2 py-1 border rounded"
+        >
+          {Object.values(ReportType)
+            .filter((type) => type !== ReportType.OCCUPANCY_REVENUE)
+            .map((type) =>
+              reportTypeLabels[type] ? (
+                <option key={type} value={type}>
+                  {reportTypeLabels[type]}
+                </option>
+              ) : null
+            )}
         </select>
 
-        <InputField name="dateRange.startDate" label="מתאריך (YYYY-MM-DD)" required />
-        <InputField name="dateRange.endDate" label="עד תאריך (YYYY-MM-DD)" required />
+        <InputField type="date" name="dateRange.startDate" label="מתאריך" required />
+        <InputField type="date" name="dateRange.endDate" label="עד תאריך" required />
 
-        <label>בחר קיבוץ לפי :</label>
-        <select {...methods.register('groupBy')} className="w-full px-2 py-1 border rounded">
-          <option value="month">חודשי</option>
-          <option value="quarter">רבעוני</option>
-          <option value="year">שנתי</option>
-        </select>
+        <SelectField
+          name="groupBy"
+          label="בחר קיבוץ לפי"
+          options={[
+            { label: 'חודשי', value: 'month' },
+            { label: 'רבעוני', value: 'quarter' },
+            { label: 'שנתי', value: 'year' },
+          ]}
+        />
 
         {selectedType === ReportType.REVENUE && (
           <>
@@ -257,6 +254,11 @@ export const FinancialReportsDashboard: React.FC = () => {
           </>
         )}
 
+        <Button type="submit" disabled={loading}>
+          {loading ? 'טוען...' : 'צור דוח'}
+        </Button>
+        {error && <p className="text-red-600">{error.message}</p>}
+
         <label>בחר סוג גרף:</label>
         <select
           value={selectedChartType}
@@ -268,22 +270,18 @@ export const FinancialReportsDashboard: React.FC = () => {
           <option value="line">גרף קו</option>
         </select>
 
-        <Button type="submit" disabled={loading}>
-          {loading ? 'טוען...' : 'צור דוח'}
-        </Button>
-        {error && <p className="text-red-600">{error.message}</p>}
-
         {reportData && (
-          <div ref={exportContentRef} className="mt-8">
+          <div ref={exportContentRef} className="mt-8 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-800">{getReportTitle()}</h2>
             <ChartDisplay type={selectedChartType} data={getChartData()} />
             <ExportButtons refContent={exportContentRef} exportData={fullTableData} title={`דוח_${selectedType}`} />
 
-            <div className="overflow-auto w-full mt-4">
-              <table className="min-w-full border border-gray-300 text-sm">
+            <div className="mt-4">
+              <table className="table-auto border border-gray-300 text-sm w-full">
                 <thead className="bg-gray-100">
                   <tr>
                     {fullTableColumns.map((col, idx) => (
-                      <th key={idx} className="border px-4 py-2 font-semibold">
+                      <th key={idx} className="border px-4 py-2 font-semibold text-right">
                         {col.header}
                       </th>
                     ))}
@@ -293,8 +291,10 @@ export const FinancialReportsDashboard: React.FC = () => {
                   {fullTableData.map((row, rowIdx) => (
                     <tr key={rowIdx} className="hover:bg-gray-50">
                       {fullTableColumns.map((col, colIdx) => (
-                        <td key={colIdx} className="border px-4 py-2">
-                          {String(row[col.accessor] ?? '')}
+                        <td key={colIdx} className="border px-4 py-2 text-right">
+                          {typeof row[col.accessor] === 'number'
+                            ? formatNumber(row[col.accessor])
+                            : String(row[col.accessor] ?? '')}
                         </td>
                       ))}
                     </tr>
