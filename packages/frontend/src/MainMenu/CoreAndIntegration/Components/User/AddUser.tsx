@@ -44,7 +44,7 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
     try {
       const newUser: User = {
         id: "",
-        email: data.email,
+        email: data.email.toLowerCase(),
         firstName: data.firstName,
         lastName: data.lastName,
         role: data.role as UserRole,
