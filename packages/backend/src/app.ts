@@ -30,6 +30,7 @@ import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 import documentRouter from './routes/document.routes';
 import invoiceRouter from './routes/invoice.route';
 import paymentRoutes from './routes/payment.routes';
+import emailTemplateRouter from './routes/emailTemplate.route';
 
 // Create Express app
 const app = express();
@@ -73,8 +74,9 @@ app.use('/api/auth',routerAuth);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 app.use('/api/document', documentRouter);
-app.use('/api/invoices', invoiceRouter); 
-app.use("/api/payments", paymentRoutes);
+app.use('/api/invoices', invoiceRouter);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/emailTemplate', emailTemplateRouter);
 
 // app.use('/api/leadInteraction', routerCstomer);
 

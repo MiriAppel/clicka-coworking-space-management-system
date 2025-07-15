@@ -198,7 +198,7 @@ const invoiceData = {
     <td>
       <select
         value={invoice.status}
-        onChange={(e) => updateInvoiceStatus(invoice.id, e.target.value as InvoiceStatus)}
+        onChange={(e) => updateInvoiceStatus(invoice.id!, e.target.value as InvoiceStatus)}
       >
         <option value={InvoiceStatus.DRAFT}>טיוטה</option>
         <option value={InvoiceStatus.SENT}>נשלח</option>
@@ -208,7 +208,7 @@ const invoiceData = {
       </select>
     </td>
     <td>
-      <button onClick={() => deleteInvoice(invoice.id)}>מחק</button>
+      <button onClick={() => deleteInvoice(invoice.id!)}>מחק</button>
     </td>
   </tr>
 ))}    

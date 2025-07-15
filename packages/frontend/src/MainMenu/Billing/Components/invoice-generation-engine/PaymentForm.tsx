@@ -27,16 +27,6 @@ async function sendPaymentToApi(payment: any) {
   }
 }
 
-async function fetchCustomerById(customerId: string) {
-  try {
-    const response = await axios.get(`http://localhost:3001/customers/${customerId}`);
-    return response.data;
-  } catch (error) {
-    console.error("שגיאה בשליפת לקוח:", error);
-    return null;
-  }
-}
-
 export default function PaymentForm() {
   const { invoices, getAllInvoices, updateInvoiceStatus, loading } = useInvoiceStore();
   const { payments, addPayment } = usePaymentStore();
@@ -99,27 +89,6 @@ export default function PaymentForm() {
       updateInvoiceStatus(invoiceId, InvoiceStatus.PAID);
     }
 
-    const customer = await fetchCustomerById(invoice.customer_id);
-    if (customer?.email) {
-      try {
-        await axios.post("/api/gmail/v1/users/me/messages/send", {
-          to: [customer.email],
-          subject: `אישור תשלום עבור חשבונית ${invoice.invoice_number}`,
-          body: `
-            <p>שלום ${invoice.customer_name},</p>
-            <p>אנו מאשרים את קבלת התשלום על סך <strong>${amount} ₪</strong> עבור חשבונית <strong>${invoice.invoice_number}</strong>.</p>
-            <p>תודה רבה,</p>
-            <p>הצוות</p>
-          `,
-          isHtml: true,
-        });
-      } catch (err) {
-        console.error("שגיאה בשליחת מייל:", err);
-      }
-    } else {
-      console.warn("לא נמצא מייל ללקוח");
-    }
-
     methods.reset();
   };
 
@@ -158,7 +127,7 @@ export default function PaymentForm() {
             options={[
               { value: "", label: "בחר חשבונית" },
               ...invoices
-                .filter((inv) => inv.id) // מסנן כאלו שאין להם id
+                .filter((inv) => inv.id)
                 .map((inv) => ({
                   value: inv.id!,
                   label: `${inv.invoice_number} - ${inv.customer_name}`,

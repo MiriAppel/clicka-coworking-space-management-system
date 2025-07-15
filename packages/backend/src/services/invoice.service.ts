@@ -5,6 +5,9 @@ import { InvoiceItemModel, InvoiceModel } from "../models/invoice.model";
 
 import { UUID } from "crypto";
 import { supabase } from "../db/supabaseClient";
+import { EmailTemplateService } from "./emailTemplate.service";
+import { sendEmail } from "./gmail-service";
+import { id } from "date-fns/locale";
 // טוען את משתני הסביבה מקובץ .env
 
 // const supabaseUrl = process.env.SUPABASE_URL || 'https://htpiqwpvvydffoapkmzk.supabase.co'; // החלף עם ה-URL של פרויקט ה-Supabase שלך
@@ -377,3 +380,114 @@ export async function serviceDeleteInvoice(id: ID): Promise<boolean> {
 // ): Promise<GeneratedDocument> => {
 //   throw new Error("Not implemented yet");
 // };
+//שליחת מייל
+   const emailService= new EmailTemplateService();
+
+export const sendStatusChangeEmails = async ( 
+    customerName: string, amount: number, invoiceNumber: string,
+    token: any,
+  ): Promise<void> => {
+    
+    const emailPromises: Promise<any>[] = [];
+    function encodeSubject(subject: string): string {
+      return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+    }
+    // פונקציה לשליחת מייל ללקוח
+    const sendCustomerEmail = async () => {
+      try {
+        const template = await emailService.getTemplateByName(
+          "אישור תשלום",
+        );
+        if (!template) {
+          console.warn("Team email template not found");
+          return;
+        }
+        const renderedHtml = await emailService.renderTemplate(
+          template.bodyHtml,
+          {
+            "customerName": customerName,
+            "amount": amount.toString(),
+            "invoiceNumber": invoiceNumber,
+          },
+        );
+        const response = await sendEmail(
+          "me",
+          {
+            to: ["ettylax@gmail.com"],
+            subject: encodeSubject(template.subject),
+            body: renderedHtml,
+            isHtml: true,
+          },
+          token,
+        );
+        console.log(template.subject);
+        console.log("HTML before sending:\n", renderedHtml);
+        
+        console.log("Team email sent successfully:", response);
+      } catch (err) {
+        console.error("שגיאה בשליחת מייל לצוות:", err);
+      }
+    };
+    // פונקציה לשליחת מייל ללקוח
+    // const sendCustomerEmail = async () => {
+    //   const template = await this.emailService.getTemplateByName(
+    //     "שינוי סטטוס - לקוח",
+    //   );
+    //   if (!template) {
+    //     console.warn("Customer email template not found");
+    //     return;
+    //   }
+    //   const renderedHtml = await this.emailService.renderTemplate(
+    //     template.bodyHtml,
+    //     {
+    //       "שם": customer.name,
+    //       "סטטוס": status,
+    //       "תאריך": formattedDate,
+    //     },
+    //   );
+    //   console.log("HTML before sending:\n", renderedHtml);
+    //   console.log(
+    //     customer.name,
+    //     detailsForChangeStatus.newStatus,
+    //     detailsForChangeStatus.effectiveDate,
+    //   );
+    //   return sendEmail(
+    //     "me",
+    //     {
+    //       to: [customer.email],
+    //       subject: encodeSubject(template.subject),
+    //       body: renderedHtml,
+    //       isHtml: true,
+    //     },
+    //     token,
+    //   );
+    // };
+    //מוסיף למערך הפרומיסים רק אם זה הצליח
+    // if (shouldNotifyTeam) {
+    //   emailPromises.push(
+    //     sendTeamEmail().catch((err) => {
+    //       console.error("שגיאה בשליחת מייל לצוות", err);
+    //     }),
+    //   );
+    // }
+    // if (shouldNotifyCustomer) {
+    //   emailPromises.push(
+    //     sendCustomerEmail().catch((err) => {
+    //       console.error("שגיאה בשליחת מייל ללקוח", err);
+    //     }),
+    //   );
+    // }
+    //אם פרומיס אחד נכשל זה לא מפעיל את השליחה
+    emailPromises.push(
+      sendCustomerEmail().catch((err) => {
+        console.error("שגיאה בשליחת מייל ללקוח", err);
+      }),
+    );
+    await Promise.all(emailPromises);
+  };
+
+
+
+
+
+

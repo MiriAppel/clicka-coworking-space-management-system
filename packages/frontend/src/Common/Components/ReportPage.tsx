@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { ChartDisplay, ChartData } from '../Components/BaseComponents/Graph';
-import { ExportButtons } from '../Components/BaseComponents/exportButtons';
 import { Button } from '../Components/BaseComponents/Button';
+import { ExportButtons } from './BaseComponents/ExportButtons';
 
 export const ReportPage = () => {
   const chartRef = useRef<HTMLDivElement>(null);

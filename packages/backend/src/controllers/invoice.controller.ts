@@ -5,11 +5,13 @@ import {
   serviceGetAllInvoiceItems,
   serviceGetInvoiceById,
   serviceUpdateInvoice,
-  serviceDeleteInvoice
+  serviceDeleteInvoice,
+  sendStatusChangeEmails
 } from "../services/invoice.service";
 import { BillingItem, ID } from "shared-types";
 import { InvoiceModel } from '../models/invoice.model';
 import { UUID } from 'crypto';
+import { UserTokenService } from '../services/userTokenService';
 
 /**
  * בקר ליצירת חשבונית ידנית
@@ -154,3 +156,39 @@ export const deleteInvoice = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ message: (error as Error).message });
   }
 };
+export const sendEmail = async (req: Request, res: Response) => {
+  try {
+    console.log("changeCustomerStatus called with params:", req.params);
+    const userTokenService = new UserTokenService();
+    const customerName = req.body.customerName;
+    const amount = req.body.amount;
+    const invoiceNumber = req.body.invoiceNumber;
+    const token = await userTokenService.getAccessTokenByUserId(
+      "5a67953d-bfd5-4c37-88b3-1059f07a47cd"
+    );
+    console.log("changeCustomerStatus called with token:", token);
+    // הנחת שהמשתמש מחובר ויש לו מזהה
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing access token" });
+    }
+    if (!customerName || !amount || !invoiceNumber) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+    // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
+    await sendStatusChangeEmails(
+      customerName,
+      amount,
+      invoiceNumber,
+      token
+    );
+    res
+      .status(200)
+      .json({ message: "Status change processed and emails sent." });
+  } catch (error) {
+    console.error("Error in changeCustomerStatus:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
