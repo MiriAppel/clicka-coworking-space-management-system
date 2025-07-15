@@ -7,6 +7,7 @@ import { UserService } from '../services/user.service';
 import { UserTokenService } from '../services/userTokenService';
 
 const userService=new UserService();
+const userTokenService = new UserTokenService();
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
   console.log('Received Google auth code:', req.body.code);
   try {
@@ -45,6 +46,10 @@ export const logout = async (req: Request, res: Response) => {
     const user = await tokenService.getUserFromCookie(req); 
     if (user) {
       await tokenService.logoutUser(user.userId, res);
+      const sessionId = req.cookies.sessionId;
+      if (sessionId) {
+        await userTokenService.deleteUserSession(user.userId, sessionId);
+      }
     }
   } catch (error) {
     console.error('Logout failed:', error);
@@ -53,6 +58,11 @@ export const logout = async (req: Request, res: Response) => {
     // Clear the auth cookie
     tokenService.clearAuthCookie(res);
     userService.clearRoleCookie(res);
+    
+  }
+  try {
+    
+  } catch (error) {
     
   }
   res.status(200).json({ message: 'Logged out successfully' });

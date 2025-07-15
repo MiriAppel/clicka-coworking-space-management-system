@@ -210,4 +210,15 @@ export class UserTokenService {
         }
 
     }
+    async deleteUserSession(userId: string, sessionId: string): Promise<void> {
+        const { error } = await supabase
+            .from('user_token')
+            .delete()
+            .eq('user_id', userId)
+            .eq('active_session_id', sessionId);
+        if (error) {
+            console.error('Error deleting user session:', error);
+            throw new Error('Failed to delete user session');
+        }
+    }
 }
