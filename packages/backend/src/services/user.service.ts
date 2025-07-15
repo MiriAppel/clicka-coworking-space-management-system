@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { UserModel } from '../models/user.model'; // נניח שהמודל User נמצא באותו תיק
 import { logUserActivity } from '../utils/logger';
 import dotenv from 'dotenv';
+import { UserRole } from 'shared-types';
+import { Response } from 'express';
 //טוען את משתני הסביבה מהקובץ .env
 dotenv.config();
 
@@ -16,6 +18,9 @@ export class UserService {
     // פונקציה ליצירת משתמש
     async createUser(user: UserModel): Promise<UserModel | null> {
         try {
+            if (await this.getUserByEmail(user.email)) {
+                throw new Error(`User with email ${user.email} already exists`);
+            }
             const { data, error } = await supabase
                 .from('users') // שם הטבלה ב-Supabase
                 .insert([user.toDatabaseFormat()])
@@ -78,14 +83,17 @@ export class UserService {
         }
     }
 
-   async getUserByEmail (email: string): Promise<UserModel | null> {
+    async getUserByEmail(email: string): Promise<UserModel | null> {
         try {
             const { data, error } = await supabase
                 .from('users')
                 .select('*')
                 .eq('email', email)
                 .single();
-
+            if (error || !data) {
+                console.error('Error fetching user by Google ID:', error || 'No user found');
+                return null;
+            }
             const user = UserModel.fromDatabaseFormat(data); // המרה לסוג UserModel
             // רישום פעילות המשתמש
             logUserActivity(user.id ? user.id : user.firstName, 'User fetched by email');
@@ -128,12 +136,12 @@ export class UserService {
                 .select('*')
                 .eq('google_id', googleId)
                 .single();
-            
-        if (error || !data) {
-            console.warn(`No user found for Google ID: ${googleId}`);
-            return null;
-        }
+            if (error || !data) {
+                console.error('Error fetching user by Google ID:', error || 'No user found');
+                return null;
+            }
             const user = UserModel.fromDatabaseFormat(data); // המרה לסוג UserModel
+
             // רישום פעילות המשתמש
             logUserActivity(user.id ? user.id : user.firstName, 'User logged in by Google ID');
             // מחזיר את המשתמש שנמצא
@@ -188,5 +196,21 @@ export class UserService {
             console.error('Error deleting user:', error);
             throw error; // זריקת השגיאה כדי לטפל בה במקום אחר
         }
+    }
+
+
+    createRoleCookies(res: Response<UserModel | { error: string }>, roleUser: UserRole): void {
+        // שליפת ה-role מתוך ה-result
+        const role = roleUser;
+        // הגדרת cookie עם ה-role
+        const expirationDays = 7; // מספר הימים שהעוגיה תהיה זמינה
+        const date = new Date();
+        date.setTime(date.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+
+        // שמירת ה-cookie עם ה-role
+        res.cookie('role', role, {
+            expires: date,
+            httpOnly: true // httpOnly כדי למנוע גישה דרך JavaScript
+        });
     }
 }

@@ -11,6 +11,9 @@ import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import MainLayout from './layout/MainLayout';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+import { Billing } from './MainMenu/Billing/Components/Billing';
+import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
+import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -53,6 +56,10 @@ export const Routing = () => {
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        <Route path="billing/*" element={<Billing />} />
+        <Route path="users" element={< UserTable />} />
+        <Route path="meetingRooms" element={<RoomReservations />} />  
+        <Route path="emailTemplate" element={< EmailTemplateTable />} />
       </Route>
     </Routes>
   );
