@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
-import { PaymentService } from "../services/payments.service";
+import { PaymentService} from "../services/payments.service";
+import { UserTokenService } from "../services/userTokenService";
+
 
 export async function getPaymentsByCustomer(req: Request, res: Response) {
   try {
@@ -21,3 +23,40 @@ export async function getPaymentsByCustomer(req: Request, res: Response) {
     res.status(500).json({ error: "Failed to fetch payments" });
   }
 }
+const paymentService = new PaymentService();
+export const sendPaymentReminder = async (req: Request, res: Response) => {
+  try {
+    console.log("sendPaymentReminder called with body:", req.body);
+
+    const userTokenService = new UserTokenService();
+    const token = await userTokenService.getSystemAccessToken();
+
+    const {
+      customerName,
+      amount,
+      invoiceNumber,
+      dueDate,
+    } = req.body;
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized: missing access token" });
+    }
+
+    if (!customerName || !amount || !invoiceNumber || !dueDate ) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    await paymentService.sendPaymentReminderEmail(
+      customerName,
+      amount,
+      invoiceNumber,
+      dueDate,
+      token
+    );
+
+    res.status(200).json({ message: "Payment reminder email sent successfully." });
+  } catch (error) {
+    console.error("Error in sendPaymentReminder:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

@@ -29,7 +29,8 @@ invoiceRouter.get('/:id', getInvoiceById);                       // חשבוני
 // UPDATE - עדכון חשבונית
 invoiceRouter.put('/:id', updateInvoice);                        // עדכון חשבונית (הסרתי 'update/')
 // DELETE - מחיקת חשבונית
-invoiceRouter.delete('/:id', deleteInvoice);                     // מחיקת חשבונית (הסרתי 'delete/')
+invoiceRouter.delete('/:id', deleteInvoice); 
+// שליחת מייל
 invoiceRouter.post('/sendemail', sendEmail);
 
 

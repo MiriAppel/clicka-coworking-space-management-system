@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ChartDisplay, ChartData } from '../Components/BaseComponents/Graph';
 import { Button } from '../Components/BaseComponents/Button';
-import { ExportButtons } from './BaseComponents/ExportButtons';
 
 export const ReportPage = () => {
   const chartRef = useRef<HTMLDivElement>(null);
@@ -68,13 +67,6 @@ export const ReportPage = () => {
       <h1 className="text-2xl font-bold mb-4">
         {isDrillDown ? `Details of "${selectedLabel}"` : 'General Report'}
       </h1>
-
-      {/* Export Buttons */}
-      <ExportButtons
-        title={isDrillDown ? `Details${selectedLabel}` : 'General Report'}
-        exportData={data}
-        refContent={chartRef}
-      />
 
       {/* מה שיש בתוך הגרף*/}
       <div

@@ -12,7 +12,7 @@ import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types'; //
 import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph'; // קומפוננטת גרף
 import { Table } from '../../../../Common/Components/BaseComponents/Table'; // טבלה כללית
 import axios from 'axios'; // ספריית קריאות HTTP
-import { ExportButtons } from '../../../../Common/Components/BaseComponents/ExportButtons';
+import { ExportButtons } from '../../../../Common/Components/BaseComponents/exportButtons';
 // טיפוס המרחיב את פרמטרי הדוח וכולל מזהה ספק
 type ExtendedReportParameters = ReportParameters & {
   vendorId?: string;

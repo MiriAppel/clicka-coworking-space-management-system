@@ -1,9 +1,10 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { googleAuthConfig } from '../../Config/googleAuth';
 import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import { axiosInstance } from '../../../../Services/Axios';
+import { googleAuthConfig } from '../../Config/googleAuth';
+
 export const LoginWithGoogle = () => {
     // const setUser = useAuthStore((state) => state.setUser);
     const { setUser, setSessionId } = useAuthStore();
@@ -25,7 +26,7 @@ export const LoginWithGoogle = () => {
     }
     const login = useGoogleLogin({
         flow: 'auth-code',
-        onSuccess: async (codeResponse: GoogleCodeResponse) => {
+        onSuccess: async (codeResponse: { code: any; }) => {
             try {
                 console.log('Code received from Google:', codeResponse);
                 const response = await axiosInstance.post<LoginResponse>(
@@ -41,26 +42,22 @@ export const LoginWithGoogle = () => {
                 setUser(response.data.user);
                 setSessionId(response.data.sessionId!)
                 // Optionally, you can handle the token and expiration here
-            } catch (error: unknown) {
-                if (axios.isAxiosError(error) && error.response?.status === 401){
+            } catch (error:any) {
+                 if (axios.isAxiosError(error) && error.response?.status === 401){
                     alert('You are not authorized to access this resource.');
                     return;
-                }
-                if (axios.isAxiosError(error)){
+                 }
+                 if(axios.isAxiosError(error)){
                     alert(error.message)
-                }
+                 }
                 console.error('Error sending code to server:', error);
             }
         },
-        onError: (error: unknown) => console.error('Login Failed:', error),
+        onError: (error) => console.error('Login Failed:', error),
         scope: googleAuthConfig.scopes.join(' '),
         redirect_uri: googleAuthConfig.redirectUri,
-        extraQueryParams: {
-            prompt: 'consent',
-            access_type: 'offline',
-            include_granted_scopes: 'false',
-        }
-    } as GoogleLoginConfig);
+    });
+
     return (
         <button onClick={() => login()}> Google התחבר עם </button>
     );

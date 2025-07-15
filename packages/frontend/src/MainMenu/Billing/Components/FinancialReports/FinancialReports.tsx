@@ -3,7 +3,9 @@ import { useFinancialReportsStore } from '../../../../Stores/Billing/financialRe
 // ייבוא קומפוננטת השליטה (טופס בחירה והזנת פרמטרים)
 import ReportControls from "./ReportControls";
 // ייבוא קומפוננטת ההצגה של הדוחות
+import ReportDisplay from './reportDisplay';
 // import ReportDisplay from './reportDisplay';
+
 
 // קומפוננטת האב המאגדת את כל מערכת הדוחות
 const FinancialReports = () => {

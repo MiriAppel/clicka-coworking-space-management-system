@@ -163,9 +163,7 @@ export const sendEmail = async (req: Request, res: Response) => {
     const customerName = req.body.customerName;
     const amount = req.body.amount;
     const invoiceNumber = req.body.invoiceNumber;
-    const token = await userTokenService.getAccessTokenByUserId(
-      "5a67953d-bfd5-4c37-88b3-1059f07a47cd"
-    );
+    const token = await userTokenService.getSystemAccessToken();
     console.log("changeCustomerStatus called with token:", token);
     // הנחת שהמשתמש מחובר ויש לו מזהה
     if (!token) {

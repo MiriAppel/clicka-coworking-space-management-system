@@ -88,12 +88,14 @@
 //    * @returns Promise<CustomerCollectionReport>
 //    */
 //   async getCustomerCollectionReport(customerId: ID)/*: Promise<CustomerCollectionReport>*/ {
-  
+
 //   }
-  
+
 // }
 import { createClient } from '@supabase/supabase-js';
 import type { ID, Payment } from 'shared-types';
+import { EmailTemplateService } from './emailTemplate.service';
+import { sendEmail } from './gmail-service';
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
@@ -168,5 +170,52 @@ export class PaymentService {
       return [];
     }
   }
-  
+  //שליחת מייל תזכורת
+  emailService = new EmailTemplateService();
+
+  sendPaymentReminderEmail = async (
+    customerName: string,
+    amount: number,
+    invoiceNumber: string,
+    dueDate: string,
+    token: any,
+  ): Promise<void> => {
+
+    function encodeSubject(subject: string): string {
+      return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+    }
+
+    try {
+      // טוענים את תבנית המייל בשם "תזכורת תשלום"
+      const template = await this.emailService.getTemplateByName("תזכורת לתשלום על חשבונית");
+      if (!template) {
+        console.warn("Email template 'תזכורת תשלום' not found");
+        return;
+      }
+
+      // ממלאים את התבנית עם הנתונים הדינמיים
+      const renderedHtml = await this.emailService.renderTemplate(template.bodyHtml, {
+        customerName,
+        amount: amount.toString(),
+        invoiceNumber,
+        dueDate,
+      });
+
+      // שולחים את המייל
+      const response = await sendEmail(
+        "me",
+        {
+          to: ["ettylax@gmail.com"],
+          subject: encodeSubject(template.subject),
+          body: renderedHtml,
+          isHtml: true,
+        },
+        token,
+      );
+
+      console.log("Payment reminder email sent successfully:", response);
+    } catch (err) {
+      console.error("Error sending payment reminder email:", err);
+    }
+  };
 }
