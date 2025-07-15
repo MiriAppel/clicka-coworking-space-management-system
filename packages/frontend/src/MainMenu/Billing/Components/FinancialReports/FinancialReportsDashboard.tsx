@@ -5,6 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from '../../../../Common/Components/BaseComponents/Input';
@@ -15,7 +16,6 @@ import { SelectField } from '../../../../Common/Components/BaseComponents/Select
 
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1';
 import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types';
-import axios from 'axios';
 
 // טיפוס כולל vendorId רק בצד הקליינט
 type ExtendedReportParameters = ReportParameters & {
@@ -82,6 +82,49 @@ export const FinancialReportsDashboard: React.FC = () => {
   const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]);
   const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
   const exportContentRef = useRef<HTMLDivElement>(null);
+// תרגום שמות עמודות בטבלה בלבד — לא משפיע על הגרף
+const columnTranslations: Record<string, string> = {
+  // RevenueReportData.breakdown
+  date: 'תאריך',
+  totalRevenue: 'סה״כ הכנסות',
+  membershipRevenue: 'הכנסות ממנויים',
+  meetingRoomRevenue: 'הכנסות מחדרי ישיבות',
+  loungeRevenue: 'הכנסות מטרקלין',
+  otherRevenue: 'הכנסות נוספות',
+
+  // ExpenseReportData.monthlyTrend
+  month: 'חודש',
+  totalExpenses: 'סה״כ הוצאות',
+  'קטגוריה 1': 'קטגוריה 1',
+  'סכום 1': 'סכום 1',
+  'קטגוריה 2': 'קטגוריה 2',
+  'סכום 2': 'סכום 2',
+  'קטגוריה 3': 'קטגוריה 3',
+  'סכום 3': 'סכום 3',
+
+  // ProfitLossReportData.breakdown
+  revenue: 'הכנסות',
+  expenses: 'הוצאות',
+  profit: 'רווח',
+
+  // CashFlowReportData.breakdown
+  totalPayments: 'סה״כ תשלומים',
+
+  // // OccupancyRevenueReportData.occupancyData
+  // totalSpaces: 'סה״כ מקומות',
+  // occupiedSpaces: 'מקומות תפוסים',
+  // openSpaceCount: 'עמדות Open Space',
+  // deskInRoomCount: 'שולחנות בחדרים',
+  // privateRoomCount: 'חדרים פרטיים',
+  // roomForThreeCount: 'חדר לשלושה',
+  // klikahCardCount: 'חברות קליקה',
+  // occupancyRate: 'אחוז תפוסה',
+  // revenue: 'הכנסה מתפוסה',
+
+  // מידע כללי
+  name: 'שם',
+  percentOfTotal: 'אחוז מהסך הכולל',
+};
 
   useEffect(() => {
     async function fetchEntities() {
@@ -160,7 +203,11 @@ export const FinancialReportsDashboard: React.FC = () => {
 
     if (selectedType === ReportType.REVENUE && reportData.revenueData?.breakdown?.length) {
       data = reportData.revenueData.breakdown;
-      columns = Object.keys(data[0]).map((key) => ({ header: key === 'date' ? 'תאריך' : key, accessor: key }));
+      columns = Object.keys(data[0]).map((key) => ({
+  header: columnTranslations[key] || key,
+  accessor: key,
+}));
+
     } else if (selectedType === ReportType.EXPENSES && reportData.expenseData?.monthlyTrend?.length) {
       data = reportData.expenseData.monthlyTrend.map((item) => {
         const top = item.topCategories || [];
@@ -175,13 +222,23 @@ export const FinancialReportsDashboard: React.FC = () => {
           'סכום 3': top[2]?.amount || '',
         };
       });
-      columns = Object.keys(data[0]).map((key) => ({ header: key, accessor: key }));
+     columns = Object.keys(data[0]).map((key) => ({
+  header: columnTranslations[key] || key,
+  accessor: key,
+}));
+
     } else if (selectedType === ReportType.PROFIT_LOSS && reportData.profitLossData?.breakdown?.length) {
       data = reportData.profitLossData.breakdown;
-      columns = Object.keys(data[0]).map((key) => ({ header: key, accessor: key }));
+      columns = Object.keys(data[0]).map((key) => ({
+  header: columnTranslations[key] || key,
+  accessor: key,
+}));
     } else if (selectedType === ReportType.CASH_FLOW && reportData.cashFlowData?.breakdown?.length) {
       data = reportData.cashFlowData.breakdown;
-      columns = Object.keys(data[0]).map((key) => ({ header: key, accessor: key }));
+      columns = Object.keys(data[0]).map((key) => ({
+  header: columnTranslations[key] || key,
+  accessor: key,
+}));
     }
 
     return { data, columns };
