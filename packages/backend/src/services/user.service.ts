@@ -13,6 +13,9 @@ export class UserService {
     // פונקציה ליצירת משתמש
     async createUser(user: UserModel): Promise<UserModel | null> {
         try {
+            if (await this.getUserByEmail(user.email)) {
+                throw new Error(`User with email ${user.email} already exists`);
+            }
             const { data, error } = await supabase
                 .from('users') // שם הטבלה ב-Supabase
                 .insert([user.toDatabaseFormat()])
@@ -121,7 +124,7 @@ export class UserService {
 
 
     //  googleId פונקציה לקרוא משתמש לפי  
-    async loginByGoogleId(googleId: string): Promise<UserModel | null> {        
+    async loginByGoogleId(googleId: string): Promise<UserModel | null> {
         try {
             const { data, error } = await supabase
                 .from('users')
@@ -133,7 +136,7 @@ export class UserService {
                 return null;
             }
             const user = UserModel.fromDatabaseFormat(data); // המרה לסוג UserModel
-           
+
             // רישום פעילות המשתמש
             logUserActivity(user.id ? user.id : user.firstName, 'User logged in by Google ID');
             // מחזיר את המשתמש שנמצא

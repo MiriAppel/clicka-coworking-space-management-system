@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const checkAuth = async () => {
       try {
         setLoading(true);
-        let res = await axiosInstance.get("/auth/verify");
+        let res = await axiosInstance.get("/api/auth/verify");
         if (res.status == 200) {
           console.log("Authenticated successfully");
           const data = res.data;

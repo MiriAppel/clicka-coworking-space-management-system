@@ -11,7 +11,7 @@ const shortcutMap: Record<string, string> = {
     '5': '/occupancyReports',
     '6': '/users',
     '7': '/emailTemplates',
-    '8': '/faq'
+    '8': '/faq',
 };
 
 const MainLayout = () => {
