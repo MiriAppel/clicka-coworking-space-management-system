@@ -1,4 +1,4 @@
-import { ID, DateISO, FileReference } from "./core";
+import { ID, DateISO, FileReference } from './core';
 
 // סוגי מסמכים
 export enum DocumentType {
@@ -45,12 +45,15 @@ export interface GeneratedDocument {
   deliveryMethod?: string;
 }
 
-
-
-
-
-
-
-
-
-
+// תבנית דוא"ל
+export interface EmailTemplate {
+  id?: ID;
+  name: string;
+  subject: string;
+  bodyHtml: string;
+  bodyText: string;
+  language: 'he' | 'en';
+  variables: string[];
+  createdAt: DateISO;
+  updatedAt: DateISO;
+}
