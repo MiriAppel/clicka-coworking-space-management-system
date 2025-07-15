@@ -4,6 +4,7 @@ import { UserTokenService } from './userTokenService';
 import { generateJwtToken, verifyJwtToken } from './authService';
 import { decrypt } from './cryptoService';
 import { refreshAccessToken } from './googleAuthService';
+import { UserService } from './user.service';
 
 const userTokenService = new UserTokenService();
 export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, token: string, sessionId: string): void => {
@@ -74,7 +75,8 @@ export const refreshUserToken = async (sessionToken: string, sessionId: string):
     const newJwt = generateJwtToken({
         userId,
         email: payload.email,
-        googleId: payload.googleId
+        googleId: payload.googleId,
+        role: payload.role
     });
     return newJwt;
 }
