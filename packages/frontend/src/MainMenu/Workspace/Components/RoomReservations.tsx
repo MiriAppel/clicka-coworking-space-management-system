@@ -53,7 +53,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       mode: "onSubmit",
     });
 
-    const { createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
+    const { createBooking, getCustomerByPhoneOrEmail, getAllRooms ,createBookingInCalendar} = useBookingStore();
     const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
 
     const status = useWatch({ control: methods.control, name: "customerStatus" });
@@ -160,7 +160,15 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         if (result) {
           alert("ההזמנה נוצרה בהצלחה");
           methods.reset();
-                    if (onSubmit) onSubmit(); 
+          if (onSubmit) onSubmit(); 
+        }
+
+        const calendarResult = await createBookingInCalendar(bookingPayload, "primary");
+
+        if (calendarResult) {
+          alert("ההזמנה נוצרה בהצלחה ביומן");
+          methods.reset();
+          if (onSubmit) onSubmit(); 
         }
       } catch (error) {
         console.error("שגיאה ביצירת ההזמנה:", error);
