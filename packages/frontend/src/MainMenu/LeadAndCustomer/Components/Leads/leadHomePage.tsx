@@ -5,6 +5,7 @@ import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { LeadsTable } from "./LeadsTable"; // 💡 ודאי שהשמות תואמים
+import { deleteLead } from "../../Service/LeadAndCustomersService";
 
 export const LeadsHomePage = () => {
   const navigate = useNavigate();

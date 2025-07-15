@@ -86,6 +86,7 @@ export const CustomerStatusChanged: React.FC = () => {
     updateCustomer,
     recordExitNotice,
     fetchCustomerById,
+    changeCustomerStatus,
     error,
   } = useCustomerStore();
 
@@ -156,6 +157,8 @@ export const CustomerStatusChanged: React.FC = () => {
       notes: data.exitReasonDetails,
       ...(data.reason && { reason: data.reason }),
     });
+
+    await changeCustomerStatus(customerId, data.status);
 
     const latestError = useCustomerStore.getState().error;
     if (latestError) {

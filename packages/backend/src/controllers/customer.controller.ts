@@ -7,6 +7,7 @@ import {
 } from "shared-types";
 import { contractService } from "../services/contract.service";
 import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.service";
+import { UserTokenService } from "../services/userTokenService";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
@@ -188,6 +189,45 @@ export const getCustomerPaymentMethods = async (req: Request, res: Response) => 
     res.status(200).json(paymentMethods);
   } catch (error) {
     res.status(500).json({ message: "Error fetching customer payment methods", error });
+  }
+}
+export const changeCustomerStatus = async (req: Request, res: Response) => {
+  try {
+    console.log("changeCustomerStatus called with params:", req.params);
+    const userTokenService = new UserTokenService();
+    const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
+    const detailsForChangeStatus = req.body; // פרטים לשינוי הסטטוס
+    const token = await userTokenService.getAccessTokenByUserId(
+      "5a67953d-bfd5-4c37-88b3-1059f07a47cd"
+    );
+
+    console.log("changeCustomerStatus called with token:", token);
+
+
+    // הנחת שהמשתמש מחובר ויש לו מזהה
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing access token" });
+    }
+
+    if (!id || !detailsForChangeStatus) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
+    await serviceCustomer.sendStatusChangeEmails(
+      detailsForChangeStatus,
+      id,
+      token
+    );
+
+    res
+      .status(200)
+      .json({ message: "Status change processed and emails sent." });
+  } catch (error) {
+    console.error("Error in changeCustomerStatus:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

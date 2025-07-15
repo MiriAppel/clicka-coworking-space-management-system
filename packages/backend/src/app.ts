@@ -1,8 +1,8 @@
+import express, { NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
-import express, { NextFunction } from 'express';
 // import translationRouter from './routes/translation.route';
 // import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
@@ -10,11 +10,7 @@ import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import routerPricing from './routes/pricing.route';
 import expenseRouter from './routes/expense.route';
-
-import dotenv from 'dotenv';
-import  routerAuth  from './routes/auth';
-import { Request, Response } from 'express';
-import cookieParser from "cookie-parser";
+import routerPayment from './routes/payment.route';
 import bookRouter from './routes/booking.route';
 import workspaceRouter from './routes/workspace.route';
 import featureRouter from './routes/roomFaeature.route';
@@ -22,11 +18,15 @@ import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/WorkspaceMapRoute';
-import userRouter from './routes/user.route';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import router from './routes';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
+import dotenv from 'dotenv';
+import  routerAuth  from './routes/auth';
+import { Request, Response } from 'express';
+import cookieParser from "cookie-parser";
+import userRouter from './routes/user.route';
 
 // Create Express app
 const app = express();
@@ -46,8 +46,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 
+// app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
-// app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
 app.use('/api/book', bookRouter);
@@ -71,6 +71,7 @@ app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 
 // app.use('/api/leadInteraction', routerCstomer);
+app.use('/api/payment', routerPayment);
 
 
 // Health check endpoint
