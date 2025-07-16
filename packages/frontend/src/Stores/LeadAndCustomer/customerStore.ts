@@ -1,4 +1,4 @@
-import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
+import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest, StatusChangeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
 import { create } from 'zustand';
 
 interface CustomerStore {
@@ -22,7 +22,7 @@ interface CustomerStore {
     resetSelectedCustomer: () => void;
     recordExitNotice: (id: string, data: RecordExitNoticeRequest) => Promise<void>;
     getCustomerPaymentMethods: (id: string) => Promise<CustomerPaymentMethod[]>;
-    changeCustomerStatus: (id: string, status: CustomerStatus) => Promise<void>;
+    changeCustomerStatus: (id: string, statusChangeData: StatusChangeRequest) => Promise<void>;
 
 }
 
@@ -271,7 +271,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
         }
     },
 
-    changeCustomerStatus: async (id: string, status: CustomerStatus) => {
+    changeCustomerStatus: async (id: string, statusChangeData: StatusChangeRequest) => {
         set({ loading: true, error: undefined });
         try {
             const response = await fetch(`${BASE_API_URL}/${id}/status-change`, {
@@ -279,8 +279,10 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ status }),
+                body: JSON.stringify(statusChangeData),
             });
+            console.log("Changing customer status in store:", id, statusChangeData);
+            
             if (!response.ok) {
                 let errorMsg = "Failed to change customer status";
                 try {
@@ -293,6 +295,8 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
             await useCustomerStore.getState().fetchCustomersByPage();
         } catch (error: any) {
             set({ error: error.message || "שגיאה בשינוי סטטוס לקוח", loading: false });
+            console.log("Error changing customer status in store:", error);
+            
             throw error;
         } finally {
             set({ loading: false });

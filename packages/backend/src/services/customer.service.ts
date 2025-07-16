@@ -23,6 +23,7 @@ import { serviceCustomerPaymentMethod } from "./customerPaymentMethod.service";
 import { EmailTemplateService } from "./emailTemplate.service";
 import { EmailTemplateModel } from "../models/emailTemplate.model";
 import { sendEmail } from "./gmail-service";
+import { log } from "node:console";
 
 export class customerService extends baseService<CustomerModel> {
   constructor() {
@@ -398,8 +399,12 @@ export class customerService extends baseService<CustomerModel> {
   ): Promise<void> => {
     const customer = await this.getById(id);
 
+    console.log("Customer in sendStatusChangeEmails:", customer);
+    console.log("Details for change status:", detailsForChangeStatus);
+
+
     // סטטוסים שדורשים התראה לצוות
-    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE"];
+    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE","ACTIVE"];
     const shouldNotifyTeam = notifyTeamStatuses.includes(
       detailsForChangeStatus.newStatus,
     );
@@ -415,10 +420,12 @@ export class customerService extends baseService<CustomerModel> {
     }
 
     // תרגום הסטטוס לעברית
-    const statusTranslations: Record<string, string> = {
-      NOTICE_GIVEN: "ניתנה הודעה",
-      TERMINATED: "סיום העסקה",
+
+    const statusTranslations: Record<CustomerStatus, string> = {
       ACTIVE: "פעיל",
+      NOTICE_GIVEN: "הודעת עזיבה",
+      EXITED: "עזב",
+      PENDING: "בהמתנה",
     };
 
     const effectiveDate = new Date(detailsForChangeStatus.effectiveDate);
@@ -430,8 +437,9 @@ export class customerService extends baseService<CustomerModel> {
       minute: "2-digit",
     });
 
-    detailsForChangeStatus.effectiveDate = formattedDate;
-    const status = statusTranslations[detailsForChangeStatus.newStatus] ||
+    detailsForChangeStatus.effectiveDate = formattedDate;    
+    
+    const status = statusTranslations[detailsForChangeStatus.newStatus as CustomerStatus] ||
       detailsForChangeStatus.newStatus;
 
     // פונקציה לשליחת מייל לצוות
@@ -455,10 +463,13 @@ export class customerService extends baseService<CustomerModel> {
           },
         );
 
+        console.log("Rendered HTML for team email:\n", renderedHtml);
+
+
         const response = await sendEmail(
           "me",
           {
-            to: ["diversitech25clicka@gmail.com"],
+            to: ["malki566588@gmail.com"],
             subject: encodeSubject(template.subject),
             body: renderedHtml,
             isHtml: true,
@@ -519,6 +530,7 @@ export class customerService extends baseService<CustomerModel> {
 
     //מוסיף למערך הפרומיסים רק אם זה הצליח
     if (shouldNotifyTeam) {
+      console.log("Sending email to team for status change:", customer.name, status);
       emailPromises.push(
         sendTeamEmail().catch((err) => {
           console.error("שגיאה בשליחת מייל לצוות", err);

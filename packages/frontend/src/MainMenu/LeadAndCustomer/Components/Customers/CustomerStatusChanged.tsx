@@ -4,7 +4,7 @@ import React, { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CustomerStatus, ExitReason } from 'shared-types';
+import { CustomerStatus, ExitReason, StatusChangeRequest } from 'shared-types';
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
 import { InputField } from '../../../../Common/Components/BaseComponents/Input';
@@ -141,6 +141,13 @@ export const CustomerStatusChanged: React.FC = () => {
   const onSubmit = async (data: FormData) => {
     console.log("data in submit", data);
 
+    const changeStautsData: StatusChangeRequest = {
+      newStatus: data.status,
+      effectiveDate: new Date().toISOString(), // תאריך עדכון הסטטוס הוא התאריך הנוכחי
+      reason: data.reason,
+      notifyCustomer: data.notifyCustomer,
+      notes: data.exitReasonDetails,
+    }
 
     // 1. אם מדובר בעזיבה – קודם נקליט את פרטי העזיבה
     if (data.status === CustomerStatus.NOTICE_GIVEN) {
@@ -157,8 +164,15 @@ export const CustomerStatusChanged: React.FC = () => {
       notes: data.exitReasonDetails,
       ...(data.reason && { reason: data.reason }),
     });
+    try {
+      console.log("Changing customer status:", customerId, changeStautsData);
+      
+      await changeCustomerStatus(customerId, changeStautsData);
+    } catch (error: any) {
+      console.error("Error changing customer status:", error);
+      showAlert("שגיאה", `שגיאה בשליחת מייל:\n${error}`, "error");
+    }
 
-    await changeCustomerStatus(customerId, data.status);
 
     const latestError = useCustomerStore.getState().error;
     if (latestError) {
