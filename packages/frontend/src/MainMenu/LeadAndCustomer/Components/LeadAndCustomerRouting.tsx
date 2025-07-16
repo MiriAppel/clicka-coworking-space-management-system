@@ -17,6 +17,8 @@ import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { CustomerDetails } from "./Customers/customerDetails";
 
+import LeadSourcesPieChart from './Leads/LeadSourcesPieChart';
+
 export const LeadAndCustomerRouting = () => {
     const nav = useNavigate()
     const {
@@ -34,12 +36,14 @@ export const LeadAndCustomerRouting = () => {
             <Route path="contracts" element={<ContractManagement />} />
             <Route path="contracts/:customerId" element={<ContractDetails />} />
             <Route path="contracts/new" element={<AddContract />} />
-            <Route path="leads" element={<LeadsHomePage />} />
+            {/* <Route path="leads" element={<LeadsHomePage />} /> */}
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
-            <Route path="leads/intersections" element={<LeadInteractions />} />
-            <Route path="leads/intersections/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => handleCreateInteraction(lead)} onCancel={() => { 
-                nav('/leadAndCustomer/leads/intersections')
+            <Route path="leads" element={<LeadInteractions />} />
+               <Route path="/" element={<LeadInteractions />} />
+        <Route path="leads/LeadSourcesPieChart" element={<LeadSourcesPieChart />} />
+            <Route path="leads/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => handleCreateInteraction(lead)} onCancel={() => { 
+                nav('/leadAndCustomer/leads')
             }} />} />
         </Routes>
     );

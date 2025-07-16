@@ -80,7 +80,7 @@ export const InteractionForm: React.FC<InteractionFormProps> = ({
                 }
               }).then(() => {
                 handleSelectLead(null)
-                nav('/leadAndCustomer/leads/intersections')
+                nav('/leadAndCustomer/leads')
               });
 
             } catch (error) {
