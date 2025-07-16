@@ -4,7 +4,8 @@ import { devtools, persist } from 'zustand/middleware';
 import axios from 'axios';
 import type{ Invoice } from 'shared-types';
 import { InvoiceStatus } from 'shared-types';
-
+import { v4 as uuidv4 } from 'uuid';
+import {VAT_RATE} from "../../../../../../backend/src/constants";
 
 interface InvoiceState {
   // ===== STATE =====
@@ -70,7 +71,7 @@ export const useInvoiceStore = create<InvoiceState>()(
         due_date: '2024-06-30',
         items: [],
         subtotal: 100,
-        taxtotal: 17,
+        tax_total:45,
         createdAt: '2024-06-01',
         updatedAt: '2024-06-01'
       }

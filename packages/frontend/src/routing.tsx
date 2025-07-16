@@ -8,7 +8,7 @@ import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/Le
 import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
-import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
+// import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import MainLayout from './layout/MainLayout';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BillingRouting } from './MainMenu/Billing/Components/billingRouting';
@@ -48,7 +48,7 @@ export const Routing = () => {
         <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-        <Route path="payment" element={<PaymentForm />} />
+        {/* <Route path="payment" element={<PaymentForm />} /> */}
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />

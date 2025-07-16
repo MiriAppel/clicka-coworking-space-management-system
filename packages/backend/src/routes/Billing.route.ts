@@ -1,37 +1,62 @@
 import express, { Request, Response } from 'express';
- import { calculateBillingForCustomer } from '../services/billingCalcullation.services';
+import { calculateBillingForCustomer, calculateBillingForAllCustomers } from '../services/billingCalcullation.services';
+import { getAllCustomers } from '../controllers/customer.controller';
 
-const router = express.Router();
+const billingRouter = express.Router();
 
-// פונקציה עזר לחישוב dueDate (למשל 10 לחודש)
-function getDueDate(startDate: string): string {
-  const d = new Date(startDate);
-  d.setDate(10);
+// פונקציה עזר לחישוב dueDate (10 ימים לאחר endDate)
+function getDueDate(endDate: string): string {
+  const d = new Date(endDate);
+  d.setDate(d.getDate() + 10); // הוספת 10 ימים לתאריך הסיום
   return d.toISOString().slice(0, 10);
 }
 
+
 // מחשב חיוב ללקוח בודד לפי מזהה וטווח תאריכים
-router.post('/calculate/:customerId', async (req: Request, res: Response) => {
+billingRouter.post('/calculate/:customerId', async (req: Request, res: Response) => {
   try {
     const customerId = req.params.customerId;
+    console.log('Received customerId:', customerId);
     const { startDate, endDate } = req.body;
 
     if (!startDate || !endDate) {
       return res.status(400).json({ error: 'חובה לציין תאריכים' });
     }
 
-    const dueDate = getDueDate(startDate);
+    const dueDate = getDueDate(endDate);
 
     const result = await calculateBillingForCustomer(
       customerId,
       { startDate, endDate },
       dueDate
     );
-
+    console.log('Received body:', req.body);
     res.json(result);
   } catch (err: any) {
     res.status(500).json({ error: 'שגיאה בחישוב החיוב', details: err?.message });
   }
 });
 
-export default router;
+// מחשב חיוב לכל הלקוחות בטווח תאריכים
+billingRouter.post('/calculate-all', async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'חובה לציין תאריכים' });
+    }
+
+    const dueDate = getDueDate(endDate);
+
+    const result = await calculateBillingForAllCustomers(
+      { startDate, endDate },
+      dueDate
+    );
+
+    res.json(result);
+  } catch (err: any) {
+    res.status(500).json({ error: 'שגיאה בחישוב החיוב לכל הלקוחות', details: err?.message });
+  }
+});
+
+export default billingRouter;

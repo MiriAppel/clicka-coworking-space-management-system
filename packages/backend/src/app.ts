@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express, { NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -5,68 +7,60 @@ import morgan from 'morgan';
 import { json, urlencoded } from 'express';
 // import translationRouter from './routes/translation.route';
 import routerCstomer from './routes/customer.route';
-import routerContract from './routes/contract.route';
+//import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 
-import dotenv from 'dotenv';
-dotenv.config();
+import billingRouter from './routes/Billing.route';
+import invoiceRouter from './routes/invoice-router';
+
 
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
-import cookieParser from "cookie-parser";
-import bookRouter from './routes/booking.route';
-import workspaceRouter from './routes/workspace.route';
-import featureRouter from './routes/roomFaeature.route';
-import spaceRouter from './routes/spaceAssignmemt.route';
-import roomRouter from './routes/room.route';
-import occupancyrouter from './routes/occupancyTrend.route';
-import routerMap from './routes/WorkspaceMapRoute';
+const cookieParser = require('cookie-parser');
 import userRouter from './routes/user.route';
-import vendorRouter from './routes/vendor.router';
-import expenseRouter from './routes/expense.route';
-import routerBilling from './routes/Billing.route'; 
 
 // Create Express app
 const app = express();
-
 
 // Apply middlewares
 app.use(cookieParser());
 
 app.use(helmet());
+// app.use(cors({
+//   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
+//   credentials: true, // Allow cookies to be sent with requests
+// }));
+
+//fix
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
-  credentials: true, // Allow cookies to be sent with requests
+  origin: [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Set-Cookie']
 }));
+
+//////
+
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(json());
-
-app.use(urlencoded({ extended: true }));
+// app.use(json());
+// app.use(urlencoded({ extended: true }));
 app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCstomer);
-app.use('/api/book', bookRouter);
-app.use('/api/rooms', roomRouter);
-app.use('/api/features', featureRouter);
-app.use('/api/space', spaceRouter);
-app.use('/api/map',routerMap);
-app.use('/api/billing', routerBilling);
- // User routes
-app.use('/api/workspace', workspaceRouter);
-app.use('/api/occupancy', occupancyrouter);
+app.use('/api/invoices', invoiceRouter);
+
 app.use('/api/leads', routerLead);
-app.use('/api/contract', routerContract);
-app.use('/expense', expenseRouter);
-app.use('/vendor', (req, res, next) => {
-  console.log('Vendor route hit:', req.method, req.originalUrl);
-  next();
-}, vendorRouter);
+//app.use('/api/contract', routerContract);
 // app.use('/api/translate', translationRouter);
 app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);
-
-
+app.use('/api/billing', billingRouter);
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -87,25 +81,5 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     }
   });
 });
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Clicka API',
-      version: '1.0.0',
-      description: 'API Documentation for Clicka backend',
-    },
-    servers: [
-      {
-        url: 'http://localhost:3001',
-      },
-    ],
-  },
-  apis: [
-    './src/routes/*.ts',
-    './src/swagger.ts' ,
-    './src/services/*.ts'
-  ],
-};
 
 export default app;
