@@ -196,21 +196,5 @@ export class UserService {
     }
 
 
-    createRoleCookies(res: Response<LoginResponse | { error: string }>, roleUser: UserRole): void {
-        // שליפת ה-role מתוך ה-resulte
-        const role = roleUser;
-        // הגדרת cookie עם ה-role
-        res.cookie('role', role, {
-            httpOnly: true,// httpOnly כדי למנוע גישה דרך JavaScript
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
-    }
-    clearRoleCookie = (res: Response): void => {
-        res.clearCookie('role', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-        });
-    };
+  
 }

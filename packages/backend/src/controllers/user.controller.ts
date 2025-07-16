@@ -45,7 +45,6 @@ export class UserController {
         try {
             const result = await this.userService.loginByGoogleId(googleId);
             if (result) {
-                this.userService.createRoleCookies(res, result.role);
                 res.status(200).json(result);
             } else {
                 res.status(404).json({ error: "User not found" });
