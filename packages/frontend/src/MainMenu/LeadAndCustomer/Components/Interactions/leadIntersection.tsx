@@ -2,17 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { LeadInteractionDetails } from "./leadInteractionDetails";
-<<<<<<< HEAD
-import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { useNavigate } from "react-router-dom";
-=======
 import { SearchLeads } from "../Leads/SearchLeads";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from "react-router-dom";
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
->>>>>>> fa66c6f1ac62b7020e82ed667e96f442694653ca
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 
@@ -27,9 +22,7 @@ export const LeadInteractions = () => {
   const [page, setPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
   
-  const allLeadsRef = useRef<Lead[]>([]);
-  const navigate = useNavigate();
-  
+  const allLeadsRef = useRef<Lead[]>([]);  
   const {
     leads,
     fetchLeads,

@@ -24,12 +24,9 @@
     "@react-oauth/google": "^0.12.2",
     "@supabase/supabase-js": "^2.50.3",
     "@types/node": "^24.0.10",
-<<<<<<< HEAD
     "@supabase/supabase-js": "^2.50.3",
     "cookie-parser": "^1.4.7",
-=======
     "@types/react-fontawesome": "^1.6.8",
->>>>>>> fa66c6f1ac62b7020e82ed667e96f442694653ca
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
     "fullcalendar": "^6.1.18",
