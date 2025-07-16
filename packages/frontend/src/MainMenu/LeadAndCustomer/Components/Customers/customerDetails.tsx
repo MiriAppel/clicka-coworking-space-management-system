@@ -67,7 +67,7 @@ export const CustomerDetails = () => {
                 <h3 className="mt-4 text-lg font-semibold">שיטות תשלום</h3>
                 {customer.paymentMethods && customer.paymentMethods.map(method => (
                     <div key={method.id}>
-                        <p><strong>מספר כרטיס אשראי (4 ספרות אחרונות):</strong> {method.creditCardLast4}</p>
+                        <p><strong>מספר כרטיס אשראי (4 ספרות אחרונות):</strong> {method.creditCardNumber}</p>
                         <p><strong>תאריך תפוגה:</strong> {method.creditCardExpiry}</p>
                     </div>
                 ))}

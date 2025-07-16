@@ -167,13 +167,13 @@ export class customerService extends baseService<CustomerModel> {
         creditCardExpiry: newCustomer.paymentMethod?.creditCardExpiry,
         creditCardHolderIdNumber: newCustomer.paymentMethod?.creditCardHolderIdNumber,
         creditCardHolderPhone: newCustomer.paymentMethod?.creditCardHolderPhone,
-        creditCardLast4: newCustomer.paymentMethod?.creditCardLast4,
+        creditCardNumber: newCustomer.paymentMethod?.creditCardNumber,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         toDatabaseFormat() {
           return {
             customer_id: this.customerId,
-            credit_card_last_4: this.creditCardLast4,
+            credit_card_number: this.creditCardNumber,
             credit_card_expiry: this.creditCardExpiry,
             credit_card_holder_id_number: this.creditCardHolderIdNumber,
             credit_card_holder_phone: this.creditCardHolderPhone,
@@ -214,7 +214,7 @@ export class customerService extends baseService<CustomerModel> {
           const paymentMethodData = {
             ...paymentMethods[0], // נשתמש בנתונים הקיימים
             isActive: true,
-            creditCardLast4: dataToUpdate.creditCardLast4,
+            creditCardNumber: dataToUpdate.creditCardNumber,
             creditCardExpiry: dataToUpdate.creditCardExpiry,
             creditCardHolderIdNumber: dataToUpdate.creditCardHolderIdNumber,
             creditCardHolderPhone: dataToUpdate.creditCardHolderPhone,
@@ -231,13 +231,13 @@ export class customerService extends baseService<CustomerModel> {
             creditCardExpiry: dataToUpdate.creditCardExpiry,
             creditCardHolderIdNumber: dataToUpdate.creditCardHolderIdNumber,
             creditCardHolderPhone: dataToUpdate.creditCardHolderPhone,
-            creditCardLast4: dataToUpdate.creditCardLast4,
+            creditCardNumber: dataToUpdate.creditCardNumber,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             toDatabaseFormat() {
               return {
                 customer_id: this.customerId,
-                credit_card_last_4: this.creditCardLast4,
+                credit_card_number: this.creditCardNumber,
                 credit_card_expiry: this.creditCardExpiry,
                 credit_card_holder_id_number: this.creditCardHolderIdNumber,
                 credit_card_holder_phone: this.creditCardHolderPhone,
@@ -469,7 +469,7 @@ export class customerService extends baseService<CustomerModel> {
         const response = await sendEmail(
           "me",
           {
-            to: ["malki566588@gmail.com"],
+            to: ["diversitech25clicka@gmail.com"],
             subject: encodeSubject(template.subject),
             body: renderedHtml,
             isHtml: true,

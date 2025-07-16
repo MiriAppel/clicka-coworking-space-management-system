@@ -18,7 +18,7 @@ export const UpdateCustomer: React.FC = () => {
 
     const defaultValues = {
         ...customer,
-        creditCardLast4: firstPayment.creditCardLast4 || "",
+        creditCardNumber: firstPayment.creditCardNumber || "",
         creditCardExpiry: firstPayment.creditCardExpiry || "",
         creditCardHolderIdNumber: firstPayment.creditCardHolderIdNumber || customer.idNumber || "",
         creditCardHolderPhone: firstPayment.creditCardHolderPhone || customer.phone || "",
@@ -44,6 +44,7 @@ export const UpdateCustomer: React.FC = () => {
             onSubmit={onSubmit}
             title="עדכון פרטי לקוח"
             subtitle="ערוך את הפרטים הרצויים"
+            isEditMode={true}
         />
     );
 };

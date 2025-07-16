@@ -5,7 +5,7 @@ export class customerPaymentMethodModel implements CustomerPaymentMethod {
 
   id?: UUID;
   customerId: ID;
-  creditCardLast4?: string;
+  creditCardNumber?: string;
   creditCardExpiry?: string;
   creditCardHolderIdNumber?: string;
   creditCardHolderPhone?: string;
@@ -19,7 +19,7 @@ export class customerPaymentMethodModel implements CustomerPaymentMethod {
     isActive: boolean,
     createdAt: DateISO,
     updatedAt: DateISO,
-    creditCardLast4?: string,
+    creditCardNumber?: string,
     creditCardExpiry?: string,
     creditCardHolderIdNumber?: string,
     creditCardHolderPhone?: string,
@@ -32,13 +32,13 @@ export class customerPaymentMethodModel implements CustomerPaymentMethod {
     this.creditCardExpiry = creditCardExpiry;
     this.creditCardHolderIdNumber = creditCardHolderIdNumber;
     this.creditCardHolderPhone = creditCardHolderPhone;
-    this.creditCardLast4 = creditCardLast4;
+    this.creditCardNumber = creditCardNumber;
   }
 
   toDatabaseFormat() {
     return {
       customer_id: this.customerId,
-      credit_card_last_4: this.creditCardLast4,
+      credit_card_number: this.creditCardNumber,
       credit_card_expiry: this.creditCardExpiry,
       credit_card_holder_id_number: this.creditCardHolderIdNumber,
       credit_card_holder_phone: this.creditCardHolderPhone,
@@ -55,7 +55,7 @@ export class customerPaymentMethodModel implements CustomerPaymentMethod {
       dbData.is_active,
       dbData.created_at,
       dbData.updated_at,
-      dbData.credit_card_last_4,
+      dbData.credit_card_number,
       dbData.credit_card_expiry,
       dbData.credit_card_holder_id_number,
       dbData.credit_card_holder_phone
@@ -69,7 +69,7 @@ export class customerPaymentMethodModel implements CustomerPaymentMethod {
   static partialToDatabaseFormat(data: Partial<customerPaymentMethodModel>) {
     const dbObj: any = {};
     if (data.customerId !== undefined) dbObj.customer_id = data.customerId;
-    if (data.creditCardLast4 !== undefined) dbObj.credit_card_last_4 = data.creditCardLast4;
+    if (data.creditCardNumber !== undefined) dbObj.credit_card_number = data.creditCardNumber;
     if (data.creditCardExpiry !== undefined) dbObj.credit_card_expiry = data.creditCardExpiry;
     if (data.creditCardHolderIdNumber !== undefined) dbObj.credit_card_holder_id_number = data.creditCardHolderIdNumber;
     if (data.creditCardHolderPhone !== undefined) dbObj.credit_card_holder_phone = data.creditCardHolderPhone;
