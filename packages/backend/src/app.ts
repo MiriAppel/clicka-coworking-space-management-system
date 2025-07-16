@@ -1,4 +1,3 @@
-
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -10,7 +9,6 @@ import routerLead from './routes/lead.route';
 import routerPricing from './routes/pricing.route';
 import expenseRouter from './routes/expense.route';
 import interactionRouter from './routes/leadInteraction.route';
-
 import dotenv from 'dotenv';
 import routerAuth from './routes/auth';
 import { Request, Response } from 'express';
@@ -48,11 +46,6 @@ app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
   credentials: true, // Allow cookies to be sent with requests
 }));
-
-
-
-
-
  
 app.use(morgan('dev'));
 app.use(express.json());
@@ -127,6 +120,26 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
     }
   });
 });
- app.use(cookieParser());
 
+
+ const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Clicka API',
+      version: '1.0.0',
+      description: 'API Documentation for Clicka backend',
+    },
+    servers: [
+      {
+        url: 'http://localhost:3001',
+      },
+    ],
+  },
+  apis: [
+    './src/routes/*.ts',
+    './src/swagger.ts' ,
+    './src/services/*.ts'
+  ],
+};
 export default app;
