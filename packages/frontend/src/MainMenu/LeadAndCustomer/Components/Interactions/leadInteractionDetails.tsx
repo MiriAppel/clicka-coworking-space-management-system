@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { InteractionType, Lead, LeadInteraction } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { ChartData, ChartDisplay } from "../../../../Common/Components/BaseComponents/Graph";
+import { set } from "lodash";
 
 const getInteractionIcon = (type: InteractionType) => {
   switch (type) {
@@ -65,8 +66,18 @@ export const LeadInteractionDetails = () => {
     }
   };
 
-  const deleteInteraction = async (interactionId: string) => {
+  // const deleteInteraction = async (interactionId: string) => {
+  //   await handleDeleteInteraction(interactionId);
+  // };
+ const deleteInteraction = async (interactionId: string) => {
     await handleDeleteInteraction(interactionId);
+
+    // עדכון הסטייט לאחר מחיקה
+    if (selectedLead) {
+      const updatedInteractions = selectedLead.interactions.filter(i => i.id !== interactionId);
+      set(selectedLead, "interactions", updatedInteractions); // תיקון של קריאת set
+
+    }
   };
 
   const generateChartData = (): ChartData[] => {
@@ -274,3 +285,89 @@ export const LeadInteractionDetails = () => {
 
 export default LeadInteractionDetails;
 
+
+
+
+
+// import React, { useEffect } from "react";
+// import { FaTrash, FaPen } from "react-icons/fa";
+// import { Button } from "../../../../Common/Components/BaseComponents/Button";
+// import { useLocation, useNavigate } from "react-router-dom";
+// import { InteractionType, Lead } from "shared-types";
+// import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
+// import { get, set } from "react-hook-form"; // ודא שאתה מייבא את get ו-set
+// import { Store } from "lucide-react";
+
+// export const LeadInteractionDetails = () => {
+//   const navigate = useNavigate();
+//   const selectedLead = useLeadsStore(state => state.selectedLead);
+//   const { handleDeleteInteraction, handleSelectLead, resetSelectedLead } = useLeadsStore();
+//   const location = useLocation();
+//   const isEditModalOpen = useLeadsStore(state => state.isEditModalOpen);
+//   const setIsEditModalOpen = useLeadsStore(state => state.setIsEditModalOpen);
+//   const editingInteraction = useLeadsStore(state => state.editingInteraction);
+//   const setEditingInteraction = useLeadsStore(state => state.setEditingInteraction);
+
+//   useEffect(() => {
+//     // טען את הליד מהשרת ועדכן ב-store
+//   }, [selectedLead, handleSelectLead, location.pathname]);
+
+//   const deleteInteraction = async (interactionId: string) => {
+//     await handleDeleteInteraction(interactionId);
+
+//     // עדכון הסטייט לאחר מחיקה
+//     if (selectedLead) {
+//       const updatedInteractions = selectedLead.interactions.filter(i => i.id !== interactionId);
+//       set(selectedLead, "interactions", updatedInteractions); // תיקון של קריאת set
+
+//     }
+//   };
+
+//   return (
+//     <div className="bg-blue-50 mt-2 p-4 rounded-lg border border-blue-200">
+//       <div className="text-sm text-gray-700 mb-2">
+//         <div>
+//           {selectedLead && selectedLead.interactions?.length > 0 ? (
+//             <p className="font-semibold">
+//               ל{selectedLead.name} יש {selectedLead.interactions.length} אינטראקציות
+//             </p>
+//           ) : (
+//             <p>ל{selectedLead?.name} אין אינטראקציות</p>
+//           )}
+
+//           <div className="flex flex-wrap gap-4 mt-4">
+//             {selectedLead?.interactions?.map((interaction) => (
+//               <div key={interaction.id} className="p-4 border rounded-lg shadow-md bg-white w-64">
+//                 <p className="font-semibold">סוג אינטראקציה: {interaction.type}</p>
+//                 <p className="font-semibold">אימייל משתמש: {interaction.userEmail}</p>
+//                 <p className="font-semibold">תאריך עדכון: {new Date(interaction.updatedAt).toLocaleDateString()}</p>
+//                 <div className="flex gap-2 mt-4">
+//                   <button
+//                     onClick={() => interaction.id && deleteInteraction(interaction.id)}
+//                     className="text-red-500 hover:text-red-700"
+//                   >
+//                     <FaTrash />
+//                   </button>
+//                   <button
+//                     onClick={async e => {
+//                       e.stopPropagation();
+//                       await setIsEditModalOpen(true);
+//                       await setEditingInteraction({ ...interaction });
+//                     }}
+//                     className="text-yellow-500 hover:text-yellow-700"
+//                   >
+//                     <FaPen />
+//                   </button>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* שאר הקוד נשאר כפי שהוא */}
+//     </div>
+//   );
+// }
+
+// export default LeadInteractionDetails;

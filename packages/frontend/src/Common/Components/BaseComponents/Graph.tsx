@@ -20,6 +20,7 @@ export interface ChartData {
 
 // טיפוס עבור פרופסים של קומפוננטת הגרף
 interface ChartDisplayProps {
+  
   type: 'line' | 'bar' | 'pie'; // סוג הגרף: קו / עמודות / עוגה
   data: ChartData[];            // הנתונים להצגה
   title?: string;               // כותרת אופציונלית לגרף

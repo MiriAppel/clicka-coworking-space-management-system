@@ -18,6 +18,13 @@ interface RowData {
 
 export const LeadsTable = ({ leads, onDelete }: LeadsTableProps) => {
   const navigate = useNavigate();
+  const handleRegistration = (lead: Lead | undefined) => {
+    if (lead) {
+      navigate("interestedCustomerRegistration", {
+        state: { data: lead },
+      });
+    }
+  };
 
   const valuesToTable: RowData[] = leads.map((lead) => ({
     id: lead.id!,
@@ -41,11 +48,7 @@ export const LeadsTable = ({ leads, onDelete }: LeadsTableProps) => {
       onDelete={(row) => onDelete(row.id)}
       renderActions={(row) => (
         <Button
-          onClick={() =>
-            navigate("interestedCustomerRegistration", {
-              state: { data: leads.find((l) => l.id === row.id) },
-            })
-          }
+          onClick={() => handleRegistration(leads.find((l) => l.id === row.id))}
           variant="primary"
           size="sm"
         >
