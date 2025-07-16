@@ -175,7 +175,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           <h1 className="form-title">הזמנות חדרים</h1>
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(handleSubmit)}>
-              <fieldset>
+              {/* <fieldset>
                 <legend>סטטוס לקוח</legend>
                 <label>
                   <InputField type="radio" name="customerStatus" value="external" label="לקוח חיצוני" />
@@ -183,7 +183,28 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
                 <label>
                   <InputField type="radio" name="customerStatus" value="customer" label="לקוח קיים" />
                 </label>
-              </fieldset>
+              </fieldset> */}
+              <fieldset>
+  <legend>סטטוס לקוח</legend>
+  <label>
+    <input
+      type="radio"
+      value="customer"
+      {...methods.register("customerStatus")}
+      defaultChecked
+    />
+    לקוח קיים
+  </label>
+  <label>
+    <input
+      type="radio"
+      value="external"
+      {...methods.register("customerStatus")}
+    />
+    לקוח חיצוני
+  </label>
+</fieldset>
+
 
               {status === "customer" ? (
                 <>
