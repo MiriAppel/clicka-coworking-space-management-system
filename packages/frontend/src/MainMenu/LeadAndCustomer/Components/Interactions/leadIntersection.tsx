@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { LeadInteractionDetails } from "./leadInteractionDetails";
+import { Button } from "../../../../Common/Components/BaseComponents/Button";
+import { useNavigate } from "react-router-dom";
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 export const LeadInteractions = () => {
@@ -9,6 +11,8 @@ export const LeadInteractions = () => {
   const [showGraph, setShowGraph] = useState(false); // כאן נוספה השליטה בגרף
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const navigate = useNavigate();
+
   const [alertCriterion, setAlertCriterion] = useState<AlertCriterion>("noRecentInteraction");
   const {
     leads,
@@ -66,6 +70,16 @@ export const LeadInteractions = () => {
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
       <div className="flex flex-wrap justify-center gap-4 mb-6">
+        <div className="relative flex flex-col items-start">
+          <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
+          <Button
+            onClick={() => navigate("interestedCustomerRegistration")}
+            variant="primary"
+            size="sm"
+          >
+            הוספת מתעניין חדש
+          </Button>
+        </div>
         <div className="relative flex flex-col items-start">
           <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
           <select

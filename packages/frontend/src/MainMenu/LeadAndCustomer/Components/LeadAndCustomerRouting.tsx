@@ -38,7 +38,8 @@ export const LeadAndCustomerRouting = () => {
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
-            <Route path="leads/intersections/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => handleCreateInteraction(lead)} onCancel={() => { 
+            <Route path="leads/intersections/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
+            <Route path="leads/intersections/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => handleCreateInteraction(lead)} onCancel={() => {
                 nav('/leadAndCustomer/leads/intersections')
             }} />} />
         </Routes>

@@ -86,7 +86,7 @@ export const LeadInteractionDetails = () => {
     }));
   };
   console.log(generateChartData());
-  
+
   return (
     <div className="bg-blue-50 mt-2 p-4 rounded-lg border border-blue-200">
       <div className="text-sm text-gray-700 mb-2">
@@ -108,7 +108,7 @@ export const LeadInteractionDetails = () => {
                   <ChartDisplay title="אינטרקציות" type="line" data={generateChartData()}></ChartDisplay>
                 </div>
               ) : selectedLead?.interactions?.map((interaction) => {
-                console.log(interaction); // הוספת השורה כאן
+                console.log(interaction);
                 return (
                   <div key={interaction.id} className="p-4 border rounded-lg shadow-md bg-white w-64">
                     <div className="flex items-center gap-2 font-semibold">
@@ -248,7 +248,8 @@ export const LeadInteractionDetails = () => {
           <Button
             variant="accent"
             size="sm"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (!selectedLead?.id) return;
               setShowGraphForId(showGraph ? null : selectedLead.id);
             }}
