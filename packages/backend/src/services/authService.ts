@@ -5,6 +5,7 @@ import { saveUserTokens } from './tokenService';
 import { randomUUID } from 'crypto';
 import { UserService } from "./user.service";
 
+    const userService = new UserService();
 
 export const generateJwtToken = (payload: { userId: string; email: string; googleId: string ;role :UserRole }): string => {
   return jwt.sign(
@@ -33,7 +34,6 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     console.log(userInfo);
 
     //need to check if the user have permission to login
-    const userService = new UserService();
     if (!userInfo.id) {
       throw new Error('Google ID is missing for the user');
     }
@@ -93,3 +93,24 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     throw error;
   }
 };
+
+export async function loginWithEmailAndPassword(email: string, password: string) {
+  try {
+    
+  } catch (error) {
+    console.error('Error during login:', error);
+    throw new Error('Login with password failed');
+    
+  }
+  const user = await userService.getUserByEmail(email);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const isValidPassword = await userService.verifyUserPassword(user.id, password);
+  if (!isValidPassword) {
+    throw new Error('Invalid password');
+  }
+
+  return user;
+}

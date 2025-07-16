@@ -3,6 +3,7 @@ import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore
 import axios from "axios";
 import { axiosInstance } from "../../../../Services/Axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import GoogleOneTap from "./GoogleOneTap";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -88,6 +89,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // if(isLoading){
   //     return <div className="auth-loading"> מאמת זהות...</div>
   // }
-  return <>{children}</>
+  return <>
+    {user == null && <GoogleOneTap />}
+    {children}</>
 
 }

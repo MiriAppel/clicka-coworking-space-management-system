@@ -7,7 +7,7 @@ import { refreshAccessToken } from './googleAuthService';
 import { UserService } from './user.service';
 
 const userTokenService = new UserTokenService();
-export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, token: string, sessionId: string): void => {
+export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, token: string, sessionId?: string): void => {
     res.cookie('session', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -15,12 +15,14 @@ export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, 
         maxAge: 8 * 60 * 60 * 1000, // 8 שעות
     });
     console.log('setAuthCookie', sessionId);
-    res.cookie('sessionId', sessionId, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 8 * 60 * 60 * 1000, // 8 שעות
-    });
+    if (sessionId) {
+        res.cookie('sessionId', sessionId, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 8 * 60 * 60 * 1000, // 8 שעות
+        });
+    }
 };
 
 export const clearAuthCookie = (res: Response): void => {

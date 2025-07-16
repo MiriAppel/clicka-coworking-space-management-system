@@ -5,10 +5,31 @@ import dotenv from 'dotenv';
 import { LoginResponse, UserRole } from 'shared-types';
 import { Response } from 'express';
 import { supabase } from '../db/supabaseClient';
+import { decrypt } from './cryptoService';
 //טוען את משתני הסביבה מהקובץ .env
 dotenv.config();
 
 export class UserService {
+    async verifyUserPassword(id: string | undefined, password: string): Promise<boolean> {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('password')
+          .eq('id', id)
+          .single();
+
+        if (error || !data) {
+          console.error('Error fetching user password:', error || 'No user found');
+          return false;
+        }
+
+        const dcryptPassword = decrypt(data.password)
+        return dcryptPassword===password;
+      } catch (error) {
+        console.error('Error verifying user password:', error);
+        throw error;
+      }
+    }
 
     // פונקציה ליצירת משתמש
     async createUser(user: UserModel): Promise<UserModel | null> {
