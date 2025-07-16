@@ -1,4 +1,4 @@
-import type { ID, DateISO, EmailTemplate } from '../../../shared-types';
+import { DateISO, EmailTemplate, ID } from "shared-types";
 
 export class EmailTemplateModel implements EmailTemplate {
     id?: ID;
