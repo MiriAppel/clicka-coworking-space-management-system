@@ -1,5 +1,6 @@
 // google-types.d.ts
 
+import { BookingStatus } from 'booking';
 import { ApiResponse, ID, FileReference } from './core';
 
 // Google OAuth token data
@@ -62,7 +63,7 @@ export interface Event {
     displayName?: string;
     // responseStatus?: 'needsAction' | 'declined' | 'tentative' | 'accepted';
   }[];
-  // status: 'confirmed' | 'tentative' | 'cancelled';
+  status: BookingStatus; // 'confirmed' | 'tentative' | 'cancelled';
   created: string; // ISO date string
   updated: string; // ISO date string
   htmlLink: string; // URL to the event in Google Calendar

@@ -13,6 +13,9 @@ function logUserActivity(userId: string, action: string) {
 }
 
 export class BookingService {
+    static getBookingByEventId(id: string | null | undefined): any {
+        throw new Error("Method not implemented.");
+    }
    
   async createBooking(book: BookingModel): Promise<BookingModel | null> {
     console.log('📦 Inserting booking:', book.toDatabaseFormat());
@@ -93,6 +96,25 @@ throw new Error(`Failed to create booking: ${error.message}`);
                   .from('booking')
                   .select('*')
                   .eq('id', id)
+                  .single();
+      
+              if (error) {
+                  console.error('Error fetching booking:', error);
+                  return null;
+              }
+      
+              const booking = BookingModel.fromDatabaseFormat(data); // המרה לסוג UserModel
+              // רישום פעילות המשתמש
+             // logUserActivity(feature.id? feature.id:feature.description, 'User fetched by ID');
+              // מחזיר את המשתמש שנמצא
+              return booking;
+  }
+  //googleeventIdקבלת  פגישה לפי ID
+  async  getBookingByEventId(googleEventId:string) {
+           const { data, error } = await supabase
+                  .from('booking')
+                  .select('*')
+                  .eq('google_calendar_event_id', googleEventId)
                   .single();
       
               if (error) {

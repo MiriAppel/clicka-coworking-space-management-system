@@ -50,6 +50,16 @@ export class BookingController {
 res.status(500).json({massage:'err.massage'});
     }
 }
+ async  getBookingByEventId(req: Request, res: Response){
+    try{
+       const getBooking = await this.bookingservice.getBookingByEventId(req.params.eventId);
+
+        res.json(getBooking);
+    }
+    catch(err){
+res.status(500).json({massage:'err.massage'});
+    }
+}
 
  async  deleteRoom(req: Request, res: Response) {
     try{

@@ -25,6 +25,7 @@ export const getGoogleCalendarEvents = async (calendarId: string, token: string)
 
     // המרת האירועים לאובייקטים מסוג GoogleCalendarEvent
     const newEvents: Event[] = events.map(event => ({
+        
     id: event.id || '',  // או זרוק שגיאה אם id לא קיים
     calendarId: calendarId,
     summary: event.summary || '',
@@ -43,7 +44,8 @@ export const getGoogleCalendarEvents = async (calendarId: string, token: string)
         displayName: attendee.displayName || '',
         // responseStatus: attendee.responseStatus,
     })) : [],
-    // status: event.status || '',
+    status:   BookingService.getBookingByEventId(event.id) , //
+    // BookingService.get(event.id)|| '', // הוספת שדה status
     created: event.created || '',
     updated: event.updated || '',
     htmlLink: event.htmlLink || '',
