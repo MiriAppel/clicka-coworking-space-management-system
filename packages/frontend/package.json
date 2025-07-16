@@ -86,6 +86,7 @@
   },
   "devDependencies": {
     "@types/glob": "^9.0.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.20",
     "@types/mime": "^4.0.0",
     "@types/parse-json": "^7.0.0",

@@ -104,35 +104,39 @@ export class PaymentService {
    * שליפת תשלומים לפי טווח תאריכים
    * @param params - אובייקט עם תאריך התחלה ותאריך סיום
    * @returns רשימת תשלומים
-   */
-  async getPaymentByDate(params: { dateFrom: string; dateTo: string; customerId?: ID }): Promise<Payment[]> {
-    try {
-      let query = supabase.from('payment').select('*');
+   */ 
+  async getPaymentByDateAndCIds(params: {
+  dateFrom: string;
+  dateTo: string;
+  customerIds?: ID[]; // תמיכה בריבוי לקוחות
+}): Promise<Payment[]> {
+  try {
+    let query = supabase.from('payment').select('*');
 
-      if (params.customerId) {
-        query = query.eq('customer_id', params.customerId);
-      }
-      if (params.dateFrom) {
-        query = query.gte('date', params.dateFrom);
-      }
-      if (params.dateTo) {
-        query = query.lte('date', params.dateTo);
-      }
+    if (params.customerIds?.length) {
+      query = query.in('customer_id', params.customerIds); // ✅ סינון לפי כמה לקוחות
+    }
+    if (params.dateFrom) {
+      query = query.gte('date', params.dateFrom);
+    }
+    if (params.dateTo) {
+      query = query.lte('date', params.dateTo);
+    }
 
-      // מיון מהחדש לישן לפי תאריך
-      query = query.order('date', { ascending: false });
+    query = query.order('date', { ascending: false });
 
-      const { data, error } = await query;
+    const { data, error } = await query;
 
-      if (error) {
-        console.error('Error fetching payments:', error);
-        return [];
-      }
-
-      return data as Payment[];
-    } catch (err) {
-      console.error('Unexpected error fetching payments:', err);
+    if (error) {
+      console.error('Error fetching payments:', error);
       return [];
     }
+
+    return data as Payment[];
+  } catch (err) {
+    console.error('Unexpected error fetching payments:', err);
+    return [];
   }
+}
+
 }
