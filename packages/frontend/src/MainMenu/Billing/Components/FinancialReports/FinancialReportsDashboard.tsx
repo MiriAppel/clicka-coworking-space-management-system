@@ -322,9 +322,12 @@ const columnTranslations: Record<string, string> = {
           onChange={(e) => setSelectedChartType(e.target.value as 'bar' | 'pie' | 'line')}
           className="w-full px-2 py-1 border rounded"
         >
-          <option value="bar">גרף עמודות</option>
-          <option value="pie">גרף עוגה</option>
-          <option value="line">גרף קו</option>
+<option value="bar">גרף עמודות</option>
+{selectedType !== ReportType.PROFIT_LOSS && (
+  <option value="pie">גרף עוגה</option>
+)}
+<option value="line">גרף קו</option>
+
         </select>
 
         {reportData && (
