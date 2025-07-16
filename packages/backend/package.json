@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
     "@supabase/supabase-js": "^2.50.2",
     "@types/dotenv": "^8.2.3",
     "@types/morgan": "^1.9.9",
@@ -30,7 +31,9 @@
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
     "papaparse": "^5.5.3",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.16.0",
+    "puppeteer": "^24.12.1",
     "shared-types": "*",
     "undici": "^7.10.0",
     "uuid": "^11.1.0",

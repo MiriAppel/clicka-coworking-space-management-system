@@ -11,6 +11,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
+import documentTemplatesRouter from './routes/document.route';
+import generatedDocumentsRouter from './routes/GeneratedDocument.route';
 const cookieParser = require('cookie-parser');
 import userRouter from './routes/user.route';
 import vendorRouter from './routes/vendor.router';
@@ -47,7 +49,9 @@ app.use('/api/customers', routerCstomer);
 app.use('/api/leads', routerLead);
 //app.use('/api/contract', routerContract);
 // app.use('/api/translate', translationRouter);
-
+// Document management routes
+app.use('/api/documents/templates', documentTemplatesRouter);
+app.use('/api/documents/generated', generatedDocumentsRouter);
 app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);
 // Health check endpoint
