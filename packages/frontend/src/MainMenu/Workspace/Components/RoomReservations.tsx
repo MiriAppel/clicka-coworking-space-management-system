@@ -92,6 +92,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           if (customer) {
             methods.setValue("customerId", customer.id);
             methods.setValue("name", customer.name);
+            console.log("שם הלקוח:", customer.name);
             methods.setValue("email", customer.email);
             methods.setValue("phone", customer.phone);
           }
@@ -101,6 +102,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     }, [status, phoneOrEmail]);
 
     const convertFormToBooking = (data: FormFields) => {
+      const name = data.name?.trim() || "";
       const startTime = `${data.startDate}T${data.startTime}:00.000Z`;
       const endTime = `${data.endDate}T${data.endTime}:00.000Z`;
       const selectedRoom = roomOptions.find((room) => room.value === data.selectedRoomId);
@@ -108,6 +110,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
 
       const base = {
         id: uuidv4(),
+        name,
         roomId: data.selectedRoomId,
         roomName,
         startTime,
@@ -125,10 +128,15 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       };
 
       if (data.customerStatus === "customer") {
+        console.log("customerId",data.customerId);
+        console.log("customerName",data.name);
+        console.log("customerPhone",data.phone);
+
+
         return {
           ...base,
           customerId: data.customerId ?? "",
-          customerName: data.name ?? "",
+          customerName:name ?? "",
          
         };
       }
@@ -147,6 +155,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           if (!data.customerId) {
             alert("יש לבחור לקוח מהרשימה או לפי מייל/טלפון");
             return;
+            
           }
         } else {
           if (!data.name || !data.phone || !data.email) {
