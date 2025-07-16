@@ -14,7 +14,7 @@ export class BookingModel implements Booking {
   endTime: DateISO;
   status: BookingStatus;
   notes?: string;
-  googleCalendarEventId?: string;
+  googleCalendarEventId?: string | null;
   totalHours: number;
   chargeableHours: number;
   totalCharge: number;
