@@ -549,6 +549,17 @@ export class customerService extends baseService<CustomerModel> {
     await Promise.all(emailPromises);
   };
 }
+//  export const CustomerAuthentication = async (email: string) => {
+//     const { data, error } = await supabase.auth.api.sendVerificationEmail(email);
+
+//   if (error) {
+//     console.error("Error sending verification email:", error);
+//     throw error;
+//   }
+
+//   console.log("Verification email sent to:", email);
+// }
+
 const serviceCustomer = new customerService();
 
 // מחלץ לקובץ csv את כל הלקוחות שעומדים בסינון שמקבלת הפונקציה

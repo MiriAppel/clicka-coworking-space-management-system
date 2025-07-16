@@ -225,12 +225,9 @@ export const changeCustomerStatus = async (req: Request, res: Response) => {
     const userTokenService = new UserTokenService();
     const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
     const statusChangeData : StatusChangeRequest = req.body; // פרטים לשינוי הסטטוס
-    const token = await userTokenService.getAccessTokenByUserId(
-      "5a67953d-bfd5-4c37-88b3-1059f07a47cd"
-    );
 
+    const token = await userTokenService.getSystemAccessToken();
     console.log("changeCustomerStatus called with token:", token);
-
 
     // הנחת שהמשתמש מחובר ויש לו מזהה
     if (!token) {
@@ -241,7 +238,7 @@ export const changeCustomerStatus = async (req: Request, res: Response) => {
 
     if (!id || !statusChangeData) {
       return res.status(400).json({ error: "Missing required parameters" });
-    }    
+    }
 
     // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
     await serviceCustomer.sendStatusChangeEmails(
@@ -258,3 +255,4 @@ export const changeCustomerStatus = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
