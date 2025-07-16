@@ -1,16 +1,18 @@
 import type { CreateInvoiceRequest, ID, Invoice } from "shared-types";
 import { deleteInvoice, getAllInvoices, createInvoice, getInvoiceById, InvoiceModel, updateInvoice } from "../models/invoice.model";
+import { supabase } from "../db/supabaseClient";
 
-
+export async function serviceGetAllInvoices(): Promise<InvoiceModel[]> {
+    const { data: invoices, error } = await supabase.from('invoice').select('*');
+    if (error)
+        throw new Error(error.message);
+    const invoicesArray = invoices as InvoiceModel[];
+    return invoicesArray;
+}
 //crud functions
 // יצירת חשבונית חדשה 
 export async function serviceCreateInvoice(data: Partial<InvoiceModel>): Promise<InvoiceModel> {
   return createInvoice(data);
-}
-
-// קבלת כל החשבוניות
-export async function serviceGetAllInvoices(): Promise<InvoiceModel[]> {
-  return getAllInvoices();
 }
 
 // קבלת חשבונית לפי מזהה
