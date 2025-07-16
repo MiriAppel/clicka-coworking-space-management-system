@@ -28,6 +28,7 @@
     "googleapis": "^150.0.1",
     "helmet": "^8.1.0",
     "iconv-lite": "^0.6.3",
+    "js-yaml": "^4.1.0",
     "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
@@ -37,25 +38,18 @@
     "pg": "^8.16.3",
     "shared-types": "*",
     "swagger-ui-express": "^5.0.1",
-<<<<<<< HEAD
-    "undici": "7.11.0",
-=======
     "undici": "^7.10.0",
->>>>>>> origin
     "uuid": "^11.1.0",
     "yamljs": "^0.3.0",
     "yarn": "^1.22.22",
     "zustand": "^5.0.6"
   },
   "devDependencies": {
+    "@babel/plugin-transform-explicit-resource-management": "^7.28.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
-<<<<<<< HEAD
-    "@types/express": "^5.0.3",
-=======
     "@types/express": "^4.17.22",
     "@types/js-yaml": "^4.0.9",
->>>>>>> origin
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.10",
