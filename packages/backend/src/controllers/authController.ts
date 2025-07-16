@@ -3,10 +3,13 @@ import * as authService from '../services/authService';
 import * as tokenService from '../services/tokenService';
 import { LoginResponse } from "shared-types";
 import { HttpStatusCode } from 'axios';
+import { UserService } from '../services/user.service';
+import { UserTokenService } from '../services/userTokenService';
 
+const userService = new UserService();
+const userTokenService = new UserTokenService();
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
   console.log('Received Google auth code:', req.body.code);
-
   try {
     const { code } = req.body;
     if (!code) {
@@ -16,13 +19,14 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     const loginResult = await authService.exchangeCodeAndFetchUser(code);
     console.log('Login result:', loginResult);
     tokenService.setAuthCookie(res, loginResult.token, loginResult.sessionId!);
+
     const response = {
       ...loginResult,
       message: 'התחברת בהצלחה. נותקת ממכשירים אחרים.'
     };
     res.status(200).json(response);
   } catch (error: any) {
-    console.log('in auth controller catch ',error)
+    console.log('in auth controller catch ', error)
     if ((error as any).message === 'User not found or not authorized to login') {
       res.status(HttpStatusCode.Forbidden).json({ error: 'User not found or not authorized to login' });
     } else if (error.message === 'User not found') {
@@ -30,7 +34,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     }
     else {
       console.error('Google login failed:', error);
-      res.status(500).json({ error: 'Authentication failed' });
+      res.status(400).json({ error: 'Authentication failed' });
     }
   }
 
@@ -41,6 +45,10 @@ export const logout = async (req: Request, res: Response) => {
     const user = await tokenService.getUserFromCookie(req);
     if (user) {
       await tokenService.logoutUser(user.userId, res);
+      const sessionId = req.cookies.sessionId;
+      if (sessionId) {
+        await userTokenService.deleteUserSession(user.userId, sessionId);
+      }
     }
   } catch (error) {
     console.error('Logout failed:', error);
@@ -48,6 +56,12 @@ export const logout = async (req: Request, res: Response) => {
   finally {
     // Clear the auth cookie
     tokenService.clearAuthCookie(res);
+
+  }
+  try {
+
+  } catch (error) {
+
   }
   res.status(200).json({ message: 'Logged out successfully' });
 };

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+
 import { UserRole } from "shared-types";
 import { verifyJwtToken } from '../services/authService';
 
@@ -17,7 +18,6 @@ export const authorizeUser = (permission: UserRole[]) => {
 
             //אימות הטוקן
             const payload = verifyJwtToken(sessionToken);
-            console.log('Decoded token:', payload);
 
             // שליפת ה role מהטוקן
             const userRole = payload.role as UserRole;
@@ -28,7 +28,7 @@ export const authorizeUser = (permission: UserRole[]) => {
                 return;
             }
 
-            if (userRole && permission.includes(userRole)) {
+            if (permission.includes(userRole)) {
                 console.log(permission);
 
                 next(); // אם יש הרשאה, המשך למסלול הבא

@@ -4,14 +4,11 @@ import { logUserActivity } from '../utils/logger';
 import dotenv from 'dotenv';
 import { LoginResponse, UserRole } from 'shared-types';
 import { Response } from 'express';
+import { supabase } from '../db/supabaseClient';
+import { generateJwtToken } from './authService';
+import { setAuthCookie } from './tokenService';
 //טוען את משתני הסביבה מהקובץ .env
 dotenv.config();
-
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_KEY || '';
-console.log(supabaseUrl, supabaseAnonKey);
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 
 export class UserService {
 
@@ -199,21 +196,21 @@ export class UserService {
     }
 
 
-    createRoleCookies(res: Response<LoginResponse | { error: string }>, roleUser: UserRole): void{
+    createRoleCookies(res: Response<LoginResponse | { error: string }>, roleUser: UserRole): void {
         // שליפת ה-role מתוך ה-resulte
         const role = roleUser;
         // הגדרת cookie עם ה-role
         res.cookie('role', role, {
-            httpOnly: true ,// httpOnly כדי למנוע גישה דרך JavaScript
+            httpOnly: true,// httpOnly כדי למנוע גישה דרך JavaScript
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
         });
     }
     clearRoleCookie = (res: Response): void => {
-    res.clearCookie('role', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-    });
-};
+        res.clearCookie('role', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+    };
 }

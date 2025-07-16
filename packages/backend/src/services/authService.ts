@@ -89,7 +89,7 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     };
 
 
-  } catch (error: any) {
+  } catch (error:any) {
     throw error;
   }
 };
