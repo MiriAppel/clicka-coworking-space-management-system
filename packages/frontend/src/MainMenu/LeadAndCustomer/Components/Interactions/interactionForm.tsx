@@ -13,7 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const MySwal = withReactContent(Swal);
 
 export const interactionSchema = z.object({
-  type: z.enum(["call", "email", "meeting"], { required_error: "חובה לבחור סוג" }),
+  type: z.enum(["phone", "email", "meeting","tour"], { required_error: "חובה לבחור סוג" }),
   notes: z.string().min(1, "יש להזין הערות"),
   date: z.string().refine(val => !isNaN(Date.parse(val)), "תאריך לא תקין"),
 });
