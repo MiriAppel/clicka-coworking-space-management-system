@@ -11,7 +11,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Backend for Clicka application",
   "dependencies": {
     "@supabase/supabase-js": "^2.50.2",
     "@types/dotenv": "^8.2.3",
@@ -36,10 +36,10 @@
     "papaparse": "^5.5.3",
     "pg": "^8.16.0",
     "shared-types": "*",
-    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "undici": "5.26.5",
+    "undici": "^7.10.0",
     "uuid": "^11.1.0",
+    "yamljs": "^0.3.0",
     "yarn": "^1.22.22",
     "zustand": "^5.0.5"
   },

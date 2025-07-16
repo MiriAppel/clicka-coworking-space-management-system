@@ -1,5 +1,8 @@
 import { google } from 'googleapis';
 import axios from 'axios';
+import dotenv from 'dotenv';
+import { log } from 'console';
+dotenv.config();
 
 //parameters for Google OAuth2 from environment variables
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -13,7 +16,6 @@ export const oauth2Client = new google.auth.OAuth2(
 );
 
 // function to generate the authentication URL for Google OAuth2
-
 //function to replace the code with the tokens received from Google
 export async function getTokens(code: string) {
   const { tokens } = await oauth2Client.getToken(code);
