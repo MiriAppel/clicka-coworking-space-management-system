@@ -80,6 +80,7 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     return {
       user,
       token: jwtToken,
+
       sessionId: newSessionId,
        //googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it

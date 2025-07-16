@@ -65,7 +65,7 @@ const reportTypeLabels: Record<ReportType, string> = {
 
 export const FinancialReportsDashboard: React.FC = () => {
   const methods = useForm<ExtendedReportParameters>({
-    resolver: zodResolver(ReportFormSchema),
+    // resolver: zodResolver(ReportFormSchema),
     defaultValues: {
       dateRange: { startDate: '', endDate: '' },
       categories: [],
@@ -258,6 +258,7 @@ const columnTranslations: Record<string, string> = {
 
   return (
     <Form label="טופס דוחות פיננסיים" schema={ReportFormSchema} onSubmit={onSubmit} methods={methods}>
+
       <div className="flex flex-col gap-4">
         <select
           value={selectedType}

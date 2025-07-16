@@ -84,4 +84,22 @@ export const deleteContractDocument = async (req: Request, res: Response) => {
         console.error('Error in deleteContractDocument controller:', error);
         res.status(500).json({ message: 'Error deleting contract document', error});
     }
+
+    
 }
+
+export const searchContractsByText = async (req: Request, res: Response) => {
+  try {
+    const text = req.query.text as string;
+
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
+    }
+
+    const leads = await serviceContract.getContractsByText(text);
+    return res.json(leads);
+  } catch (error) {
+    console.error("שגיאה בחיפוש חוזים:", error);
+    return res.status(500).json({ error: "שגיאה בשרת." });
+  }
+};

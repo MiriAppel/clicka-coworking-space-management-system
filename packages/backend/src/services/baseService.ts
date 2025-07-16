@@ -1,4 +1,5 @@
-import type { ID } from "shared-types";
+
+import type { ID, LeadInteraction } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 
 
@@ -25,7 +26,30 @@ export class baseService<T> {
     return data;
   };
 
-  getByFilters = async (filters: { q?: string; page?: number; limit?: number;}): Promise<T[]> => {
+
+  getAll = async (): Promise<T[]> => {
+    console.log("🧾 טבלה:", this.tableName);
+
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select("*, lead_interaction(*)")
+
+    console.log(data);
+
+    if (!data || data.length === 0) {
+      console.log(` אין נתונים בטבלה ${this.tableName}`);
+      return []; // תחזירי מערך ריק במקום לזרוק שגיאה
+    }
+
+    if (error) {
+      console.error("שגיאה בשליפת נתונים:", error);
+      throw error;
+    }
+
+    return data;
+  };
+
+   getByFilters = async (filters: { q?: string; page?: number; limit?: number;}): Promise<T[]> => {
     const { q, page, limit } = filters;
 
     let query = supabase.from(this.tableName).select("*");
@@ -51,41 +75,30 @@ export class baseService<T> {
 
     return data ?? [];
   };
-
-  getAll = async (): Promise<T[]> => {
-    console.log("🧾 טבלה:", this.tableName);
-
-    const { data, error } = await supabase.from(this.tableName).select("*");
-
-    if (!data || data.length === 0) {
-      console.log(` אין נתונים בטבלה ${this.tableName}`);
-      return []; // תחזירי מערך ריק במקום לזרוק שגיאה
-    }
-
-    if (error) {
-      console.error("שגיאה בשליפת נתונים:", error);
-      throw error;
-    }
-
-    return data;
-  };
-
+  
   patch = async (dataToUpdate: Partial<T>, id: ID): Promise<T> => {
-    
     let dataForInsert = dataToUpdate;
     if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
-      try{
-      dataForInsert = (dataToUpdate as any).toDatabaseFormat();
-      console.log(dataForInsert);
+      try {
+        dataForInsert = (dataToUpdate as any).toDatabaseFormat();
 
-      }catch (error){
+      } catch (error) {
         console.error("שגיאה בהמרה", error)
       }
     }
 
     const { data, error } = await supabase
       .from(this.tableName)
-      .update(dataForInsert)
+      .update({
+        id: (dataToUpdate as unknown as LeadInteraction).id,
+        lead_id: (dataToUpdate as unknown as LeadInteraction).leadId,
+        notes:(dataToUpdate as unknown as LeadInteraction).notes,
+        user_email:(dataToUpdate as unknown as LeadInteraction).userEmail,
+        updated_at:(dataToUpdate as unknown as LeadInteraction).updatedAt,
+        created_at:(dataToUpdate as unknown as LeadInteraction).createdAt,
+        date:(dataToUpdate as unknown as LeadInteraction).date,
+        type:(dataToUpdate as unknown as LeadInteraction).type.toUpperCase()
+      })
       .eq("id", id)
       .select();
 
@@ -100,6 +113,9 @@ export class baseService<T> {
     return data[0];
   };
 
+  patchInteraction = async (data: T, id: ID) => {
+
+  }
   post = async (dataToAdd: T): Promise<T> => {
     console.log("come to function");
 

@@ -2,7 +2,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
-import { axiosInstance } from '../../../../Services/Axios';
+import { axiosInstance } from '../../../../Service/Axios';
 import { googleAuthConfig } from '../../../../Config/googleAuth';
 import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
 

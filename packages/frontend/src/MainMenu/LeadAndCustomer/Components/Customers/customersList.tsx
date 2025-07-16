@@ -1,156 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import React, { useRef, useState, useEffect } from "react";
-// import { Button } from '../../../../Common/Components/BaseComponents/Button';
-// import { NavLink } from "react-router";
-// import { ExportToExcel } from '../exportToExcel';
-// import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-// import { Customer, CustomerStatus } from "shared-types";
-// import { deleteCustomer, getAllCustomers } from "../../Service/LeadAndCustomersService";
-// import { Stack, TextField } from '@mui/material';
-// import { supabase } from "../../../../Services/supabaseClient";
-
-// interface ValuesToTable {
-//     id: string;
-//     name: string;
-//     phone: string;
-//     email: string;
-//     status: React.ReactElement;
-//     businessName: string;
-//     businessType: string;
-// }
-// const statusLabels: Record<CustomerStatus, string> = {
-//     ACTIVE: 'פעיל',
-//     NOTICE_GIVEN: 'הודעת עזיבה',
-//     EXITED: 'עזב',
-//     PENDING: 'בהמתנה',
-// };
-// export const CustomersList = () => {
-//     const navigate = useNavigate();
-//     const [isLoading, setIsLoading] = useState(true);
-//     const [customers, setCustomers] = useState<Customer[]>([]);
-//     const [searchTerm, setSearchTerm] = useState('');
-
-//     const fetchCustomers = async () => {
-//         try {
-//             setIsLoading(true);
-//             const data = await getAllCustomers();
-//             setCustomers(data);
-//         } catch (error) {
-//             console.error('Error fetching customers:', error);
-//         } finally {
-//             setIsLoading(false);
-//         }
-//     };
-
-//     useEffect(() => {
-//         fetchCustomers();
-//          //לבדוק למה לא עובד המשתני סביבה!!!
-//         // האזנה לשינויים בטבלת customers
-//         const channel = supabase
-//             .channel('public:customer')
-//             .on(
-//                 'postgres_changes',
-//                 { event: '*', schema: 'public', table: 'customers' },
-//                 (payload) => {
-//                     // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
-//                     fetchCustomers();
-//                 }
-//             )
-//             .subscribe();
-
-//         // ניקוי מאזין כשיוצאים מהקומפוננטה
-//         return () => {
-//             supabase.removeChannel(channel);
-//         };
-//     }, []);
-
-//     const handleSearch = (term: string) => {
-//         const lower = term.toLowerCase();
-//         const filtered = customers.filter((c) =>
-//             c.name.toLowerCase().includes(lower) ||
-//             c.email.toLowerCase().includes(lower) ||
-//             c.phone.toLowerCase().includes(lower) ||
-//             statusLabels[c.status].toLowerCase().includes(lower)||
-//             c.businessName.toLowerCase().includes(lower)||
-//             c.businessType.toLowerCase().includes(lower)
-//         );
-//         return filtered;
-//     };
-
-//     const getValuseToTable = (): ValuesToTable[] => {
-//         return handleSearch(searchTerm).map(customer => ({
-//             id: customer.id!,
-//             name: customer.name,
-//             phone: customer.phone,
-//             email: customer.email,
-//             status: (
-//                 <div className="flex justify-between">
-//                     {statusLabels[customer.status]}
-//                     <Button variant="secondary" size="sm" onClick={() => navigate(`updateStatus/${customer.id}`)}>עדכון</Button>
-//                 </div>
-//             ),
-//             businessName: customer.businessName,
-//             businessType: customer.businessType,
-//         }));
-//     };
-
-//     const columns: TableColumn<ValuesToTable>[] = [
-//         { header: "שם", accessor: "name" },
-//         { header: "פלאפון", accessor: "phone" },
-//         { header: "מייל", accessor: "email" },
-//         { header: "סטטוס", accessor: "status" },
-//         { header: "שם העסק", accessor: "businessName" },
-//         { header: "סוג עסק", accessor: "businessType" }
-//     ];
-
-//     const deleteCurrentCustomer = async (val: ValuesToTable) => {
-//         try {
-//             await deleteCustomer(val.id);
-//             fetchCustomers();
-//             alert("לקוח נמחק בהצלחה");
-//         } catch (error) {
-//             console.error("שגיאה במחיקת לקוח:", error);
-//             alert("מחיקה נכשלה");
-//         }
-//     };
-//     const editCustomer = (val: ValuesToTable) => {
-//         const selected = customers.find(c => c.id === val.id);
-//         navigate("update", { state: { data: selected } });
-//     };
-//     return (
-//         <>
-//             {isLoading ? (
-//                 <h2 className="text-3xl font-bold text-center text-blue-600 my-4">טוען...</h2>
-//             ) : (
-//                 <div className="p-6">
-//                     <h2 className="text-3xl font-bold text-center text-blue-600 my-4">לקוחות</h2>
-//                     <ExportToExcel data={customers} fileName="לקוחות" /><br /><br />
-//                     <Stack spacing={2} direction="row">
-//                         <TextField
-//                             label="חיפוש"
-//                             fullWidth
-//                             value={searchTerm}
-//                             onChange={(e) => setSearchTerm(e.target.value)}
-//                         />
-//                     </Stack>
-//                     <br />
-//                     <Table<ValuesToTable>
-//                         data={getValuseToTable()}
-//                         columns={columns}
-//                         onDelete={deleteCurrentCustomer}
-//                         onUpdate={editCustomer}
-//                         renderActions={(row) => (
-//                             <>
-//                                 <NavLink to={`:${row.id}/dashboard`} className="text-blue-500 hover:underline ml-2">לוח בקרה</NavLink>
-//                                 <NavLink to={`:${row.id}/contract`} className="text-blue-500 hover:underline ml-2">חוזה לקוח</NavLink>
-//                             </>
-//                         )}
-//                     />
-//                 </div>
-//             )}
-//         </>
-//     );
-// };
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { NavLink } from "react-router";
 import { ExportToExcel } from "../exportToExcel";
@@ -164,9 +13,11 @@ import { Stack, TextField } from "@mui/material";
 import axios from "axios";
 import debounce from "lodash/debounce";
 import { Pencil, Trash } from "lucide-react";
+import { supabase } from "../../../../Service/supabaseClient";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { set } from "lodash";
+import { text } from "body-parser";
 // import { supabase } from "../../../../Services/supabaseClient";
-
-
 
 interface ValuesToTable {
   id: string;
@@ -190,12 +41,13 @@ export const CustomersList = () => {
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [allCustomers, setAllCustomers] = useState<Customer[]>([]);
+
+  const allCustomersRef = useRef<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [term, setTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  // const [hasMore, setHasMore] = useState(true);
 
   //   const fetchCustomers = async () => {
   //     try {
@@ -208,83 +60,52 @@ export const CustomersList = () => {
   //       setIsLoading(false);
   //     }
   //   };
-  const fetchCustomers = async () => {
-    axios
-      .get("http://localhost:3001/api/customers/by-page", {
-        params: { page, limit: 50 },
-      })
-      .then((response) => {
-        if (response.data.length < 50) {
-          setHasMore(false);
-          // אין יותר נתונים
+  const fetchCustomers = async (
+    page: number,
+    limit: number,
+    searchTerm = ""
+  ) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        "http://localhost:3001/api/customers/by-page",
+        {
+          params: { page, limit },
         }
-        setCustomers((prev) => {
-          const ids = new Set(prev.map((l) => l.id));
-          const uniqueNew = response.data.filter(
-            (customer: Customer) => !ids.has(customer.id)
-          );
-          return [...prev, ...uniqueNew];
-        });
-        // עדכון המאגר הכללי של הלקוחות
-        setAllCustomers((prev) => {
-          const ids = new Set(prev.map((l) => l.id));
-          const uniqueNew = response.data.filter(
-            // מסנן לידים שלא קיימים כבר במאגר הכללי
-            (customer: Customer) => !ids.has(customer.id)
-          );
-          return [...prev, ...uniqueNew];
-        });
-      })
+      );
 
-      .catch((error) => {
-        console.log("error in customerList page", error);
+      const data: Customer[] = response.data;
 
-        console.error("Error fetching leads:", error);
-      })
-      .finally(() => setIsLoading(false));
-  }
+      // setHasMore(data.length === limit); // אם פחות מה-limit, אין עוד דפים
+
+      // תמיד להחליף את הסטייט בתוצאות הדף בלבד (לא להוסיף)
+      setCustomers(data);
+      allCustomersRef.current = data;
+    } catch (error) {
+      console.error("שגיאה ב-fetchCustomers:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   useEffect(() => {
-    // axios
-    //   .get("http://localhost:3001/api/customers/by-page", {
-    //     params: { page, limit: 50 },
-    //   })
-    //   .then((response) => {
-    //     if (response.data.length < 50) {
-    //       setHasMore(false);
-    //       // אין יותר נתונים
-    //     }
-    //     setCustomers((prev) => {
-    //       const ids = new Set(prev.map((l) => l.id));
-    //       const uniqueNew = response.data.filter(
-    //         (customer: Customer) => !ids.has(customer.id)
-    //       );
-    //       return [...prev, ...uniqueNew];
-    //     });
-    //     // עדכון המאגר הכללי של הלקוחות
-    //     setAllCustomers((prev) => {
-    //       const ids = new Set(prev.map((l) => l.id));
-    //       const uniqueNew = response.data.filter(
-    //         // מסנן לידים שלא קיימים כבר במאגר הכללי
-    //         (customer: Customer) => !ids.has(customer.id)
-    //       );
-    //       return [...prev, ...uniqueNew];
-    //     });
-    //   })
+    if (searchTerm.trim() === "") {
+      setIsSearching(false);
+      fetchCustomers(page, 20, "");
+    }
+  }, [searchTerm]);
 
-    //   .catch((error) => {
-    //     console.log("error in customerList page", error);
-
-    //     console.error("Error fetching leads:", error);
-    //   })
-    //   .finally(() => setIsLoading(false));
-    fetchCustomers()
-
+  useEffect(() => {
+    fetchCustomers(page, 20, searchTerm).then(() => {
+      console.log(
+        "✅ אחרי fetchCustomers - כמות לקוחות ב־allCustomers:",
+        allCustomersRef.current.length
+      );
+    });
   }, [page]);
 
   useEffect(() => {
-    if (!loaderRef.current || !hasMore || isSearching) return;
+    if (!loaderRef.current || isSearching) return;
 
-    // ברגע שהלידים עומדים להגמר זה עובר לעמוד הבא
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
         setPage((prev) => prev + 1);
@@ -293,77 +114,68 @@ export const CustomersList = () => {
 
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [hasMore, isSearching]);
+  }, [isSearching]);
 
-  // useEffect(() => {
-  //   fetchCustomers();
-  //   // האזנה לשינויים בטבלת customers
-  //   const channel = supabase
-  //     .channel('public:customer')
-  //     .on(
-  //       'postgres_changes',
-  //       { event: '*', schema: 'public', table: 'customers' },
-  //       (payload) => {
-  //         // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
-  //         fetchCustomers();
-  //       }
-  //     )
-  //     .subscribe();
+  //צריך בשביל זה גישה
+  //  useEffect(() => {
+  //       const channel = supabase
+  //         .channel('public:customer')
+  //         .on(
+  //           'postgres_changes',
+  //           { event: '*', schema: 'public', table: 'customer' },
+  //           (payload) => {
+  //             console.log('Change detected:', payload); // הוסף לוג כדי לבדוק אם האירועים מתקבלים
+  //             fetchCustomers(page, 20, ""); // ודא שהפונקציה זו מוגדרת
+  //           }
+  //         )
+  //         .subscribe();
 
-  //   // ניקוי מאזין כשיוצאים מהקומפוננטה
-  //   return () => {
-  //     supabase.removeChannel(channel);
-  //   };
-  // }, []);
+  //       return () => {
+  //         supabase.removeChannel(channel);
+  //       };
+  //   }, []);
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
+  useEffect(() => {
+    if (!loaderRef.current || isSearching) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prev) => prev + 1);
+      }
+    });
+    observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [isSearching]);
 
-    if (!term || term.trim() === "") {
-      setIsSearching(false);
-      setPage(1); // זה יגרום ל-useEffect לטעון את הדף הראשון
-      setCustomers([]); // מרוקן את הקיימים כדי שיטען מחדש
-      setHasMore(true);
-      return;
-    }
+  // הפונקציה שמטפלת בשינוי החיפוש
+ const handleSearch = (term: string) => {
+  setTerm(term);
+  setSearchTerm(term);
 
-    setIsSearching(true);
+  if (!term.trim()) {
+    // אם ריק, מחזירים לתצוגה רגילה
+    setIsSearching(false);
+    fetchCustomers(page, 20, "");
+    return;
+  }
 
-    // סינון תומך באותיות קטנות וגדולות
-    // מחפש גם לפי שם, פלאפון ודוא"ל
-    // אם לא מצא תוצאות, שולח בקשה לשרת
-    const filtered = allCustomers.filter(
-      (customer) =>
-        customer.name.toLowerCase().includes(term.toLowerCase()) ||
-        customer.phone.includes(term) ||
-        customer.email.toLowerCase().includes(term.toLowerCase()) ||
-        customer.businessName?.toLowerCase().includes(term.toLowerCase()) ||
-        customer.businessType?.toLowerCase().includes(term.toLowerCase()) ||
-        statusLabels[customer.status]?.includes(term) ||
-        translateStatus(customer.status)?.includes(term) // תרגום הסטטוס לחיפוש 
-        || customer.status.toLowerCase().includes(term.toLowerCase()) // הוספת חיפוש ישיר על הסטטוס
-    );
+  setIsSearching(true);
+  const lower = term.toLowerCase();
 
-    if (filtered.length > 0) {
-      setCustomers(filtered);
-    } else {
-      axios
-        .get("http://localhost:3001/api/customers/filter", {
-          params: { q: term, page: 1, limit: 50 },
-        })
-        .then((response) => {
-          setCustomers(response.data);
-        })
-        .catch((error) => {
-          console.error("Error searching from server:", error);
-        });
-    }
-  };
+  const filtered = allCustomersRef.current.filter(
+    (c) =>
+      c.name.toLowerCase().includes(lower) ||
+      c.phone.toLowerCase().includes(lower) ||
+      c.email.toLowerCase().includes(lower) ||
+      c.businessName?.toLowerCase().includes(lower) ||
+      c.businessType?.toLowerCase().includes(lower) ||
+      statusLabels[c.status].toLowerCase().includes(lower)
+  );
 
-  //   const handleDeleteCustomer = (id: string) => {
-  //     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
-  //     setAllCustomers((prev) => prev.filter((customer) => customer.id !== id)); // גם מהמאגר הכללי
-  //   };
+  setCustomers(filtered);
+};
+
+
+
 
   const getValuseToTable = (): ValuesToTable[] => {
     return customers.map((customer) => ({
@@ -373,7 +185,7 @@ export const CustomersList = () => {
       email: customer.email,
       businessName: customer.businessName || "לא זמין",
       businessType: customer.businessType || "לא זמין",
-      status: customer.status
+      status: customer.status,
     }));
   };
 
@@ -403,12 +215,21 @@ export const CustomersList = () => {
 
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
     try {
-      await deleteCustomer(val.id);
-
-      alert("לקוח נמחק בהצלחה");
+      await deleteCustomer(val.id)
+      await fetchCustomers(page, 20, "");
+      // setCustomers((prev) => prev.filter(customer => customer.id !== val.id));
+      // allCustomersRef.current = allCustomersRef.current.filter((customer) => customer.id !== val.id);
+      showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
     } catch (error) {
-      console.error("שגיאה במחיקת לקוח:", error);
-      alert("מחיקה נכשלה");
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error:', error.response?.data);
+        showAlert("שגיאה במחיקת לקוח", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
+      } else {
+        // טיפול בשגיאות אחרות
+        console.error('Unexpected error:', error);
+        showAlert("שגיאה במחיקת לקוח", 'שגיאה בלתי צפויה', "error");
+      }
+      // showAlert("שגיאה", `מחיקת לקוח נכשלה\n${error}`, "error");
     }
   };
 
@@ -464,8 +285,32 @@ export const CustomersList = () => {
               value={searchTerm}
               onChange={handleChange}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch(searchTerm);
+                if (
+                  (e.key === "Enter" && searchTerm.trim()) ||
+                  customers.length === 0 // אין תוצאות בדף הנוכחי
+                ) {
+                  console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
+
+                  axios
+                    .get("http://localhost:3001/api/customers/search", {
+                      params: { text: searchTerm },
+                    })
+                    .then((response) => {
+                      const data: Customer[] = response.data.map(
+                        (item: any) => ({
+                          ...item,
+                          businessName: item.business_name,
+                          businessType: item.business_type,
+                        })
+                      );
+
+                      setCustomers(data);
+                      allCustomersRef.current = data;
+                      console.log("✅ תוצאות שהגיעו מהשרת:", data.length);
+                    })
+                    .catch((error) => {
+                      console.error("שגיאה בחיפוש מהשרת:", error);
+                    });
                 }
               }}
             />
@@ -478,7 +323,7 @@ export const CustomersList = () => {
             onUpdate={editCustomer}
             renderActions={(row) => (
               <>
-                <NavLink
+                {/* <NavLink
                   to={`:${row.id}/dashboard`}
                   className="text-blue-500 hover:underline ml-2"
                 >
@@ -489,10 +334,43 @@ export const CustomersList = () => {
                   className="text-blue-500 hover:underline ml-2"
                 >
                   חוזה לקוח
-                </NavLink>
+                </NavLink> */}
+                <Button
+                  onClick={() => navigate(`:${row.id}`, { state: { data: customers.find(c => c.id == row.id) } })}
+                  variant="primary"
+                  size="sm"
+                >
+                  פרטי הלקוח
+                </Button>
               </>
             )}
           />{" "}
+          <Button
+            variant="secondary"
+            disabled={page <= 1}
+            onClick={() => {
+              if (page > 1) {
+                const prevPage = page - 1;
+                setPage(prevPage);
+                fetchCustomers(prevPage, 20, "");
+              }
+            }}
+          >
+            דף הקודם
+          </Button>
+          <Button
+            variant="secondary"
+            // disabled={!hasMore}
+            onClick={() => {
+              // if (hasMore) {
+              const nextPage = page + 1;
+              setPage(nextPage);
+              fetchCustomers(nextPage, 20, "");
+              // }
+            }}
+          >
+            <span></span> הבא
+          </Button>
           <div ref={loaderRef} className="h-4"></div>
         </div>
       )}

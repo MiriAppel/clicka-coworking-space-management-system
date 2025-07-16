@@ -122,7 +122,7 @@ export interface Customer {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-  paymentMethods: CustomerPaymentMethod[];
+  paymentMethods?: CustomerPaymentMethod[];
   periods?: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CreateCustomerRequest, WorkspaceType, Lead, PaymentMethodType } from "shared-types";
+import { CreateCustomerRequest, WorkspaceType, Lead, PaymentMethodType, LeadStatus } from "shared-types";
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
@@ -10,7 +10,11 @@ import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
-import { createCustomer, deleteLead } from "../../Service/LeadAndCustomersService"
+import { createCustomer, updateLead } from "../../Service/LeadAndCustomersService"
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import axios from 'axios';
+
+//לסדר שיראו את השגיאות אימות של המשורשר
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
@@ -44,12 +48,12 @@ const schema = z.object({
     notes: z.string().optional(), // אופציונלי
     invoiceName: z.string().optional(), // אופציונלי
     //לבדוק דחוף מה עם זה!!!!!!!
-    // paymentMethod: z.object({
-    //     creditCardLast4: z.string().optional().refine(val => !val || (/^\d{4}$/.test(val)), { message: "חובה להזין 4 ספרות בדיוק" }), // אופציונלי
-    //     creditCardExpiry: z.string().optional().refine(val => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }), // אופציונלי
-    //     creditCardHolderIdNumber: z.string().optional().refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // אופציונלי
-    //     creditCardHolderPhone: z.string().optional().refine(val => !val || /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }), // אופציונלי
-    // }).optional(), // אופציונלי
+    paymentMethod: z.object({
+        creditCardLast4: z.string().optional().refine(val => !val || (/^\d{4}$/.test(val)), { message: "חובה להזין 4 ספרות בדיוק" }), // אופציונלי
+        creditCardExpiry: z.string().optional().refine(val => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }), // אופציונלי
+        creditCardHolderIdNumber: z.string().optional().refine(val => !val || (/^\d{9}$/.test(val)), { message: "חובה להזין 9 ספרות בדיוק" }), // אופציונלי
+        creditCardHolderPhone: z.string().optional().refine(val => !val || /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }), // אופציונלי
+    }).optional(), // אופציונלי
     paymentMethodType: z.nativeEnum(PaymentMethodType).refine(val => !!val, { message: "חובה" }),
     contractDocuments: z.array(z.any()).optional(),
 
@@ -64,14 +68,12 @@ export const InterestedCustomerRegistration: React.FC = () => {
     // המידע שאני מקבלת מהדף הקודם - או לעשות קריאת שרת שמקבלת מתעניין בודד לפי מזהה
     const lead: Lead = location.state?.data;
 
-    const [showForm, setShowForm] = useState<boolean>(true);
-
     const [currentStep, setCurrentStep] = useState<number>(0);
 
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        // defaultValues: { ...lead, workspaceCount: 1, paymentMethod: { creditCardHolderPhone: lead.phone, creditCardHolderIdNumber: lead.idNumber } }
-        defaultValues: { ...lead, workspaceCount: 1 }
+        defaultValues: { ...lead, workspaceCount: 1, paymentMethod: { creditCardHolderPhone: lead.phone, creditCardHolderIdNumber: lead.idNumber }, notes: lead.notes || "" }
+        // defaultValues: { ...lead, workspaceCount: 1 }
 
     });
 
@@ -105,8 +107,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
     const stepFieldNames = [
         ["name", "phone", "email", "idNumber", "businessName", "businessType"] as const,
         ["workspaceType", "workspaceCount", "notes", "invoiceName"] as const,
-        // ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
-        ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType", "contractDocuments"] as const
+        ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType", "paymentMethod.creditCardLast4", "paymentMethod.creditCardExpiry", "paymentMethod.creditCardHolderIdNumber", "paymentMethod.creditCardHolderPhone", "contractDocuments"] as const
+        // ["contractSignDate", "contractStartDate", "billingStartDate", "paymentMethodType", "contractDocuments"] as const
 
     ];
 
@@ -162,13 +164,13 @@ export const InterestedCustomerRegistration: React.FC = () => {
                         options={PaymentMethodTypeOptions}
                         required
                     />
-                    {/* <div className="col-span-2 mt-4 mb-2">
+                    <div className="col-span-2 mt-4 mb-2">
                         <h3 className="text-lg font-semibold text-gray-700 pb-1">פרטי אשראי</h3>
                     </div>
                     <InputField name="paymentMethod.creditCardLast4" label="4 ספרות אחרונות של כרטיס אשראי" />
                     <InputField name="paymentMethod.creditCardExpiry" label="תוקף כרטיס אשראי" />
                     <InputField name="paymentMethod.creditCardHolderIdNumber" label="תעודת זהות בעל הכרטיס" />
-                    <InputField name="paymentMethod.creditCardHolderPhone" label="טלפון בעל הכרטיס" /> */}
+                    <InputField name="paymentMethod.creditCardHolderPhone" label="טלפון בעל הכרטיס" />
                 </>
             )
         }
@@ -211,81 +213,88 @@ export const InterestedCustomerRegistration: React.FC = () => {
         JSON.stringify(data, null, 2);
         const customerRequest: CreateCustomerRequest = data;
         console.log(customerRequest);
+        customerRequest.paymentMethod = customerRequest.paymentMethodType == PaymentMethodType.CREDIT_CARD ? customerRequest.paymentMethod : undefined
 
         await createCustomer(customerRequest)
-            .then(() => {
-                setShowForm(false);
-                console.log("successfully create customer");
+            .then(async () => {
+
+                await updateLead(lead.id!, { status: LeadStatus.CONVERTED })
+                    .then(() => {
+                        showAlert("", "המתעניין נוסף ללקוחות בהצלחה", "success");
+                        navigate(-1);
+                    }).catch((error) => {
+                        if (axios.isAxiosError(error)) {
+                            // אם השגיאה היא של Axios
+                            console.error('Axios error:', error.response?.data);
+                            // תוכל להציג את השגיאה למשתמש או לוג
+                            showAlert("שגיאה בעדכון סטטוס ", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
+                        } else {
+                            // טיפול בשגיאות אחרות
+                            console.error('Unexpected error:', error);
+                            showAlert("שגיאה בשינוי סטטוס", 'שגיאה בלתי צפויה', "error");
+                        }
+                    })
 
             }).catch((error: Error) => {
-                console.error("Error create customer:", error);
+                if (axios.isAxiosError(error)) {
+                    // אם השגיאה היא של Axios
+                    console.error('Axios error:', error.response?.data);
+                    // תוכל להציג את השגיאה למשתמש או לוג
+                    showAlert("שגיאה ביצירת לקוח", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
+                } else {
+                    // טיפול בשגיאות אחרות
+                    console.error('Unexpected error:', error);
+                    showAlert("שגיאה ביצירת לקוח", 'שגיאה בלתי צפויה', "error");
+                }
             });
-
-        //מחיקת המתעניין
-        try {
-            await deleteLead(lead.id!);
-        } catch (error) {
-            console.error("שגיאה במחיקת מתעניין:", error);
-            alert("מחיקה נכשלה");
-        }
-
     }
 
 
     return <div className='interestedCustomerRegistration'>
-        {/* כל עוד הטופס לא תקין רואים אותו ולאחר שליחה רואים את הדיב שבסוף */}
-        {showForm ?
-            <div>
-                <h1 className="text-3xl font-bold text-center text-blue-600 my-4">רישום מתעניין ללקוח</h1>
-                <h4 className="text-lg text-center text-gray-600 my-2">מלא את הפרטים החסרים</h4>
-                <Form
-                    label={steps[currentStep].title}
-                    schema={schema}
-                    onSubmit={onSubmit}
-                    methods={methods}
-                    className="mx-auto mt-10"
+        <div>
+            <h1 className="text-3xl font-bold text-center text-blue-600 my-4">רישום מתעניין ללקוח</h1>
+            <h4 className="text-lg text-center text-gray-600 my-2">מלא את הפרטים החסרים</h4>
+            <Form
+                label={steps[currentStep].title}
+                schema={schema}
+                onSubmit={onSubmit}
+                methods={methods}
+                className="mx-auto mt-10"
+            >
+                <div
+                    key={currentStep}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4 col-span-2"
                 >
-                    <div
-                        key={currentStep}
-                        className="col-span-2"
-                    >
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {steps[currentStep].content}
-                        </div>
+                    {steps[currentStep].content}
 
-                        <div className="col-span-2 flex justify-between">
-                            {/* צד ימין: כפתור הקודם או ריק */}
-                            {currentStep > 0 ? (
-                                <Button onClick={prevStep} variant="primary" size="sm">
-                                    הקודם
-                                </Button>
-                            ) : (
-                                <span /> // אלמנט ריק כדי לדחוף את הבא לשמאל
-                            )}
+                    <div className="col-span-2 flex justify-between">
+                        {/* צד ימין: כפתור הקודם או ריק */}
+                        {currentStep > 0 ? (
+                            <Button onClick={prevStep} variant="primary" size="sm">
+                                הקודם
+                            </Button>
+                        ) : (
+                            <span /> // אלמנט ריק כדי לדחוף את הבא לשמאל
+                        )}
 
-                            {/* צד שמאל: הבא או שלח */}
-                            {currentStep < steps.length - 1 ? (
-                                <Button onClick={nextStep} variant="primary" size="sm">
-                                    הבא
-                                </Button>
-                            ) : (
-                                <Button
-                                    variant="primary"
-                                    size="sm"
-                                    type="submit"
-                                >
-                                    שלח
-                                </Button>
-                            )}
-                        </div>
+                        {/* צד שמאל: הבא או שלח */}
+                        {currentStep < steps.length - 1 ? (
+                            <Button onClick={nextStep} variant="primary" size="sm">
+                                הבא
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                type="submit"
+                            >
+                                שלח
+                            </Button>
+                        )}
                     </div>
-                </Form>
-            </div>
-            :
-            <div className="text-center my-4">
-                <h2 className="text-2xl font-semibold text-gray-700 mb-2">הלקוח נרשם בהצלחה!</h2>
-                <Button onClick={() => navigate(`/leadAndCustomer/customers`)} variant="primary" size="sm">למעבר לרשימת הלקוחות</Button>
-            </div>}
+                </div>
+            </Form>
+        </div>
     </div>
 
 
