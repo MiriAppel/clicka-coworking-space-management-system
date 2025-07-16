@@ -204,8 +204,12 @@ export const createCalendarEvent = async (calendarId: string,
           }
           console.log('Type of updatedData:', booking.constructor.name);
 
-          BookingService.updateBooking(booking.id, booking);
-
+          console.log(booking, "booking in ??????????????????????????\n  ,",booking.id);
+          
+        const bookingModel = booking instanceof BookingModel
+  ? booking
+  : new BookingModel(booking);
+await BookingService.updateBooking(bookingModel.id!, bookingModel);
 
         // if (!statusEvent || !statusEvent.id) {
         //     sync.syncStatus = CalendarSyncStatus.FAILED; // במקרה ואין id

@@ -49,23 +49,27 @@ throw new Error(`Failed to create booking: ${error.message}`);
       return null;
     }
   }
-     static async  updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
-      
-          const { data, error } = await supabase
-              .from('booking')
-              .update([updatedData.toDatabaseFormat()])
-              .eq('id', id)
-              .select()
-              .single();
-  
-          if (error) {
-              console.error('Error updating booking:', error);
-              return null;
-          }
-          const booking =  BookingModel.fromDatabaseFormat(data); // המרה לסוג UserModel
-          
-          return booking; 
+   static async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
+  const formattedData = updatedData.toDatabaseFormat();
+  console.log(":rocket: Trying to update booking with ID:", id);
+  console.log(":memo: Data being sent:", formattedData);
+  const { data, error } = await supabase
+    .from('booking')
+    .update([formattedData])
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) {
+    console.error(':fire: Supabase update error:', error);
+    return null;
   }
+  if (!data) {
+    console.warn(':warning: No data returned. ID might not exist.');
+    return null;
+  }
+  console.log(":white_check_mark: Successfully updated booking:", data);
+  return BookingModel.fromDatabaseFormat(data);
+}
   //מחיקת פגישה
   async  deleteBooking(id:string) {
               const { error } = await supabase
