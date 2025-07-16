@@ -8,6 +8,8 @@ import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 import { Button } from './Common/Components/BaseComponents/Button';
 import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
 
+import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
+
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -56,7 +58,10 @@ function App() {
       </div>
      
       <Accesibility></Accesibility>
-
+       <Routes>
+          <Route path="/pricing" element={<PricingConfigurationPage />} />
+          {/* אפשר להוסיף כאן ראוטים נוספים */}
+        </Routes>
         <AuthenticationScreen />
     </div>
     </AuthProvider>
