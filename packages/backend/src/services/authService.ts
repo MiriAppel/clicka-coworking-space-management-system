@@ -1,4 +1,4 @@
-import {  LoginResponse, User } from "shared-types";
+import { LoginResponse, User } from "shared-types";
 import { getTokens, getGoogleUserInfo } from './googleAuthService';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
@@ -82,13 +82,13 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       token: jwtToken,
 
       sessionId: newSessionId,
-      // googleAccessToken: tokens.access_token,
+       //googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
 
+
   } catch (error:any) {
-    //console.error('error in exchange code and fetch user', error);
     throw error;
   }
 };

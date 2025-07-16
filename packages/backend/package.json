@@ -11,7 +11,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Backend for Clicka application",
   "dependencies": {
     "@supabase/supabase-js": "^2.50.3",
     "@types/dotenv": "^8.2.3",
@@ -36,17 +36,26 @@
     "papaparse": "^5.5.3",
     "pg": "^8.16.3",
     "shared-types": "*",
-    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+<<<<<<< HEAD
     "undici": "7.11.0",
+=======
+    "undici": "^7.10.0",
+>>>>>>> origin
     "uuid": "^11.1.0",
+    "yamljs": "^0.3.0",
     "yarn": "^1.22.22",
     "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
+<<<<<<< HEAD
     "@types/express": "^5.0.3",
+=======
+    "@types/express": "^4.17.22",
+    "@types/js-yaml": "^4.0.9",
+>>>>>>> origin
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.10",
@@ -55,8 +64,7 @@
     "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.1.10",
     "typescript": "^5.8.3"
-  }
-  ,
+  },
   "resolutions": {
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.19.6"

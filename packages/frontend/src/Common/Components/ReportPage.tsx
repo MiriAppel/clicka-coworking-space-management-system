@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChartDisplay, ChartData } from '../Components/BaseComponents/Graph';
-import { ExportButtons } from '../Components/BaseComponents/exportButtons';
+import { ExportButtons } from './BaseComponents/ExportButtons';
 import { Button } from '../Components/BaseComponents/Button';
 // import {formatNumberIL } 
 
@@ -152,13 +152,6 @@ export const ReportPage = () => {
           className="border p-1 rounded"
         />
       </div>
-
-      {/* Export Buttons */}
-      <ExportButtons
-        title={isDrillDown ? `Details${selectedLabel}` : 'General Report'}
-        exportData={data}
-        refContent={chartRef}
-      />
 
       {/* מה שיש בתוך הגרף*/}
       <div
