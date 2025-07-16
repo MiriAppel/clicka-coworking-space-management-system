@@ -19,9 +19,10 @@ export const AuthenticationScreen = () => {
           <h1>ברוך הבא!</h1>
           <p>אנא התחבר כדי להמשיך</p>
           <LoginWithGoogle />
+          <LoginWithPassword />
+
         </div>
       )}
-      <LoginWithPassword/>
     </div>
   );
 }

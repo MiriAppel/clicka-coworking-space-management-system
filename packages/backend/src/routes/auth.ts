@@ -1,4 +1,4 @@
-import { handleGoogleAuthCode, handleGoogleIdTokenLogin, handleLoginWithPassword, logout, refreshTokenHandler } from '../controllers/authController';
+import { handleGoogleAuthCode, handleGoogleIdTokenLogin, handleLoginWithPassword, logout, refreshTokenHandler, registerUser } from '../controllers/authController';
 import { verifySession } from '../middlewares/authMiddleware';
 import express from 'express';
 
@@ -9,6 +9,7 @@ routerAuth.post('/google', handleGoogleAuthCode);
 routerAuth.post('/logout', logout);
 routerAuth.post('/google-login', handleGoogleIdTokenLogin);
 routerAuth.post('/loginWithPassword', handleLoginWithPassword);
+routerAuth.post('/registerUserPassword', registerUser);
 routerAuth.get('/verify', verifySession, (req, res) => {
   const user = (req as any).user;
   const sessionId = (req as any).sessionId;

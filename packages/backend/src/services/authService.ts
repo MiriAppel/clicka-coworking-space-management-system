@@ -4,10 +4,12 @@ import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
 import { randomUUID } from 'crypto';
 import { UserService } from "./user.service";
+import bcrypt from 'bcrypt';
 
-    const userService = new UserService();
 
-export const generateJwtToken = (payload: { userId: string; email: string; googleId: string ;role :UserRole }): string => {
+const userService = new UserService();
+
+export const generateJwtToken = (payload: { userId: string; email: string; googleId: string; role: UserRole }): string => {
   return jwt.sign(
     {
       userId: payload.userId,
@@ -42,14 +44,14 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       //need to check if the user in the system but doesnt have googleId yet
       try {
         checkUser = await userService.getUserByEmail(userInfo.email);
-        if(checkUser==null){
+        if (checkUser == null) {
           console.log('user not found by email:', userInfo.email);
-          
-           throw new Error("User not found")
-        }
-        await userService.updateGoogleIdUser(checkUser.id ?? userInfo.id,userInfo.id);
 
-      } catch (error:any) {
+          throw new Error("User not found")
+        }
+        await userService.updateGoogleIdUser(checkUser.id ?? userInfo.id, userInfo.id);
+
+      } catch (error: any) {
         throw error;
       }
     }
@@ -63,18 +65,18 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       lastLogin: new Date().toISOString(),
       active: true,
       createdAt: checkUser.createdAt,
-      updatedAt:checkUser.updatedAt,
+      updatedAt: checkUser.updatedAt,
     }
     //---------------------------------------------------
     const newSessionId = randomUUID();
     console.log('in exchange code and fetch user, newSessionId:', newSessionId);
 
-    await saveUserTokens(checkUser.id?? userInfo.id, tokens.refresh_token ?? '', tokens.access_token, newSessionId);
+    await saveUserTokens(checkUser.id ?? userInfo.id, tokens.refresh_token ?? '', tokens.access_token, newSessionId);
 
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);
     const jwtToken = generateJwtToken({
-      userId: checkUser.id?? userInfo.id,
+      userId: checkUser.id ?? userInfo.id,
       email: user.email,
       googleId: user.googleId!,
       role: user.role,
@@ -83,34 +85,35 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       user,
       token: jwtToken,
       sessionId: newSessionId,
-       //googleAccessToken: tokens.access_token,
+      //googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
 
 
-  } catch (error:any) {
+  } catch (error: any) {
     throw error;
   }
 };
 
 export async function loginWithEmailAndPassword(email: string, password: string) {
   try {
-    
+    const user = await userService.getUserByEmail(email);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (!user.password) {
+      throw new Error('User password not set');
+    }
+    // Verify the password
+    const isMatch: boolean = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error('Invalid password');
+    }
+    return user;
   } catch (error) {
     console.error('Error during login:', error);
     throw new Error('Login with password failed');
-    
-  }
-  const user = await userService.getUserByEmail(email);
-  if (!user) {
-    throw new Error('User not found');
-  }
 
-  const isValidPassword = await userService.verifyUserPassword(user.id, password);
-  if (!isValidPassword) {
-    throw new Error('Invalid password');
   }
-
-  return user;
 }

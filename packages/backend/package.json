@@ -14,10 +14,12 @@
   "description": "Backend for Clicka application",
   "dependencies": {
     "@supabase/supabase-js": "^2.50.2",
+    "@types/bcrypt": "^5.0.2",
     "@types/dotenv": "^8.2.3",
     "@types/morgan": "^1.9.9",
     "@types/papaparse": "^5.3.16",
     "axios": "^1.10.0",
+    "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

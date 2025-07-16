@@ -7,6 +7,9 @@ import { UserService } from '../services/user.service';
 import { UserTokenService } from '../services/userTokenService';
 import { getGoogleWithoutCode } from '../services/googleAuthService';
 import { randomUUID } from 'crypto';
+import bcrypt from 'bcrypt';
+import { saveUserTokens } from '../services/tokenService';
+const SALT_ROUNDS = 10; // מספר הסיבובים ל־bcrypt
 
 const userService = new UserService();
 const userTokenService = new UserTokenService();
@@ -70,14 +73,17 @@ export const handleGoogleIdTokenLogin = async (req: Request, res: Response) => {
         googleId: userInfo.googleId!,
         role: loginResult.role,
       });
-      tokenService.setAuthCookie(res, jwtToken, randomUUID());
-    }
-
-    return res.status(200).json({
-      ...loginResult,
+      const sessionId = randomUUID();
+      tokenService.setAuthCookie(res, jwtToken, sessionId);
+  
+    const response = {
+      loginResult,
+      jwtToken,
+      sessionId,
       message: 'התחברת בהצלחה דרך Google One Tap',
-    });
-
+    };
+    return res.status(200).json(response);
+  }
   } catch (error) {
     console.error('Google One Tap login failed:', error);
     return res.status(401).json({ error: 'Authentication failed' });
@@ -133,24 +139,50 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error refreshing token' });
   }
 }
-  export const handleLoginWithPassword = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+export const handleLoginWithPassword = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-
-    try {
-      const user = await authService.loginWithEmailAndPassword(email, password);
-      if (!user) {
-        return res.status(401).json({ error: 'Invalid email or password' });
-      }
-
-      const token = authService.generateJwtToken({ userId: user.id!, googleId: user.googleId, email: user.email, role: user.role });
-      tokenService.setAuthCookie(res, token, randomUUID());
-      res.status(200).json({ message: 'Login successful' });
-    } catch (error) {
-      console.error('Login failed:', error);
-      res.status(401).json({ error: 'Login failed' });
-    }
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
   }
+
+  try {
+    const user = await authService.loginWithEmailAndPassword(email, password);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const token = authService.generateJwtToken({ userId: user.id!, googleId: user.googleId, email: user.email, role: user.role });
+    const sessionId = randomUUID();
+    tokenService.setAuthCookie(res, token, sessionId);
+    await tokenService.saveSessionId(user.id!, sessionId);
+    const response = {
+      user,
+      token,
+      sessionId,
+      message: 'התחברת בהצלחה.'
+    };
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Login failed:', error);
+    res.status(401).json({ error: 'Login failed' });
+  }
+}
+export const registerUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+  // 2. save to database
+  const user = await userService.getUserByEmail(email);
+  if (user) {
+    if (user.password) {
+      throw new Error('User password already exists');
+    }
+    userService.updatePassword(user?.id!, hashedPassword);
+  }
+  else {
+    throw new Error('User not exists');
+  }
+  return res.status(200).json(user);
+}
+

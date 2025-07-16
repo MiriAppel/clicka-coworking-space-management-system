@@ -92,3 +92,6 @@ export const logoutUser = async (userId: string, res: Response): Promise<void> =
     await userTokenService.invalidateSession(userId);
     clearAuthCookie(res);
 };
+export const saveSessionId= async (userId: string, sessionId: string): Promise<void> => {
+    await userTokenService.saveSessionId(userId, sessionId);
+}
