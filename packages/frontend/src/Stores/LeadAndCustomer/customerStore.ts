@@ -1,5 +1,6 @@
 import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
 import { create } from 'zustand';
+import { axiosInstance } from '../../Services/Axios'; 
 
 interface CustomerStore {
     customersPage: Customer[]; //כל פעם גם משתנה זה מתעדכן עם הלקוחות של העמוד הזה כדי שבחיפוש יחפשו מתוך הרשימה הזו
@@ -35,21 +36,34 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     limit: 20, // מספר הלקוחות לעמוד
     loading: false,
     error: undefined,
-
-    fetchCustomers: async () => {
+/////////////////////////////////////
+    fetchCustomersS: async () => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(BASE_API_URL);
-            if (!response.ok) {
-                throw new Error("Failed to fetch customers");
-            }
-            const data: Customer[] = await response.json();
-            set({ customers: data, loading: false });
+            // const response = await fetch(BASE_API_URL);
+            const response = await axiosInstance.get('/customers/');
+            // if (!response.ok) {
+            //     throw new Error("Failed to fetch customers");
+            // }
+            // const data: Customer[] = await response.json();
+            // set({ customers: data, loading: false });
         } catch (error: any) {
             set({ error: error.message || "שגיאה בטעינת הלקוחות", loading: false });
         }
     },
-
+    fetchCustomers: async () => {
+        console.log("fetchCustomers RUN");
+        set({ loading: true, error: undefined });
+        try {
+          const response = await axiosInstance.get('/customers/');
+          console.log("📥 קיבלתי מהשרת:", response.data);
+          console.log("לקוחות מהשרת:", response.data);
+          set({ customers: response.data, loading: false });
+        } catch (error: any) {
+          console.error("שגיאה ב-fetchCustomers:", error);
+          set({ error: error.message || "שגיאה בטעינת הלקוחות", loading: false });
+        }
+      },
     fetchCustomersByPage: async () => {
         set({ loading: true, error: undefined });
         try {

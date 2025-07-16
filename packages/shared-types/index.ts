@@ -13,10 +13,4 @@ export * from './lead';
 export * from './pricing';
 export * from './translation';
 export * from './person'
-<<<<<<< HEAD
-// export * from './calendarSync';
-
-export * from './document';
-=======
 export * from './template';
->>>>>>> origin/main

@@ -25,8 +25,11 @@ import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import emailTemplateRouter from './routes/emailTemplate.route';
 import router from './routes';
+import bookRouter from './routes/booking.route';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
-
+import routerMap from './routes/mapLayout.route';
+import routerLayout from './routes/mapLayout.route';
+import routerCalendarSync from './routes/calendar-route';
 // Create Express app
 const app = express();
 dotenv.config();
@@ -72,7 +75,6 @@ app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 
 // app.use('/api/leadInteraction', routerCstomer);
-app.use('/api/map',routerMap);
 app.use('/api/layout',routerLayout);
 app.use('/api/calendar-sync',routerCalendarSync)
 app.use('/api',router)

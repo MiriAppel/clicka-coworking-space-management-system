@@ -14,7 +14,7 @@ export class BookingModel implements Booking {
   endTime: DateISO;
   status: BookingStatus;
   notes?: string;
-  googleCalendarEventId?: string;
+  googleCalendarEventId?: string | null;
   totalHours: number;
   chargeableHours: number;
   totalCharge: number;
@@ -47,7 +47,7 @@ export class BookingModel implements Booking {
     createdAt?: DateISO;
     updatedAt?: DateISO;
   }) {
-    this.id = params.id;
+    this.id = params.id||undefined;
     this.roomId = params.roomId;
     this.roomName = params.roomName;
     this.customerId = params.customerId;
@@ -64,8 +64,8 @@ export class BookingModel implements Booking {
     this.chargeableHours = params.chargeableHours ?? 0;
     this.totalCharge = params.totalCharge ?? 0;
     this.isPaid = params.isPaid ?? false;
-    this.approvedBy = params.approvedBy;
-    this.approvedAt = params.approvedAt;
+    this.approvedBy = params.approvedBy ||undefined;
+    this.approvedAt = params.approvedAt ||undefined;
     this.createdAt = params.createdAt ?? new Date().toISOString();
     this.updatedAt = params.updatedAt ?? new Date().toISOString();
   }
@@ -83,15 +83,15 @@ export class BookingModel implements Booking {
       end_time: this.endTime,
       status: this.status,
       notes: this.notes,
-    //   google_calendar_event_id: this.googleCalendarEventId,
-    // total_hours: this.totalHours,
-    // chargeable_hours: this.chargeableHours,
-    // total_charge: this.totalCharge,
+      google_calendar_event_id: this.googleCalendarEventId,
+    total_hours: this.totalHours,
+    chargeable_hours: this.chargeableHours,
+    total_charge: this.totalCharge,
     is_paid: this.isPaid,
-    // approved_by: this.approvedBy,
-    // approved_at: this.approvedAt,
-    // created_at: this.createdAt,
-    // updated_at: this.updatedAt,
+    approved_by: this.approvedBy,
+    approved_at: this.approvedAt,
+    created_at: this.createdAt,
+    updated_at: this.updatedAt,
     
 }}
      static fromDatabaseFormat(dbData: any): BookingModel {
