@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { Request, Response } from 'express';
 import { createInvoice, deleteInvoice, getAllInvoiceItems, getAllInvoices, getInvoiceById, sendEmail, updateInvoice } from '../controllers/invoice.controller';
 import { sendStatusChangeEmails } from '../services/invoice.service';
+import { sendInvoiceUpdateMail } from '../controllers/InvoiceUpdateMail';
 
 const invoiceRouter = Router();
 // נתיב בדיקה
@@ -32,11 +33,8 @@ invoiceRouter.put('/:id', updateInvoice);                        // עדכון �
 invoiceRouter.delete('/:id', deleteInvoice); 
 // שליחת מייל
 invoiceRouter.post('/sendemail', sendEmail);
-
-
-
-
-
+//עידכון מייל
+invoiceRouter.post('/send-invoice-update-email', sendInvoiceUpdateMail);
 
 
 export default invoiceRouter;

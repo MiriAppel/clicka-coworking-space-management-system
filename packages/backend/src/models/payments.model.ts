@@ -72,4 +72,7 @@ export function toDatabaseFormat(payment: PaymentModel): any {
     created_at: payment.createdAt,
     updated_at: payment.updatedAt,
   };
+  
 }
+
+

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PaymentService} from "../services/payments.service";
+import { PaymentService, sendPaymentProblemEmailInternal} from "../services/payments.service";
 import { UserTokenService } from "../services/userTokenService";
 
 
@@ -60,3 +60,35 @@ export const sendPaymentReminder = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+//////////////////////////////////////////////////////////
+
+export const sendPaymentProblemEmail = async (req: Request, res: Response) => {
+  try {
+    const {
+      customerName,
+      invoiceNumber,
+      amount,
+      paymentStatus,
+      invoiceUrl,
+      customerEmail,
+    } = req.body;
+
+    const token = await new UserTokenService().getSystemAccessToken();
+
+    await sendPaymentProblemEmailInternal(
+      customerName,
+      invoiceNumber,
+      amount,
+      paymentStatus,
+      invoiceUrl,
+      customerEmail,
+      token
+    );
+
+    res.status(200).send("Email sent successfully");
+  } catch (error) {
+    console.error("Error sending payment problem email:", error);
+    res.status(500).send("Failed to send email");
+  }
+};
+

@@ -219,3 +219,45 @@ export class PaymentService {
     }
   };
 }
+///////////////////////////////////////////////////////////////////////
+const emailService = new EmailTemplateService();
+
+export const sendPaymentProblemEmailInternal = async (
+  customerName: string,
+  invoiceNumber: string,
+  amount: number,
+  paymentStatus: string,
+  invoiceUrl: string,
+  customerEmail: string,
+  token: any
+): Promise<void> => {
+  const template = await emailService.getTemplateByName("בעיית תשלום");
+
+  if (!template) {
+    throw new Error("Template 'בעיית תשלום' not found.");
+  }
+
+  const renderedHtml = await emailService.renderTemplate(template.bodyHtml, {
+    customerName,
+    invoiceNumber,
+    amount: amount.toFixed(2),
+    paymentStatus,
+    invoiceUrl,
+  });
+
+  await sendEmail(
+    "me",
+    {
+      to: ["ettylax@gmail.com"],
+      subject: encodeSubject(template.subject),
+      body: renderedHtml,
+      isHtml: true,
+    },
+    token
+  );
+};
+
+function encodeSubject(subject: string): string {
+  return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+}
+
