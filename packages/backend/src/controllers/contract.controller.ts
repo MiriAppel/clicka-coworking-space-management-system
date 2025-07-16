@@ -28,11 +28,11 @@ export const getContractById = async (req: Request, res: Response) => {
 };
 
 // קבלת חוזה לפי מזהה לקוח
-export const getContracstByCustomerId = async (req: Request, res: Response) => {
+export const getAllContractsByCustomerId = async (req: Request, res: Response) => {
   const { customerId } = req.params;
   try {
-    const contract = await serviceContract.getContractByCustomerId(customerId);
-    res.status(200).json(contract);
+    const contracts = await serviceContract.getAllContractsByCustomerId(customerId);
+    res.status(200).json(contracts);
   } catch (error) {
     console.error('Error in getContractByCustomerId controller:', error);
     res.status(500).json({ message: 'Error fetching contract by customer ID', error });

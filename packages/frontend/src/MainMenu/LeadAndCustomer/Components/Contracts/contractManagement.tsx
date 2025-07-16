@@ -29,15 +29,8 @@ const statusLabels: Record<ContractStatus, string> = {
 };
 
 // פונקציית עזר לפורמט תאריך
-const formatDate = (iso?: string) => {
-  if (!iso) return "";
-  const d = new Date(iso);
-  const day = d.getDate().toString().padStart(2, "0");
-  const month = (d.getMonth() + 1).toString().padStart(2, "0");
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
-};
-
+const formatDate = (iso?: string) =>
+  iso ? new Date(iso).toISOString().split("T")[0].split("-").reverse().join("/") : "";
 
 export const ContractManagement = () => {
   const navigate = useNavigate();
@@ -46,18 +39,13 @@ export const ContractManagement = () => {
   };
   const contracts = useContractStore(state => state.contracts) as ContractWithCustomerName[];
   const [activeTab, setActiveTab] = useState<"all" | "endingSoon">("all");
-  const {
-    fetchContracts,
-    fetchContractsEndingSoon,
-    handleDeleteContract,
-  } = useContractStore();
+  const {fetchContracts, fetchContractsEndingSoon, handleDeleteContract} = useContractStore();
 
   useEffect(() => {
     fetchContracts().catch((err) =>
       console.error("שגיאה בטעינת חוזים:", err)
     );
   }, []);
-
 
   const loadAllContracts = () => {
     fetchContracts().catch((err) =>
@@ -70,8 +58,19 @@ export const ContractManagement = () => {
       console.error("שגיאה בטעינת חוזים שתוקפם עומד להסתיים:", err)
     );
   };
+  const latestContractsMap = new Map<string, ContractWithCustomerName>();
 
-  const valuesToTable: ValuesToTable[] = contracts.map((contract) => ({
+  contracts.forEach(contract => {
+    const existing = latestContractsMap.get(contract.customerId);
+    const currentStart = contract.startDate ? new Date(contract.startDate) : null;
+    const existingStart = existing?.startDate ? new Date(existing.startDate) : null;
+
+    if (!existing || (currentStart && existingStart && currentStart > existingStart)) {
+      latestContractsMap.set(contract.customerId, contract);
+    }
+  });
+
+  const valuesToTable: ValuesToTable[] = Array.from(latestContractsMap.values()).map(contract => ({
     id: contract.id ?? "",
     customerId: contract.customerId ?? "",
     customerName: contract.customerName,
@@ -98,16 +97,15 @@ export const ContractManagement = () => {
 
     if (confirmed) {
       await handleDeleteContract(row.id)
-      .then(() => {
-        showAlert("מחיקה", "החוזה נמחק בהצלחה", "success");
-      })
-      .catch((err) => {
-        console.log("שגיאה במחיקת חוזה:", err);
-        showAlert("מחיקה", "שגיאה במחיקת חוזה", "error");
-      });
+        .then(() => {
+          showAlert("מחיקה", "החוזה נמחק בהצלחה", "success");
+        })
+        .catch((err) => {
+          console.log("שגיאה במחיקת חוזה:", err);
+          showAlert("מחיקה", "שגיאה במחיקת חוזה", "error");
+        });
     }
   };
-
 
   //עדכון חוזה
   const updateContract = (val: ValuesToTable) => {
@@ -117,7 +115,7 @@ export const ContractManagement = () => {
   const renderActions = (row: ValuesToTable) => (
     <div className="flex gap-2">
       <Button variant="secondary" size="sm" onClick={() => navigate(`customer/${row.customerId}`, { state: { customerName: row.customerName } })}>
-        פרטי חוזה
+        פרטי חוזים
       </Button>
     </div>
   );
@@ -157,8 +155,6 @@ export const ContractManagement = () => {
           חוזים שתוקפם יסתיים בקרוב
         </button>
       </div>
-
-
 
       <Table<ValuesToTable>
         data={valuesToTable}

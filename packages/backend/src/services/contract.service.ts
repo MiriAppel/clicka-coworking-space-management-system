@@ -57,43 +57,43 @@ export class contractService extends baseService<ContractModel> {
     }));
   };
 
-  // חוזה אחד לפי מזהה לקוח
-  getContractByCustomerId = async (customerId: ID): Promise<Contract> => {
-    const { data, error } = await supabase
-      .from("contract")
-      .select("*")
-      .eq("customer_id", customerId)
-      .single();
+  // // חוזה אחד לפי מזהה לקוח
+  // getContractByCustomerId = async (customerId: ID): Promise<Contract> => {
+  //   const { data, error } = await supabase
+  //     .from("contract")
+  //     .select("*")
+  //     .eq("customer_id", customerId)
+  //     .single();
 
-    if (error) {
-      console.error("שגיאה בעת שליפת חוזה לפי לקוח:", error.message);
-      throw new Error("לא ניתן לשלוף חוזה עבור הלקוח.");
-    }
+  //   if (error) {
+  //     console.error("שגיאה בעת שליפת חוזה לפי לקוח:", error.message);
+  //     throw new Error("לא ניתן לשלוף חוזה עבור הלקוח.");
+  //   }
 
-    return {
-      id: data.id,
-      customerId: data.customer_id,
-      version: data.version,
-      status: data.status,
-      signDate: data.sign_date,
-      startDate: data.start_date,
-      endDate: data.end_date,
-      terms: {
-        workspaceType: data.terms?.workspace_type,
-        workspaceCount: data.terms?.workspace_count,
-        monthlyRate: data.terms?.monthly_rate,
-        duration: data.terms?.duration,
-        renewalTerms: data.terms?.renewal_terms,
-        terminationNotice: data.terms?.termination_notice,
-        specialConditions: data.terms?.special_conditions,
-      },
-      documents: data.documents,
-      signedBy: data.signed_by,
-      witnessedBy: data.witnessed_by,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    };
-  };
+  //   return {
+  //     id: data.id,
+  //     customerId: data.customer_id,
+  //     version: data.version,
+  //     status: data.status,
+  //     signDate: data.sign_date,
+  //     startDate: data.start_date,
+  //     endDate: data.end_date,
+  //     terms: {
+  //       workspaceType: data.terms?.workspace_type,
+  //       workspaceCount: data.terms?.workspace_count,
+  //       monthlyRate: data.terms?.monthly_rate,
+  //       duration: data.terms?.duration,
+  //       renewalTerms: data.terms?.renewal_terms,
+  //       terminationNotice: data.terms?.termination_notice,
+  //       specialConditions: data.terms?.special_conditions,
+  //     },
+  //     documents: data.documents,
+  //     signedBy: data.signed_by,
+  //     witnessedBy: data.witnessed_by,
+  //     createdAt: data.created_at,
+  //     updatedAt: data.updated_at,
+  //   };
+  // };
 
   // שליפת כל החוזים של לקוח
   getAllContractsByCustomerId = async (customerId: ID): Promise<Contract[]> => {

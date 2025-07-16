@@ -3,6 +3,7 @@ import { create } from "zustand";
 
 interface ContractStore {
     contracts: Contract[];
+    contractsByCustomer: Contract[];
     selectedContract: Contract | null;
     loading: boolean;
     error?: string;
@@ -27,6 +28,7 @@ const BASE_API_URL = `${process.env.REACT_APP_API_URL}/contract`;
 
 export const useContractStore = create<ContractStore>((set, get) => ({
     contracts: [],
+    contractsByCustomer: [],
     selectedContract: null,
     loading: false,
     error: undefined,
@@ -68,7 +70,7 @@ export const useContractStore = create<ContractStore>((set, get) => ({
             const response = await fetch(`${BASE_API_URL}/customer/${customerId}`);
             if (!response.ok) throw new Error("Failed to fetch contracts by customer");
             const data: Contract[] = await response.json();
-            set({ contracts: data });
+            set({ contractsByCustomer: data });
         } catch (error: any) {
             set({ error: error.message || "שגיאה בטעינת חוזים לפי לקוח" });
         } finally {

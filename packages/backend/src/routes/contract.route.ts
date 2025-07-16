@@ -8,7 +8,7 @@ routerContract.get('/ending-soon', contractControler.getContractsEndingSoon);
 
 routerContract.get('/', contractControler.getAllContracts); 
 
-routerContract.get('/customer/:customerId', contractControler.getContracstByCustomerId);
+routerContract.get('/customer/:customerId', contractControler.getAllContractsByCustomerId);
 
 routerContract.get('/:contractId', contractControler.getContractById);
 
