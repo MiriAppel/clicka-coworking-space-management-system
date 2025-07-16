@@ -22,7 +22,6 @@ import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import router from './routes';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
-
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -38,7 +37,11 @@ dotenv.config();
 
 // Apply middlewares
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true, // זה חשוב!
+}));
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
