@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
+import { useTheme } from '../../../../Common/Components/themeConfig';
 
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from '../../../../Common/Components/BaseComponents/Input';
@@ -71,12 +72,13 @@ export const FinancialReportsDashboard: React.FC = () => {
       customerIds: [],
     },
   });
+  const { theme } = useTheme();  // גישה לנושא הצבעים
 
   const fetchReport = useFinancialReportsStore((s) => s.fetchReport);
   const reportData = useFinancialReportsStore((s) => s.reportData);
   const loading = useFinancialReportsStore((s) => s.loading);
   const error = useFinancialReportsStore((s) => s.error);
-
+const [loadingReport, setLoadingReport] = useState(false);
   const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE);
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'pie' | 'line'>('bar');
   const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]);
@@ -125,8 +127,14 @@ const columnTranslations: Record<string, string> = {
   name: 'שם',
   percentOfTotal: 'אחוז מהסך הכולל',
 };
+  const [color, setColor] = useState("#3498db"); // צבע התחלתי
 
   useEffect(() => {
+        const interval = setInterval(() => {
+      setColor(prevColor => prevColor === "#3498db" ? "#e7ae3cff" : "#3498db");
+    }, 1000);
+
+
     async function fetchEntities() {
       try {
         const [customerRes, vendorRes] = await Promise.all([
@@ -138,14 +146,18 @@ const columnTranslations: Record<string, string> = {
       } catch {}
     }
     fetchEntities();
+    return () => clearInterval(interval);  // חשוב לנקות את ה-interval אחרי השימוש
+
   }, []);
 
   const onSubmit = async (data: ExtendedReportParameters) => {
+      setLoadingReport(true); 
     const transformed = {
       ...data,
       vendorId: selectedType === ReportType.EXPENSES ? data.customerIds?.[0] : undefined,
     };
     await fetchReport(selectedType, transformed);
+      setLoadingReport(false);
   };
 
   const getChartData = () => {
@@ -314,6 +326,60 @@ const columnTranslations: Record<string, string> = {
         <Button type="submit" disabled={loading}>
           {loading ? 'טוען...' : 'צור דוח'}
         </Button>
+    <div>
+      {/* הצגת הודעת טעינה רק כשיש טעינה */}
+ {loadingReport && (
+  <div
+    style={{
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.3)', // רקע כהה
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 9999,
+    }}
+  >
+    <div
+      style={{
+        backgroundColor: '#fff',
+        padding: '20px',
+        borderRadius: '8px',
+        textAlign: 'center',
+      }}
+    >
+      {/* אנימציה של סיבוב */}
+      <div
+        style={{
+          border: '8px solid #f3f3f3',
+          borderTop: `8px solid ${color}`, // השפעת הצבע על הסיבוב
+          borderRadius: '50%',
+          width: '40px',
+          height: '40px',
+          animation: 'spin 2s linear infinite',
+          marginBottom: '10px',
+        }}
+      ></div>
+
+      {/* טקסט עם שינוי צבעים */}
+      <p
+        style={{
+          fontSize: '16px',
+          fontWeight: 'bold',
+          color: color,  // הצגת הצבע המשתנה
+          animation: 'colorChange 2s infinite alternate',  // אנימציה לשינוי צבע
+        }}
+      >
+        יצירת הדוח... אנא המתן
+      </p>
+    </div>
+  </div>
+)}
+    </div>
+
         {error && <p className="text-red-600">{error.message}</p>}
 
         <label>בחר סוג גרף:</label>
@@ -327,7 +393,6 @@ const columnTranslations: Record<string, string> = {
   <option value="pie">גרף עוגה</option>
 )}
 <option value="line">גרף קו</option>
-
         </select>
 
         {reportData && (
