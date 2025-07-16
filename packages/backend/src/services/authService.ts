@@ -1,4 +1,4 @@
-import {  LoginResponse, User } from "shared-types";
+import { LoginResponse, User, UserRole } from "shared-types";
 import { getTokens, getGoogleUserInfo } from './googleAuthService';
 import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
@@ -6,12 +6,13 @@ import { randomUUID } from 'crypto';
 import { UserService } from "./user.service";
 
 
-export const generateJwtToken = (payload: { userId: string; email: string; googleId: string }): string => {
+export const generateJwtToken = (payload: { userId: string; email: string; googleId: string; role: UserRole }): string => {
   return jwt.sign(
     {
       userId: payload.userId,
       email: payload.email,
-      googleId: payload.googleId
+      googleId: payload.googleId,
+      role: payload.role
     },
     process.env.JWT_SECRET!,
     { expiresIn: '8h' } // 8 hours
@@ -19,7 +20,7 @@ export const generateJwtToken = (payload: { userId: string; email: string; googl
 };
 
 export const verifyJwtToken = (token: string) => {
-  return jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string };
+  return jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string; role: UserRole };
 };
 
 export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse> => {
@@ -41,14 +42,14 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       //need to check if the user in the system but doesnt have googleId yet
       try {
         checkUser = await userService.getUserByEmail(userInfo.email);
-        if(checkUser==null){
+        if (checkUser == null) {
           console.log('user not found by email:', userInfo.email);
-          
-           throw new Error("User not found")
-        }
-        await userService.updateGoogleIdUser(checkUser.id ?? userInfo.id,userInfo.id);
 
-      } catch (error:any) {
+          throw new Error("User not found")
+        }
+        await userService.updateGoogleIdUser(checkUser.id ?? userInfo.id, userInfo.id);
+
+      } catch (error: any) {
         throw error;
       }
     }
@@ -62,32 +63,33 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       lastLogin: new Date().toISOString(),
       active: true,
       createdAt: checkUser.createdAt,
-      updatedAt:checkUser.updatedAt,
+      updatedAt: checkUser.updatedAt,
     }
     //---------------------------------------------------
     const newSessionId = randomUUID();
     console.log('in exchange code and fetch user, newSessionId:', newSessionId);
 
-    await saveUserTokens(checkUser.id?? userInfo.id, tokens.refresh_token ?? '', tokens.access_token, newSessionId);
+    await saveUserTokens(checkUser.id ?? userInfo.id, tokens.refresh_token ?? '', tokens.access_token, newSessionId);
 
     console.log('Access Token:', tokens.access_token);
     console.log('Refresh Token:', tokens.refresh_token);
     const jwtToken = generateJwtToken({
-      userId: checkUser.id?? userInfo.id,
+      userId: checkUser.id ?? userInfo.id,
       email: user.email,
-      googleId: user.googleId!
+      googleId: user.googleId!,
+      role: user.role,
     });
     return {
       user,
       token: jwtToken,
       sessionId: newSessionId,
-      // googleAccessToken: tokens.access_token,
+      //googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at
     };
 
-  } catch (error:any) {
-    //console.error('error in exchange code and fetch user', error);
+
+  } catch (error: any) {
     throw error;
   }
 };

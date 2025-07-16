@@ -7,6 +7,10 @@ function getAuth(token: string) {
   return auth;
 }
 
+function encodeSubject(subject: string): string {
+  return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+}
+
 function encodeMessage(request: SendEmailRequest): string {
   const boundary = '__BOUNDARY__';
   const headers = [
@@ -14,7 +18,7 @@ function encodeMessage(request: SendEmailRequest): string {
     `To: ${request.to.join(', ')}`,
     request.cc?.length ? `Cc: ${request.cc.join(', ')}` : '',
     request.bcc?.length ? `Bcc: ${request.bcc.join(', ')}` : '',
-    `Subject: ${request.subject}`,
+    `Subject: ${encodeSubject(request.subject)}`,
     `MIME-Version: 1.0`,
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
   ].filter(Boolean).join('\n');
