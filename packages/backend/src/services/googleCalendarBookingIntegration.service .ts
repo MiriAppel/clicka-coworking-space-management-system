@@ -21,7 +21,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export const getGoogleCalendarEvents = async (calendarId: string, token: string): Promise<Event[] | null> => {
     //שליפת כל האירועים לפי לוח
      const events = await getEvents(calendarId, token);
-     console.log(events); // הדפס את האירועים המתקבלים
+    //  console.log(events); // הדפס את האירועים המתקבלים
 
     // המרת האירועים לאובייקטים מסוג GoogleCalendarEvent
     const newEvents: Event[] = events.map(event => ({
@@ -176,6 +176,9 @@ export const createCalendarEvent = async (calendarId: string,
     //ולהוסיף אותו לאובייקט המתאים במסד
 
     //אם ההזמנה לא מאושרת-אין אפשרות ליצור אירוע
+    console.log('Booking object:', booking);
+    console.log('token object:', token);
+    console.log('calendarId object:', calendarId);
     if (!booking.approvedBy) {
 
         throw new Error('Booking must be approved by someone before creating a calendar event.');
@@ -199,6 +202,8 @@ export const createCalendarEvent = async (calendarId: string,
           if (!booking.id) {
             throw new Error('Booking ID is required to update the booking.');
           }
+          console.log('Type of updatedData:', booking.constructor.name);
+
           BookingService.updateBooking(booking.id, booking);
 
 

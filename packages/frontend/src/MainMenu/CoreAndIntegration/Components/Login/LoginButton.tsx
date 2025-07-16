@@ -66,27 +66,27 @@ export const LoginWithGoogle = () => {
                         body: JSON.stringify({
 
                             booking: {
-                                id:"bec60177-ec14-4ab8-a6ec-40592306a464",
+                                id: "3da78a90-fe85-4e66-bb26-e22c34f63b1c",
                                 roomId: "10da8c25-6b79-48f3-8c50-f506b3ea16ee",
-                                roomName: "חדר ישיבות",
-                                // customerId: "00506d08-83c4-45b5-8913-140be971ceec",
-                                externalUserName: "אדריכלית",
-                                externalUserEmail: "nechamie10@gmail.com",
-                                externalUserPhone: "0556775395",
-                                startTime: "2025-07-15T12:00:00.000Z",
-                                endTime: "2025-07-1T14:00:00.000Z",
+                                roomName: "gggg",
+                                customerId: null,
+                                customerName: null,
+                                externalUserName: "ללי",
+                                externalUserEmail: "m0556722858@gmail.com",
+                                externalUserPhone: "0556723622",
+                                startTime: "2025-07-15T16:17:00.000Z",
+                                endTime: "2025-07-15T18:17:00.000Z",
                                 status: "PENDING",
-                                notes: "פגישה חשובה",
-                                googleCalendarEventId: "",
-                                totalHours: 2,
-                                chargeableHours: 2,
-                                totalCharge: 100,
-                                isPaid: true,
-                                approvedBy: "admin-01",
-                                approvedAt: "2025-07-10T11:00:00.000Z",
-                                createdAt: "2025-07-10T10:00:00.000Z",
-                                updatedAt: "2025-07-10T10:10:00.000Z"
-
+                                notes: null,
+                                googleCalendarEventId: null,
+                                totalHours: 0,
+                                chargeableHours: 0,
+                                totalCharge: 0,
+                                isPaid: false,
+                            approvedBy: "clicka manager Nechami",
+                                approvedAt: "2025-07-15 12:17:29.982418+00",
+                                createdAt: "2025-07-15 12:17:29.982418+00",
+                                updatedAt: "2025-07-15 12:17:29.982418+00"
                             }
 
                         }),
@@ -105,7 +105,7 @@ export const LoginWithGoogle = () => {
                         .then(res => res.json())
                         .then(data => console.log('GET events:', data))
                         .catch(err => console.error(err))
-                        // עם המרות לריאקט בדיקת GET calendar
+                    // עם המרות לריאקט בדיקת GET calendar
                     fetch('http://localhost:3001/api/calendar-sync/all/primary', {
                         method: 'GET',
                         headers: {
@@ -162,5 +162,4 @@ export const LoginWithGoogle = () => {
         <button onClick={() => login()}> Google התחבר עם </button>
     );
 };
-
 

@@ -1,5 +1,5 @@
-import type{  DateISO, ID } from "shared-types/core";
-import {Booking,BookingStatus} from 'shared-types/booking'
+import type { DateISO, ID } from "shared-types/core";
+import { Booking, BookingStatus } from 'shared-types/booking'
 
 export class BookingModel implements Booking {
   id?: ID;
@@ -64,8 +64,8 @@ export class BookingModel implements Booking {
     this.chargeableHours = params.chargeableHours ?? 0;
     this.totalCharge = params.totalCharge ?? 0;
     this.isPaid = params.isPaid ?? false;
-    this.approvedBy = params.approvedBy;
-    this.approvedAt = params.approvedAt;
+    this.approvedBy = params.approvedBy || undefined;
+    this.approvedAt = params.approvedAt || undefined;
     this.createdAt = params.createdAt ?? new Date().toISOString();
     this.updatedAt = params.updatedAt ?? new Date().toISOString();
   }
@@ -83,37 +83,44 @@ export class BookingModel implements Booking {
       end_time: this.endTime,
       status: this.status,
       notes: this.notes,
-    //   google_calendar_event_id: this.googleCalendarEventId,
-    // total_hours: this.totalHours,
-    // chargeable_hours: this.chargeableHours,
-    // total_charge: this.totalCharge,
-    is_paid: this.isPaid,
-    // approved_by: this.approvedBy,
-    // approved_at: this.approvedAt,
-    // created_at: this.createdAt,
-    // updated_at: this.updatedAt,
-    
-}}
-     static fromDatabaseFormat(dbData: any): BookingModel {
-        return new BookingModel({
-            id: dbData.id,
-            roomId: dbData.room_id,
-            roomName: dbData.room_name,
-            customerId: dbData.customer_id,
-            customerName: dbData.customer_name,
-            externalUserName: dbData.external_user_name,
-            externalUserEmail: dbData.external_user_email,
-            externalUserPhone: dbData.external_user_phone,
-            startTime: dbData.start_time,
-            endTime: dbData.end_time,
-            status: dbData.status,
-            notes: dbData.notes,
-            googleCalendarEventId: dbData.google_calendar_event_id,
-            isPaid: dbData.is_paid,
-            totalHours: dbData.total_hours,
-        });
+      google_calendar_event_id: this.googleCalendarEventId,
+      total_hours: this.totalHours,
+      chargeable_hours: this.chargeableHours,
+      total_charge: this.totalCharge,
+      is_paid: this.isPaid,
+      approved_by: this.approvedBy,
+      approved_at: this.approvedAt,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt,
+
     }
-    static fromDatabaseFormatArray(dbDataArray: any[] ): BookingModel[] {
-        return dbDataArray.map(dbData => BookingModel.fromDatabaseFormat(dbData));
-    }
+  }
+  static fromDatabaseFormat(dbData: any): BookingModel {
+    return new BookingModel({
+      id: dbData.id,
+      roomId: dbData.room_id,
+      roomName: dbData.room_name,
+      customerId: dbData.customer_id,
+      customerName: dbData.customer_name,
+      externalUserName: dbData.external_user_name,
+      externalUserEmail: dbData.external_user_email,
+      externalUserPhone: dbData.external_user_phone,
+      startTime: dbData.start_time,
+      endTime: dbData.end_time,
+      status: dbData.status,
+      notes: dbData.notes,
+      googleCalendarEventId: dbData.google_calendar_event_id,
+      isPaid: dbData.is_paid,
+      totalHours: dbData.total_hours,
+      chargeableHours: dbData.chargeable_hours,
+      totalCharge: dbData.total_charge,
+      approvedBy: dbData.approved_by,
+      approvedAt: dbData.approved_at,
+      createdAt: dbData.created_at,
+      updatedAt: dbData.updated_at,
+    });
+  }
+  static fromDatabaseFormatArray(dbDataArray: any[]): BookingModel[] {
+    return dbDataArray.map(dbData => BookingModel.fromDatabaseFormat(dbData));
+  }
 }

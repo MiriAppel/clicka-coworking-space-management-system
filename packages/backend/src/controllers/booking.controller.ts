@@ -28,15 +28,17 @@ export class BookingController {
 
 
  async  updateBooking(req: Request, res: Response){
-    try{
-        const bookingData = req.body;
-        const booking = new BookingModel(bookingData);
-      const updateBooking = await BookingService.updateBooking(req.params.id, booking);
-      res.json(updateBooking);
-    }
-    catch(err){
-       res.status(500).json({massage:'err.message'});
-    }
+   
+      const bookingId = req.params.id;
+            const updatedData = req.body;
+            const updatedBooking = new BookingModel(updatedData);
+        console.log('Prepared booking data:', JSON.stringify(updatedBooking, null, 2));
+            const result = await BookingService.updateBooking(bookingId, updatedBooking);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(500).json({ error: "Failed to update booking" });
+            }
 }
 
  async  getBookingById(req: Request, res: Response){

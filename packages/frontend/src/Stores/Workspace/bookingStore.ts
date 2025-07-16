@@ -13,7 +13,7 @@ interface BookingState {
   getAllBookings: () => Promise<void>;
   getBookingById: (id: string) => Promise<Booking | null>;
   createBooking: (booking: Booking) => Promise<Booking | null>;
-  createBookingInCalendar: (booking: Booking,calendarId:string) => Promise<Booking | null>;
+  createBookingInCalendar: (booking: Booking, calendarId: string) => Promise<Booking | null>;
   updateBooking: (id: string, updated: Booking) => Promise<Booking | null>;
   deleteBooking: (id: string) => Promise<boolean>;
   setCurrentBooking: (booking: Booking | null) => void;
@@ -54,6 +54,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   createBooking: async (booking: Booking) => {
     set({ loading: true, error: null });
+    
     try {
       // מוודאים שה־payload נכון
       const response = await axiosInstance.post("/book", booking);
@@ -71,12 +72,29 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return null;
     }
   },
-  createBookingInCalendar: async (booking: Booking,calendarId:string) => {
+ createBookingInCalendar: async (booking: Booking, calendarId: string) => {
+  console.log(booking,"booking in createBookingInCalendar??????????????????????????\n");
+  
+    const googleAccessToken = localStorage.getItem('google_token'); // שיניתי כאן
+    console.log("Google Access Token:", googleAccessToken);
+    
+    // if (googleAccessToken) {
+    //   // אין צורך לשמור את הטוקן שוב
+    // } else {
+    //   console.log("token not found in localStorage\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    // }
     set({ loading: true, error: null });
     try {
-      // מוודאים שה־payload נכון
-      const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, booking);
+      // const x= BookingModel 
+      
+      const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, booking, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${googleAccessToken}`,
+        }
+      });
       const created = response.data;
+console.log(created,"created in createBookingInCalendar??????????????????????????\n");
 
       set(state => ({
         bookings: [...state.bookings, created],
@@ -89,7 +107,8 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       set({ error: 'בcalenar שגיאה ביצירת הזמנה', loading: false });
       return null;
     }
-  },
+  }
+,
 
   updateBooking: async (id: string, updated: Booking) => {
     set({ loading: true, error: null });
@@ -160,7 +179,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return [];
     }
   },
-  
-  
-  
+
+
+
 }));

@@ -106,7 +106,8 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       const selectedRoom = roomOptions.find((room) => room.value === data.selectedRoomId);
       const roomName = selectedRoom?.label ?? "Unknown";
 
-      const base = {
+      // Always include all fields required by Booking type
+      return {
         id: uuidv4(),
         roomId: data.selectedRoomId,
         roomName,
@@ -119,20 +120,10 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         isPaid: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      };
-
-      if (data.customerStatus === "customer") {
-        return {
-          ...base,
-          customerId: data.customerId ?? "",
-        };
-      }
-
-      return {
-        ...base,
-        externalUserName: data.name ?? "",
-        externalUserEmail: data.email ?? "",
-        externalUserPhone: data.phone ?? "",
+        customerId: data.customerStatus === "customer" ? data.customerId ?? "" : "",
+        externalUserName: data.customerStatus === "valid" ? data.name ?? "" : "",
+        externalUserEmail: data.customerStatus === "valid" ? data.email ?? "" : "",
+        externalUserPhone: data.customerStatus === "valid" ? data.phone ?? "" : "",
       };
     };
 
@@ -156,6 +147,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
 
         const bookingPayload = convertFormToBooking(data);
         const result = await createBooking(bookingPayload);
+        console.log("Booking created:",  bookingPayload);
 
         if (result) {
           alert("ההזמנה נוצרה בהצלחה");
@@ -164,6 +156,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         }
 
         const calendarResult = await createBookingInCalendar(bookingPayload, "primary");
+         console.log("Booking created 2 :",  bookingPayload);
 
         if (calendarResult) {
           alert("ההזמנה נוצרה בהצלחה ביומן");
