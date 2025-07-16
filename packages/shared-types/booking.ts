@@ -73,7 +73,6 @@ export interface Booking {
   status: BookingStatus;
   notes?: string;
   googleCalendarEventId?: string | null;
-  // googleCalendarEventId?: string;
   totalHours: number;
   chargeableHours: number; // After free hours deduction
   totalCharge: number; // Amount to be charged
