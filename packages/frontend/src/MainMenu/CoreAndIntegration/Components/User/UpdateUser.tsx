@@ -12,7 +12,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 const schema = z.object({
-    email: z.string().email("Invalid Email").nonempty("EMAIL is required"),
     firstName: z.string().nonempty("First name is required"),
     lastName: z.string().nonempty("Last name is required"),
     role: z.string().nonempty("Role is required"),
@@ -35,12 +34,11 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-            email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
             role: user.role,
             active: user.active,
-            acceptTerms: true, // תמיד true לעדכון
+            acceptTerms: true, 
         }
     });
 
@@ -50,7 +48,6 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
         try {
             const updatedUser: User = {
                 ...user,
-                email: data.email,
                 firstName: data.firstName,
                 lastName: data.lastName,
                 role: data.role as UserRole,
@@ -113,13 +110,6 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
                         required
                     />
                 </div>
-
-                <InputField
-                    name="email"
-                    label="Email"
-                    required
-                    type="email"
-                />
 
                 <SelectField
                     name="role"

@@ -16,8 +16,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         setLoading(true);
         let res = await axiosInstance.get("/api/auth/verify");
-        console.log("po????????????????????????????????????\n");
-        
         if (res.status == 200) {
           console.log("Authenticated successfully");
           const data = res.data;
@@ -66,24 +64,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuth();
   }, [setUser, clearUser, setLoading, setSessionId]);
   //check session every 30 seconds to check if the session is still valid and same as the one in the store
-  // useEffect(() => {
-  //   let interval: NodeJS.Timeout | undefined;
-  //   if (user != null) {
-  //     interval = setInterval(async () => {
-  //       try {
-  //         const res = await axiosInstance.get("/api/auth/verify");
-  //       } catch (err: any) {
-  //         if (axios.isAxiosError(err) && err.response?.status === 409) {
-  //           console.warn("Session ID mismatch - logging out.");
-  //            alert("you logged in in another device -logging out")
-  //           clearUser();
-  //         }
-  //         console.error("Failed session check", err);
-  //         clearUser();
-  //       }
-  //     }, 30000); // כל 30 שניות
-  //   }
-
+  useEffect(() => {
+    let interval: NodeJS.Timeout | undefined;
+    if (user != null) {
+      interval = setInterval(async () => {
+        try {
+          const res = await axiosInstance.get("/auth/verify");
+        } catch (err: any) {
+          if (axios.isAxiosError(err) && err.response?.status === 409) {
+            console.warn("Session ID mismatch - logging out.");
+            alert("you logged in in another device -logging out")
+            clearUser();
+          }
+          console.error("Failed session check", err);
+          clearUser();
+        }
+      }, 30000); // כל 30 שניות
+    }
+  })
   //   return () => {
   //     if (interval) clearInterval(interval); // ניקוי כאשר הקומפוננטה מוסרת
   //   };

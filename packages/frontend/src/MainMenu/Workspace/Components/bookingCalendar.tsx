@@ -468,11 +468,6 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
         onClick={() => {
           setFormInitialData({
             selectedRoomId: roomId,
-           // roomName: roomName,
-            startDate: new Date().toISOString().slice(0, 10),
-            startTime: "08:00",
-            endDate: new Date().toISOString().slice(0, 10),
-            endTime: "09:00",
             // אפשר להוסיף כאן עוד נתונים אם צריך
           });
           setShowFormModal(true);
@@ -495,7 +490,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             
             // תיקון זמנים - רק 8-18
             slotMinTime="08:00"
-            slotMaxTime="18:00"
+            slotMaxTime="22:00"
             slotDuration="01:00"
             slotLabelInterval="01:00"
             snapDuration="00:15"
@@ -513,7 +508,7 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             businessHours={{
               daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
               startTime: '08:00',
-              endTime: '18:00',
+              endTime: '22:00',
             }}
             
             // תיקון כותרת
@@ -528,14 +523,13 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
             
             // תיקון לאירועים
             selectConstraint={{
-              start: '08:00',
-              end: '18:00'
+              // start: '08:00',
+              // end: '18:00'
             }}
             
             // הגדרות נוספות
             aspectRatio={1.35}
             contentHeight="auto"
-            
             events={events}
             selectMirror={true}
             selectable={true}

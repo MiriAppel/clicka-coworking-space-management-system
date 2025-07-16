@@ -1,4 +1,3 @@
-// src/store/booking.store.ts
 import { create } from 'zustand';
 import { Booking } from 'shared-types/booking';
 import { axiosInstance } from '../../Services/Axios';

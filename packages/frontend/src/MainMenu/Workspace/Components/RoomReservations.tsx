@@ -1,9 +1,10 @@
-import React, {useEffect,useState,useImperativeHandle,forwardRef} from "react";
+import React, { useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { InputField } from "../../../Common/Components/BaseComponents/Input";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
 import { SelectField } from "../../../Common/Components/BaseComponents/Select";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
+import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
 import { v4 as uuidv4 } from "uuid";
 import "../Css/roomReservations.css";
 
@@ -21,7 +22,7 @@ type Room = {
 };
 
 export type FormFields = {
-  customerStatus: "valid" | "customer";
+  customerStatus: "external" | "customer";
   phoneOrEmail?: string;
   customerId?: string;
   name?: string;
@@ -40,20 +41,24 @@ export type RoomReservationsRef = {
 
 export type RoomReservationsProps = {
   initialData?: Partial<FormFields>;
-    onSubmit?: () => void; // הוסיפי שורה זו
+  onSubmit?: () => void;
 };
 
 export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservationsProps>(
-  ({ initialData , onSubmit}, ref) => {
+  ({ initialData, onSubmit }, ref) => {
     const methods = useForm<FormFields>({
       defaultValues: {
-        customerStatus: "valid",
+        customerStatus: "customer",
         ...initialData,
       },
       mode: "onSubmit",
     });
 
-    const { createBooking, getCustomerByPhoneOrEmail, getAllRooms ,createBookingInCalendar} = useBookingStore();
+    const { createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
+    const customers = useCustomerStore((s) => s.customers);
+    const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
+
+
     const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
 
     const status = useWatch({ control: methods.control, name: "customerStatus" });
@@ -68,47 +73,45 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     }));
 
     useEffect(() => {
-      const fetchRooms = async () => {
-        const rooms: Room[] = await getAllRooms();
+      fetchCustomers();
+      getAllRooms().then((rooms: Room[]) => {
         setRoomOptions(
           rooms.map((room) => ({
             label: room.name,
             value: room.id,
           }))
         );
-      };
-      fetchRooms();
+      });
     }, []);
 
     useEffect(() => {
-      const fetchCustomer = async () => {
+      console.log("📦 API_URL:", process.env.REACT_APP_API_URL);
+      const fetch = async () => {
         if (status === "customer" && phoneOrEmail) {
-          try {
-            const customer = await getCustomerByPhoneOrEmail(phoneOrEmail);
-            if (customer) {
-              methods.setValue("customerId", customer.id);
-              methods.setValue("name", customer.name);
-              methods.setValue("email", customer.email);
-              methods.setValue("phone", customer.phone);
-            }
-          } catch (err) {
-            console.error("שגיאה בשליפת לקוח:", err);
+          const customer = await getCustomerByPhoneOrEmail(phoneOrEmail);
+          if (customer) {
+            methods.setValue("customerId", customer.id);
+            methods.setValue("name", customer.name);
+            console.log("שם הלקוח:", customer.name);
+            methods.setValue("email", customer.email);
+            methods.setValue("phone", customer.phone);
           }
         }
       };
-      fetchCustomer();
-    }, [status, phoneOrEmail, methods]);
+      fetch();
+    }, [status, phoneOrEmail]);
 
     const convertFormToBooking = (data: FormFields) => {
+      const name = data.name?.trim() || "";
       const startTime = `${data.startDate}T${data.startTime}:00.000Z`;
       const endTime = `${data.endDate}T${data.endTime}:00.000Z`;
-
       const selectedRoom = roomOptions.find((room) => room.value === data.selectedRoomId);
       const roomName = selectedRoom?.label ?? "Unknown";
 
       // Always include all fields required by Booking type
-      return {
+      const base = {
         id: uuidv4(),
+        name,
         roomId: data.selectedRoomId,
         roomName,
         startTime,
@@ -117,30 +120,47 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         totalHours: 0,
         chargeableHours: 0,
         totalCharge: 0,
+        googleCalendarEventId: undefined,
         isPaid: false,
+        approvedBy: "",
+        approvedAt: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        customerId: data.customerStatus === "customer" ? data.customerId ?? "" : "",
-        externalUserName: data.customerStatus === "valid" ? data.name ?? "" : "",
-        externalUserEmail: data.customerStatus === "valid" ? data.email ?? "" : "",
-        externalUserPhone: data.customerStatus === "valid" ? data.phone ?? "" : "",
+      };
+
+      if (data.customerStatus === "customer") {
+        console.log("customerId",data.customerId);
+        console.log("customerName",data.name);
+        console.log("customerPhone",data.phone);
+
+
+        return {
+          ...base,
+          customerId: data.customerId ?? "",
+          customerName:name ?? "",
+         
+        };
+      }
+
+      return {
+        ...base,
+        externalUserName: data.name ?? "",
+        externalUserEmail: data.email ?? "",
+        externalUserPhone: data.phone ?? "",
       };
     };
-
+    console.log("סטטוס נוכחי:", status);
     const handleSubmit = async (data: FormFields) => {
       try {
         if (data.customerStatus === "customer") {
           if (!data.customerId) {
-            const customer = await getCustomerByPhoneOrEmail(data.phoneOrEmail ?? "");
-            if (!customer) {
-              alert("לא נמצא לקוח עם הטלפון או המייל שסופקו");
-              return;
-            }
-            data.customerId = customer.id;
+            alert("יש לבחור לקוח מהרשימה או לפי מייל/טלפון");
+            return;
+            
           }
         } else {
           if (!data.name || !data.phone || !data.email) {
-            alert("נא למלא את כל השדות ללקוח חדש");
+            alert("נא למלא את כל פרטי הלקוח החיצוני");
             return;
           }
         }
@@ -152,20 +172,11 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         if (result) {
           alert("ההזמנה נוצרה בהצלחה");
           methods.reset();
-          if (onSubmit) onSubmit(); 
+          onSubmit?.();
         }
-
-        const calendarResult = await createBookingInCalendar(bookingPayload, "primary");
-         console.log("Booking created 2 :",  bookingPayload);
-
-        if (calendarResult) {
-          alert("ההזמנה נוצרה בהצלחה ביומן");
-          methods.reset();
-          if (onSubmit) onSubmit(); 
-        }
-      } catch (error) {
-        console.error("שגיאה ביצירת ההזמנה:", error);
-        alert("אירעה שגיאה ביצירת ההזמנה");
+      } catch (err) {
+        console.error("שגיאה ביצירת ההזמנה:", err);
+        alert("שגיאה ביצירת ההזמנה");
       }
     };
 
@@ -175,23 +186,52 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           <h1 className="form-title">הזמנות חדרים</h1>
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(handleSubmit)}>
-              <fieldset>
+              {/* <fieldset>
                 <legend>סטטוס לקוח</legend>
                 <label>
-                  <InputField type="radio" name="customerStatus" value="valid" label="מתעניין" />
+                  <InputField type="radio" name="customerStatus" value="external" label="לקוח חיצוני" />
                 </label>
                 <label>
                   <InputField type="radio" name="customerStatus" value="customer" label="לקוח קיים" />
                 </label>
-              </fieldset>
+              </fieldset> */}
+              <fieldset>
+  <legend>סטטוס לקוח</legend>
+  <label>
+    <input
+      type="radio"
+      value="customer"
+      {...methods.register("customerStatus")}
+      defaultChecked
+    />
+    לקוח קיים
+  </label>
+  <label>
+    <input
+      type="radio"
+      value="external"
+      {...methods.register("customerStatus")}
+    />
+    לקוח חיצוני
+  </label>
+</fieldset>
 
-              {status === "customer" && (
-                <div className="form-field">
-                  <InputField name="phoneOrEmail" label="טלפון או מייל לזיהוי" type="text" required />
-                </div>
-              )}
 
-              {status === "valid" && (
+              {status === "customer" ? (
+                <>
+                  <div className="form-field">
+                    <SelectField
+                      name="customerId"
+                      label="בחר לקוח מהרשימה"
+                      options={customers.map((c) => ({
+                        label: `${c.name} - ${c.phone}`,
+                        value: c.id || "",
+                      }))}
+                      required
+                    />
+                  </div>
+                </>
+              ) : (
                 <>
                   <div className="form-field">
                     <InputField name="name" label="שם" type="text" required />
@@ -232,3 +272,5 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     );
   }
 );
+
+RoomReservations.displayName = "RoomReservations";

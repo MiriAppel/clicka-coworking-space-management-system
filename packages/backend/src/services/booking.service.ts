@@ -18,24 +18,64 @@ export class BookingService {
     }
    
   async createBooking(book: BookingModel): Promise<BookingModel | null> {
-    console.log('📦 Inserting booking:', book.toDatabaseFormat());
-    const { data, error } = await supabase
-      .from('booking')
-      .insert([book.toDatabaseFormat()])
-      .select()
-      .single();
-
-
-   if (error) {
-  console.log('❌ Supabase Insert Error:', error); // ✅ הוספתי הדפסה מפורטת
-throw new Error(`Failed to create booking: ${error.message}`);
-  }
-
-    const createdBook =   BookingModel.fromDatabaseFormat(data);
-    logUserActivity(book.id ?? book.roomName, 'book created');
-    return createdBook;
+    try {
+      // אם יש לקוח קיים - ננסה לשלוף את שמו
+      if (book.customerId) {
+        console.log('🔍 Trying to fetch customer name by ID:', book.customerId);
+  
+        const { data: customer, error: customerError } = await supabase
+          .from('customers')
+          .select('name')
+          .eq('id', book.customerId)
+          .single();
+  
+        if (customerError || !customer) {
+          console.warn('⚠️ לא נמצא שם לקוח, נמשיך בלי זה');
+        } else {
+          console.log('✅ Customer found:', customer.name);
+          book.customerName = customer.name;
+        }
+      }
+  
+      console.log('📦 Inserting booking:', book.toDatabaseFormat());
+  
+      const { data, error } = await supabase
+        .from('booking')
+        .insert([book.toDatabaseFormat()])
+        .select()
+        .single();
+  
+      if (error) {
+        console.log('❌ Supabase Insert Error:', error);
+        throw new Error(`Failed to create booking: ${error.message}`);
+      }
+  
+      const createdBook = BookingModel.fromDatabaseFormat(data);
+      logUserActivity(book.id ?? book.roomName, 'book created');
+      return createdBook;
+    } catch (err) {
+      console.error('❌ Error in createBooking:', err);
+      return null;
     }
-      async getAllBooking() {
+  }
+  
+
+//   async createBooking(book: BookingModel): Promise<BookingModel | null> {
+//     console.log('📦 Inserting booking:', book.toDatabaseFormat());
+//     const { data, error } = await supabase
+//       .from('booking')
+//       .insert([book.toDatabaseFormat()])
+//       .select()
+//       .single();
+//    if (error) {
+//   console.log('❌ Supabase Insert Error:', error); // ✅ הוספתי הדפסה מפורטת
+// throw new Error(`Failed to create booking: ${error.message}`);
+//   }
+//     const createdBook =   BookingModel.fromDatabaseFormat(data);
+//     logUserActivity(book.id ?? book.roomName, 'book created');
+//     return createdBook;
+//     }
+  async getAllBooking() {
     try {
       const { data, error } = await supabase
         .from('booking') 

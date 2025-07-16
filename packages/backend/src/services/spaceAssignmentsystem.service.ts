@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { RoomModel } from "../models/room.model";
 import type { ID } from "shared-types";
 import dotenv from 'dotenv';
-import { SpaceAssignmentModel } from '../models/spaceAssignment.model';
+import { SpaceAssignmentModel } from '../models/spaceAssingment.model';
 dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
@@ -38,7 +38,7 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
         console.error('Supabase error:', error.message);
         return null;
       }
- const createdspace = SpaceAssignmentModel.fromDatabaseFormatArray(data)
+ const createdspace = SpaceAssignmentModel.fromDatabaseFormat(data)
       return createdspace;
     } catch (err) {
       console.error('Unexpected error:', err);
