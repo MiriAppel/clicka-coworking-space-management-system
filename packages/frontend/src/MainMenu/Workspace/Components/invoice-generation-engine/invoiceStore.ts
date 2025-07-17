@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import axios from 'axios';
-import type{ Invoice } from 'shared-types';
+import type { Invoice } from 'shared-types';
 import { InvoiceStatus } from 'shared-types';
 
 
@@ -36,8 +36,8 @@ export const useInvoiceStore = create<InvoiceState>()(
   devtools(
     persist(
       (set, get) => ({
-       invoices: [
-    ],
+        invoices: [
+        ],
         loading: false,
         error: null,
 
@@ -57,29 +57,27 @@ export const useInvoiceStore = create<InvoiceState>()(
         //   }
         // },
         fetchInvoices: async () => {
-  set({ loading: true, error: null });
-  set({
-    invoices: [
-      {
-        id: '1',
-        invoice_number: '1001',
-        customer_id: 'c1',
-        customer_name: 'לקוח א',
-        status: InvoiceStatus.ISSUED,
-        issue_date: '2024-06-01',
-        due_date: '2024-06-30',
-        items: [],
-        subtotal: 100,
-        taxtotal: 17,
-        created_at: '2024-06-01',
-        updated_at: '2024-06-01'
-      }
-    ],
-    loading: false
-  });
-},
-
-
+          set({ loading: true, error: null });
+          set({
+            invoices: [
+              {
+                id: '1',
+                invoice_number: '1001',
+                customer_id: 'c1',
+                customer_name: 'לקוח א',
+                status: InvoiceStatus.ISSUED,
+                issue_date: '2024-06-01',
+                due_date: '2024-06-30',
+                items: [],
+                subtotal: 100,
+                taxtotal: 17,
+                created_at: '2024-06-01',
+                updated_at: '2024-06-01'
+              }
+            ],
+            loading: false
+          });
+        },
         // יצירת חשבונית חדשה
         createInvoice: async (newInvoice) => {
           set({ loading: true, error: null });
@@ -99,21 +97,21 @@ export const useInvoiceStore = create<InvoiceState>()(
 
         // עדכון חשבונית קיימת
         updateInvoice: async (id, updates) => {
-  let updatedInvoice: Invoice | undefined;
-  set((state) => {
-    const invoices = state.invoices.map(invoice => {
-      if (invoice.id === id) {
-        updatedInvoice = { ...invoice, ...updates };
-        return updatedInvoice;
-      }
-      return invoice;
-    });
-    return { invoices };
-  });
-  // אם לא נמצא, אפשר להחזיר שגיאה או undefined
-  if (!updatedInvoice) throw new Error('Invoice not found');
-  return updatedInvoice;
-},
+          let updatedInvoice: Invoice | undefined;
+          set((state) => {
+            const invoices = state.invoices.map(invoice => {
+              if (invoice.id === id) {
+                updatedInvoice = { ...invoice, ...updates };
+                return updatedInvoice;
+              }
+              return invoice;
+            });
+            return { invoices };
+          });
+          // אם לא נמצא, אפשר להחזיר שגיאה או undefined
+          if (!updatedInvoice) throw new Error('Invoice not found');
+          return updatedInvoice;
+        },
         // מחיקת חשבונית
         deleteInvoice: async (id) => {
           try {
@@ -180,8 +178,8 @@ export const useInvoiceStore = create<InvoiceState>()(
         calculateOpenInvoicesTotal: () => {
           const { invoices } = get();
           return invoices
-            .filter(invoice => 
-              invoice.status !== InvoiceStatus.PAID && 
+            .filter(invoice =>
+              invoice.status !== InvoiceStatus.PAID &&
               invoice.status !== InvoiceStatus.CANCELED
             )
             .reduce((total, invoice) => total + invoice.subtotal, 0);

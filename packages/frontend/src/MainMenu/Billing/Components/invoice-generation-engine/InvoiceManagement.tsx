@@ -36,8 +36,6 @@ export const InvoiceManagement: React.FC = () => {
   const [emailData, setEmailData] = useState({ invoiceId: '', email: '' });
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
   const [invoiceItems, setInvoiceItems] = useState<any[]>([]);
-
-
   const [formData, setFormData] = useState({
     customerId: '',
     customerName: '',
@@ -334,7 +332,6 @@ console.log("55555555555555",invoice);
       // טען את פריטי החשבונית באותו אופן כמו בפונקציה הקיימת
       const response: any = await getAllInvoiceItems(invoice.id);
       let invoiceItems = [];
-
       if (Array.isArray(response.invoiceItems)) {
         invoiceItems = response.invoiceItems;
       } else {
@@ -343,7 +340,6 @@ console.log("55555555555555",invoice);
       }
 
       setEditingInvoice(invoice);
-
       const formDataForEdit = {
         customerId: invoice.customer_id || '',
         customerName: invoice.customer_name || '',

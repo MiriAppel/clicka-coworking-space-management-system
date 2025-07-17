@@ -33,8 +33,6 @@ export async function createInvoice(req: Request, res: Response): Promise<void> 
   }
 }
 
-
-
 // /**
 //  * בקר לקבלת כל החשבוניות
 //  */
@@ -52,19 +50,16 @@ export const getAllInvoices = async (_req: Request, res: Response) => {
 };
 //  * בקר לקבלת כל פרטי החשבוניות
 //  */
+
 export const getAllInvoiceItems = async (req: Request, res: Response) => {
-  console.log('=== getAllInvoiceItems CALLED ===*****');
-  console.log('Full URL:', req.url);
   try {
     const invoiceId = req.params.invoice_id as UUID;
     const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
-    //const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
     res.status(200).json({
       message: `נמצאו ${invoiceItems.length} חשבוניות`,
       invoiceItems
     });
   } catch (error) {
-    console.error(' CONTROLLER: שגיאה:', error);
     res.status(500).json({ message: (error as Error).message });
   }
 };
@@ -95,14 +90,20 @@ export const getInvoiceById = async (req: Request, res: Response): Promise<void>
  * בקר לעדכון חשבונית
  */
 export const updateInvoice = async (req: Request, res: Response): Promise<void> => {
+
+  console.log('=== updateInvoice CALLED ===');
+
   try {
     const id = req.params.id as ID;
+    console.log('ID שהתקבל:', id);
     const updateData = req.body;
     const updatedInvoice = await serviceUpdateInvoice(id, updateData);
+
     if (!updatedInvoice) {
       res.status(404).json({ message: "חשבונית לא נמצאה" });
       return;
     }
+
     res.status(200).json({
       message: "חשבונית עודכנה בהצלחה",
       invoice: updatedInvoice
@@ -115,26 +116,8 @@ export const updateInvoice = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// export const updateInvoice = async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const id = req.params.id as ID;
-//     const updateData = req.body;
 
-//     const updatedInvoice = await serviceUpdateInvoice(id, updateData);
 
-//     if (!updatedInvoice) {
-//       res.status(404).json({ message: "חשבונית לא נמצאה" });
-//       return; 
-//     }
-
-//     res.status(200).json({
-//       message: "חשבונית עודכנה בהצלחה",
-//       invoice: updatedInvoice
-//     });
-//   } catch (error) {
-//     res.status(400).json({ message: (error as Error).message });
-//   }
-// };
 
 
 /**

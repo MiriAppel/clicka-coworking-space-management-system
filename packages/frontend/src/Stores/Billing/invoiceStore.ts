@@ -5,7 +5,7 @@ import axios from 'axios';
 import {
   CreateInvoiceRequest,
   Invoice,
-//   InvoiceItem,
+  //   InvoiceItem,
 } from 'shared-types';
 import { InvoiceStatus } from 'shared-types';
 import { UUID } from 'crypto';
@@ -46,75 +46,29 @@ export const useInvoiceStore = create<InvoiceState>()(
         loading: false,
         error: null,
         // שליפת כל החשבוניות מהשרת
-        // getAllInvoices: async () => {
-        //   set({ loading: true, error: null });
-        //   try {
-        //     console.log(' מתחיל לשלוף חשבוניות...');
-        //     const response = await axios.get('http://localhost:3001/api/invoices/');
-        //     console.log(' תגובה מהשרת:', response);
-        //     console.log(' נתונים:', response.data);
 
-        //     // השרת מחזיר אובייקט עם message ו-invoices
-        //     // צריך לגשת ל-response.data.invoices במקום response.data
-        //     const invoicesData = Array.isArray(response.data.invoices) ? response.data.invoices : [];
-        //     console.log(' נתונים מעובדים:', invoicesData);
-        //     console.log(' כמות חשבוניות:', invoicesData.length);
-
-        //     set({ invoices: invoicesData, loading: false });
-        //   } catch (error) {
-        //     console.error(' שגיאה בשליפת חשבוניות:', error);
-        //     set({
-        //       error: 'Error fetching invoices',
-        //       loading: false,
-        //       invoices: []
-        //     });
-        //     throw error;
-        //   }
-        // },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-     fetchInvoices: async () => {
-  set({ loading: true, error: null });
-  set({
-    invoices: [
-      {
-        id: '1',
-        invoice_number: '1001',
-        customer_id: 'c1',
-        customer_name: 'לקוח א',
-        status: InvoiceStatus.ISSUED,
-        issue_date: '2024-06-01',
-        due_date: '2024-06-30',
-        items: [],
-        subtotal: 100,
-        taxtotal: 17,
-        created_at: '2024-06-01',
-        updated_at: '2024-06-01'
-      }
-    ],
-    loading: false
-  });
-},
-
-
-
+        fetchInvoices: async () => {
+          set({ loading: true, error: null });
+          set({
+            invoices: [
+              {
+                id: '1',
+                invoice_number: '1001',
+                customer_id: 'c1',
+                customer_name: 'לקוח א',
+                status: InvoiceStatus.ISSUED,
+                issue_date: '2024-06-01',
+                due_date: '2024-06-30',
+                items: [],
+                subtotal: 100,
+                taxtotal: 17,
+                created_at: '2024-06-01',
+                updated_at: '2024-06-01'
+              }
+            ],
+            loading: false
+          });
+        },
 
         getAllInvoices: async () => {
           set({ loading: true, error: null });
@@ -122,8 +76,6 @@ export const useInvoiceStore = create<InvoiceState>()(
             const response = await axios.get('http://localhost:3001/api/invoices/');
             // השרת מחזיר אובייקט עם message ו-invoices
             const invoicesData = Array.isArray(response.data.invoices) ? response.data.invoices : [];
-          
-            
             const processedInvoices = invoicesData.map((invoice: any) => {
               return {
                 ...invoice,
@@ -131,7 +83,6 @@ export const useInvoiceStore = create<InvoiceState>()(
                 items: invoice.items || invoice.invoice_item || []
               };
             });
-
             set({ invoices: processedInvoices, loading: false });
           } catch (error) {
             console.error(' שגיאה בשליפת חשבוניות:', error);

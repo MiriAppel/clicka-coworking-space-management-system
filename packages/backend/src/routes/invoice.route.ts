@@ -9,6 +9,8 @@ import {
   deleteInvoice
 } from '../controllers/invoice.controller';
 const invoiceRouter = Router();
+console.log('✅ invoice router loaded');
+
 // נתיב בדיקה
 invoiceRouter.get('/health', (req: Request, res: Response) => {
   res.json({
@@ -25,6 +27,8 @@ invoiceRouter.get('/health', (req: Request, res: Response) => {
     ]
   });
 });
+console.log('✅ invoice router loaded');
+
 // CREATE - יצירת חשבוניות
 invoiceRouter.post('/create', createInvoice);                    // יצירת חשבונית ידנית            // יצירת חשבוניות אוטומטיות
 // READ - קריאת חשבוניות
@@ -35,5 +39,10 @@ invoiceRouter.get('/:id', getInvoiceById);                       // חשבוני
 invoiceRouter.put('/:id', updateInvoice);                        // עדכון חשבונית (הסרתי 'update/')
 // DELETE - מחיקת חשבונית
 invoiceRouter.delete('/:id', deleteInvoice);                     // מחיקת חשבונית (הסרתי 'delete/')
+
+invoiceRouter.get('/health', (req, res) => {
+  res.json({ message: 'INVOICE ROUTER OK' });
+});
+
 
 export default invoiceRouter;
