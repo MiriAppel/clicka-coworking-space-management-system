@@ -19,7 +19,7 @@ export class CustomerModel implements Customer {
   notes?: string;
   invoiceName?: string;
   // contractDocuments?: FileReference[];
-  paymentMethods: CustomerPaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
+  paymentMethods?: CustomerPaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
   paymentMethodType: PaymentMethodType;
   periods?: CustomerPeriod[];
   // contracts: Contract[];  // One customer can have several contracts. 1:N
@@ -39,7 +39,7 @@ export class CustomerModel implements Customer {
     createdAt: DateISO,
     updatedAt: DateISO,
     paymentMethods: CustomerPaymentMethod[],
-    paymentMethodsType: PaymentMethodType,
+    paymentMethodType: PaymentMethodType,
     currentWorkspaceType?: WorkspaceType,
     contractSignDate?: string,
     contractStartDate?: string,
@@ -67,7 +67,7 @@ export class CustomerModel implements Customer {
     this.invoiceName = invoiceName;
     // this.contractDocuments = contractDocuments;
     this.paymentMethods = paymentMethods;
-    this.paymentMethodType = paymentMethodsType;
+    this.paymentMethodType = paymentMethodType;
     this.periods = periods;
     // this.contracts = contracts;
     this.createdAt = createdAt;
@@ -112,8 +112,7 @@ export class CustomerModel implements Customer {
       dbData.workspace_count,
       dbData.created_at,
       dbData.updated_at,
-      [],
-      // dbData.paymentMethods || [],
+      dbData.paymentMethods || [],
       dbData.payment_methods_type,
       dbData.current_workspace_type,
       dbData.contract_sign_date,
@@ -147,7 +146,7 @@ export class CustomerModel implements Customer {
     if (data.billingStartDate !== undefined) dbObj.billing_start_date = data.billingStartDate;
     if (data.notes !== undefined) dbObj.notes = data.notes;
     if (data.invoiceName !== undefined) dbObj.invoice_name = data.invoiceName;
-    // if (data.paymentMethodsType !== undefined) dbObj.payment_methods_type = data.paymentMethodsType;
+    if (data.paymentMethodType !== undefined) dbObj.payment_methods_type = data.paymentMethodType;
     if (data.createdAt !== undefined) dbObj.created_at = data.createdAt;
     if (data.updatedAt !== undefined) dbObj.updated_at = data.updatedAt;
     // הוסיפי כאן שדות נוספים במידת הצורך

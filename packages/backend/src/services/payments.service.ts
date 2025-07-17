@@ -1,19 +1,142 @@
-// import type{ ID, Invoice, Payment } from "shared-types";
+import type{ ID, Invoice, Payment } from "shared-types";
+import { baseService } from "./baseService";
+import { PaymentModel } from "../models/payments.model";
+import { supabase } from "../db/supabaseClient";
 
-// export class PaymentService {
-//   static getCustomerBalance(customerId: string) {
-//     throw new Error('Method not implemented.');
-//   }
-//   static recordPayment(body: any, id: any) {
-//     throw new Error('Method not implemented.');
-//   }
-//  updatePayment(request: PaymentRequest, recordedBy: ID)/*: Payment*/ {
-//     // אימות מזהה לקוח (נניח שמבוצע ברמת שירות או קריאה חיצונית)
-//     // אימות חשבונית אם צורפה
-//     // יצירת אובייקט תשלום חדש
-//     // עדכון סטטוס חשבונית בהתאם אם צורפה - יבוצע בהמשך במערכת
-//   }
+export class PaymentService extends baseService<PaymentModel> {
 
+  constructor() {
+    super("payment");
+  }
+  
+  // static getCustomerBalance(customerId: string) {
+  //   throw new Error('Method not implemented.');
+  // }
+  // static recordPayment(body: any, id: any) {
+  //   throw new Error('Method not implemented.');
+  // }
+  getPaymentsByText = async (text: string): Promise<PaymentModel[]> => {
+  const searchFields = ["customerName", "customerId", "amount"]; // כל השדות שאת רוצה לבדוק בהם
+
+  const filters = searchFields
+    .map((field) => `${field}.ilike.%${text}%`)
+    .join(",");
+
+  const { data, error } = await supabase
+    .from("payment")
+    .select("*")
+    .or(filters);
+
+  if (error) {
+    console.error("שגיאה:", error);
+    return [];
+  }
+
+  return data as PaymentModel[];
+};
+async getPaymentByDateAndCIds(params: {
+  dateFrom: string;
+  dateTo: string;
+  customerIds?: ID[]; // תמיכה בריבוי לקוחות
+}): Promise<Payment[]> {
+  try {
+    let query = supabase.from('payment').select('*');
+
+    if (params.customerIds?.length) {
+      query = query.in('customer_id', params.customerIds); // ✅ סינון לפי כמה לקוחות
+    }
+    if (params.dateFrom) {
+      query = query.gte('date', params.dateFrom);
+    }
+    if (params.dateTo) {
+      query = query.lte('date', params.dateTo);
+    }
+
+    query = query.order('date', { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching payments:', error);
+      return [];
+    }
+
+    return data as Payment[];
+  } catch (err) {
+    console.error('Unexpected error fetching payments:', err);
+    return [];
+  }
+}
+  getPaymentByPage = async (filters: {
+        page?: string ;
+        limit?: number;
+      }): Promise<PaymentModel[]> => {
+        console.log("Fetching payments with filters:", filters);
+        const { page, limit } = filters;
+    
+        const pageNum = Number(filters.page);
+        const limitNum = Number(filters.limit);
+    
+        if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
+          throw new Error("Invalid filters provided for pagination");
+        }
+    
+        const from = (pageNum - 1) * limitNum;
+        const to = from + limitNum - 1;
+    
+        const { data, error } = await supabase
+          .from("payment")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .range(from, to);
+    
+        console.log("Supabase data:", data);
+        console.log("Supabase error:", error);
+    
+        if (error) {
+          console.error("❌ Supabase error:", error.message || error);
+          return Promise.reject(
+            new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+          );
+        }
+    
+          const customers = data || [];
+          PaymentModel
+        return PaymentModel.fromDatabaseFormatArray(customers)
+      };
+
+
+    async getPaymentByDate(params: { dateFrom: string; dateTo: string; customerId?: ID }): Promise<Payment[]> {
+    try {
+      let query = supabase.from('payment').select('*');
+
+      if (params.customerId) {
+        query = query.eq('customer_id', params.customerId);
+      }
+      if (params.dateFrom) {
+        query = query.gte('date', params.dateFrom);
+      }
+      if (params.dateTo) {
+        query = query.lte('date', params.dateTo);
+      }
+
+      // מיון מהחדש לישן לפי תאריך
+      query = query.order('date', { ascending: false });
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching payments:', error);
+        return [];
+      }
+
+      return data as Payment[];
+    } catch (err) {
+      console.error('Unexpected error fetching payments:', err);
+      return [];
+    }
+  }
+    }
 //   getCustomerBalance(customerId: ID)/*: CustomerBalance*/ {
 //     // שליפת כל החשבוניות של הלקוח שלא שולמו במלואן
 //     // חישוב סך כל החשבוניות שעדיין פתוחות
@@ -49,14 +172,12 @@
 //     // עדכון של החשבוניות בהתאם לסכום שנכנס
 //     // אם התשלום הושלם, להכניס את היתרה ליתרה בחשבון של המשתמש
 //   }
-// async getPaymentHistory(customerId: ID): Promise<Payment[]> {
-//     // כרגע מחזיר רשימה ריקה לצורך בניית ה-service
-//       // שליפת כל התשלומים מהמסד (פונקציה כללית שמחזירה את כולם)
+
+//   getPaymentHistory(customerId: ID)/*: Payment[]*/ {
+//     // שליפת כל התשלומים מהמסד (פונקציה כללית שמחזירה את כולם)
 //     // סינון לפי מזהה הלקוח
 //     // מיון תשלומים מהחדש לישן לפי תאריך תשלום
-//     return [];
 //   }
-
 
 //   //לרחל
 //   /**
@@ -92,51 +213,3 @@
 //   }
   
 // }
-import { createClient } from '@supabase/supabase-js';
-import type { ID, Payment } from 'shared-types';
-
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-export class PaymentService {
-  /**
-   * שליפת תשלומים לפי טווח תאריכים
-   * @param params - אובייקט עם תאריך התחלה ותאריך סיום
-   * @returns רשימת תשלומים
-   */ 
-  async getPaymentByDateAndCIds(params: {
-  dateFrom: string;
-  dateTo: string;
-  customerIds?: ID[]; // תמיכה בריבוי לקוחות
-}): Promise<Payment[]> {
-  try {
-    let query = supabase.from('payment').select('*');
-
-    if (params.customerIds?.length) {
-      query = query.in('customer_id', params.customerIds); // ✅ סינון לפי כמה לקוחות
-    }
-    if (params.dateFrom) {
-      query = query.gte('date', params.dateFrom);
-    }
-    if (params.dateTo) {
-      query = query.lte('date', params.dateTo);
-    }
-
-    query = query.order('date', { ascending: false });
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Error fetching payments:', error);
-      return [];
-    }
-
-    return data as Payment[];
-  } catch (err) {
-    console.error('Unexpected error fetching payments:', err);
-    return [];
-  }
-}
-
-}

@@ -1,4 +1,4 @@
-import { DateISO, EmailTemplate, ID } from "shared-types";
+import { DateISO, ID, EmailTemplate } from "shared-types";
 
 export class EmailTemplateModel implements EmailTemplate {
     id?: ID;
@@ -18,6 +18,7 @@ export class EmailTemplateModel implements EmailTemplate {
         this.bodyHtml = data.bodyHtml ?? data.body_html ?? '';
         this.bodyText = data.bodyText ?? data.body_text ?? '';
         this.language = data.language;
+        this.variables = data.variables ?? [];
         let parsedVariables: string[] = [];
         if (Array.isArray(data.variables)) {
             // אם זה כבר מערך, נחלץ את החלק שלפני הנקודתיים (אם קיים)

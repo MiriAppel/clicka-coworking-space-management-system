@@ -12,7 +12,7 @@ const expenseRouter = Router();
 
 expenseRouter.get(
   '/getExpensesByVendorId/:vendorId',
-  // expenseController.getExpensesByVendorId.bind(expenseController)
+  expenseController.getExpensesByVendorId.bind(expenseController)
 );
 expenseRouter.get("/getAll",expenseController.getAllExpenses1.bind(expenseController));
 expenseRouter.post("/createExpense",expenseController.createExpense.bind(expenseController));

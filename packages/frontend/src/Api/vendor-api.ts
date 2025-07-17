@@ -4,7 +4,7 @@ import { Vendor, VendorCategory } from "shared-types";
 const BASE_URL = "http://localhost:3001";
 
 export const getAllVendors = async () => {
-  const response = await axios.get(`${BASE_URL}/vendor/getAllVendors`);
+  const response = await axios.get(`${BASE_URL}/vendor`);
   return response.data;
 };
 
