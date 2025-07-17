@@ -167,9 +167,9 @@ const columnTranslations: Record<string, string> = {
       case ReportType.EXPENSES:
         return reportData?.expenseData?.monthlyTrend?.map((i) => ({ label: i.month, value: i.totalExpenses })) || [];
       case ReportType.PROFIT_LOSS:
-        return reportData?.profitLossData?.breakdown?.map((i) => ({ label: i.date, value: i.profit })) || [];
-      case ReportType.CASH_FLOW:
-        return reportData?.cashFlowData?.breakdown?.map((i) => ({ label: i.date, value: i.totalPayments })) || [];
+       return reportData?.profitLossData?.breakdown?.map((i) => ({ label: i.date, value: i.profit })) || [];
+     case ReportType.CASH_FLOW:
+       return reportData?.cashFlowData?.breakdown?.map((i) => ({ label: i.date, value: i.totalPayments })) || [];
       default:
         return [];
     }

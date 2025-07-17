@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
@@ -15,9 +16,12 @@ import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
-import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
+import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
 
-
+import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';
+import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
+import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
+import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -60,6 +64,10 @@ export const Routing = () => {
         <Route path="users" element={< UserTable />} />
         <Route path="meetingRooms" element={<RoomReservations />} />  
         <Route path="emailTemplate" element={< EmailTemplateTable />} />
+        <Route path="/pricing" element={<PricingHomePage />} />
+        <Route path="/pricing/workspace" element={<PricingSectionPage type="workspace" />} />
+        <Route path="/pricing/meeting-room" element={<PricingSectionPage type="meeting-room" />} />
+        <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
       </Route>
     </Routes>
   );
