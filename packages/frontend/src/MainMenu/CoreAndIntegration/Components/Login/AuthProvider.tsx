@@ -1,7 +1,8 @@
 import { Children, ReactNode, useEffect } from "react";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
-import { axiosInstance } from "../../../../Service/Axios";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import axiosInstance from "../../../../Service/Axios";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -15,7 +16,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const checkAuth = async () => {
       try {
         setLoading(true);
-        let res = await axiosInstance.get("/api/auth/verify");
+        let res = await axiosInstance.get("/auth/verify");
         if (res.status == 200) {
           console.log("Authenticated successfully");
           const data = res.data;
@@ -48,7 +49,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         if (axios.isAxiosError(err) && err.response?.status === 409) {
           console.warn("Session ID mismatch - logging out.");
-          alert("you logged in in another device -please log in again")
+          showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
           clearUser();
         }
 
@@ -70,7 +71,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         } catch (err: any) {
           if (axios.isAxiosError(err) && err.response?.status === 409) {
             console.warn("Session ID mismatch - logging out.");
-            alert("you logged in in another device -logging out")
+            showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
             clearUser();
           }
           console.error("Failed session check", err);

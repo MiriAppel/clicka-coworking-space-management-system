@@ -93,7 +93,7 @@ export interface Contract {
 export interface CustomerPaymentMethod {
   id?: ID;
   customerId: ID;
-  creditCardLast4?: string;
+  creditCardNumber?: string;
   creditCardExpiry?: string;
   creditCardHolderIdNumber?: string;
   creditCardHolderPhone?: string;
@@ -144,7 +144,7 @@ export interface CreateCustomerRequest {
   notes?: string;
   invoiceName?: string;
   paymentMethod?: {
-    creditCardLast4?: string;
+    creditCardNumber?: string;
     creditCardExpiry?: string;
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;
@@ -152,7 +152,6 @@ export interface CreateCustomerRequest {
   paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
-
 
 // Update customer request
 export interface UpdateCustomerRequest {
@@ -226,7 +225,7 @@ export interface ConvertLeadToCustomerRequest {
   billingStartDate: DateISO;
   notes?: string;
   paymentMethod?: {
-    creditCardLast4?: string;
+    creditCardNumber?: string;
     creditCardExpiry?: string;
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;

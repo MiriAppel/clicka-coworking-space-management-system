@@ -1,4 +1,4 @@
-import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
+import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest, StatusChangeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
 import { create } from 'zustand';
 
 interface CustomerStore {
@@ -21,7 +21,8 @@ interface CustomerStore {
     deleteCustomer: (id: string) => Promise<void>;
     resetSelectedCustomer: () => void;
     recordExitNotice: (id: string, data: RecordExitNoticeRequest) => Promise<void>;
-    getCustomerPaymentMethods: (id: string) => Promise<CustomerPaymentMethod[]>; 
+    getCustomerPaymentMethods: (id: string) => Promise<CustomerPaymentMethod[]>;
+    changeCustomerStatus: (id: string, statusChangeData: StatusChangeRequest) => Promise<void>;
 
 }
 
@@ -57,7 +58,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
             if (!response.ok) {
                 throw new Error("Failed to fetch customers by page");
             }
-            const data: Customer[] = await response.json();            
+            const data: Customer[] = await response.json();
             set({ customers: data, customersPage: data, loading: false });
 
         } catch (error: any) {
@@ -172,7 +173,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
 
     updateCustomer: async (id: string, customer: Partial<Customer>) => {
         console.log("עדכון לקוח עם מזהה:", id, "פרטי הלקוח:", customer);
-        
+
         set({ loading: true, error: undefined });
         try {
             const response = await fetch(`${BASE_API_URL}/${id}`, {
@@ -253,22 +254,54 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     },
 
     getCustomerPaymentMethods: async (id: string) => {
-    set({ loading: true, error: undefined });
-    try {
-        const response = await fetch(`${BASE_API_URL}/${id}/payment-methods`);
-        if (!response.ok) {
-            throw new Error("Failed to fetch customer payment methods");
-        }
-        const data = await response.json();
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch(`${BASE_API_URL}/${id}/payment-methods`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch customer payment methods");
+            }
+            const data = await response.json();
             console.log("שיטות תשלום שהתקבלו :", data);
-        return data;
-    } catch (error: any) {
-        set({ error: error.message || "שגיאה בקבלת אמצעי תשלום ללקוח", loading: false });
-        return [];
-    } finally {
-        set({ loading: false });
+            return data;
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה בקבלת אמצעי תשלום ללקוח", loading: false });
+            return [];
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    changeCustomerStatus: async (id: string, statusChangeData: StatusChangeRequest) => {
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch(`${BASE_API_URL}/${id}/status-change`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(statusChangeData),
+            });
+            console.log("Changing customer status in store:", id, statusChangeData);
+            
+            if (!response.ok) {
+                let errorMsg = "Failed to change customer status";
+                try {
+                    const errorBody = await response.json();
+                    errorMsg = errorBody?.error?.details || errorBody?.error?.message || errorBody?.message || errorMsg;
+                } catch (e) { }
+                throw new Error(errorMsg);
+            }
+            // עדכן את הלקוחות אחרי שינוי
+            await useCustomerStore.getState().fetchCustomersByPage();
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה בשינוי סטטוס לקוח", loading: false });
+            console.log("Error changing customer status in store:", error);
+            
+            throw error;
+        } finally {
+            set({ loading: false });
+        }
     }
-},
 }));
 
 const statusLabels: Record<CustomerStatus, string> = {

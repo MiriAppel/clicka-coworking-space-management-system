@@ -7,7 +7,6 @@ const userController = new UserController();
 const userRouter = Router();
 
 //לברר איזה הרשאות יש לכל משתמש
-//authorizeUser([UserRole.ADMIN,UserRole.MANAGER])
 
 //get
 userRouter.get("/loginByGoogleId/:googleId", userController.loginByGoogleId.bind(userController));
@@ -20,7 +19,8 @@ userRouter.get("/getUserByEmail/:email", userController.getUserByEmail.bind(user
 
 //post
 
-userRouter.post("/createUser", userController.createUser.bind(userController));
+userRouter.post("/createUser", authorizeUser([UserRole.ADMIN,UserRole.MANAGER]),
+userController.createUser.bind(userController));
 
 userRouter.put("/updateGoogleIdUser/:id", userController.updateGoogleIdUser.bind(userController));
 

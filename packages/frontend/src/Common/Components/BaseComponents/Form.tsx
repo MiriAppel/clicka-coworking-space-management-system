@@ -52,7 +52,7 @@ export function Form<T extends FieldValues>({
   const effectiveDir = dir || theme.direction;
 
   const internalMethods = useForm<T>({
-    ...(schema ? { resolver: zodResolver(schema) } : {}),
+    // ...(schema ? { resolver: zodResolver(schema) } : {}),
     mode: "onSubmit",
   });
   const methods: UseFormReturn<T> = externalMethods ?? internalMethods;
@@ -80,7 +80,7 @@ export function Form<T extends FieldValues>({
               : theme.typography.fontFamily.latin,
         }}
         role="form"
-        aria-label={label ? t(label) : undefined} //  ומשתמש בשפה הנדרשת שיקרא את הכותרת של הטופס 
+        aria-label={label} //  ומשתמש בשפה הנדרשת שיקרא את הכותרת של הטופס 
       >
 
         {label && (
@@ -91,7 +91,8 @@ export function Form<T extends FieldValues>({
             }}
             tabIndex={-1}
           >
-            {t(label)}
+            {/* {t(label)} */}
+            {label}
             {/* //שימוד בשפה נדרשת לפי הI18NEXT */}
           </h2>
         )}

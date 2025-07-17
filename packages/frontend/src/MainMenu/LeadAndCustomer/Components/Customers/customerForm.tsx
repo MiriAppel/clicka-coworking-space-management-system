@@ -42,14 +42,8 @@ const schema = z.object({
     billingStartDate: z.string().nonempty("חובה למלא תאריך תחילת חיוב"), // חובה
     notes: z.string().optional(), // אופציונלי
     invoiceName: z.string().optional(), // אופציונלי
-    // paymentMethod: z.object({
-    //    creditCardLast4: z.string().optional().refine(val => val && /^\d{4}$/.test(val), { message: "חובה להזין 4 ספרות בדיוק" }),
-    //     creditCardExpiry: z.string().optional().refine(val => val && /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), { message: "פורמט תוקף לא תקין (MM/YY)" }),
-    //     creditCardHolderIdNumber: z.string().optional().refine(val => val && /^\d{9}$/.test(val), { message: "חובה להזין 9 ספרות בדיוק" }),
-    //     creditCardHolderPhone: z.string().optional().refine(val => val && /^0\d{8,9}$/.test(val), { message: "מספר טלפון לא תקין" }),
-    // }).optional(), // אופציונלי
     paymentMethodType: z.nativeEnum(PaymentMethodType).refine(val => !!val, { message: "חובה" }),
-    creditCardLast4: z.string().optional(),
+    creditCardNumber: z.string().optional(),
     creditCardExpiry: z.string().optional(),
     creditCardHolderIdNumber: z.string().optional(),
     creditCardHolderPhone: z.string().optional(),
@@ -57,11 +51,11 @@ const schema = z.object({
     ProfilePicture: z.any().optional(),
 }).superRefine((data, ctx) => {
     if (data.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
-        if (!data.creditCardLast4 || !/^\d{4}$/.test(data.creditCardLast4)) {
+        if (!data.creditCardNumber || !/^\d{16}$/.test(data.creditCardNumber)) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                path: ['creditCardLast4'],
-                message: "חובה להזין 4 ספרות בדיוק",
+                path: ['creditCardNumber'],
+                message: "חובה להזין 16 ספרות בדיוק",
             });
         }
         if (!data.creditCardExpiry || !/^(0[1-9]|1[0-2])\/\d{2}$/.test(data.creditCardExpiry)) {
@@ -93,6 +87,7 @@ export interface CustomerRegistrationFormProps {
     onSubmit: (data: z.infer<typeof schema>) => Promise<void>;
     title?: string;
     subtitle?: string;
+    isEditMode?: boolean; // האם זה מצב עריכה
 }
 // type FormData = z.infer<typeof schema>;
 
@@ -100,7 +95,9 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
     defaultValues,
     onSubmit,
     title = "רישום לקוח חדש",
-    subtitle = "מלא את הפרטים החסרים"
+    subtitle = "מלא את הפרטים החסרים",
+    isEditMode = false
+
 }) => {
 
     const [currentStep, setCurrentStep] = useState<number>(0);
@@ -128,7 +125,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
     //         contractStartDate: "",
     //         billingStartDate: "",
     //         paymentMethod: {
-    //             creditCardLast4: "",
+    //             creditCardNumber: "",
     //             creditCardExpiry: "",
     //             creditCardHolderIdNumber: "",
     //             creditCardHolderPhone: "",
@@ -141,7 +138,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
     const stepFieldNames = [
         ["name", "phone", "email", "idNumber", "businessName", "businessType", "notes", "ProfilePicture"] as const,
         ["currentWorkspaceType", "workspaceCount", "contractSignDate", "contractStartDate", "billingStartDate", "contractDocuments"] as const,
-        ["paymentMethodType", "invoiceName", "creditCardLast4", "creditCardExpiry", "creditCardHolderIdNumber", "creditCardHolderPhone"] as const,
+        ["paymentMethodType", "invoiceName", "creditCardNumber", "creditCardExpiry", "creditCardHolderIdNumber", "creditCardHolderPhone"] as const,
 
     ];
     const paymentMethodType = methods.watch("paymentMethodType");
@@ -166,7 +163,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
             )
         },
 
-        {
+        ...(isEditMode ? [] : [{
             title: "פרטי חוזה",
             content: (
                 <>
@@ -175,15 +172,12 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                         label="בחר סוג חלל עבודה"
                         options={workspaceTypeOptions}
                         required
-
                     />
                     <NumberInputField
                         name="workspaceCount"
                         label="כמות חללי עבודה"
                         required
-                        // placeholder="הכנס כמות"
                         min={1}
-                        // step={1}
                         dir="rtl"
                     />
                     <InputField name="contractSignDate" label="תאריך חתימת חוזה" required type="date" />
@@ -192,7 +186,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                     <FileInputField name="contractDocuments" label="מסמכי חוזה" multiple />
                 </>
             )
-        },
+        }]),
         {
             title: "פרטי תשלום",
             content: (
@@ -207,7 +201,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                     <div className="col-span-2 mt-4 mb-2">
                         <h3 className="text-lg font-semibold text-gray-700 pb-1">פרטי אשראי</h3>
                     </div>
-                    <InputField name="creditCardLast4" label="4 ספרות אחרונות של כרטיס אשראי" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} />
+                    <InputField name="creditCardNumber" label="מספר כרטיס אשראי" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} />
                     <InputField name="creditCardExpiry" label="תוקף כרטיס אשראי" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} />
                     <InputField name="creditCardHolderIdNumber" label="תעודת זהות בעל הכרטיס" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} defaultValue={idNumber} />
                     <InputField name="creditCardHolderPhone" label="טלפון בעל הכרטיס" required={paymentMethodType === PaymentMethodType.CREDIT_CARD} defaultValue={phone} />
