@@ -5,6 +5,8 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
+import { Button } from './Common/Components/BaseComponents/Button';
+import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
 
 
 function App() {
@@ -31,6 +33,7 @@ function App() {
         setLoading(false);
       });
   }, []);
+  
 
   return (
     <AuthProvider>
@@ -41,10 +44,17 @@ function App() {
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
-
+<Button
+  onClick={() => navigate('/graph')}
+  
+  className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
+>
+ 
+  graph
+</Button>
       <div className='menu' style={{ backgroundColor: 'black' }}>
-
       </div>
+     
       <Accesibility></Accesibility>
 
         <AuthenticationScreen />

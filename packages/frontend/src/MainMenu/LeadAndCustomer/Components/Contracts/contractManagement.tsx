@@ -1,96 +1,138 @@
-import { useState } from "react";
-import { NavLink, Outlet } from "react-router";
-import { useNavigate } from 'react-router-dom';
-import { Contract, ContractStatus, WorkspaceType, ID} from "shared-types";
-import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+import { getAllContracts, deleteContract} from "../../Service/LeadAndCustomersService";
+import { Contract, ContractStatus, ID } from "shared-types";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
-//צריך לבדוק אם לעשות מכאן את העריכה או מהפרטי חוזה ואם בכלל לעשות פרטי חוזה
-
-
+// טיפוס פנימי לתצוגת טבלה
 interface ValuesToTable {
-    id: ID
-    customerId: ID; //  מזהה הלקוח בעל החוזה -כדאי להחליף לשם שלו
-    status: ContractStatus; // סטטוס החוזה
-    linkToDetails: React.ReactElement; // קישור לפרטים של החוזה
+  id: ID;
+  customerId: ID;
+  customerName: string;
+  status: string;
+  startDate: string;
+  workspaceCount: number;
 }
 
+// תרגום סטטוסים לעברית
+const statusLabels: Record<ContractStatus, string> = {
+  [ContractStatus.DRAFT]: "טיוטה",
+  [ContractStatus.PENDING_SIGNATURE]: "ממתין לחתימה",
+  [ContractStatus.SIGNED]: "נחתם",
+  [ContractStatus.ACTIVE]: "פעיל",
+  [ContractStatus.EXPIRED]: "פג תוקף",
+  [ContractStatus.TERMINATED]: "הסתיים",
+};
+
+// פונקציית עזר לפורמט תאריך
+const formatDate = (iso?: string) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const day = d.getDate().toString().padStart(2, "0");
+  const month = (d.getMonth() + 1).toString().padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+
 export const ContractManagement = () => {
+  const navigate = useNavigate();
+  type ContractWithCustomerName = Contract & {
+    customerName: string;
+  };
+  const [contracts, setContracts] = useState<ContractWithCustomerName[]>([]);
 
-    const navigate = useNavigate()
+  // שליפת כל החוזים מהשרת
+  useEffect(() => {
+    getAllContracts()
+      .then((dataFromServer) => {
+        const converted = dataFromServer.map((c: any) => ({
+          id: c.id,
+          customerId: c.customerId ?? "",
+          version: c.version,
+          status: c.status,
+          signDate: c.signDate,
+          startDate: c.startDate ?? "",
+          endDate: c.endDate,
+          terms: c.terms, 
+          documents: c.documents,
+          signedBy: c.signedBy,
+          witnessedBy: c.witnessedBy,
+          createdAt: c.createdAt,
+          updatedAt: c.updatedAt,
+          customerName: c.customerName ?? "",
+        }));
+        setContracts(converted);        
+      })
+      .catch((err) => console.error("שגיאה בטעינת חוזים:", err));
+  }, []);
 
-    const [contracts, setContracts] = useState<Contract[]>([
-        {
-            id: '1', // יש להחליף עם ID אמיתי
-            customerId: '101', // יש להחליף עם ID אמיתי
-            version: 1,
-            status: ContractStatus.DRAFT,
-            startDate: new Date().toISOString(), // תאריך התחלה נוכחי
-            terms: {
-                workspaceType: WorkspaceType.DESK_IN_ROOM, // יש להחליף עם WorkspaceType אמיתי
-                workspaceCount: 5,
-                monthlyRate: 1500,
-                duration: 12,
-                renewalTerms: 'Automatic renewal every year',
-                terminationNotice: 30,
-            },
-            documents: [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        },
-        {
-            id: '2', // יש להחליף עם ID אמיתי
-            customerId: '102', // יש להחליף עם ID אמיתי
-            version: 1,
-            status: ContractStatus.PENDING_SIGNATURE,
-            startDate: new Date().toISOString(), // תאריך התחלה נוכחי
-            terms: {
-                workspaceType: WorkspaceType.OPEN_SPACE, // יש להחליף עם WorkspaceType אמיתי
-                workspaceCount: 2,
-                monthlyRate: 800,
-                duration: 6,
-                renewalTerms: 'No automatic renewal',
-                terminationNotice: 15,
-            },
-            documents: [],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        },
-    ]);
+  const valuesToTable: ValuesToTable[] = contracts.map((contract) => ({
+    id: contract.id ?? "",
+    customerId: contract.customerId ?? "",
+    customerName: contract.customerName,
+    status: statusLabels[contract.status],
+    startDate: formatDate(contract.startDate),
+    workspaceCount: contract.terms?.workspaceCount ?? 0,
+  }));
 
-    const valuesToTable: ValuesToTable[] = contracts.map(contract => ({
-        id: contract.id!,
-        customerId: contract.customerId,
-        status: contract.status,
-        //להוסיף כאן אפשרות לעדכון סטטוס שיפתח אפשרות לבחירה מתוך רשימה והפעלת פונצקיה לעדכון
-        linkToDetails: <NavLink to={`:${contract.customerId}`} className="text-blue-500 hover:underline">פרטי חוזה</NavLink>, // קישור
-    }));
+  // הגדרת עמודות הטבלה
+  const columns: TableColumn<ValuesToTable>[] = [
+    { header: "שם לקוח", accessor: "customerName" },
+    { header: "סטטוס", accessor: "status" },
+    { header: "תאריך התחלה", accessor: "startDate" },
+    { header: "כמות עמדות", accessor: "workspaceCount" },
+  ];
 
-    const Columns: TableColumn<ValuesToTable>[] = [
-        { header: "מזהה הלקוח", accessor: "customerId" }, // כדאי לשנות לשם הלקוח
-        { header: "סטטוס", accessor: "status" },
-        { header: "פרטים", accessor: "linkToDetails" },
-    ];
+const handleDeleteContract = (row: ValuesToTable) => {
+  if (!window.confirm("האם אתה בטוח שברצונך למחוק את החוזה?")) return;
+  deleteContract(row.id)
+    .then(() => {
+      setContracts((prev) => prev.filter((c) => c.id !== row.id));
+      showAlert("מחיקה", "החוזה נמחק בהצלחה", "success");
+    })
+    .catch((err) => {console.log("שגיאה במחיקת חוזה:", err), showAlert("מחיקה", "שגיאה במחיקת חוזה", "error")});
+};
 
-    const deleteContract = (val: ValuesToTable) => {
-        //כאן יהיה קריאת שרת למחיקת חוזה ועדכון מחדש של המערך המקומי
-        //זה רק דוג' למחיקה מקומית
-        const newCustomers = contracts.filter(c => c.id !== val.id);
-        setContracts(newCustomers); // עדכון ה-state
+  const handleUpdateContract = (val: ValuesToTable) => {
+    navigate(`edit/${val.id}`, { state: { customerName: val.customerName } });
+  };
 
-    }
+  // פעולות לכל שורה בטבלה
+  const renderActions = (row: ValuesToTable) => (
+    <div className="flex gap-2">
+      <Button variant="secondary" size="sm" onClick={() => navigate(`customer/${row.customerId}`, { state: { customerName: row.customerName } })}>
+        פרטי חוזה
+      </Button>
+    </div>
+  );
 
-    return (
-        <div className="p-6">
-            <h2 className="text-3xl font-bold text-center text-blue-600 my-4">ניהול חוזים</h2>
-            {/* Add your contract management implementation here */}
-            <Button variant="primary" size="sm" onClick={() => navigate('new')}>new contract</Button>
+  return (
+    <div className="p-6" dir="rtl">
 
-            {/* כאן יהיה טבלה של כל החוזים עם הפרטים (אם זה מדי הרבה פרטים ולא יפה לעשות הכל כאן אפשר לנתב לעמוד של פרטי חוזה בודד) */}
+      <Button
+        variant="primary"
+        size="md"
+        onClick={() => navigate("addContract")}
+        dir="rtl"
+        data-testid="add-contract-button"
+      >
+        הוספת חוזה חדש
+      </Button>
 
-            {/* <Table<ValuesToTable> data={valuesToTable} columns={Columns} dir="rtl" onDelete={deleteContract}/> */}
+      <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
+        ניהול חוזים
+      </h2>
 
-        </div>
-
-    );
+      <Table<ValuesToTable>
+        data={valuesToTable}
+        columns={columns}
+        onDelete={handleDeleteContract}
+        onUpdate={handleUpdateContract}
+        renderActions={renderActions}
+      />
+    </div>
+  );
 }
