@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAssignmentStore } from "../../../Stores/Workspace/assigmentStore";
-import { WorkspaceType } from "shared-types"; 
+import { WorkspaceType } from "shared-types";
 
 interface AssignmentFormProps {
   onSubmit?: (data: any) => Promise<void>;
@@ -21,7 +21,7 @@ interface AssignmentFormProps {
 
 export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   onSubmit,
-  title = "הקצאת חלל עבודה",
+  title,
   workspaceId,
   workspaceName,
   workspaceType,
@@ -32,20 +32,27 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   notes,
   assignedBy,
   status = 'ACTIVE',
-}) => {
+}) => { 
+  const computedTitle =
+    title ||
+    (customerName
+      ? `הקצאה עבור לקוח ${customerName}`
+      : workspaceName
+      ? `הקצאת חלל עבודה: ${workspaceName}`
+      : "הקצאת חלל עבודה");
   const {
     spaces,
     customers,
     loading,
     error,
-    conflictCheck, 
+    conflictCheck,
     getAllSpaces,
     getAllCustomers,
     createAssignment,
     checkConflicts,
     clearError,
   } = useAssignmentStore();
-  
+
   const [isCheckingConflicts, setIsCheckingConflicts] = useState(false);
 
   const { register, handleSubmit, reset, watch } = useForm({
@@ -65,25 +72,25 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   const watchedAssignedDate = watch("assignedDate");
   const watchedUnassignedDate = watch("unassignedDate");
 
- useEffect(() => { 
-  const loadData = async () => {
-    try {
-      console.log('Loading data...'); // debug
-      await getAllSpaces();
-      await getAllCustomers();
-      console.log('Data loaded successfully'); // debug
-    } catch (error) {
-      console.error("Error loading data:", error);
-    }
-  };
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        console.log('Loading data...'); // debug
+        await getAllSpaces();
+        await getAllCustomers();
+        console.log('Data loaded successfully'); // debug
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
 
-  loadData();
-  
-  // cleanup
-  return () => {
-    clearError();
-  };
-}, []); // ← רק פעם אחת בטעינה
+    loadData();
+
+    // cleanup
+    return () => {
+      clearError();
+    };
+  }, []); // ← רק פעם אחת בטעינה
 
   // בדיקת קונפליקטים בזמן אמת
   useEffect(() => {
@@ -108,34 +115,34 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
     return () => clearTimeout(timeoutId);
   }, [watchedWorkspaceId, watchedAssignedDate, watchedUnassignedDate, checkConflicts]);
 
-const filteredSpaces = React.useMemo(() => {
+  const filteredSpaces = React.useMemo(() => {
     if (!workspaceType) {
       return spaces;
     }
-    
+
     console.log('Filtering spaces by type:', workspaceType);
     console.log('Available spaces:', spaces.map(s => ({ id: s.id, name: s.name, type: s.type })));
-    
+
     const filtered = spaces.filter(space => {
       // נקה את הערך מגרשיים מיותרים אם יש
-      const spaceType = typeof space.type === 'string' 
-        ? space.type.replace(/^"(.*)"$/, '$1') 
+      const spaceType = typeof space.type === 'string'
+        ? space.type.replace(/^"(.*)"$/, '$1')
         : space.type;
-      
+
       return spaceType === workspaceType;
     });
-    
+
     console.log('Filtered spaces:', filtered);
     return filtered;
   }, [spaces, workspaceType]);
 
-// הוספת useEffect נפרד לdebug
-useEffect(() => {
-  console.log('Customers updated:', customers);
-  console.log('Spaces updated:', spaces);
-  console.log('Loading:', loading);
-  console.log('Error:', error);
-}, [customers, spaces, loading, error]);
+  // הוספת useEffect נפרד לdebug
+  useEffect(() => {
+    console.log('Customers updated:', customers);
+    console.log('Spaces updated:', spaces);
+    console.log('Loading:', loading);
+    console.log('Error:', error);
+  }, [customers, spaces, loading, error]);
 
   const handleFormSubmit = async (data: any) => {
     try {
@@ -158,34 +165,33 @@ useEffect(() => {
       </div>
     );
   }
-console.log('Render - customers:', customers.length);
-console.log('Render - spaces:', spaces.length);
-console.log('Render - loading:', loading);
-console.log('Render - error:', error);
+  console.log('Render - customers:', customers.length);
+  console.log('Render - spaces:', spaces.length);
+  console.log('Render - loading:', loading);
+  console.log('Render - error:', error);
 
-if (loading) {
-  return (
-    <div className="p-4 text-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-      <p className="mt-2">טוען נתונים...</p>
-      <p className="text-xs text-gray-500">Customers: {customers.length}, Spaces: {spaces.length}</p>
-    </div>
-  );
-}
+  if (loading) {
+    return (
+      <div className="p-4 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-2">טוען נתונים...</p>
+        <p className="text-xs text-gray-500">Customers: {customers.length}, Spaces: {spaces.length}</p>
+      </div>
+    );
+  }
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
       className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto"
     >
-      <h2 className="text-xl font-bold mb-6 text-gray-800">{title}</h2>
-
+      <h2 className="text-xl font-bold mb-6 text-gray-800">{computedTitle}</h2>
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           <strong>שגיאה:</strong> {error}
         </div>
       )}
 
-      
+
       {/* הצגת תוצאות בדיקת קונפליקטים */}
       {isCheckingConflicts && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
@@ -197,17 +203,15 @@ if (loading) {
       )}
 
       {conflictCheck && !isCheckingConflicts && (
-        <div className={`mb-4 p-3 rounded-md ${
-          conflictCheck.hasConflicts 
-            ? 'bg-red-50 border border-red-200' 
-            : 'bg-green-50 border border-green-200'
-        }`}>
-          <div className={`text-sm font-medium ${
-            conflictCheck.hasConflicts ? 'text-red-800' : 'text-green-800'
+        <div className={`mb-4 p-3 rounded-md ${conflictCheck.hasConflicts
+          ? 'bg-red-50 border border-red-200'
+          : 'bg-green-50 border border-green-200'
           }`}>
+          <div className={`text-sm font-medium ${conflictCheck.hasConflicts ? 'text-red-800' : 'text-green-800'
+            }`}>
             {conflictCheck.message}
           </div>
-          
+
           {conflictCheck.hasConflicts && conflictCheck.conflicts.length > 0 && (
             <div className="mt-2 text-xs text-red-600">
               <strong>קונפליקטים:</strong>
@@ -347,7 +351,7 @@ if (loading) {
         disabled={loading}
         className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
       >
- {loading ? "שומר..." : conflictCheck?.hasConflicts ? "שמור למרות קונפליקטים" : "שמור הקצאה"}      </button>
+        {loading ? "שומר..." : conflictCheck?.hasConflicts ? "שמור למרות קונפליקטים" : "שמור הקצאה"}      </button>
     </form>
   );
 };
