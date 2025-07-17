@@ -4,8 +4,11 @@ import { axiosInstance } from '../../../../Services/Axios';
 
 export default function GoogleOneTap() {
   const { setUser, setSessionId } = useAuthStore();
+  let alreadyInitialized = false;
 
   useEffect(() => {
+    if (alreadyInitialized) return;
+    alreadyInitialized = true;
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
@@ -14,24 +17,24 @@ export default function GoogleOneTap() {
 
     script.onload = () => {
       if ((window as any).google) {
-         try {
-        (window as any).google.accounts.id.initialize({
-          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
-          auto_select: true,
-        });
+        try {
+          (window as any).google.accounts.id.initialize({
+            client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+            callback: handleCredentialResponse,
+            auto_select: true,
+          });
 
-        (window as any).google.accounts.id.prompt(); // מציג את החלון האוטומטי
-         console.log("✔️ Google One Tap initialized");
-          } catch (error) {
-        console.error("❌ שגיאה באתחול Google One Tap:", error);
-      }
+          (window as any).google.accounts.id.prompt(); // מציג את החלון האוטומטי
+          console.log("✔️ Google One Tap initialized");
+        } catch (error) {
+          console.error("❌ שגיאה באתחול Google One Tap:", error);
+        }
       }
     };
 
-  script.onerror = () => {
-    console.error("❌ שגיאה בטעינת Google script");
-  };
+    script.onerror = () => {
+      console.error("❌ שגיאה בטעינת Google script");
+    };
 
     return () => {
       document.body.removeChild(script);
@@ -41,7 +44,13 @@ export default function GoogleOneTap() {
   const handleCredentialResponse = async (response: any) => {
     const idToken = response.credential;
     try {
-      const res = await axiosInstance.post('auth/google-login', { idToken });
+      const res = await axiosInstance.post('auth/google-login', {
+        id_token: idToken,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          // headers אחרים לפי הצורך
+        },
+      });
       if (res.status === 200) {
         setUser(res.data.user);
         setSessionId(res.data.sessionId);
@@ -53,5 +62,5 @@ export default function GoogleOneTap() {
   };
 
   return null;
-  
+
 }

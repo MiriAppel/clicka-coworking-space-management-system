@@ -42,14 +42,13 @@ app.use(cookieParser());
 
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
+  origin: [process.env.CORS_ORIGIN || 'http://localhost:3000' , 'https://57737495d7dc.ngrok-free.app'], // Adjust as needed
   credentials: true, // Allow cookies to be sent with requests
 }));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
-
 app.use(urlencoded({ extended: true }));
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
