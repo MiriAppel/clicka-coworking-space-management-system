@@ -63,11 +63,11 @@ export interface Booking {
   id?: ID;
   roomId: ID;
   roomName: string;
-  customerId?: ID;
-  customerName?: string;
-  externalUserName?: string;
-  externalUserEmail?: string;
-  externalUserPhone?: string;
+  customerId?: ID|null;
+  customerName?: string|null;
+  externalUserName?: string|null;
+  externalUserEmail?: string|null;
+  externalUserPhone?: string|null;
   startTime: DateISO;
   endTime: DateISO;
   status: BookingStatus;

@@ -54,9 +54,11 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       mode: "onSubmit",
     });
 
-    const { createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
+    const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
     const customers = useCustomerStore((s) => s.customers);
     const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
+
+
 
 
     const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
@@ -74,6 +76,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
 
     useEffect(() => {
       fetchCustomers();
+
       getAllRooms().then((rooms: Room[]) => {
         setRoomOptions(
           rooms.map((room) => ({
@@ -92,7 +95,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           if (customer) {
             methods.setValue("customerId", customer.id);
             methods.setValue("name", customer.name);
-            console.log("שם הלקוח:", customer.name);
+            // console.log("שם הלקוח:", customer.name);
             methods.setValue("email", customer.email);
             methods.setValue("phone", customer.phone);
           }
@@ -111,16 +114,21 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       // Always include all fields required by Booking type
       const base = {
         id: uuidv4(),
-        name,
         roomId: data.selectedRoomId,
         roomName,
+        customerId: null,
+        customerName: null,
+        externalUserName: null,
+        externalUserEmail: null,
+        externalUserPhone: null,
         startTime,
         endTime,
         status: BookingStatus.PENDING,
+        notes: "",
+        googleCalendarEventId: null,
         totalHours: 0,
         chargeableHours: 0,
         totalCharge: 0,
-        googleCalendarEventId: undefined,
         isPaid: false,
         approvedBy: "",
         approvedAt: new Date().toISOString(),
@@ -129,16 +137,16 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       };
 
       if (data.customerStatus === "customer") {
-        console.log("customerId",data.customerId);
-        console.log("customerName",data.name);
-        console.log("customerPhone",data.phone);
+         console.log("customerId",data.customerId);
+         console.log("customerName",data.name);
+         console.log("customerPhone",data.phone);
 
 
         return {
           ...base,
           customerId: data.customerId ?? "",
-          customerName:name ?? "",
-         
+          customerName: name ,
+
         };
       }
 
@@ -149,14 +157,14 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         externalUserPhone: data.phone ?? "",
       };
     };
-    console.log("סטטוס נוכחי:", status);
+    // console.log("סטטוס נוכחי:", status);
     const handleSubmit = async (data: FormFields) => {
+
       try {
         if (data.customerStatus === "customer") {
           if (!data.customerId) {
             alert("יש לבחור לקוח מהרשימה או לפי מייל/טלפון");
             return;
-            
           }
         } else {
           if (!data.name || !data.phone || !data.email) {
@@ -164,12 +172,24 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
             return;
           }
         }
-
+   
+        
         const bookingPayload = convertFormToBooking(data);
+             console.log(bookingPayload, "Booking payload before masad");
         const result = await createBooking(bookingPayload);
-        console.log("Booking created:",  bookingPayload);
+        // console.log("Booking created:",  bookingPayload);
 
-        if (result) {
+        // if (result) {
+        //   alert("ההזמנה נוצרה בהצלחה");
+        //   methods.reset();
+        //   onSubmit?.();
+        // }
+        console.log("Booking payload: before calendar", bookingPayload);
+
+        const resultCalendar = await createBookingInCalendar(bookingPayload, "primary");
+         console.log(resultCalendar,"Booking created:"  );
+
+        if (resultCalendar) {
           alert("ההזמנה נוצרה בהצלחה");
           methods.reset();
           onSubmit?.();
@@ -196,25 +216,25 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
                 </label>
               </fieldset> */}
               <fieldset>
-  <legend>סטטוס לקוח</legend>
-  <label>
-    <input
-      type="radio"
-      value="customer"
-      {...methods.register("customerStatus")}
-      defaultChecked
-    />
-    לקוח קיים
-  </label>
-  <label>
-    <input
-      type="radio"
-      value="external"
-      {...methods.register("customerStatus")}
-    />
-    לקוח חיצוני
-  </label>
-</fieldset>
+                <legend>סטטוס לקוח</legend>
+                <label>
+                  <input
+                    type="radio"
+                    value="customer"
+                    {...methods.register("customerStatus")}
+                    defaultChecked
+                  />
+                  לקוח קיים
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="external"
+                    {...methods.register("customerStatus")}
+                  />
+                  לקוח חיצוני
+                </label>
+              </fieldset>
 
 
               {status === "customer" ? (

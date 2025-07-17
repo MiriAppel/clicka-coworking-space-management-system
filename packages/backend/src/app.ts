@@ -29,7 +29,8 @@ import bookRouter from './routes/booking.route';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 import routerMap from './routes/mapLayout.route';
 import routerLayout from './routes/mapLayout.route';
-import routerCalendarSync from './routes/calendar-route';
+import routerCalendarSync from './routes/googleCalendarBookingIntegration.route';
+
 // Create Express app
 const app = express();
 dotenv.config();

@@ -31,10 +31,16 @@ export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
 
 // זו הפונקציה העדכנית-----------------------------
 export const createCalendarEvent = async (req: Request, res: Response, next: NextFunction) => {
-    const token = extractToken(req);
+       console.log(req.body, "req ");
+        console.log("find the token in body ",req.body.headers.Authorization, "find the token in body ");
+    const token = extractToken(req.body);
+    console.log("Token in createCalendarEvent:", token);
+    
       if (!token) return next({ status: 401, message: 'Missing token' });
       const { calendarId } = req.params;
-      const{  booking }: {booking:BookingModel}= req.body;
+      console.log("Booking in createCalendarEvent:", req.body.body.booking);
+      const  booking = req.body.body.booking;
+      console.log("Booking in createCalendarEvent:", booking);
       try {
         // validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
         const createdEvent = await CalendarService.createCalendarEvent(calendarId, booking,token);
@@ -205,9 +211,19 @@ export const shareCalendar = async (req: Request, res: Response) => {
 }
 
 function extractToken(req: Request): string | null {
-  const auth = req.headers.authorization;
-  return auth?.startsWith('Bearer ') ? auth.split(' ')[1] : null;
+  const auth = req.headers.Authorization;
+  if (typeof auth === 'string' && auth.startsWith('Bearer ')) {
+    return auth.split(' ')[1];
+  }
+  return null;
 }
+// function extractToken(req: Request): string | null {
+//   const auth = req.headers.Authorization;
+//   console.log(auth);
+  
+//   return "";
+// //   return auth?.startsWith('Bearer ') ? auth.split(' ')[1] : null;
+// }
 
 
 

@@ -13,6 +13,7 @@ interface BookingState {
   getBookingById: (id: string) => Promise<Booking | null>;
   createBooking: (booking: Booking) => Promise<Booking | null>;
   createBookingInCalendar: (booking: Booking, calendarId: string) => Promise<Booking | null>;
+  //|boolean
   updateBooking: (id: string, updated: Booking) => Promise<Booking | null>;
   deleteBooking: (id: string) => Promise<boolean>;
   setCurrentBooking: (booking: Booking | null) => void;
@@ -86,10 +87,13 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     try {
       // const x= BookingModel 
       
-      const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, booking, {
+      const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${googleAccessToken}`,
+        },
+        body: {
+         booking:booking
         }
       });
       const created = response.data;
@@ -99,7 +103,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
         bookings: [...state.bookings, created],
         loading: false,
       }));
-
+//return true;
       return created;
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -169,7 +173,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
   getAllRooms: async (): Promise<{ id: string; name: string }[]> => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get('/rooms/getAllRooms');
+      const response = await axiosInstance.get('rooms/getAllRooms');
       console.log("🎯 rooms from server:", response.data); // חשוב!
       return response.data;
     } catch (error) {

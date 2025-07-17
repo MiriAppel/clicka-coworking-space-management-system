@@ -44,8 +44,8 @@ export const getGoogleCalendarEvents = async (calendarId: string, token: string)
         displayName: attendee.displayName || '',
         // responseStatus: attendee.responseStatus,
     })) : [],
-    status:   BookingService.getBookingByEventId(event.id) , //
-    // BookingService.get(event.id)|| '', // הוספת שדה status
+    // status:  BookingService.getBookingByEventId(event.id).status||"" , //
+    status: "", // ← זה צריך להיות סטטוס ההזמנה, לא האירוע
     created: event.created || '',
     updated: event.updated || '',
     htmlLink: event.htmlLink || '',
@@ -181,15 +181,9 @@ export const createCalendarEvent = async (calendarId: string,
     console.log('Booking object:', booking);
     console.log('token object:', token);
     console.log('calendarId object:', calendarId);
-    if (!booking.approvedBy) {
-
-        throw new Error('Booking must be approved by someone before creating a calendar event.');
-    }
-    console.log("booking is aproved by", booking.approvedBy);
     
     console.log("booking before the convert\n",booking);
     const calendarEvent = await convertBookingToCalendarEvent(booking);
-    console.log(calendarEvent);
     try {
         const statusEvent = await createEvent(calendarId, calendarEvent, token);
         console.log("statusEvent\n", statusEvent);
@@ -213,16 +207,7 @@ export const createCalendarEvent = async (calendarId: string,
   : new BookingModel(booking);
 await BookingService.updateBooking(bookingModel.id!, bookingModel);
 
-        // if (!statusEvent || !statusEvent.id) {
-        //     sync.syncStatus = CalendarSyncStatus.FAILED; // במקרה ואין id
-        //     // } else if (!booking.approvedBy) {
-        //     //     sync.syncStatus = CalendarSyncStatus.PENDING;
-        // }
-        //  else {
-        //     sync.syncStatus = CalendarSyncStatus.SYNCED; // מסונכרן
-        // }
-
-        // await createCalendarSync(sync);
+       
     } catch (error) {
         console.log("checking the type of", error);
 
