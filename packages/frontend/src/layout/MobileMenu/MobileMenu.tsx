@@ -5,7 +5,6 @@ import { menus } from '../menuData';
 
 const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const navigate = useNavigate();
-
   const [popupKey, setPopupKey] = useState<string | null>(null);
   const [popupPosition, setPopupPosition] = useState<{ top: number; right: number } | null>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -28,7 +27,6 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-
   const mobileMenus = menus.map(({ key, title, icon }) => ({ key, title, icon }));
 
   const handleMenuClick = (e: React.MouseEvent<HTMLLIElement>, key: string) => {
@@ -46,9 +44,9 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       let newTop = popupPosition.top;
 
       if (popupPosition.top + popupHeight > viewportHeight && popupPosition.top - popupHeight > 0) {
-        newTop = popupPosition.top - popupHeight - 40; 
+        newTop = popupPosition.top - popupHeight - 40;
       } else if (popupPosition.top + popupHeight > viewportHeight) {
-        newTop = viewportHeight - popupHeight - 10; 
+        newTop = viewportHeight - popupHeight - 10;
       }
 
       if (newTop !== popupPosition.top) {
@@ -59,17 +57,16 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
   return (
     <>
-      {!isOpen ? null : (
+      {isOpen && (
         <div className={styles.backdrop} onClick={onClose}>
           <div className={styles.drawer} onClick={e => e.stopPropagation()}>
             <button className={styles.close} onClick={onClose}>×</button>
-
             <ul className={styles.menu}>
               {mobileMenus.map(menu => (
                 <li
                   key={menu.key}
                   onClick={e => handleMenuClick(e, menu.key)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+                  className={styles.menuItem}
                 >
                   {menu.icon}
                   <span>{menu.title}</span>
@@ -89,7 +86,11 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
               >
                 <ul>
                   {menus.find(m => m.key === popupKey)?.items.map((item, index) => (
-                    <li key={index} onClick={() => handleNavigate(item.path)}>
+                    <li
+                      key={index}
+                      className={styles.popupItem}
+                      onClick={() => handleNavigate(item.path)}
+                    >
                       {item.label}
                     </li>
                   ))}
@@ -101,6 +102,6 @@ const MobileMenu = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       )}
     </>
   );
-}
+};
 
-  export default MobileMenu;
+export default MobileMenu;
