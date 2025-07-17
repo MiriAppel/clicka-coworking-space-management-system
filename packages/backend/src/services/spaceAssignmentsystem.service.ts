@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { RoomModel } from "../models/room.model";
 import type { DateRangeFilter, ID, OccupancyReportResponse } from "shared-types";
 import dotenv from 'dotenv';
-import { SpaceAssignmentModel } from '../models/spaceAssignment.model';
+import { SpaceAssignmentModel } from '../models/spaceAssingment.model';
 dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
@@ -38,7 +38,7 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
         console.error('Supabase error:', error.message);
         return null;
       }
- const createdspace = SpaceAssignmentModel.fromDatabaseFormatArray(data)
+ const createdspace = SpaceAssignmentModel.fromDatabaseFormat(data)
       return createdspace;
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -89,49 +89,72 @@ async  getSpaceById(id:string) {
             return space;
 }
 
-//קבלת דו"ח תפוסה על פי תאריך וסוג חלל
-async getOccupancyReport(type: string, startDate:string, endDate:string): Promise<OccupancyReportResponse | null> {
-  const { data, error } = await supabase
-      .from('space_assignment')
-      .select('*')
-      .eq('type', type)
-      .gte('date', startDate)
-      .lte('date', endDate);
-    if (error) {
-      console.error('Error fetching occupancy report:', error);
-      return null;
+   // בדיקת קונפליקטים
+    async checkConflicts(
+        workspaceId: string, 
+        assignedDate: string, 
+        unassignedDate?: string, 
+        excludeId?: string
+    ): Promise<SpaceAssignmentModel[]> {
+        try {
+            console.log('Checking conflicts in DB for:', { workspaceId, assignedDate, unassignedDate, excludeId });
+            
+            let query = supabase
+                .from('space_assignment')
+                .select('*')
+                .eq('workspace_id', workspaceId)
+                .in('status', ['ACTIVE']); // לא כולל ENDED
+            
+            // אם יש excludeId (למקרה של עדכון), לא לכלול אותו
+            if (excludeId) {
+                query = query.neq('id', excludeId);
+            }
+            
+            const { data, error } = await query;
+            
+            if (error) {
+                console.error('Supabase error in checkConflicts:', error);
+                throw new Error(`Failed to check conflicts: ${error.message}`);
+            }
+            
+            if (!data || data.length === 0) {
+                console.log('No existing assignments found');
+                return [];
+            }
+            
+            // המרה לאובייקטים
+            const existingAssignments = data.map(item => SpaceAssignmentModel.fromDatabaseFormat(item));
+            console.log('Found existing assignments:', existingAssignments.length);
+            
+            // בדיקת חפיפות
+            const conflicts = existingAssignments.filter(existing => {
+                const existingStart = new Date(existing.assignedDate);
+                const existingEnd = existing.unassignedDate ? new Date(existing.unassignedDate) : null;
+                const newStart = new Date(assignedDate);
+                const newEnd = unassignedDate ? new Date(unassignedDate) : null;
+                
+                // אם ההקצאה הקיימת אין לה תאריך סיום - היא פעילה לתמיד
+                if (!existingEnd) {
+                    // אם ההקצאה החדשה מתחילה אחרי הקיימת - יש קונפליקט
+                    return newStart >= existingStart;
+                }
+                
+                // אם להקצאה החדשה אין תאריך סיום
+                if (!newEnd) {
+                    // אם היא מתחילה לפני שהקיימת מסתיימת - יש קונפליקט
+                    return newStart <= existingEnd;
+                }
+                
+                // בדיקת חפיפה רגילה
+                return (newStart <= existingEnd && newEnd >= existingStart);
+            });
+            
+            console.log('Found conflicts:', conflicts.length);
+            return conflicts;
+            
+        } catch (error) {
+            console.error('Error in checkConflicts:', error);
+            throw error;
+        }
     }
-    const spaces =  SpaceAssignmentModel.fromDatabaseFormatArray(data);
-     // דוגמה ליצירת occupancyData (לפי יום)
-  // const occupancyData = spaces.map(space => ({
-  //   date: space.date, // ודא שיש שדה כזה במודל שלך
-  //   totalSpaces: 1,
-  //   occupiedSpaces: space.status === 'OCCUPIED' ? 1 : 0,
-  //   openSpaceCount: space.type === 'OPEN_SPACE' ? 1 : 0,
-  //   deskInRoomCount: space.type === 'DESK_IN_ROOM' ? 1 : 0,
-  //   privateRoomCount: space.type === 'PRIVATE_ROOM' ? 1 : 0,
-  //   roomForThreeCount: space.type === 'ROOM_FOR_THREE' ? 1 : 0,
-  //   klikahCardCount: space.type === 'KLIKAH_CARD' ? 1 : 0,
-  //   occupancyRate: space.status === 'OCCUPIED' ? 100 : 0,
-  // }));
-
-  // // דוגמה לסיכום
-  // const occupancyRates = occupancyData.map(d => d.occupancyRate);
-  // const summary = {
-  //   averageOccupancyRate: occupancyRates.length ? occupancyRates.reduce((a, b) => a + b, 0) / occupancyRates.length : 0,
-  //   maxOccupancyRate: occupancyRates.length ? Math.max(...occupancyRates) : 0,
-  //   minOccupancyRate: occupancyRates.length ? Math.min(...occupancyRates) : 0,
-  //   totalCustomerCount: spaces.length,
-  // };
-
-  // const report: OccupancyReportResponse = {
-  //   period: 'DAILY', // או 'MONTHLY' לפי הצורך
-  //   dateRange: { startDate, endDate },
-  //   occupancyData,
-  //   summary,
-  // };
-  const report: OccupancyReportResponse = {} as OccupancyReportResponse;
-    return report;
-  }
 }
-

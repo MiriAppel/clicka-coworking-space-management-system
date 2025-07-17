@@ -34,7 +34,8 @@ export const clearAuthCookie = (res: Response): void => {
         sameSite: 'strict',
     });
 };
-export const getUserFromCookie = (req: Request): string | null => {
+// Function to get the current user ID from the session cookie
+export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string } | null => {
     const sessionToken = req.cookies.session;
     const sessionId = req.cookies.sessionId;
     if (!sessionToken || !sessionId) return null;
@@ -45,7 +46,11 @@ export const getUserFromCookie = (req: Request): string | null => {
         if (!isValidSession) {
             return null;
         }
-        return userId;
+        return {
+            userId,
+            email: payload.email,
+            googleId: payload.googleId
+        };
     } catch (error) {
         console.error('Error verifying JWT token:', error);
         return null;
@@ -61,11 +66,7 @@ export const refreshUserToken = async (sessionToken: string, sessionId: string):
     if (!isValidSession) {
         throw new Error('INVALID_SESSION');
     }
-    // שליפת refresh token
-    //need to access DB to get the refresh token
-    // const record = await userTokensService.findByUserId(userId);
     const UserTokenRecord = await userTokenService.findByUserId(userId);
-    //------------------------------------------------------------------
     //if userTokenRecord is null, then the user is not logged in
     if (!UserTokenRecord)
         throw new Error('TOKEN_NOT_FOUND');
