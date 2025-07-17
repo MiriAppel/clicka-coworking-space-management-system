@@ -3,7 +3,9 @@
   color: white;
   padding: 10px 20px;
   direction: rtl;
-}
+  position: sticky; /* הוסף את זה */
+  /* top: 0; /* הוסף את זה */
+  /* z-index: 1000;  */
 
 .navList {
   display: flex;
@@ -34,7 +36,7 @@
   padding: 8px 4px;
   cursor: pointer;
   font-weight: bold;
-  color: white;
+  color: rgb(4, 4, 4);
   gap: 3px;
   outline: none;
   border-bottom: 3px solid transparent;
@@ -98,7 +100,7 @@
     background-color: transparent;
     padding: 0;
   }
-} */
+} 
 .topNav {
   background-color: white;
   color: #1a1a1a;

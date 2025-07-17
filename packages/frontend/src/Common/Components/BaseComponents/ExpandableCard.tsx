@@ -100,7 +100,6 @@
 
 
 ////מעודכן כולל פרופיל
-
 import React, { useState } from "react";
 import {
   ChevronDown,
@@ -117,7 +116,11 @@ import {
   ScrollText,
   Coins,
   BadgePercent,
+  User,
+  Camera,
+  FileDown,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
 import { Button } from "./Button";
 
@@ -129,6 +132,7 @@ export interface CustomerCardProps {
   businessName: string;
   businessType: string;
   status: CustomerStatus;
+  image?: string;
   idNumber?: string;
   currentWorkspaceType?: WorkspaceType;
   workspaceCount?: number;
@@ -159,26 +163,41 @@ const statusLabels: Record<CustomerStatus, string> = {
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
-  PRIVATE_ROOM: 'חדר פרטי',
-  DESK_IN_ROOM: 'שולחן בחדר',
-  OPEN_SPACE: 'אופן ספייס',
-  KLIKAH_CARD: 'כרטיס קליקה',
+  PRIVATE_ROOM: "חדר פרטי",
+  DESK_IN_ROOM: "שולחן בחדר",
+  OPEN_SPACE: "אופן ספייס",
+  KLIKAH_CARD: "כרטיס קליקה",
 };
 
 const paymentMethodLabels: Record<PaymentMethodType, string> = {
-  CREDIT_CARD: 'כרטיס אשראי',
-  BANK_TRANSFER: 'העברה בנקאית',
-  CHECK: 'שיק',
-  CASH: 'מזומן',
-  OTHER: 'אחר',
+  CREDIT_CARD: "כרטיס אשראי",
+  BANK_TRANSFER: "העברה בנקאית",
+  CHECK: "שיק",
+  CASH: "מזומן",
+  OTHER: "אחר",
 };
 
 const formatDate = (dateString?: string) => {
-  if (!dateString) return 'לא זמין';
+  if (!dateString) return "לא זמין";
   const date = new Date(dateString);
-  return `${date.getDate().toString().padStart(2, '0')}/${
-    (date.getMonth() + 1).toString().padStart(2, '0')
-  }/${date.getFullYear().toString().slice(-2)}`;
+  return `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}/${date.getFullYear().toString().slice(-2)}`;
+};
+
+const getColorForChar = (char: string) => {
+  const colors = [
+    "bg-red-200 text-red-800",
+    "bg-green-200 text-green-800",
+    "bg-blue-200 text-blue-800",
+    "bg-yellow-200 text-yellow-800",
+    "bg-purple-200 text-purple-800",
+    "bg-pink-200 text-pink-800",
+    "bg-indigo-200 text-indigo-800",
+    "bg-teal-200 text-teal-800",
+  ];
+  const index = char.toUpperCase().charCodeAt(0) % colors.length;
+  return colors[index];
 };
 
 export const ExpandableCustomerCard = ({
@@ -189,6 +208,7 @@ export const ExpandableCustomerCard = ({
   businessName,
   businessType,
   status,
+  image,
   idNumber,
   currentWorkspaceType,
   workspaceCount,
@@ -204,88 +224,143 @@ export const ExpandableCustomerCard = ({
   onDelete,
 }: CustomerCardProps) => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleEditImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`updateImage/${id}`);
+  };
+
+  const initials = name?.charAt(0).toUpperCase();
+  const avatarColor = getColorForChar(initials || "A");
+  const hasImage = !!image;
 
   return (
     <div className="rounded-xl border shadow p-5 mb-4 bg-white transition-all duration-300 text-right">
-  {/* Header row */}
-  <div className="cursor-pointer" onClick={() => setOpen(!open)}>
-    {/* שם + סטטוס */}
-    <div className="flex justify-between items-center">
-      <div className="flex items-center gap-4">
-        <div className="text-xl font-bold text-gray-900">{name}</div>
-        <div className={`text-xs px-2 py-1 rounded-xl font-semibold ${statusColors[status]}`}>
-          {statusLabels[status]}
+      <div className="cursor-pointer" onClick={() => setOpen(!open)}>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              {hasImage ? (
+                <img
+                  src={image}
+                  alt={name}
+                  className="w-10 h-10 rounded-full object-cover border-2 border-gray-300 hover:border-blue-500 cursor-pointer"
+                  onClick={handleEditImage}
+                />
+              ) : (
+                <div
+                  className={`w-10 h-10 flex items-center justify-center rounded-full font-bold cursor-pointer ${avatarColor}`}
+                  onClick={handleEditImage}
+                >
+                  {initials}
+                </div>
+              )}
+              <Camera
+                size={14}
+                className="absolute -bottom-1 -left-1 bg-white rounded-full p-[1px] border cursor-pointer"
+                onClick={handleEditImage}
+              />
+            </div>
+
+            <div className="text-xl font-bold text-gray-900">{name}</div>
+
+            <div
+              className={`text-xs px-3 py-1 rounded-xl font-semibold flex items-center gap-2 ${statusColors[status]}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`updateStatus/${id}`);
+              }}
+            >
+              {statusLabels[status]}
+              <Pencil size={12} />
+            </div>
+          </div>
+          {open ? (
+            <ChevronUp className="text-gray-600" />
+          ) : (
+            <ChevronDown className="text-gray-600" />
+          )}
+        </div>
+
+        <div className="mt-4 flex justify-between flex-wrap gap-y-4 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <Phone size={16} /> {phone}
+          </div>
+          <div className="flex items-center gap-2">
+            <Mail size={16} /> {email}
+          </div>
+          <div className="flex items-center gap-2">
+            <Building2 size={16} /> {businessName}
+          </div>
         </div>
       </div>
-      {open ? <ChevronUp className="text-gray-600" /> : <ChevronDown className="text-gray-600" />}
+
+      {open && (
+        <div className="mt-6 border-t pt-5 grid gap-4 text-sm text-gray-700">
+          <div className="flex items-center gap-2">
+            <IdCard size={14} /> ת"ז: {idNumber || "לא זמין"}
+          </div>
+          <div className="flex items-center gap-2">
+            <BadgePercent size={14} /> תחום עיסוק: {businessType}
+          </div>
+          <div className="flex items-center gap-2">
+            <ClipboardSignature size={14} /> סוג מקום עבודה: {workspaceTypeLabels[currentWorkspaceType!] || "לא זמין"}
+          </div>
+          <div className="flex items-center gap-2">
+            <Building2 size={14} /> מקומות עבודה: {workspaceCount ?? "לא זמין"}
+          </div>
+          <div className="flex items-center gap-2">
+            <ScrollText size={14} /> חתימה: {formatDate(contractSignDate)}
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar size={14} /> התחלת חוזה: {formatDate(contractStartDate)}
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar size={14} /> תחילת חיוב: {formatDate(billingStartDate)}
+          </div>
+          <div className="flex items-center gap-2">
+            <FileText size={14} /> הערות: {notes || "אין"}
+          </div>
+          <div className="flex items-center gap-2">
+            <FileText size={14} /> חשבונית ע"ש: {invoiceName || "לא זמין"}
+          </div>
+          <div className="flex items-center gap-2">
+            <Coins size={14} /> תשלום: {paymentMethodLabels[paymentMethodType!] || "לא זמין"}
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar size={14} /> נוצר: {formatDate(createdAt)}
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar size={14} /> עודכן: {formatDate(updatedAt)}
+          </div>
+
+          <div className="flex flex-wrap justify-between items-center mt-4 gap-2">
+            <div className="flex gap-3 text-blue-600 font-medium text-sm">
+              <button onClick={() => navigate(`/${id}/dashboard`)}>לוח בקרה</button>
+              <button onClick={() => navigate(`${id}/contract`)}>חוזה לקוח</button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => onEdit(id)}
+                className="flex gap-1 items-center"
+              >
+                <Pencil size={14} /> עריכה
+              </Button>
+              <Button
+                size="sm"
+                variant="accent"
+                onClick={() => onDelete(id)}
+                className="flex gap-1 items-center"
+              >
+                <Trash size={14} /> מחיקה
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-
-    {/* שורה אחת של טלפון | מייל | עסק עם רווחים */}
-    <div className="mt-4 flex justify-between flex-wrap gap-y-4 text-sm text-gray-600">
-      <div className="flex items-center gap-2">
-        <Phone size={16} /> {phone}
-      </div>
-      <div className="flex items-center gap-2">
-        <Mail size={16} /> {email}
-      </div>
-      <div className="flex items-center gap-2">
-        <Building2 size={16} /> {businessName}
-      </div>
-    </div>
-  </div>
-
-  {/* Expanded section */}
-  {open && (
-    <div className="mt-6 border-t pt-5 grid gap-4 text-sm text-gray-700">
-      <div className="flex items-center gap-2">
-        <IdCard size={14} /> <span>ת"ז: {idNumber || "לא זמין"}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <BadgePercent size={14} /> <span>תחום עיסוק: {businessType}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <ClipboardSignature size={14} />
-        <span>סוג מקום עבודה: {workspaceTypeLabels[currentWorkspaceType!] || "לא זמין"}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <Building2 size={14} /> <span>מספר מקומות עבודה: {workspaceCount ?? "לא זמין"}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <ScrollText size={14} /> <span>חתימה: {formatDate(contractSignDate)}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <Calendar size={14} /> <span>התחלת חוזה: {formatDate(contractStartDate)}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <Calendar size={14} /> <span>תחילת חיוב: {formatDate(billingStartDate)}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <FileText size={14} /> <span>הערות: {notes || "אין"}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <FileText size={14} /> <span>חשבונית ע"ש: {invoiceName || "לא זמין"}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <Coins size={14} /> <span>סוג תשלום: {paymentMethodLabels[paymentMethodType!] || "לא זמין"}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <Calendar size={14} /> <span>נוצר בתאריך: {formatDate(createdAt)}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <Calendar size={14} /> <span>עודכן בתאריך: {formatDate(updatedAt)}</span>
-      </div>
-
-      <div className="flex gap-2 mt-4 justify-end">
-        <Button size="sm" variant="secondary" onClick={() => onEdit(id)} className="flex gap-1 items-center">
-          <Pencil size={14} /> עריכה
-        </Button>
-        <Button size="sm" variant="accent" onClick={() => onDelete(id)} className="flex gap-1 items-center">
-          <Trash size={14} /> מחיקה
-        </Button>
-      </div>
-    </div>
-  )}
-</div>
-
   );
 };

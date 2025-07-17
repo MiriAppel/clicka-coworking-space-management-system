@@ -11,7 +11,7 @@ import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/Vend
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import MainLayout from './layout/MainLayout';
-import { Billing } from './MainMenu/Billing/Components/Billing';
+import { Billing } from './MainMenu/Billing/Components/billing';
 // import { WorkspaceMap } from './MainMenu/Workspace/Components/WorkspaceMap'
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';

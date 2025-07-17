@@ -3,11 +3,23 @@
 // import { v4 as uuid } from 'uuid';
 // import type{ Language, Translation } from 'shared-types';
 // import { supportedLanguages } from 'shared-types';
+// import { baseService } from './baseService';
+// import { translateText } from '../utils/translate';
+// import { v4 as uuid } from 'uuid';
+// import type{ Language, Translation } from 'shared-types';
+// import { supportedLanguages } from 'shared-types';
 
 // function isLanguage(value: string): value is Language {
 //   return supportedLanguages.includes(value as Language);
 // }
+// function isLanguage(value: string): value is Language {
+//   return supportedLanguages.includes(value as Language);
+// }
 
+// class TranslationService extends baseService<Translation> {
+//   constructor() {
+//     super('translations'); // שם הטבלה בבסיס הנתונים
+//   }
 // class TranslationService extends baseService<Translation> {
 //   constructor() {
 //     super('translations'); // שם הטבלה בבסיס הנתונים
@@ -31,11 +43,13 @@
 //     const langsToTranslate = supportedLanguages.filter(l => l !== lang);
 
 //     const newTranslations: Translation[] = [];
+//     const newTranslations: Translation[] = [];
 
 //     for (const targetLang of langsToTranslate) {
 //       // const alreadyExists = existing.find(e => e.lang === targetLang);
 //       // if (alreadyExists) continue; // דילוג אם כבר קיים
 
+//       const translatedValue = await translateText(text, lang, targetLang);
 //       const translatedValue = await translateText(text, lang, targetLang);
 
 //       const translation: Translation = {
@@ -46,7 +60,17 @@
 //         createdAt: new Date().toISOString(),
 //         updatedAt: new Date().toISOString(),
 //       };
+//       const translation: Translation = {
+//         id: uuid(),
+//         key,
+//         lang: targetLang,
+//         text: translatedValue,
+//         createdAt: new Date().toISOString(),
+//         updatedAt: new Date().toISOString(),
+//       };
 
+//       newTranslations.push(translation);
+//     }
 //       newTranslations.push(translation);
 //     }
 
@@ -65,10 +89,16 @@
 
 //     // שמירה
 //     await Promise.all(newTranslations.map(t => this.post(t)));
+//     // שמירה
+//     await Promise.all(newTranslations.map(t => this.post(t)));
 
 //     return newTranslations;
 //   }
+//     return newTranslations;
+//   }
 
+// }
+// export const translationService = new TranslationService();
 // }
 // export const translationService = new TranslationService();
 

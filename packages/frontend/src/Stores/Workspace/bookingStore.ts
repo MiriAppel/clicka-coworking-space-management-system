@@ -1,7 +1,7 @@
 // src/store/booking.store.ts
 import { create } from 'zustand';
 import { Booking } from 'shared-types/booking';
-import { axiosInstance } from '../../Services/Axios';
+import { axiosInstance } from '../../Service/Axios';
 
 interface BookingState {
   bookings: Booking[];

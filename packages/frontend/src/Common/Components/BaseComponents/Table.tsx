@@ -100,7 +100,7 @@ export const Table = <T extends Record<string, any>>({
                 // {/* //ניגש לכל מה שכתוב בעמודות לדוג אם ACCESOR=NAME אז מדפיס לי ROW[NAME] */}
               ))}
 
-              <td className="border px-4 py-2 flex gap-2 justify-center">
+              <td className="border-t px-4 py-2 flex gap-2 justify-center">
                 {typeof renderActions === "function" && renderActions(row)}
                 <Button
                   variant="secondary"

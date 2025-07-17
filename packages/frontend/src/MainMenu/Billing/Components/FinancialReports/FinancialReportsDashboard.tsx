@@ -14,12 +14,9 @@ import { Table } from '../../../../Common/Components/BaseComponents/Table'; // �
 import axios from 'axios'; // ספריית קריאות HTTP
 import { ExportButtons } from '../../../../Common/Components/BaseComponents/exportButtons'; // כפתורי ייצוא
 
-// טיפוס המרחיב את פרמטרי הדוח וכולל מזהה ספק
 type ExtendedReportParameters = ReportParameters & {
   vendorId?: string;
 };
-
-// סכימת ולידציה לטופס עם zod
 const ReportFormSchema = z.object({
   dateRange: z.object({
     startDate: z.string().min(1, 'יש להזין תאריך התחלה'),
@@ -30,8 +27,6 @@ const ReportFormSchema = z.object({
   customerIds: z.array(z.string()).optional(),
   includeProjections: z.boolean().optional(),
 });
-
-// מיפוי קטגוריות הוצאה לתוויות בעברית
 const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   RENT: 'שכירות',
   UTILITIES: 'חשבונות',
@@ -51,10 +46,7 @@ const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   PETTY_CASH: 'קופה קטנה',
   OTHER: 'אחר',
 };
-
-// הקומפוננטה הראשית
 export const FinancialReportsDashboard: React.FC = () => {
-  // אתחול טופס עם סכימה וערכי ברירת מחדל
   const methods = useForm<ExtendedReportParameters>({
     resolver: zodResolver(ReportFormSchema),
     defaultValues: {
@@ -63,22 +55,17 @@ export const FinancialReportsDashboard: React.FC = () => {
       customerIds: [],
     },
   });
-
-  // משתני עיצוב פנימי לטבלה מותאמת
   const thStyle: React.CSSProperties = {
     border: '1px solid #ccc', padding: '8px', backgroundColor: '#f0f0f0', textAlign: 'left',
   };
   const tdStyle: React.CSSProperties = { border: '1px solid #ccc', padding: '8px' };
   const trStyle: React.CSSProperties = {};
-
   const { fetchReport, reportData, loading, error } = useFinancialReportsStore(); // נתוני דוח מה־store
   const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE); // סוג דוח נבחר
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'pie' | 'line'>('bar'); // סוג גרף
   const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]); // לקוחות
   const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]); // ספקים
   const exportContentRef = useRef<HTMLDivElement>(null); // רפרנס לייצוא PDF
-
-  // שליפת לקוחות וספקים מהשרת בהעלאת הקומפוננטה
   useEffect(() => {
     async function fetchEntities() {
       try {
@@ -94,8 +81,6 @@ export const FinancialReportsDashboard: React.FC = () => {
     }
     fetchEntities();
   }, []);
-
-  // שליחת טופס
   const onSubmit = async (data: ExtendedReportParameters) => {
     const transformed = {
       ...data,
@@ -103,8 +88,41 @@ export const FinancialReportsDashboard: React.FC = () => {
     };
     await fetchReport(selectedType, transformed);
   };
-
+const exportTableData =
+    selectedType === 'REVENUE'
+      ? reportData?.revenueData?.breakdown?.map((item) => ({
+          תאריך: item.date,
+          'סה״כ הכנסות': item.totalRevenue,
+        })) || []
+      : reportData?.expenseData?.monthlyTrend?.map((item) => ({
+          חודש: item.month,
+          'סה״כ הוצאות': item.totalExpenses,
+        })) || [];
   // טופס מלא + תצוגה וייצוא
+   const exportFullTableData =
+  selectedType === 'REVENUE'
+    ? reportData?.revenueData?.breakdown?.map((item) => ({
+        'תאריך': item.date,
+        'סה״כ הכנסות': item.totalRevenue,
+        'חברות': item.membershipRevenue,
+        'ישיבות': item.meetingRoomRevenue,
+        'לאונג׳': item.loungeRevenue,
+        'אחר':
+          item.totalRevenue -
+          item.membershipRevenue -
+          item.meetingRoomRevenue -
+          item.loungeRevenue,
+      })) || []
+    : reportData?.expenseData?.monthlyTrend?.map((item) => ({
+        'חודש': item.month,
+        'סה״כ הוצאות': item.totalExpenses,
+        'קטגוריה 1': item.topCategories[0]?.category || '',
+        'סכום 1': item.topCategories[0]?.amount || '',
+        'קטגוריה 2': item.topCategories[1]?.category || '',
+        'סכום 2': item.topCategories[1]?.amount || '',
+        'קטגוריה 3': item.topCategories[2]?.category || '',
+        'סכום 3': item.topCategories[2]?.amount || '',
+      })) || [];
   return (
     <Form<ExtendedReportParameters>
       label="טופס דוחות פיננסיים"
@@ -122,11 +140,9 @@ export const FinancialReportsDashboard: React.FC = () => {
           <option value="REVENUE">הכנסות</option>
           <option value="EXPENSES">הוצאות</option>
         </select>
-
         {/* שדות תאריכים */}
         <InputField name="dateRange.startDate" label="מתאריך (YYYY-MM-DD)" required />
         <InputField name="dateRange.endDate" label="עד תאריך (YYYY-MM-DD)" required />
-
         {/* שדות מיוחדים לפי סוג הדוח */}
         {selectedType === 'REVENUE' && (
           <>
@@ -144,7 +160,6 @@ export const FinancialReportsDashboard: React.FC = () => {
             </select>
           </>
         )}
-
         {selectedType === 'EXPENSES' && (
           <>
           <label className="block mb-2">בחר ספק :</label>
@@ -280,7 +295,7 @@ export const FinancialReportsDashboard: React.FC = () => {
           <ExportButtons
             title={selectedType === 'REVENUE' ? 'דוח הכנסות' : 'דוח הוצאות'}
             refContent={exportContentRef}
-            exportData={[] /* ניתן להרחיב לפי צורך */}
+            exportData={exportFullTableData}
           />
         </div>
       )}

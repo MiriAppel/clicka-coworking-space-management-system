@@ -23,8 +23,7 @@
     "paths": {
       "shared-types": ["../shared-types/src"]
     },
-    "types": []
-    // "types": ["cookie-parser"]
+    "types": ["node"]
   },
   "include": ["src", "../shared-types/src", "../shared-types/core.ts", "../shared-types/customer.ts", "../shared-types/google.ts", "../shared-types/language.ts", "../shared-types/mapCoordinates.ts", "../shared-types/occupancy.ts", "../shared-types/report.ts", "../shared-types/spaceAssignment.ts", "../shared-types/workspaceMap.ts"]
 }

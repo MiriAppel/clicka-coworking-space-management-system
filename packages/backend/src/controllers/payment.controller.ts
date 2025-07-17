@@ -1,4 +1,4 @@
-// // payment.controller.ts
+// payment.controller.ts
 // import { Request, Response } from 'express';
 // import type{ ID } from 'shared-types';
 // import { PaymentService } from '../services/payments.service';
@@ -64,10 +64,3 @@
 //     res.status(400).json({ message: (error as Error).message });
 //   }
 // };
-
-
-
-
-
-
-
