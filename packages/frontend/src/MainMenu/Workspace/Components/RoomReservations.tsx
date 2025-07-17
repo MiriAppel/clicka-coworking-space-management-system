@@ -7,6 +7,7 @@ import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
 import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
 import { v4 as uuidv4 } from "uuid";
 import "../Css/roomReservations.css";
+import { log } from "console";
 
 export enum BookingStatus {
   PENDING = "PENDING",
@@ -34,7 +35,6 @@ export type FormFields = {
   endDate: string;
   endTime: string;
 };
-
 export type RoomReservationsRef = {
   fillFormWithExternalData: (data: Partial<FormFields>) => void;
 };
@@ -54,13 +54,10 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       mode: "onSubmit",
     });
 
-    const { createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
+    const { createBookingInCalendar,createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
     const customers = useCustomerStore((s) => s.customers);
     const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
-
-
     const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
-
     const status = useWatch({ control: methods.control, name: "customerStatus" });
     const phoneOrEmail = useWatch({ control: methods.control, name: "phoneOrEmail" });
 
@@ -83,9 +80,18 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         );
       });
     }, []);
-
     useEffect(() => {
-      console.log("📦 API_URL:", process.env.REACT_APP_API_URL);
+      if (status === "customer" && methods.getValues("customerId")) {
+        const customer = customers.find((c) => c.id === methods.getValues("customerId"));
+        console.log("נמצא לקוח?", customer);
+        if (customer) {
+          methods.setValue("name", customer.name);
+          console.log("שם מתוך useEffect:", customer.name);
+        }
+      }
+    }, [status, customers, methods.watch("customerId")]);
+    
+    useEffect(() => {
       const fetch = async () => {
         if (status === "customer" && phoneOrEmail) {
           const customer = await getCustomerByPhoneOrEmail(phoneOrEmail);
@@ -119,25 +125,24 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         totalHours: 0,
         chargeableHours: 0,
         totalCharge: 0,
-        googleCalendarEventId: undefined,
+        googleCalendarEventId:data.selectedRoomId, 
+        // googleCalendarEventId: undefined,
         isPaid: false,
         approvedBy: "",
         approvedAt: new Date().toISOString(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-
+      
       if (data.customerStatus === "customer") {
         console.log("customerId",data.customerId);
         console.log("customerName",data.name);
         console.log("customerPhone",data.phone);
-
-
         return {
           ...base,
           customerId: data.customerId ?? "",
-          customerName:name ?? "",
-         
+          customerName: name,
+
         };
       }
 
@@ -148,7 +153,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         externalUserPhone: data.phone ?? "",
       };
     };
-    console.log("סטטוס נוכחי:", status);
     const handleSubmit = async (data: FormFields) => {
       try {
         if (data.customerStatus === "customer") {
@@ -166,8 +170,13 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
 
         const bookingPayload = convertFormToBooking(data);
         const result = await createBooking(bookingPayload);
-
+        const resultCalendar = await createBookingInCalendar(bookingPayload,"primary");
         if (result) {
+          alert("ההזמנה נוצרה בהצלחה");
+          methods.reset();
+          onSubmit?.();
+        }
+        if (resultCalendar) {
           alert("ההזמנה נוצרה בהצלחה");
           methods.reset();
           onSubmit?.();
@@ -184,15 +193,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           <h1 className="form-title">הזמנות חדרים</h1>
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(handleSubmit)}>
-              {/* <fieldset>
-                <legend>סטטוס לקוח</legend>
-                <label>
-                  <InputField type="radio" name="customerStatus" value="external" label="לקוח חיצוני" />
-                </label>
-                <label>
-                  <InputField type="radio" name="customerStatus" value="customer" label="לקוח קיים" />
-                </label>
-              </fieldset> */}
               <fieldset>
   <legend>סטטוס לקוח</legend>
   <label>
@@ -202,15 +202,16 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       {...methods.register("customerStatus")}
       defaultChecked
     />
-    לקוח קיים
+        לקוח קיים
   </label>
+  <br></br>
   <label>
     <input
       type="radio"
       value="external"
       {...methods.register("customerStatus")}
     />
-    לקוח חיצוני
+        לקוח חיצוני
   </label>
 </fieldset>
 

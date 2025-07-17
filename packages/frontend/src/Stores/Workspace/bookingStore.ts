@@ -74,7 +74,8 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       // מוודאים שה־payload נכון
-      const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, booking);
+      // const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, booking);
+      const response = await axiosInstance.post(`/calendar-sync/calendars/${calendarId}/events`, booking);
       const created = response.data;
 
       set(state => ({
