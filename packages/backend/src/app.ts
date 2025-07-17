@@ -29,6 +29,7 @@ import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
 import cookieParser from "cookie-parser";
 import userRouter from './routes/user.route';
+import routerEmail from './routes/gmail-route';
 
 // Create Express app
 const app = express();
@@ -64,7 +65,8 @@ app.use('/api/contract', routerContract);
 // app.use('/api/translate', translationRouter);
 app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);
-app.use('/api/pricing',routerPricing)
+app.use('/api/pricing',routerPricing);
+app.use('/api/email',routerEmail)
 app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();

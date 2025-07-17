@@ -1,7 +1,6 @@
 import type { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 
-
 export class baseService<T> {
   // בשביל שם המחלקה
   constructor(private tableName: string) {}
@@ -25,7 +24,6 @@ export class baseService<T> {
     return data;
   };
 
-  
   getAll = async (): Promise<T[]> => {
     console.log("🧾 טבלה:", this.tableName);
 
@@ -66,8 +64,9 @@ export class baseService<T> {
       throw error;
     }
 
-    if (!data || data.length === 0)
+    if (!data || data.length === 0) {
       throw new Error("לא התקבלה תשובה מהשרת אחרי העדכון");
+    }
 
     return data[0];
   };
@@ -83,8 +82,11 @@ export class baseService<T> {
       console.log(dataForInsert);
     }
 
-    // if (this.tableName === "customer")
-    //  await CustomerAuthentication((dataForInsert as any).email);
+    // אם זה הוספת לקוח לא מוסיפים לו מייל עד שמאמתים את הלקוח והמייל נוסף רק בצורת עדכון אחרי שהשלקוח נוצר
+    if (this.tableName === "customer") {
+      const { email, ...rest } = dataForInsert as any;
+      dataForInsert = rest;
+    }
 
     const { data, error } = await supabase
       .from(this.tableName)

@@ -8,9 +8,14 @@ import {
 } from "shared-types";
 import { contractService } from "../services/contract.service";
 import { UserTokenService } from "../services/userTokenService";
+import { sendEmail } from "../services/gmail-service";
+import { EmailTemplateService } from "../services/emailTemplate.service";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
+const userTokenService = new UserTokenService();
+const emailService = new EmailTemplateService();
+
 
 export const getAllCustomers = async (req: Request, res: Response) => {
   try {
@@ -29,8 +34,41 @@ export const postCustomer = async (req: Request, res: Response) => {
 
     // console.log("in controller");
     // console.log(newCustomer);
+    const email = newCustomer.email;
 
     const customer = await serviceCustomer.createCustomer(newCustomer);
+
+    const token = await userTokenService.getSystemAccessToken();
+
+    const template = await emailService.getTemplateByName(
+          "אימות לקוח",
+    );
+    if (!template) {
+          console.warn("Team email template not found");
+          return;
+        }
+        // const renderedHtml = await emailService.renderTemplate(
+        //   template.bodyHtml,
+        //   {
+        //     "שם": customer.name,
+        //     "סטטוס": status,
+        //     "תאריך": formattedDate,
+        //     "סיבה": detailsForChangeStatus.reason || "ללא סיבה מצוינת",
+        //   },
+        // );
+    
+
+    if (!email || !token)
+      res.status(401).json("its have a problam on email or token");
+
+    // sendEmail( "me",
+    //       {
+    //         to: [email ?? ""],
+    //         subject: template.subject,
+    //         body: renderedHtml,
+    //         isHtml: true,
+    //       },
+    //       token,)
     console.log("in controller");
     console.log(customer);
 
@@ -212,7 +250,6 @@ export const patchCustomer = async (req: Request, res: Response) => {
 export const changeCustomerStatus = async (req: Request, res: Response) => {
   try {
     console.log("changeCustomerStatus called with params:", req.params);
-    const userTokenService = new UserTokenService();
     const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
     const detailsForChangeStatus = req.body; // פרטים לשינוי הסטטוס
     const token = await userTokenService.getSystemAccessToken();

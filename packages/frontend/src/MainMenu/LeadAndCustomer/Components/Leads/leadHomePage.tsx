@@ -60,7 +60,7 @@ export const LeadsHomePage = () => {
     (l) =>
       l.name.toLowerCase().includes(term.toLowerCase()) ||
       l.phone.includes(term) ||
-      l.email.toLowerCase().includes(term.toLowerCase())
+      l.email?.toLowerCase().includes(term.toLowerCase())
   );
 
   if (filtered.length > 0) {

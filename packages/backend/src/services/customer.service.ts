@@ -94,6 +94,8 @@ export class customerService extends baseService<CustomerModel> {
     console.log(customerData);
 
     await this.post(customerData);
+
+
     //יש להעביר את פרטי הלקוח והחוזה למערכת החיוב (של Team 4 - Billing) לצורך חישוב תמחור והכנת חיובים ראשוניים.
 
     // קריאה לשירותי התראות/מייל מתאימים לאחר המרה מוצלחת קשור לקבוצה 1
@@ -250,9 +252,9 @@ export class customerService extends baseService<CustomerModel> {
 
     const emailPromises: Promise<any>[] = [];
 
-    function encodeSubject(subject: string): string {
-      return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
-    }
+    // function encodeSubject(subject: string): string {
+    //   return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+    // }
 
     // תרגום הסטטוס לעברית
     const statusTranslations: Record<string, string> = {
@@ -299,7 +301,7 @@ export class customerService extends baseService<CustomerModel> {
           "me",
           {
             to: ["diversitech25clicka@gmail.com"],
-            subject: encodeSubject(template.subject),
+            subject: template.subject,
             body: renderedHtml,
             isHtml: true,
           },
@@ -348,8 +350,8 @@ export class customerService extends baseService<CustomerModel> {
       return sendEmail(
         "me",
         {
-          to: [customer.email],
-          subject: encodeSubject(template.subject),
+          to: [customer.email ?? ""],
+          subject: template.subject,
           body: renderedHtml,
           isHtml: true,
         },
@@ -376,17 +378,49 @@ export class customerService extends baseService<CustomerModel> {
     //אם פרומיס אחד נכשל זה לא מפעיל את השליחה
     await Promise.all(emailPromises);
   };
+
+  CustomerAuthentication = async (
+    id: ID,
+    token: any,
+  ): Promise<void> => {
+    const customer = await this.getById(id);
+
+    // פונקציה לשליחת מייל לצוות
+    const sendEmailToAuth = async () => {
+      try {
+        const template = await this.emailService.getTemplateByName(
+          "אימות לקוח",
+        );
+
+        if (!template) {
+          console.warn("Team email template not found");
+          return;
+        }
+        const renderedHtml = await this.emailService.renderTemplate(
+          template.bodyHtml,
+          {},
+        );
+
+        const response = await sendEmail(
+          "me",
+          {
+            to: [customer.email ?? ""],
+            subject: template.subject,
+            body: renderedHtml,
+            isHtml: true,
+          },
+          token,
+        );
+        console.log(template.subject);
+
+        console.log("HTML before sending:\n", renderedHtml);
+      } catch (err) {
+        console.error("שגיאה בשליחת מייל לצוות:", err);
+      }
+    };
+    sendEmailToAuth();
+  };
 }
-//  export const CustomerAuthentication = async (email: string) => {
-//     const { data, error } = await supabase.auth.api.sendVerificationEmail(email);
-
-//   if (error) {
-//     console.error("Error sending verification email:", error);
-//     throw error;
-//   }
-
-//   console.log("Verification email sent to:", email);
-// }
 
 const serviceCustomer = new customerService();
 

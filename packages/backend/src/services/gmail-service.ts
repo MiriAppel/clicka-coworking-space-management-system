@@ -1,12 +1,13 @@
 import { google } from 'googleapis';
-import { SendEmailRequest } from 'shared-types';
-
+import { SendEmailRequest } from 'shared-types/google';
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();
   auth.setCredentials({ access_token: token });
   return auth;
 }
-
+function encodeSubject(subject: string): string {
+  return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+}
 function encodeMessage(request: SendEmailRequest): string {
   const boundary = '__BOUNDARY__';
   const headers = [
@@ -14,7 +15,7 @@ function encodeMessage(request: SendEmailRequest): string {
     `To: ${request.to.join(', ')}`,
     request.cc?.length ? `Cc: ${request.cc.join(', ')}` : '',
     request.bcc?.length ? `Bcc: ${request.bcc.join(', ')}` : '',
-    `Subject: ${request.subject}`,
+    `Subject: ${encodeSubject(request.subject)}`,
     `MIME-Version: 1.0`,
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
   ].filter(Boolean).join('\n');
@@ -35,14 +36,12 @@ function encodeMessage(request: SendEmailRequest): string {
   ].join('\n');
   return Buffer.from(message).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
-
 export async function sendEmail(userId: string, request: SendEmailRequest, token: string) {
   const gmail = google.gmail({ version: 'v1', auth: getAuth(token) });
   const raw = encodeMessage(request);
   const res = await gmail.users.messages.send({ userId, requestBody: { raw } });
   return res.data;
 }
-
 export async function listEmails(
   userId: string,
   token: string,
@@ -66,7 +65,6 @@ export async function listEmails(
   } catch (error) {
     return [{ error: 'Failed to fetch message list', details: error }];
   }
-
   const messages = listRes.data?.messages;
   if (!messages || messages.length === 0) return [];
   const detailed = await Promise.all(
@@ -92,3 +90,18 @@ export async function listEmails(
   );
   return detailed;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

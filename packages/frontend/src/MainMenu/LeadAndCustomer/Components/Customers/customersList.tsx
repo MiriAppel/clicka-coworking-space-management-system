@@ -183,6 +183,7 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "הודעת עזיבה",
   EXITED: "עזב",
   PENDING: "בהמתנה",
+  CREATED: "נוצר"
 };
 
 export const CustomersList = () => {
@@ -321,7 +322,7 @@ export const CustomersList = () => {
     (c) =>
       c.name.toLowerCase().includes(lower) ||
       c.phone.toLowerCase().includes(lower) ||
-      c.email.toLowerCase().includes(lower) ||
+      c.email?.toLowerCase().includes(lower) ||
       c.businessName?.toLowerCase().includes(lower) ||
       c.businessType?.toLowerCase().includes(lower) ||
       statusLabels[c.status].toLowerCase().includes(lower)
@@ -338,7 +339,7 @@ export const CustomersList = () => {
       id: customer.id!,
       name: customer.name,
       phone: customer.phone,
-      email: customer.email,
+      email: customer.email || "",
       businessName: customer.businessName || "לא זמין",
       businessType: customer.businessType || "לא זמין",
       status: customer.status,
