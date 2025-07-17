@@ -1,8 +1,8 @@
-// import { baseService } from './baseService';
-// import { translateText } from '../utils/translate';
-// import { v4 as uuid } from 'uuid';
-// import type{ Language, Translation } from 'shared-types';
-// import { supportedLanguages } from 'shared-types';
+// import { Language, supportedLanguages, Translation } from "shared-types";
+// import { baseService } from "./baseService";
+// import { translateText } from "../utils/translate";
+
+
 
 // function isLanguage(value: string): value is Language {
 //   return supportedLanguages.includes(value as Language);
@@ -13,17 +13,6 @@
 //     super('translations'); // שם הטבלה בבסיס הנתונים
 //   }
 
-//   // אפשר גם להוסיף פונקציות ייחודיות רק לשירות הזה כאן
-//   // async getByKey(key: string): Promise<Translation[]> {
-//   //   return this.getByFilters({ key });
-//   // }
-
-//   // async getByLang(lang: string): Promise<Translation[]> {
-//   //   if (!isLanguage(lang)) {
-//   //     throw new Error(`Invalid language: ${lang}`);
-//   //   }
-//   //   return this.getByFilters({ lang });
-//   // }
 //   async createWithTranslations(base: { key: string; text: string; lang: Language }) {
 //     const { key, text, lang } = base;
     
@@ -37,7 +26,7 @@
 //       // if (alreadyExists) continue; // דילוג אם כבר קיים
 
 //       const translatedValue = await translateText(text, lang, targetLang);
-
+       
 //       const translation: Translation = {
 //         id: uuid(),
 //         key,
@@ -65,10 +54,9 @@
 
 //     // שמירה
 //     await Promise.all(newTranslations.map(t => this.post(t)));
+//     // שמירה
 
-//     return newTranslations;
-//   }
-
+  
 // }
 // export const translationService = new TranslationService();
 

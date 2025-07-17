@@ -9,8 +9,6 @@ export const createVendorController = async (req: Request, res: Response) => {
     const newVendor = new VendorModel(req.body); // יצירת מופע מודל מ-req.body
     const vn = await create(req.body as CreateVendorRequest); // העברת המודל
     res.status(201).json(vn);
-    console.log("vendor.routes loaded");
-
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

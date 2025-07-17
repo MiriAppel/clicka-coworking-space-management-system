@@ -96,8 +96,30 @@ paths:
                 $ref: '#/components/schemas/User'
         '500':
           description: Failed to create user
-
-  /api/users/{id}:
+  /api/users/getUserByEmail/{email}:
+    get:
+      tags:
+        - Users
+      summary: Get user by email
+      parameters:
+        - in: path
+          name: email
+          schema:
+            type: string
+          required: true
+          description: User email
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  /api/users/getUserById/{id}:
     get:
       tags:
         - Users
@@ -120,7 +142,38 @@ paths:
           description: User not found
         '500':
           description: Internal server error
-
+  /api/users/updateGoogleIdUser/{id}:
+    put:
+      tags:
+        - Users
+      summary: Update user's Google ID by user ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+               type: string
+            required: true
+            description: User google ID
+      responses:
+        '200':
+          description: User's Google ID updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  /api/users/updateUser/{id}:
     put:
       tags:
         - Users
@@ -145,13 +198,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid input
         '404':
           description: User not found
         '500':
           description: Internal server error
 
+  /api/users/deleteUser/{id}:
     delete:
       tags:
         - Users
@@ -159,10 +211,12 @@ paths:
       parameters:
         - in: path
           name: id
-          schema:
-            type: string
-          required: true
-          description: User ID
+          content:
+            application/json:
+            schema:
+              type: string
+            required: true
+            description: User ID
       responses:
         '204':
           description: User deleted successfully
@@ -192,8 +246,27 @@ paths:
                 $ref: '#/components/schemas/User'
         '404':
           description: User not found
+        '400':
+          description: Google ID is required
+        '500':
+          description: Failed to login by Google ID
+        
 
 components:
+  securitySchemes:
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: session
+    CookieSessionId:
+      type: apiKey
+      in: cookie
+      name: sessionId
+    RoleCookie:
+      type: apiKey
+      in: cookie
+      name: role
+
   schemas:
     User:
       type: object
@@ -223,11 +296,7 @@ components:
           type: string
           format: date-time
 
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: role
-
 security:
-  - cookieAuth: []
+  - CookieAuth: []
+  - CookieSessionId: []
+  - RoleCookie: []

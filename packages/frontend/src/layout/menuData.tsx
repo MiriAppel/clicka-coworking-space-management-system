@@ -34,6 +34,7 @@ export const menus: Menu[] = [
       { label: 'מתעניינים', path: '/leadAndCustomer/leads' },
       { label: 'לקוחות', path: '/leadAndCustomer/customers' },
       { label: 'חוזים', path: '/leadAndCustomer/contracts' },
+          { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
       { label: 'היסטוריית לקוח', path: '/customerHistory' }
     ]
   },
@@ -54,7 +55,9 @@ export const menus: Menu[] = [
     items: [
       { label: 'חשבוניות', path: '/billing' },
       { label: 'תשלומים', path: '/payments' },
-      { label: 'הוצאות', path: '/expenses' }
+      { label: 'הוצאות', path: '/expenses' },
+      { label: 'תמחור', path: '/pricing' } // הוספתי כאן
+
     ]
   },
   {

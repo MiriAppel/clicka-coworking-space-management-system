@@ -1,5 +1,3 @@
-// customer-types.d.ts
-
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
@@ -95,7 +93,7 @@ export interface Contract {
 export interface CustomerPaymentMethod {
   id?: ID;
   customerId: ID;
-  creditCardLast4?: string;
+  creditCardNumber?: string;
   creditCardExpiry?: string;
   creditCardHolderIdNumber?: string;
   creditCardHolderPhone?: string;
@@ -122,7 +120,8 @@ export interface Customer {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-  paymentMethods: CustomerPaymentMethod[];
+  paymentMethods?: CustomerPaymentMethod[];
+  paymentMethodType: PaymentMethodType;
   periods?: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -137,7 +136,7 @@ export interface CreateCustomerRequest {
   idNumber: string;
   businessName: string;
   businessType: string;
-  workspaceType: WorkspaceType;
+  currentWorkspaceType: WorkspaceType;
   workspaceCount: number;
   contractSignDate: DateISO;
   contractStartDate: DateISO;
@@ -145,12 +144,12 @@ export interface CreateCustomerRequest {
   notes?: string;
   invoiceName?: string;
   paymentMethod?: {
-    creditCardLast4?: string;
+    creditCardNumber?: string;
     creditCardExpiry?: string;
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;
   };
-    paymentMethodType: PaymentMethodType;
+  paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
 
@@ -226,7 +225,7 @@ export interface ConvertLeadToCustomerRequest {
   billingStartDate: DateISO;
   notes?: string;
   paymentMethod?: {
-    creditCardLast4?: string;
+    creditCardNumber?: string;
     creditCardExpiry?: string;
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;

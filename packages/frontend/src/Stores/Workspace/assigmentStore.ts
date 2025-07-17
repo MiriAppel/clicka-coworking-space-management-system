@@ -1,17 +1,10 @@
 import { create } from 'zustand';
 import axios, { AxiosError } from 'axios';
-
+import { Space } from 'shared-types/workspace'; // ייבוא הטייפ הנכון
+import { WorkspaceType } from 'shared-types';
 // הגדרת בסיס URL לAPI
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
-// הגדרת טיפוסים
-interface Space {
-  id: string | number;
-  name: string;
-  description?: string;
-  capacity?: number;
-  location?: string;
-}
 
 interface Customer {
   id: string | number;
@@ -28,8 +21,15 @@ interface Assignment {
   unassignedDate?: string;
   notes?: string;
   assignedBy: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'ENDED';
+  status: 'ACTIVE' | 'SUSPENDED' | 'ENDED';
 }
+
+interface ConflictCheck {
+  hasConflicts: boolean;
+  conflicts: Assignment[];
+  message: string;
+}
+
 
 interface AssignmentStoreState {
   // State
@@ -39,6 +39,8 @@ interface AssignmentStoreState {
   loading: boolean;
   error: string | null;
   selectedAssignment: Assignment | null;
+  conflictCheck: ConflictCheck | null;
+
 
   // Actions
   getAllSpaces: () => Promise<Space[]>;
@@ -49,6 +51,7 @@ interface AssignmentStoreState {
   updateAssignment: (id: string | number, assignmentData: Partial<Assignment>) => Promise<Assignment>;
   deleteAssignment: (id: string | number) => Promise<void>;
   setSelectedAssignment: (assignment: Assignment | null) => void;
+  checkConflicts: (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number) => Promise<ConflictCheck>;
   clearError: () => void;
   resetStore: () => void;
 }
@@ -69,6 +72,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   loading: false,
   error: null,
   selectedAssignment: null,
+  conflictCheck: null,
 
   /**
    * מביא את כל הלקוחות מהשרת - לצורך הצגה בטופס
@@ -76,7 +80,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   getAllCustomers: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await api.get<Customer[]>('/api/customers');
+      const response = await api.get<Customer[]>('/customers');
       set({ customers: response.data, loading: false });
       return response.data;
     } catch (error) {
@@ -94,7 +98,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   getAllSpaces: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await api.get<Space[]>('/api/workspace/getAllWorkspace');
+      const response = await api.get<Space[]>('/workspace/getAllWorkspace');
       set({ spaces: response.data, loading: false });
       return response.data;
     } catch (error) {
@@ -112,7 +116,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   createAssignment: async (assignmentData: Omit<Assignment, 'id'>) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.post<Assignment>('/api/space/createSpace', assignmentData);
+      const response = await api.post<Assignment>('/space/createSpace', assignmentData);
       const newAssignment = response.data;
       set((state) => ({
         assignments: [...state.assignments, newAssignment],
@@ -135,7 +139,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   getAssignments: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await api.get<Assignment[]>('/api/space/getAllSpaces');
+      const response = await api.get<Assignment[]>('/space/getAllSpaces');
       set({ assignments: response.data, loading: false });
       return response.data;
     } catch (error) {
@@ -153,7 +157,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   getAssignmentById: async (id: string | number) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.get<Assignment>(`/api/space/getSpaceById/${id}`);
+      const response = await api.get<Assignment>(`/space/getSpaceById/${id}`);
       set({ loading: false });
       return response.data;
     } catch (error) {
@@ -171,7 +175,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   updateAssignment: async (id: string | number, assignmentData: Partial<Assignment>) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.put<Assignment>(`/api/space/updateSpace/${id}`, assignmentData);
+      const response = await api.put<Assignment>(`/space/updateSpace/${id}`, assignmentData);
       const updatedAssignment = response.data;
       set((state) => ({
         assignments: state.assignments.map((assignment) => 
@@ -195,7 +199,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   deleteAssignment: async (id: string | number) => {
     set({ loading: true, error: null });
     try {
-      await api.delete(`/api/space/deleteSpace/${id}`);
+      await api.delete(`/space/deleteSpace/${id}`);
       set((state) => ({
         assignments: state.assignments.filter((assignment) => assignment.id !== id),
         loading: false
@@ -205,6 +209,28 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
         ? error.message 
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
+      throw error;
+    }
+  },
+  /**
+   * בדיקת קונפליקטים לפני יצירת/עדכון הקצאה
+   */
+  checkConflicts: async (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number) => {
+    try {
+      const response = await api.post<ConflictCheck>('/space/checkConflicts', {
+        workspaceId,
+        assignedDate,
+        unassignedDate,
+        excludeId
+      });
+      
+      set({ conflictCheck: response.data });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error instanceof AxiosError 
+        ? error.message 
+        : 'An unknown error occurred';
+      set({ error: errorMessage });
       throw error;
     }
   },

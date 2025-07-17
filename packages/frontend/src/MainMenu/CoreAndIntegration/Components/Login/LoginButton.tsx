@@ -1,22 +1,46 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { googleAuthConfig } from '../../Config/googleAuth';
 import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
+<<<<<<< HEAD
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:3001',
     withCredentials: true, // Ensure cookies are sent with requests
 });
+=======
+import { axiosInstance } from '../../../../Service/Axios';
+import { googleAuthConfig } from '../../../../Config/googleAuth';
+import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
+
+>>>>>>> origin/main
 export const LoginWithGoogle = () => {
     // const setUser = useAuthStore((state) => state.setUser);
     const { setUser, setSessionId } = useAuthStore();
+    interface GoogleCodeResponse {
+        code: string;
+        // Add other properties if needed
+    }
+
+    interface GoogleLoginConfig {
+        flow: 'auth-code';
+        onSuccess: (codeResponse: GoogleCodeResponse) => Promise<void>;
+        onError: (error: unknown) => void;
+        scope: string;
+        redirect_uri: string;
+        extraQueryParams: {
+            prompt: string;
+            access_type: string;
+            include_granted_scopes: string;
+        };
+    }
+
     const login = useGoogleLogin({
         flow: 'auth-code',
-        onSuccess: async (codeResponse) => {
+        onSuccess: async (codeResponse: { code: any; }) => {
             try {
                 console.log('Code received from Google:', codeResponse);
                 const response = await axiosInstance.post<LoginResponse>(
-                    '/api/auth/google',
+                    '/auth/google',
                     { code: codeResponse.code },
                     {
                         headers: {
@@ -28,6 +52,7 @@ export const LoginWithGoogle = () => {
                 // setUser(response.data.user);
                 setSessionId(response.data.sessionId!)
                 // Optionally, you can handle the token and expiration here
+<<<<<<< HEAD
                 // נניח שזה השדה שבו נשמר ה-access token
                 setUser(response.data.user);
                 const googleAccessToken = response.data.googleAccessToken; // ← שימוש בטוקן של גוגל
@@ -141,13 +166,33 @@ export const LoginWithGoogle = () => {
                 }
                 //עד כאן
             } catch (error) {
+=======
+            } catch (error: any) {
+                if (axios.isAxiosError(error) && error.response?.status === 401) {
+                    showAlert("", "המשתמש לא מורשה לגשת למשאב זה", "error");
+                    return;
+                }
+                if (axios.isAxiosError(error)) {
+                    showAlert("", error.message, "error");
+                }
+>>>>>>> origin/main
                 console.error('Error sending code to server:', error);
             }
         },
-        onError: (error) => console.error('Login Failed:', error),
+        onError: (error: any) => console.error('Login Failed:', error),
         scope: googleAuthConfig.scopes.join(' '),
         redirect_uri: googleAuthConfig.redirectUri,
+<<<<<<< HEAD
     });
+=======
+        extraQueryParams: {
+            prompt: 'consent',
+            access_type: 'offline',
+             include_granted_scopes: 'false',
+        }
+    } as any);
+
+>>>>>>> origin/main
     return (
         <button onClick={() => login()}> Google התחבר עם </button>
     );
