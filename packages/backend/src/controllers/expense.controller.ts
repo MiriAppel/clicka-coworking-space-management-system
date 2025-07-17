@@ -20,7 +20,6 @@ async getAllExpenses1(req: Request, res: Response) {
 }
     async createExpense(req: Request, res: Response) {
         const expenseData: CreateExpenseRequest = req.body; // קריאת פרטי ההוצאה מתוך גוף הבקשה
-        console.log('Prepared expense data:', JSON.stringify(expenseData, null, 2)); // הדפסת נתוני ההוצאה ללוג
 
         const result = await this.expenseService.createExpense(expenseData); // קריאה לשירות ליצירת הוצאה במסד
 
@@ -57,9 +56,6 @@ async getAllExpenses1(req: Request, res: Response) {
     async updateExpense(req: Request, res: Response) {
         const expenseId = req.params.id; // קריאת ה-ID מתוך ה-params
         const updateData: UpdateExpenseRequest = req.body; // קריאת נתוני העדכון מתוך גוף הבקשה
-
-        console.log('Prepared update data:', JSON.stringify(updateData, null, 2)); // הדפסת נתוני העדכון ללוג
-
         const result = await this.expenseService.updateExpense(expenseId, updateData); // קריאה לשירות לביצוע העדכון
 
         if (result) {
