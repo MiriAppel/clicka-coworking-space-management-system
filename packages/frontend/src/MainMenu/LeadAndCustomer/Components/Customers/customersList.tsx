@@ -39,6 +39,10 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   DESK_IN_ROOM: 'שולחן בחדר',
   OPEN_SPACE: 'אופן ספייס',
   KLIKAH_CARD: 'כרטיס קליקה',
+  DOOR_PASS: 'דלת כניסה',
+  WALL: 'קיר',
+  COMPUTER_STAND: 'עמדת מחשב',
+  RECEPTION_DESK: 'דלפק קבלה',
 };
 
 const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
