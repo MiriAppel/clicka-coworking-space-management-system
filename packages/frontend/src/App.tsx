@@ -5,6 +5,7 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
+import FileUploader from './Common/Components/BaseComponents/FileUploader';
 
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
       <Accesibility></Accesibility>
 
         <AuthenticationScreen />
+        {/* <FileUploader></FileUploader> */}
     </div>
     </AuthProvider>
     

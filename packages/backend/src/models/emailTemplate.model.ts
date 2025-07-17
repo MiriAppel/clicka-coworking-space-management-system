@@ -44,3 +44,4 @@ export class EmailTemplateModel implements EmailTemplate {
         };
     }
 }
+

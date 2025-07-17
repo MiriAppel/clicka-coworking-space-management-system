@@ -10,9 +10,8 @@ import { Button } from '../../../../Common/Components/BaseComponents/Button'; //
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1'; // חיבור ל־store של דוחות
 import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types'; // טיפוסים משותפים
 import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph'; // קומפוננטת גרף
-import { Table } from '../../../../Common/Components/BaseComponents/Table'; // טבלה כללית
+import { Table } from '../../../../Common/Components/BaseComponents/Table'; 
 import axios from 'axios'; // ספריית קריאות HTTP
-import { ExportButtons } from '../../../../Common/Components/BaseComponents/exportButtons';
 // טיפוס המרחיב את פרמטרי הדוח וכולל מזהה ספק
 type ExtendedReportParameters = ReportParameters & {
   vendorId?: string;
@@ -276,10 +275,10 @@ export const FinancialReportsDashboard: React.FC = () => {
           </table>
 
           {/* כפתורי ייצוא */}
-          <ExportButtons
+          <Button
             title={selectedType === 'REVENUE' ? 'דוח הכנסות' : 'דוח הוצאות'}
-            refContent={exportContentRef}
-            exportData={[] /* ניתן להרחיב לפי צורך */}
+            // refContent={exportContentRef}
+            // exportData={[] /* ניתן להרחיב לפי צורך */}
           />
         </div>
       )}

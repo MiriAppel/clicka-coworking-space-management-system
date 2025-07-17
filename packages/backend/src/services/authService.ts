@@ -28,6 +28,7 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     if (!tokens.access_token) {
       throw new Error('No access token received from Google');
     }
+    console.log(tokens);
     const userInfo = await getGoogleUserInfo(tokens.access_token);
     console.log(userInfo);
 

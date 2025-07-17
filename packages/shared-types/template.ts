@@ -1,4 +1,5 @@
 import { ID, DateISO, FileReference } from './core';
+
 // סוגי מסמכים
 export enum DocumentType {
   INVOICE = 'INVOICE',
@@ -7,6 +8,7 @@ export enum DocumentType {
   STATEMENT = 'STATEMENT',
   TAX_INVOICE = 'TAX_INVOICE'
 }
+
 // תבנית מסמך
 export interface DocumentTemplate {
   id: ID;
@@ -20,6 +22,8 @@ export interface DocumentTemplate {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
+
+
 // בקשה ליצירת מסמך
 export interface GenerateDocumentRequest {
   templateId: ID;
@@ -28,6 +32,8 @@ export interface GenerateDocumentRequest {
   language?: 'hebrew' | 'english';
   deliveryMethod?: 'email' | 'download' | 'store';
 }
+
+
 // מסמך שנוצר
 export interface GeneratedDocument {
   id: ID;
@@ -40,6 +46,7 @@ export interface GeneratedDocument {
   deliveredAt?: DateISO;
   deliveryMethod?: string;
 }
+
 // תבנית דוא"ל
 export interface EmailTemplate {
   id?: ID;
@@ -52,12 +59,3 @@ export interface EmailTemplate {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
-
-
-
-
-
-
-
-
-

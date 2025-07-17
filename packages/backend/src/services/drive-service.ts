@@ -1,24 +1,98 @@
 import { google } from 'googleapis';
+import { FileReference } from 'shared-types';
 import { Readable } from 'stream';
+import { UserTokenService } from './userTokenService';
 
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();
   auth.setCredentials({ access_token: token });
   return auth;
 }
+//
+// export async function uploadFileToDrive(
+//   file: Express.Multer.File,
+//   token: string
 
-export async function uploadFileToDrive(file: Express.Multer.File, token: string) {
+// ) {
+//   const drive = google.drive({
+//     version: 'v3',
+//     auth: getAuth(token)
+
+//   });
+//   const res = await drive.files.create({
+//     requestBody: {
+//       name: file.originalname,
+//     },
+
+//     media: {
+//       mimeType: file.mimetype,
+//       body: Readable.from(file.buffer),
+//     },
+//   });
+//   return res.data;
+// }
+//ללי
+export async function uploadFileToDrive(
+  file: Express.Multer.File,
+  token: string,
+  folderId?: string  // הוסיפי את הפרמטר הזה
+) {
   const drive = google.drive({ version: 'v3', auth: getAuth(token) });
+
+  const requestBody: any = {
+    name: file.originalname,
+  };
+
+  // אם צוין מזהה תיקייה, הוסף אותו
+  if (folderId) {
+    requestBody.parents = [folderId];
+  }
+
   const res = await drive.files.create({
-    requestBody: {
-      name: file.originalname,
-    },
+    requestBody,
     media: {
       mimeType: file.mimetype,
-      body: Readable.from(file.buffer), 
+      body: Readable.from(file.buffer),
     },
   });
   return res.data;
+}
+//ללי
+// פונקציה שמקבלת path ומחזירה ID של התיקייה
+export async function getOrCreateFolderIdByPath(
+  folderPath: string,
+  token: string
+): Promise<string> {
+  console.log(`Getting folder ID for path: ${folderPath}`);
+
+  // אם הנתיב ריק - החזר undefined (שורש)
+  if (!folderPath || folderPath.trim() === '') {
+    return 'root'; // או undefined אם את רוצה שורש
+  }
+
+  // פיצול הנתיב לחלקים
+  const pathParts = folderPath.split('/').filter(part => part.trim() !== '');
+
+  let currentFolderId: string | undefined = undefined;
+
+  // עבור על כל חלק בנתיב
+  for (const folderName of pathParts) {
+    console.log(`Processing folder: ${folderName}`);
+
+    // חפש או צור את התיקייה
+    const folderId = await findFolderByName(folderName, token, currentFolderId);
+
+    if (folderId) {
+      console.log(`Found existing folder: ${folderName} with ID: ${folderId}`);
+      currentFolderId = folderId;
+    } else {
+      console.log(`Creating new folder: ${folderName}`);
+      currentFolderId = await createFolderInDrive(folderName, token, currentFolderId);
+      console.log(`Created folder: ${folderName} with ID: ${currentFolderId}`);
+    }
+  }
+
+  return currentFolderId!;
 }
 
 export async function getFileFromDrive(fileId: string, token: string): Promise<NodeJS.ReadableStream> {
@@ -60,4 +134,144 @@ export async function shareDriveFile(fileId: string, permissions: any, token: st
     fileId,
     requestBody: permissions,
   });
+}
+
+//פונקציות שהוספתי
+// פונקציה לחיפוש תיקייה לפי שם
+export async function findFolderByName(
+  folderName: string,
+  token: string,
+  parentFolderId?: string
+): Promise<string | null> {
+  const drive = google.drive({ version: 'v3', auth: getAuth(token) });
+
+  let query = `name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  if (parentFolderId) {
+    query += ` and '${parentFolderId}' in parents`;
+  }
+
+  const res = await drive.files.list({
+    q: query,
+    fields: 'files(id, name)',
+  });
+
+  return res.data.files?.[0]?.id || null;
+}
+// פונקציה ליצירת תיקייה
+export async function createFolderInDrive(
+  folderName: string,
+  token: string,
+  parentFolderId?: string
+): Promise<string> {
+  const drive = google.drive({ version: 'v3', auth: getAuth(token) });
+
+  const requestBody: any = {
+    name: folderName,
+    mimeType: 'application/vnd.google-apps.folder',
+  };
+
+  if (parentFolderId) {
+    requestBody.parents = [parentFolderId];
+  }
+
+  const res = await drive.files.create({
+    requestBody,
+  });
+
+  return res.data.id!;
+}
+// הפונקציה הראשית: מתרגמת path ל-ID
+export async function getOrCreateFolderByPath(
+  folderPath: string,
+  token: string
+): Promise<string> {
+  console.log(`Creating folder path: ${folderPath}`);
+
+  // פיצול הנתיב לחלקים
+  const pathParts = folderPath.split('/').filter(part => part.trim() !== '');
+
+  let currentFolderId: string | undefined = undefined;
+
+  // עבור על כל חלק בנתיב
+  for (const folderName of pathParts) {
+    console.log(`Looking for folder: ${folderName}`);
+
+    // חפש את התיקייה
+    let folderId = await findFolderByName(folderName, token, currentFolderId);
+
+    // אם לא נמצאה, צור אותה
+    if (!folderId) {
+      folderId = await createFolderInDrive(folderName, token, currentFolderId);
+      console.log(`Created folder: ${folderName} with ID: ${folderId}`);
+    } else {
+      console.log(`Found existing folder: ${folderName} with ID: ${folderId}`);
+    }
+
+    currentFolderId = folderId;
+  }
+
+  return currentFolderId!;
+}
+
+// פונקציה חדשה שמשלבת הכל
+//
+export async function uploadFileToFolderPath(
+  file: Express.Multer.File,
+  token: string,
+  folderPath: string
+) {
+  const drive = google.drive({ version: 'v3', auth: getAuth(token) });
+
+  // שלב 1: קבל את ID של התיקייה
+  const folderId = await getOrCreateFolderByPath(folderPath, token);
+
+  // שלב 2: בדוק אם קובץ בשם זה כבר קיים בתיקייה
+  const fileName = file.originalname.replace(/'/g, "\\'");
+  const query = `'${folderId}' in parents and name = '${fileName}' and trashed = false`;
+
+  const existingFiles = await drive.files.list({
+    q: query,
+    fields: 'files(id, name)',
+  });
+
+  if (existingFiles.data.files && existingFiles.data.files.length > 0) {
+    const error: any = new Error('קובץ בשם זה כבר קיים בתיקייה');
+    error.status = 409;
+    throw error;
+  }
+
+  // שלב 3: העלה את הקובץ
+  return await uploadFileToDrive(file, token, folderId);
+}
+const tokenService = new UserTokenService();
+// העלאה מלאה: קובץ > תיקייה > שליפת מטא-דאטה > בניית FileReference
+export async function uploadFileAndReturnReference(
+  file: Express.Multer.File,
+  folderPath: string
+): Promise<FileReference> {
+  const token = await tokenService.getSystemAccessToken();
+  // מקבלים את תיקיית היעד (או יוצרים אותה)
+  const folderId = await getOrCreateFolderByPath(folderPath, token ?? '');
+  // מעלים את הקובץ לתיקייה הזו
+  const uploaded = await uploadFileToDrive(file, token ?? '', folderId);
+  // שולפים מטאדאטה על הקובץ
+  const metadata = await getFileMetadataFromDrive(uploaded.id!, token ?? '');
+  // בונים את הקישורים
+  // const fileUrl = `https://drive.google.com/file/d/${uploaded.id}/view`;
+  const folderUrl = `https://drive.google.com/drive/folders/${folderId}`;
+  // יוצרים את האובייקט של FileReference
+  const fileRef: FileReference = {
+    id: uploaded.id!,
+    name: metadata.name!,
+    path: folderPath,
+    mimeType: metadata.mimeType!,
+    size: Number(metadata.size),
+    url: folderUrl,
+    // url: fileUrl,
+    // folderUrl, // :white_check_mark: חדש - קישור לתיקייה
+    googleDriveId: uploaded.id ?? undefined,
+    createdAt: metadata.createdTime!,
+    updatedAt: metadata.modifiedTime!,
+  };
+  return fileRef;
 }

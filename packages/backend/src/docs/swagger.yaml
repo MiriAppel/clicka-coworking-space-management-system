@@ -96,7 +96,7 @@ paths:
                 $ref: '#/components/schemas/User'
         '500':
           description: Failed to create user
-  /api/users/getUserByEmail{email}:
+  /api/users/getUserByEmail/{email}:
     get:
       tags:
         - Users

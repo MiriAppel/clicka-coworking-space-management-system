@@ -16,6 +16,7 @@ export const EmailTemplateTable = () => {
     getEmailTemplates,
     deleteEmailTemplate,
   } = useEmailTemplateStore();
+
   const [showUpdateEmailTemplate, setShowUpdateEmailTemplate] = useState(false);
   const [showAddEmailTemplate, setShowAddEmailTemplate] = useState(false);
   const [selectedEmailTemplate, setSelectedEmailTemplate] = useState<EmailTemplate | null>(null);
@@ -31,12 +32,13 @@ export const EmailTemplateTable = () => {
   }, [getEmailTemplates]);
 
   const sortedEmailTemplates = [...emailTemplates].sort((a, b) => a.name.localeCompare(b.name));
+
   const handleUpdate = (emailTemplate: EmailTemplate) => {
     setSelectedEmailTemplate(emailTemplate);
     setShowUpdateEmailTemplate(true);
   };
+
   const handleDelete = async (emailTemplate: EmailTemplate) => {
-   
     if (window.confirm(`האם אתה בטוח שברצונך למחוק את ${emailTemplate.name}?`)) {
       try {
         await deleteEmailTemplate(emailTemplate.id as string);
@@ -47,9 +49,11 @@ export const EmailTemplateTable = () => {
       }
     }
   };
+
   const handleAddEmailTemplate = () => {
     setShowAddEmailTemplate(true);
   };
+
   const handleCloseModals = () => {
     setShowUpdateEmailTemplate(false);
     setShowAddEmailTemplate(false);
@@ -58,14 +62,17 @@ export const EmailTemplateTable = () => {
     setSelectedTemplateForPreview(null);
     setRenderedHtml(null); // אפס תצוגה מקדימה כשסוגרים
   };
+
   const handleEmailTemplateUpdated = () => {
     getEmailTemplates();
     handleCloseModals();
   };
+
   const handlePreview = (emailTemplate: EmailTemplate) => {
     setSelectedTemplateForPreview(emailTemplate);
     setShowPreviewModal(true);
   };
+
   const emailTemplateColumns: TableColumn<EmailTemplate>[] = [
     { header: "שם", accessor: "name" },
     { header: "נושא", accessor: "subject" },
@@ -77,6 +84,7 @@ export const EmailTemplateTable = () => {
       render: (variables: string[]) => variables.join(', ') // המרה למחרוזת עם פסיקים ורווחים
     }
   ];
+
   // הצגת HTML בלבד אם קיים
   if (renderedHtml !== null) {
     return (
@@ -88,12 +96,15 @@ export const EmailTemplateTable = () => {
       </div>
     );
   }
+
   if (loading) {
     return <div className="p-6">טוען תבניות דוא"ל...</div>;
   }
+
   if (error) {
     return <div className="p-6 text-red-600">שגיאה: {error}</div>;
   }
+
   if (showAddEmailTemplate) {
     return (
       <AddEmailTemplate
@@ -102,6 +113,7 @@ export const EmailTemplateTable = () => {
       />
     );
   }
+
   if (showUpdateEmailTemplate && selectedEmailTemplate) {
     return (
       <UpdateEmailTemplate
@@ -111,6 +123,7 @@ export const EmailTemplateTable = () => {
       />
     );
   }
+
   if (showPreviewModal && selectedTemplateForPreview) {
     return (
       <PreviewEmailTemplate
@@ -120,13 +133,14 @@ export const EmailTemplateTable = () => {
       />
     );
   }
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">ניהול תבניות דוא"ל</h2>
-          <Button onClick={handleAddEmailTemplate}>+ הוסף תבנית דוא"ל</Button>
-
+        <Button onClick={handleAddEmailTemplate}>+ הוסף תבנית דוא"ל</Button>
       </div>
+
       <Table<EmailTemplate>
         data={sortedEmailTemplates}
         columns={emailTemplateColumns}
@@ -136,17 +150,7 @@ export const EmailTemplateTable = () => {
         renderActions={(emailTemplate: EmailTemplate) => (
           <Button onClick={() => handlePreview(emailTemplate)}>תצוגה מקדימה</Button>
         )}
-      
       />
     </div >
   );
 };
-
-
-
-
-
-
-
-
-

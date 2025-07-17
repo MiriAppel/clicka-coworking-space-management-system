@@ -62,7 +62,6 @@ export const Routing = () => {
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
         <Route path="meetingRooms" element={<RoomReservations />} />
-        <Route path="emailTemplates" element={< EmailTemplateTable />} />
       </Route>
     </Routes>
   );
