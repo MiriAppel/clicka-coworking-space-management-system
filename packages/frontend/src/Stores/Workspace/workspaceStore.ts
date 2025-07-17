@@ -15,7 +15,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set) => ({
     workSpaces: [],
     getAllSpaces: async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/workspace/getAllWorkspace');
+            const response = await axios.get('api/workspace/getAllWorkspace');
             set({ workSpaces: response.data });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
