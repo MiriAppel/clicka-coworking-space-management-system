@@ -13,7 +13,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export class UserService {
 
-    // פונקציה ליצירת משתמש
+
     async createUser(user: UserModel): Promise<UserModel | null> {
         try {
             const { data, error } = await supabase
@@ -21,18 +21,14 @@ export class UserService {
                 .insert([user.toDatabaseFormat()])
                 .select()
                 .single();
-
             const createdUser = UserModel.fromDatabaseFormat(data);
-            // רישום פעילות המשתמש
             logUserActivity(user.id ? user.id : user.firstName, 'User created');
-            //החזרת המשתמש שנוצר
             return createdUser;
         }
         catch (error) {
             console.error('Error creating user:', error);
-            throw error; // זריקת השגיאה כדי לטפל בה במקום אחר
+            throw error; 
         }
-
     }
 
     // פונקציה לקבל את כל המשתמשים

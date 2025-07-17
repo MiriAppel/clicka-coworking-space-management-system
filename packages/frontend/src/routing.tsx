@@ -10,7 +10,11 @@ import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/Vend
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import MainLayout from './layout/MainLayout';
-import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+// import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+import { WorkspaceMapGood } from './MainMenu/Workspace/Components/workspaceMap';
+import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
+import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
+import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -44,15 +48,23 @@ export const Routing = () => {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<App />} />
-        <Route path="/" element={<App />} />
-        <Route path="/workspaceMap" element={<WorkspaceMap />} />
+        <Route path="/workspaceMap" element={<WorkspaceMapGood />} />
         <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        <Route path="assignmentForm" element={<AssignmentForm />} />
+        <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
         <Route path="payment" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
+
+
+
+
+
+
       </Route>
     </Routes>
   );

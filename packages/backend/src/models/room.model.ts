@@ -12,9 +12,12 @@ export class RoomModel implements Room{
   hourlyRate: number;
   discountedHourlyRate: number;
   googleCalendarId?: string;
-  location: string;
+  // location: string;
   equipment?: string[];
-
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
   // BookingRules fields INLINED:
   MinimumBookingMinutes: number;
   MaximumBookingMinutes: number;
@@ -22,7 +25,7 @@ export class RoomModel implements Room{
   FreeHoursForKlikcaCard: number;
 
   nextMaintenanceDate?: DateISO;
-  workspaceMapId: ID; // Assuming this is a reference to a WorkspaceMap
+  workspaceMapId: String; // Assuming this is a reference to a WorkspaceMap
   createdAt: DateISO;
   updatedAt: DateISO;
 
@@ -45,7 +48,11 @@ export class RoomModel implements Room{
      MaximumBookingMinutes: number;
      RequiredApproval: boolean;
      FreeHoursForKlikcaCard: number;
-
+  positionX: number;
+  positionY: number;
+  // ממדי סביבת העבודה
+  width: number;
+  height: number;
      nextMaintenanceDate?: DateISO;
      workspaceMapId: ID; // Reference to a WorkspaceMap
      createdAt?: DateISO;
@@ -69,6 +76,10 @@ export class RoomModel implements Room{
     this.FreeHoursForKlikcaCard = params.FreeHoursForKlikcaCard;
     this.nextMaintenanceDate = params.nextMaintenanceDate;
     this.workspaceMapId = params.workspaceMapId; // Reference to a WorkspaceMap
+    this.positionX = params.positionX;
+    this.positionY = params.positionY;
+    this.width = params.width;
+    this.height = params.height;
     this.createdAt = params.createdAt ?? new Date().toISOString(); 
     this.updatedAt = params.updatedAt ?? new Date().toISOString(); 
    }
@@ -118,6 +129,10 @@ toDatabaseFormat() {
             RequiredApproval: dbData.required_approval,
             FreeHoursForKlikcaCard: dbData.free_hours_for_klikca_card,
             nextMaintenanceDate: dbData.next_maintenance_date,
+            positionX: dbData.position_x,
+            positionY: dbData.position_y,
+            width: dbData.width,
+            height: dbData.height,
             workspaceMapId: dbData.workspace_map_id, // Reference to a WorkspaceMap
         });
     }

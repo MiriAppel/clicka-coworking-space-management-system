@@ -9,4 +9,7 @@ spaceRouter.get("/getSpaceById/:id", spaceController.getSpaceById.bind(spaceCont
 spaceRouter.post("/createSpace", spaceController.createSpace.bind(spaceController));
 spaceRouter.put("/updateSpace/:id", spaceController.updateSpace.bind(spaceController));
 spaceRouter.delete("/deleteSpace/:id", spaceController.deleteSpace.bind(spaceController));
+
+spaceRouter.get("/getOccupancyReport/:type/:dateRenage", spaceController.getOccupancyReport.bind(spaceController));
+
 export default spaceRouter;

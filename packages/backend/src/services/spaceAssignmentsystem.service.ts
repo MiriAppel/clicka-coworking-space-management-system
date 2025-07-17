@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { RoomModel } from "../models/room.model";
-import type { ID } from "shared-types";
+import type { DateRangeFilter, ID, OccupancyReportResponse } from "shared-types";
 import dotenv from 'dotenv';
 import { SpaceAssignmentModel } from '../models/spaceAssignment.model';
 dotenv.config();
@@ -88,4 +88,50 @@ async  getSpaceById(id:string) {
             const space = SpaceAssignmentModel.fromDatabaseFormat(data);
             return space;
 }
+
+//קבלת דו"ח תפוסה על פי תאריך וסוג חלל
+async getOccupancyReport(type: string, startDate:string, endDate:string): Promise<OccupancyReportResponse | null> {
+  const { data, error } = await supabase
+      .from('space_assignment')
+      .select('*')
+      .eq('type', type)
+      .gte('date', startDate)
+      .lte('date', endDate);
+    if (error) {
+      console.error('Error fetching occupancy report:', error);
+      return null;
+    }
+    const spaces =  SpaceAssignmentModel.fromDatabaseFormatArray(data);
+     // דוגמה ליצירת occupancyData (לפי יום)
+  // const occupancyData = spaces.map(space => ({
+  //   date: space.date, // ודא שיש שדה כזה במודל שלך
+  //   totalSpaces: 1,
+  //   occupiedSpaces: space.status === 'OCCUPIED' ? 1 : 0,
+  //   openSpaceCount: space.type === 'OPEN_SPACE' ? 1 : 0,
+  //   deskInRoomCount: space.type === 'DESK_IN_ROOM' ? 1 : 0,
+  //   privateRoomCount: space.type === 'PRIVATE_ROOM' ? 1 : 0,
+  //   roomForThreeCount: space.type === 'ROOM_FOR_THREE' ? 1 : 0,
+  //   klikahCardCount: space.type === 'KLIKAH_CARD' ? 1 : 0,
+  //   occupancyRate: space.status === 'OCCUPIED' ? 100 : 0,
+  // }));
+
+  // // דוגמה לסיכום
+  // const occupancyRates = occupancyData.map(d => d.occupancyRate);
+  // const summary = {
+  //   averageOccupancyRate: occupancyRates.length ? occupancyRates.reduce((a, b) => a + b, 0) / occupancyRates.length : 0,
+  //   maxOccupancyRate: occupancyRates.length ? Math.max(...occupancyRates) : 0,
+  //   minOccupancyRate: occupancyRates.length ? Math.min(...occupancyRates) : 0,
+  //   totalCustomerCount: spaces.length,
+  // };
+
+  // const report: OccupancyReportResponse = {
+  //   period: 'DAILY', // או 'MONTHLY' לפי הצורך
+  //   dateRange: { startDate, endDate },
+  //   occupancyData,
+  //   summary,
+  // };
+  const report: OccupancyReportResponse = {} as OccupancyReportResponse;
+    return report;
+  }
 }
+
