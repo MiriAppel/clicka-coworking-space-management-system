@@ -19,6 +19,15 @@ export class EmailTemplateModel implements EmailTemplate {
         this.bodyText = data.bodyText ?? data.body_text ?? '';
         this.language = data.language;
         this.variables = data.variables ?? [];
+        let parsedVariables: string[] = [];
+        if (Array.isArray(data.variables)) {
+            // אם זה כבר מערך, נחלץ את החלק שלפני הנקודתיים (אם קיים)
+            parsedVariables = data.variables.map((v: string) => v.split(':')[0].trim());
+        } else if (typeof data.variables === 'string') {
+            // אם זו מחרוזת, נפצל לפי פסיקים ואז נחלץ
+            parsedVariables = data.variables.split(',').map((v: string) => v.split(':')[0].trim());
+        }
+        this.variables = parsedVariables;
         this.createdAt = data.createdAt ?? data.created_at ?? new Date().toISOString();
         this.updatedAt = data.updatedAt ?? data.updated_at ?? new Date().toISOString();
     }

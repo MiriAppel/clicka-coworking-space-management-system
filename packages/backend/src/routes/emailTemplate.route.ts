@@ -6,8 +6,8 @@ const emailTemplateRouter = Router();
 
 emailTemplateRouter.get('/', emailTemplateController.getTemplates.bind(emailTemplateController));
 emailTemplateRouter.get('/:id', emailTemplateController.getTemplateById.bind(emailTemplateController));
-emailTemplateRouter.post('/', emailTemplateController.createTemplate.bind(emailTemplateController));   
 emailTemplateRouter.get('/:name/name', emailTemplateController.getTemplateByName.bind(emailTemplateController));
+emailTemplateRouter.post('/', emailTemplateController.createTemplate.bind(emailTemplateController));
 emailTemplateRouter.put('/:id', emailTemplateController.updateTemplate.bind(emailTemplateController));
 emailTemplateRouter.delete('/:id', emailTemplateController.deleteTemplate.bind(emailTemplateController));
 emailTemplateRouter.post('/:id/preview', emailTemplateController.previewTemplate.bind(emailTemplateController));

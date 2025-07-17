@@ -44,13 +44,3 @@ export interface GeneratedDocument {
   deliveredAt?: DateISO;
   deliveryMethod?: string;
 }
-
-
-
-
-
-
-
-
-
-

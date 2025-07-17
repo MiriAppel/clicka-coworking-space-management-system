@@ -10,15 +10,17 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export class EmailTemplateService {
     async createTemplate(template: EmailTemplateModel): Promise<EmailTemplateModel | null> {
+        console.log('Attempting to insert template into Supabase:', template.toDatabaseFormat());
         const { data, error } = await supabase
             .from('email_template')
             .insert([template.toDatabaseFormat()])
             .select()
             .single();
         if (error) {
-            console.error('Error creating email template:', error.message);
+            console.error('Error creating email template in Supabase:', error.message, error.details, error.hint);
             return null;
         }
+        console.log('Successfully created email template in Supabase, data:', data);
         return new EmailTemplateModel(data);
     }
 
@@ -87,8 +89,14 @@ export class EmailTemplateService {
 
     async renderTemplate(template: string, variables: Record<string, string>): Promise<string> {
         return template.replace(/{{(.*?)}}/g, (match, key) => {
-            const variableKey = key.trim();
-            return variables[variableKey] || match; // מחזירה את המשתנה או את התו המקורי אם לא נמצא
+            const variableKey = key.trim(); // מסיר רווחים מסביב לשם המשתנה
+            const value = variables[variableKey];
+            console.log(`:repeat: Replacing {{${variableKey}}} with:`, value ?? '[NOT FOUND]');
+            console.log('Variables:', variables);
+            // מחזיר את הערך אם קיים, אחרת מחרוזת ריקה (כדי למנוע השארת {{...}})
+            return Object.prototype.hasOwnProperty.call(variables, variableKey)
+                ? value
+                : '';
         });
     }
 }

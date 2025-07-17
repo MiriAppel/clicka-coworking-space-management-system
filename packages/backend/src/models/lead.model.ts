@@ -1,6 +1,7 @@
 
 import { UUID } from "node:crypto";
 import type { ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } from "shared-types";
+import { LeadInteractionModel } from "./leadInteraction.model";
 
 export class LeadModel implements Lead {
 
@@ -72,7 +73,9 @@ export class LeadModel implements Lead {
       updated_at: this.updatedAt,
     }
   }
+  
   static fromDatabaseFormat(dbData: any): LeadModel {
+    const interactions = LeadInteractionModel.fromDatabaseFormatArray(dbData.lead_interaction || []);
     return new LeadModel(
       dbData.id,
       dbData.id_number,
@@ -86,7 +89,7 @@ export class LeadModel implements Lead {
       dbData.contact_date,
       dbData.follow_up_date,
       dbData.notes,
-      dbData.lead_interaction,
+      interactions,
       dbData.created_at,
       dbData.updated_at
     );
