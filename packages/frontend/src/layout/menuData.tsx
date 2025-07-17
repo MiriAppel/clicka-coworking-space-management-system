@@ -44,8 +44,9 @@ export const menus: Menu[] = [
     icon: <Map size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'מפה', path: '/workspaceMap' },
-      { label: 'הקצאות', path: '/workspaceAssign' },
-      { label: 'ישיבות', path: '/meetingRooms' }
+      { label: 'הקצאות', path: '/assignmentForm' },
+      { label: 'ישיבות', path: '/bookingCalendar' },
+      { label: 'ניהול', path: '/managementWorkspace' }
     ]
   },
   {

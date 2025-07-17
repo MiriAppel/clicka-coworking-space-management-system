@@ -11,9 +11,11 @@ import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/Vend
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import MainLayout from './layout/MainLayout';
+// import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
+import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
-import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
@@ -68,6 +70,8 @@ export const Routing = () => {
         <Route path="/pricing/workspace" element={<PricingSectionPage type="workspace" />} />
         <Route path="/pricing/meeting-room" element={<PricingSectionPage type="meeting-room" />} />
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
+         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
+
       </Route>
     </Routes>
   );

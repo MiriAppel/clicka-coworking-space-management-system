@@ -20,6 +20,32 @@ interface ValuesToTable {
   id: string;
 }
 
+const statusLabels: Record<CustomerStatus, string> = {
+  ACTIVE: "פעיל",
+  NOTICE_GIVEN: "הודעת עזיבה",
+  EXITED: "עזב",
+  PENDING: "בהמתנה",
+};
+
+const workspaceTypeLabels: Record<WorkspaceType, string> = {
+  PRIVATE_ROOM: 'חדר פרטי',
+  DESK_IN_ROOM: 'שולחן בחדר',
+  OPEN_SPACE: 'אופן ספייס',
+  KLIKAH_CARD: 'כרטיס קליקה',
+  DOOR_PASS: 'דלת כניסה',
+  WALL: 'קיר',
+  COMPUTER_STAND: 'עמדת מחשב',
+  RECEPTION_DESK: 'דלפק קבלה',
+};
+
+const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
+  CREDIT_CARD: 'כרטיס אשראי',
+  BANK_TRANSFER: 'העברה בנקאית',
+  CHECK: 'שיק',
+  CASH: 'מזומן',
+  OTHER: 'אחר',
+};
+
 const formatDate = (dateString: DateISO | undefined) => {
   if (!dateString) return "לא זמין";
   const date = new Date(dateString);
@@ -165,6 +191,7 @@ export const CustomersList = () => {
           </div>
         )}
       </div>
+
 
       <div className="flex justify-center space-x-4 my-4">
         <Button

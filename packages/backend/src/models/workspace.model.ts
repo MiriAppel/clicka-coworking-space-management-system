@@ -10,7 +10,7 @@ export class WorkspaceModel implements Space {
   description?: string;
   type: WorkspaceType;
   status: SpaceStatus;
-  room?: string;
+  // room?: string;
   // מידע על שוכר נוכחי (אם קיים)
   currentCustomerId?: ID;
   currentCustomerName?: string;
@@ -52,7 +52,7 @@ export class WorkspaceModel implements Space {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.description = params.description;
-    this.room = params.room;
+    // this.room = params.room;
     this.currentCustomerId = params.currentCustomerId;
     this.currentCustomerName = params.currentCustomerName;
   }
@@ -70,7 +70,7 @@ export class WorkspaceModel implements Space {
       created_at: this.createdAt,
       updated_at: this.updatedAt,
       description: this.description,
-      room: this.room,
+      // room: this.room,
       current_customer_id: this.currentCustomerId,
       current_customer_name: this.currentCustomerName,
     };
@@ -88,7 +88,7 @@ export class WorkspaceModel implements Space {
             createdAt: dbData.created_at,
             updatedAt: dbData.updated_at,
             description: dbData.description || undefined,
-            room: dbData.room || undefined,
+            // room: dbData.room || undefined,
             currentCustomerId: dbData.current_customer_id || undefined,
             currentCustomerName: dbData.current_customer_name || undefined
         });
