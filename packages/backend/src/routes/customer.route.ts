@@ -2,32 +2,36 @@ import express from 'express';
 import * as customerController from '../controllers/customer.controller'; 
 import * as contractController from '../controllers/contract.controller'
 
-const routerCstomer = express.Router();
+const routerCustomer = express.Router();
 
 // (GET)
-routerCstomer.get('/by-page', customerController.getCustomersByPage);
+// routerCustomer.get('/by-page', customerController.getCustomersByPage);
 
-routerCstomer.get('/', customerController.getAllCustomers); 
+routerCustomer.get('/page', customerController.getCustomersByPage); 
 
-routerCstomer.get('/page', customerController.getCustomersByPage); 
+routerCustomer.get('/', customerController.getAllCustomers); 
 
-routerCstomer.get('/status/all', customerController.getAllCustomerStatus);
+routerCustomer.get('/status/all', customerController.getAllCustomerStatus);
 
-routerCstomer.get('/notify/:id', customerController.getCustomersToNotify); 
+routerCustomer.get('/notify/:id', customerController.getCustomersToNotify); 
 
-routerCstomer.get('/id/:id', customerController.getCustomerById); 
+routerCustomer.get('/search', customerController.searchCustomersByText);
 
-routerCstomer.get('/filter', customerController.getCustomersByFilter);
+routerCustomer.get('/:id', customerController.getCustomerById); 
+
+routerCustomer.get('/:id/payment-methods', customerController.getCustomerPaymentMethods);
 
 //(POST)
-routerCstomer.post('/:id/exit-notice', customerController.postExitNotice); 
+routerCustomer.post('/:id/exit-notice', customerController.postExitNotice); 
 
-routerCstomer.post('/post-customer', customerController.postCustomer); 
+routerCustomer.post('/post-customer', customerController.postCustomer); 
+
+routerCustomer.post('/:id/status-change', customerController.changeCustomerStatus)
 
 //PATCH/PUT)
-routerCstomer.patch('/:id', customerController.patchCustomer); 
+routerCustomer.patch('/:id', customerController.patchCustomer); 
 
-routerCstomer.delete('/:id', customerController.deleteCustomer);
+routerCustomer.delete('/:id', customerController.deleteCustomer);
 
-export default routerCstomer;
+export default routerCustomer;
 
