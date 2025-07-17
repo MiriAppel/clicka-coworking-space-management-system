@@ -93,7 +93,7 @@ const handleDeleteContract = (row: ValuesToTable) => {
       setContracts((prev) => prev.filter((c) => c.id !== row.id));
       showAlert("מחיקה", "החוזה נמחק בהצלחה", "success");
     })
-    .catch((err) => {console.log("שגיאה במחיקת חוזה:", err), showAlert("מחיקה", "שגיאה במחיקת חוזה", "error")});
+   // .catch((err) => {console.log("שגיאה במחיקת חוזה:", err), showAlert("מחיקה", "שגיאה במחיקת חוזה", "error")});
 };
 
   const handleUpdateContract = (val: ValuesToTable) => {
