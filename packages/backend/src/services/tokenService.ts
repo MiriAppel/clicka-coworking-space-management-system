@@ -24,6 +24,14 @@ export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, 
         });
     }
 };
+export const setRefreshCookie = (res: Response, refreshToken: string): void => {
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ימים
+    });
+};
 
 export const clearAuthCookie = (res: Response): void => {
     res.clearCookie('session', {
@@ -32,6 +40,11 @@ export const clearAuthCookie = (res: Response): void => {
         sameSite: 'strict',
     });
     res.clearCookie('sessionId', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    });
+    res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',

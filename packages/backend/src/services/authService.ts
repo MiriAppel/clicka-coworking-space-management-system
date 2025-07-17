@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 
 
 const userService = new UserService();
-
+const JWT_SECRET = process.env.JWT_SECRET!;
 export const generateJwtToken = (payload: { userId: string; email: string; googleId: string; role: UserRole }): string => {
   return jwt.sign(
     {
@@ -17,15 +17,26 @@ export const generateJwtToken = (payload: { userId: string; email: string; googl
       googleId: payload.googleId,
       role: payload.role
     },
-    process.env.JWT_SECRET!,
+    JWT_SECRET,
     { expiresIn: '8h' } // 8 hours
   );
 };
 
 export const verifyJwtToken = (token: string) => {
-  return jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string; role: UserRole };
+  return jwt.verify(token, JWT_SECRET) as { userId: string; email: string; googleId: string; role: UserRole };
 };
-
+export const verifyJwtRefreshToken = (token: string) => {
+  return jwt.verify(token, JWT_SECRET) as { userId: string; };
+};
+export const generateJwtRefreshToken = (payload: { userId: string; }): string => {
+  return jwt.sign(
+    {
+      userId: payload.userId
+    },
+    JWT_SECRET,
+    { expiresIn: '30d' } // 30 days
+  );
+};
 export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginResponse> => {
   try {
     const tokens = await getTokens(code);

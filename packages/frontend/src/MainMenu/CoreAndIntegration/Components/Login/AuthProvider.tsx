@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   //     return <div className="auth-loading"> מאמת זהות...</div>
   // }
   return <>
-    {user == null && <GoogleOneTap />}
+    {/* {user == null && <GoogleOneTap />} */}
     {children}</>
 
 }

@@ -23,6 +23,8 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     }
     const loginResult = await authService.exchangeCodeAndFetchUser(code);
     console.log('Login result:', loginResult);
+    const refreshToken = authService.generateJwtRefreshToken({ userId: loginResult.user.id! });
+    tokenService.setRefreshCookie(res, refreshToken);
     tokenService.setAuthCookie(res, loginResult.token, loginResult.sessionId!);
     const response = {
       ...loginResult,
@@ -75,15 +77,16 @@ export const handleGoogleIdTokenLogin = async (req: Request, res: Response) => {
       });
       const sessionId = randomUUID();
       tokenService.setAuthCookie(res, jwtToken, sessionId);
-  
-    const response = {
-      loginResult,
-      jwtToken,
-      sessionId,
-      message: 'התחברת בהצלחה דרך Google One Tap',
-    };
-    return res.status(200).json(response);
-  }
+      const refreshToken = authService.generateJwtRefreshToken({ userId: loginResult?.id ?? userInfo.googleId });
+      tokenService.setRefreshCookie(res, refreshToken);
+      const response = {
+        loginResult,
+        jwtToken,
+        sessionId,
+        message: 'התחברת בהצלחה דרך Google One Tap',
+      };
+      return res.status(200).json(response);
+    }
   } catch (error) {
     console.error('Google One Tap login failed:', error);
     return res.status(401).json({ error: 'Authentication failed' });
@@ -119,6 +122,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
     const sessionToken = req.cookies.session;
     const sessionId = req.cookies.sessionId;
     if (!sessionToken || !sessionId) {
+
       res.status(401).json({ error: 'not authenticated' });
       return;
     }
@@ -136,7 +140,7 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
       });
       return;
     }
-    res.status(500).json({ error: 'Error refreshing token' });
+    res.status(500).json({ error: err });
   }
 }
 export const handleLoginWithPassword = async (req: Request, res: Response) => {
@@ -155,6 +159,8 @@ export const handleLoginWithPassword = async (req: Request, res: Response) => {
     const token = authService.generateJwtToken({ userId: user.id!, googleId: user.googleId, email: user.email, role: user.role });
     const sessionId = randomUUID();
     tokenService.setAuthCookie(res, token, sessionId);
+    const refreshToken = authService.generateJwtRefreshToken({ userId: user.id! });
+    tokenService.setRefreshCookie(res, refreshToken);
     await tokenService.saveSessionId(user.id!, sessionId);
     const response = {
       user,
