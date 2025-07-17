@@ -12,59 +12,66 @@ type VendorSummaryProps = {
   vendor: Vendor & { folderId?: string };
 };
 
+// טיפוס לפרופס של קומפוננטת יצירת הנתיב - כולל שם הספק ל
 export interface FileUploaderProps {
   onFilesUploaded?: (files: FileItem[]) => void;
   onPathReady: (path: string) => void;
-  email: string;
+  vendorName: string;            
   documentCategory: string;
 }
 
-export const FolderPathGenerator: React.FC<FileUploaderProps> = ({ email, documentCategory, onPathReady }) => {
+// קומפוננטה שיוצרת את נתיב התיקייה לפי שם הספק וקטגוריית המסמך
+export const FolderPathGenerator: React.FC<FileUploaderProps> = ({ vendorName, documentCategory, onPathReady }) => {
   useEffect(() => {
-    if (email && documentCategory) {
-      const path = `ספקים/${email}/${documentCategory}`;
-      onPathReady(path);
+    // אם יש שם ספק וקטגוריה, יוצרים נתיב בתבנית "ספקים/שם הספק/קטגוריה"
+    if (vendorName && documentCategory) {
+      const path = `ספקים/${vendorName}/${documentCategory}`;
+      onPathReady(path); // מעדכנים את הנתיב בקומפוננטה ההורה
     }
-  }, [email, documentCategory, onPathReady]);
+  }, [vendorName, documentCategory, onPathReady]);
 
-  return null; // אין ממשק חזותי – הכל מאחורי הקלעים
+  return null; // אין ממשק חזותי - כל העבודה היא פנימית בלבד
 };
 
 export default function VendorSummary({ vendor }: VendorSummaryProps) {
   const navigate = useNavigate();
   const { fetchExpensesByVendorId, expenses, deleteVendor } = useVendorsStore();
 
-  // סטייטים עבור קטגוריה שנבחרה ונתיב התיקייה
+  // סטייט לשמירת קטגוריית הקובץ שנבחרה
   const [fileCategory, setFileCategory] = useState("חשבוניות ספקים");
+  // סטייט לשמירת נתיב התיקייה שנוצר
   const [folderPath, setFolderPath] = useState("");
 
-  // react-hook-form - יצירת instance
+  // יצירת instance של react-hook-form לניהול הטופס
   const methods = useForm({
     defaultValues: {
-      documentType: DocumentType.INVOICE, // ערך ברירת מחדל מתאים
+      documentType: DocumentType.INVOICE, // ברירת מחדל לסוג המסמך
     }
   });
 
-  // טוען את ההוצאות כשמשתנה ה-ID של הספק
+  // טוען הוצאות של הספק לפי ה-ID שלו בכל שינוי של ה-ID
   useEffect(() => {
     fetchExpensesByVendorId(vendor.id);
   }, [vendor.id, fetchExpensesByVendorId]);
 
+  // סינון ההוצאות רק של הספק הנוכחי
   const vendorExpenses = expenses.filter((e) => e.vendor_id === vendor.id);
+
+  // חישובים סטטיסטיים על ההוצאות
   const expenseCount = vendorExpenses.length;
   const totalExpenses = vendorExpenses.reduce((sum, e) => sum + e.amount, 0);
   const averageExpense = expenseCount > 0 ? parseFloat((totalExpenses / expenseCount).toFixed(2)) : 0;
   const lastExpenseDate = expenseCount > 0 ? vendorExpenses[expenseCount - 1].date : "-";
 
-  // מחיקת ספק
+  // פונקציה למחיקת ספק עם אישור משתמש
   const handleDeleteVendor = async () => {
     if (window.confirm("האם למחוק את הספק?")) {
       await deleteVendor(vendor.id);
-      navigate("/vendors");
+      navigate("/vendors"); // מעבירים את המשתמש לדף רשימת הספקים
     }
   };
 
-  // מעקב אחרי שינוי ב-documentType של הטופס ועדכון סטייט הקטגוריה (fileCategory)
+  // מאזין לשינויים בטופס - מעדכן את קטגוריית הקובץ לפי סוג המסמך שנבחר
   useEffect(() => {
     const subscription = methods.watch((value) => {
       if (value.documentType) {
@@ -104,12 +111,12 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
             />
           </div>
 
-          {/* יצירת נתיב לפי מייל הספק וקטגוריה שנבחרה */}
+          {/* יצירת נתיב לפי שם הספק וקטגוריה שנבחרה */}
           <FolderPathGenerator
-            email={vendor.email || ""}
+            vendorName={vendor.name || ""}       
             documentCategory={fileCategory}
             onPathReady={(path) => {
-              setFolderPath(path);
+              setFolderPath(path);                {/* מעדכנים את נתיב התיקייה בסטייט */}
             }}
           />
 
@@ -120,7 +127,7 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
                 folderPath={folderPath}
                 onFilesUploaded={(files) => {
                   console.log("קבצים הועלו:", files);
-                  // כאן אפשר להוסיף לוגיקה לרענון קבצים או להודעת הצלחה
+                  // ניתן להוסיף כאן לוגיקה נוספת אחרי העלאת הקבצים
                 }}
               />
             </div>
@@ -151,7 +158,7 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
             </div>
           )}
 
-          {/* כפתור למחיקת ספק */}
+          {/* כפתורים לשמירה ומחיקה */}
           <div className="mt-6">
             <button
               type="submit"
