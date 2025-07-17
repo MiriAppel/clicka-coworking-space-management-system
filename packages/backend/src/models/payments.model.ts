@@ -43,8 +43,9 @@ export class PaymentModel implements Payment{
         this.receipt_file=receipt_file;
         this.createdAt=createdAt;
         this.updatedAt=updatedAt;
+      }
 
-    }
+  
      toDatabaseFormat(): Payment {
         return {
             id: this.id,

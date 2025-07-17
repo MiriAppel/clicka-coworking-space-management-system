@@ -9,10 +9,10 @@ export class leadService extends baseService<LeadModel> {
     super("leads");
   }
 
-    getAllLeads = async (): Promise<LeadModel[] | null> => {
-        const leads = await this.getAll();
-        return LeadModel.fromDatabaseFormatArray(leads) // המרה לסוג UserModel
-    }
+  getAllLeads = async (): Promise<LeadModel[] | null> => {
+    const leads = await this.getAll();
+    return LeadModel.fromDatabaseFormatArray(leads) // המרה לסוג UserModel
+  }
 
   getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
     const { data, error } = await supabase
@@ -114,7 +114,7 @@ export class leadService extends baseService<LeadModel> {
       .order("name", { ascending: false })
       .range(from, to);
 
-    console.log("Supabase data:", data);
+    // console.log("Supabase data:", data);
     console.log("Supabase error:", error);
 
     if (error) {
@@ -126,6 +126,48 @@ export class leadService extends baseService<LeadModel> {
 
     const leads =  data || [];
     return LeadModel.fromDatabaseFormatArray(leads)
+  };
+
+  addInteraction = async (leadId: string, interaction: { type: string; date: string; notes: string; userEmail: string }) => {
+    console.log(leadId, interaction);
+
+    const { data, error } = await supabase
+      .from("lead_interaction")
+      .insert([
+        {
+          lead_id: leadId,
+          type: interaction.type.toUpperCase(),
+          date: interaction.date,
+          notes: interaction.notes,
+          user_email: interaction.userEmail,
+          user_id: leadId
+        },
+      ]);
+    if (data)
+      return data;
+    if (error) console.log(error);;
+  }
+
+
+
+  deleteInteraction = async (leadId: string, interactionId: string): Promise<void> => {
+    try {
+      // שליחה של בקשה למחוק אינטראקציה מתוך המערך
+      const { data, error } = await supabase
+        .from('lead_interaction')
+        .delete()
+        .eq('id', interactionId)
+        .eq('lead_id', leadId);
+
+      if (error) {
+        console.log(error + '--------------------------');
+
+      }
+      // console.log(data); // יוכל להדפיס את התוצאה של העדכון
+    } catch (error) {
+      console.error("Error deleting interaction:", error);
+      throw new Error("Failed to delete interaction");
+    }
   };
 
   getLeadsByText = async (text: string): Promise<LeadModel[]> => {
@@ -152,3 +194,6 @@ export class leadService extends baseService<LeadModel> {
       
   
 }
+
+
+

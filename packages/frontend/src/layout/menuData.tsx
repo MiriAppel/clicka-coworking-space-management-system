@@ -34,6 +34,7 @@ export const menus: Menu[] = [
       { label: 'מתעניינים', path: '/leadAndCustomer/leads' },
       { label: 'לקוחות', path: '/leadAndCustomer/customers' },
       { label: 'חוזים', path: '/leadAndCustomer/contracts' },
+          { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
       { label: 'היסטוריית לקוח', path: '/customerHistory' }
     ]
   },
@@ -83,7 +84,7 @@ export const menus: Menu[] = [
     title: 'תקשורת',
     icon: <Mail size={18} style={{ marginLeft: 8 }} />,
     items: [
-      { label: 'תבניות מייל', path: '/emailTemplates' },
+      { label: 'תבניות מייל', path: '/emailTemplate' },
       { label: 'שליחת מיילים', path: '/sendEmails' },
       { label: 'התראות', path: '/notifications' }
     ]

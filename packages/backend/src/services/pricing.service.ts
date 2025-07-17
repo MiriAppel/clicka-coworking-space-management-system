@@ -1,5 +1,5 @@
 import {
-  PricingTierCreateRequest,
+  
   PricingTier,
   UpdatePricingTierRequest,
   MeetingRoomPricing,
@@ -8,7 +8,7 @@ import {
   UpdateLoungePricingRequest,
 } from "shared-types";
 import { WorkspaceType } from "shared-types";
-import type { ID } from "shared-types";
+import type { ID, PricingTierCreateRequest } from "shared-types";
 
 import { supabase } from '../db/supabaseClient'; 
 import {

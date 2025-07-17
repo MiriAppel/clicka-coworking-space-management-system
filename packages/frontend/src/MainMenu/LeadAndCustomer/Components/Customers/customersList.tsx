@@ -1,172 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import React, { useRef, useState, useEffect } from "react";
-// import { Button } from '../../../../Common/Components/BaseComponents/Button';
-// import { NavLink } from "react-router";
-// import { ExportToExcel } from '../exportToExcel';
-// import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-// import { Customer, CustomerStatus } from "shared-types";
-// import { deleteCustomer, getAllCustomers } from "../../Service/LeadAndCustomersService";
-// import { Stack, TextField } from '@mui/material';
-// import { supabase } from "../../../../Services/supabaseClient";
-
-// interface ValuesToTable {
-//     id: string;
-//     name: string;
-//     phone: string;
-//     email: string;
-//     status: React.ReactElement;
-//     businessName: string;
-//     businessType: string;
-// }
-// const statusLabels: Record<CustomerStatus, string> = {
-//     ACTIVE: 'פעיל',
-//     NOTICE_GIVEN: 'הודעת עזיבה',
-//     EXITED: 'עזב',
-//     PENDING: 'בהמתנה',
-// };
-// export const CustomersList = () => {
-//     const navigate = useNavigate();
-//     const [isLoading, setIsLoading] = useState(true);
-//     const [customers, setCustomers] = useState<Customer[]>([]);
-//     const [searchTerm, setSearchTerm] = useState('');
-
-//     const fetchCustomers = async () => {
-//         try {
-//             setIsLoading(true);
-//             const data = await getAllCustomers();
-//             setCustomers(data);
-//         } catch (error) {
-//             console.error('Error fetching customers:', error);
-//         } finally {
-//             setIsLoading(false);
-//         }
-//     };
-
-//     useEffect(() => {
-//         fetchCustomers();
-//          //לבדוק למה לא עובד המשתני סביבה!!!
-//         // האזנה לשינויים בטבלת customers
-//         const channel = supabase
-//             .channel('public:customer')
-//             .on(
-//                 'postgres_changes',
-//                 { event: '*', schema: 'public', table: 'customers' },
-//                 (payload) => {
-//                     // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
-//                     fetchCustomers();
-//                 }
-//             )
-//             .subscribe();
-
-//         // ניקוי מאזין כשיוצאים מהקומפוננטה
-//         return () => {
-//             supabase.removeChannel(channel);
-//         };
-//     }, []);
-
-//     const handleSearch = (term: string) => {
-//         const lower = term.toLowerCase();
-//         const filtered = customers.filter((c) =>
-//             c.name.toLowerCase().includes(lower) ||
-//             c.email.toLowerCase().includes(lower) ||
-//             c.phone.toLowerCase().includes(lower) ||
-//             statusLabels[c.status].toLowerCase().includes(lower)||
-//             c.businessName.toLowerCase().includes(lower)||
-//             c.businessType.toLowerCase().includes(lower)
-//         );
-//         return filtered;
-//     };
-
-//     const getValuseToTable = (): ValuesToTable[] => {
-//         return handleSearch(searchTerm).map(customer => ({
-//             id: customer.id!,
-//             name: customer.name,
-//             phone: customer.phone,
-//             email: customer.email,
-//             status: (
-//                 <div className="flex justify-between">
-//                     {statusLabels[customer.status]}
-//                     <Button variant="secondary" size="sm" onClick={() => navigate(`updateStatus/${customer.id}`)}>עדכון</Button>
-//                 </div>
-//             ),
-//             businessName: customer.businessName,
-//             businessType: customer.businessType,
-//         }));
-//     };
-
-//     const columns: TableColumn<ValuesToTable>[] = [
-//         { header: "שם", accessor: "name" },
-//         { header: "פלאפון", accessor: "phone" },
-//         { header: "מייל", accessor: "email" },
-//         { header: "סטטוס", accessor: "status" },
-//         { header: "שם העסק", accessor: "businessName" },
-//         { header: "סוג עסק", accessor: "businessType" }
-//     ];
-
-//     const deleteCurrentCustomer = async (val: ValuesToTable) => {
-//         try {
-//             await deleteCustomer(val.id);
-//             fetchCustomers();
-//             alert("לקוח נמחק בהצלחה");
-//         } catch (error) {
-//             console.error("שגיאה במחיקת לקוח:", error);
-//             alert("מחיקה נכשלה");
-//         }
-//     };
-//     const editCustomer = (val: ValuesToTable) => {
-//         const selected = customers.find(c => c.id === val.id);
-//         navigate("update", { state: { data: selected } });
-//     };
-//     return (
-//         <>
-//             {isLoading ? (
-//                 <h2 className="text-3xl font-bold text-center text-blue-600 my-4">טוען...</h2>
-//             ) : (
-//                 <div className="p-6">
-//                     <h2 className="text-3xl font-bold text-center text-blue-600 my-4">לקוחות</h2>
-//                     <ExportToExcel data={customers} fileName="לקוחות" /><br /><br />
-//                     <Stack spacing={2} direction="row">
-//                         <TextField
-//                             label="חיפוש"
-//                             fullWidth
-//                             value={searchTerm}
-//                             onChange={(e) => setSearchTerm(e.target.value)}
-//                         />
-//                     </Stack>
-//                     <br />
-//                     <Table<ValuesToTable>
-//                         data={getValuseToTable()}
-//                         columns={columns}
-//                         onDelete={deleteCurrentCustomer}
-//                         onUpdate={editCustomer}
-//                         renderActions={(row) => (
-//                             <>
-//                                 <NavLink to={`:${row.id}/dashboard`} className="text-blue-500 hover:underline ml-2">לוח בקרה</NavLink>
-//                                 <NavLink to={`:${row.id}/contract`} className="text-blue-500 hover:underline ml-2">חוזה לקוח</NavLink>
-//                             </>
-//                         )}
-//                     />
-//                 </div>
-//             )}
-//         </>
-//     );
-// };
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { NavLink } from "react-router";
 import { ExportToExcel } from "../exportToExcel";
 import {
   Table,
   TableColumn,
 } from "../../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus } from "shared-types";
+import { Customer, CustomerStatus, DateISO, PaymentMethodType, WorkspaceType } from "shared-types";
 import { Stack, TextField } from "@mui/material";
-import axios from "axios";
 import debounce from "lodash/debounce";
 import { Pencil, Trash } from "lucide-react";
-import { set } from "lodash";
-import { text } from "body-parser";
-import { deleteCustomer } from "../../Service/LeadAndCustomersService";
-// import { supabase } from "../../../../Services/supabaseClient";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { showAlertHTML } from "../../../../Common/Components/BaseComponents/showAlertHTML";
+import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
+import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
+
 
 interface ValuesToTable {
   id: string;
@@ -176,6 +24,7 @@ interface ValuesToTable {
   status: CustomerStatus;
   businessName: string;
   businessType: string;
+  image: string;
 }
 
 const statusLabels: Record<CustomerStatus, string> = {
@@ -186,152 +35,89 @@ const statusLabels: Record<CustomerStatus, string> = {
   CREATED: "נוצר"
 };
 
+const workspaceTypeLabels: Record<WorkspaceType, string> = {
+  PRIVATE_ROOM: 'חדר פרטי',
+  DESK_IN_ROOM: 'שולחן בחדר',
+  OPEN_SPACE: 'אופן ספייס',
+  KLIKAH_CARD: 'כרטיס קליקה',
+};
+
+const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
+  CREDIT_CARD: 'כרטיס אשראי',
+  BANK_TRANSFER: 'העברה בנקאית',
+  CHECK: 'שיק',
+  CASH: 'מזומן',
+  OTHER: 'אחר',
+};
+
 export const CustomersList = () => {
   const navigate = useNavigate();
   const loaderRef = useRef<HTMLDivElement | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [customers, setCustomers] = useState<Customer[]>([]);
 
-  const allCustomersRef = useRef<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [term, setTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [page, setPage] = useState(1);
-  // const [hasMore, setHasMore] = useState(true);
 
-  //   const fetchCustomers = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       const data = await getAllCustomers();
-  //       setCustomers(data);
-  //     } catch (error) {
-  //       console.error("Error fetching customers:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  const fetchCustomers = async (
-    page: number,
-    limit: number,
-    searchTerm = ""
-  ) => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get(
-        "http://localhost:3001/api/customers/by-page",
-        {
-          params: { page, limit },
-        }
-      );
-
-      const data: Customer[] = response.data;
-
-      // setHasMore(data.length === limit); // אם פחות מה-limit, אין עוד דפים
-
-      // תמיד להחליף את הסטייט בתוצאות הדף בלבד (לא להוסיף)
-      setCustomers(data);
-      allCustomersRef.current = data;
-    } catch (error) {
-      console.error("שגיאה ב-fetchCustomers:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setIsSearching(false);
-      fetchCustomers(page, 20, "");
-    }
-  }, [searchTerm]);
+  const {
+    customers,
+    deleteCustomer,
+    loading,
+    error,
+    currentPage,
+    limit,
+    searchCustomersByText,
+    fetchCustomersByPage,
+    searchCustomersInPage,
+    fetchNextPage,
+    fetchPrevPage,
+  } = useCustomerStore();
 
   useEffect(() => {
-    fetchCustomers(page, 20, searchTerm).then(() => {
-      console.log(
-        "✅ אחרי fetchCustomers - כמות לקוחות ב־allCustomers:",
-        allCustomersRef.current.length
-      );
-    });
-  }, [page]);
+    fetchCustomersByPage()    
+  }, [fetchCustomersByPage]);
 
-  useEffect(() => {
-    if (!loaderRef.current || isSearching) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setPage((prev) => prev + 1);
-      }
-    });
-
-    observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [isSearching]);
-
-  // useEffect(() => {
-  //   fetchCustomers();
-  //   // האזנה לשינויים בטבלת customers
-  //   const channel = supabase
-  //     .channel('public:customer')
-  //     .on(
-  //       'postgres_changes',
-  //       { event: '*', schema: 'public', table: 'customers' },
-  //       (payload) => {
-  //         // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
-  //         fetchCustomers();
-  //       }
-  //     )
-  //     .subscribe();
-
-  //   // ניקוי מאזין כשיוצאים מהקומפוננטה
-  //   return () => {
-  //     supabase.removeChannel(channel);
-  //   };
-  // }, []);
-
-  useEffect(() => {
-    if (!loaderRef.current || isSearching) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setPage((prev) => prev + 1);
-      }
-    });
-    observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [isSearching]);
-
-  //   const handleDeleteCustomer = (id: string) => {
-  //     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
-  //     setAllCustomers((prev) => prev.filter((customer) => customer.id !== id)); // גם מהמאגר הכללי
-  //   };
 
   // הפונקציה שמטפלת בשינוי החיפוש
- const handleSearch = (term: string) => {
-  setTerm(term);
-  setSearchTerm(term);
+  const handleSearch = (term: string) => {
+    searchCustomersInPage(term)
+      .then(() => {
 
-  if (!term.trim()) {
-    // אם ריק, מחזירים לתצוגה רגילה
-    setIsSearching(false);
-    fetchCustomers(page, 20, "");
-    return;
-  }
+      })
+  };
 
-  setIsSearching(true);
-  const lower = term.toLowerCase();
+  const showCustomerDetailsAlert = (row: ValuesToTable) => {
+    const customer = customers.find(c => c.id == row.id)!
+    const customerDetailsHtml = `<img
+            src="${row.image}"
+            alt="Customer Image"
+            class="mt-5 w-32 h-32 rounded-full border-2 border-gray-300 mx-auto"
+            />
+            <div style="text-align: center; margin: 20px;">
+        <strong style="font-size: 24px;">${customer.name || ''}</strong> <br>
+    </div>
+     <div style="margin: 20px; text-align: right;">
+    <strong>טלפון:</strong> ${customer.phone || ''}<br>
+    <strong>אימייל:</strong> ${customer.email || ''}<br>
+    <strong>מספר תעודת זהות:</strong> ${customer.idNumber || ''}<br>
+    <strong>שם עסק:</strong> ${customer.businessName || ''}<br>
+    <strong>סוג עסק:</strong> ${customer.businessType || ''}<br>
+    <strong>סטטוס:</strong> ${statusLabels[customer.status as CustomerStatus] || customer.status || ''}<br>
+    <strong>סוג מקום עבודה נוכחי:</strong> ${workspaceTypeLabels[customer.currentWorkspaceType as WorkspaceType] || customer.currentWorkspaceType || ''}<br>
+    <strong>מספר מקומות עבודה:</strong> ${customer.workspaceCount || ''}<br>
+    <strong>תאריך חתימה על חוזה:</strong> ${formatDate(customer.contractSignDate!)}<br>
+    <strong>תאריך התחלה של חוזה:</strong> ${formatDate(customer.contractStartDate!)}<br>
+    <strong>תאריך התחלה של חיוב:</strong> ${formatDate(customer.billingStartDate!)}<br>
+    <strong>הערות:</strong> ${customer.notes || ''}<br>
+    <strong>שם חשבונית:</strong> ${customer.invoiceName || ''}<br>
+    <strong>סוג תשלום:</strong> ${PaymentMethodTypeLabels[customer.paymentMethodType as PaymentMethodType] || customer.paymentMethodType || ''}<br>
+    <strong>נוצר בתאריך:</strong> ${formatDate(customer.createdAt)}<br>
+    <strong>עודכן בתאריך:</strong> ${formatDate(customer.updatedAt)}<br>
+ <a href="contracts/${row.id}" class="text-blue-500 hover:underline ml-2">חוזה</a>
+    </div>`;
 
-  const filtered = allCustomersRef.current.filter(
-    (c) =>
-      c.name.toLowerCase().includes(lower) ||
-      c.phone.toLowerCase().includes(lower) ||
-      c.email?.toLowerCase().includes(lower) ||
-      c.businessName?.toLowerCase().includes(lower) ||
-      c.businessType?.toLowerCase().includes(lower) ||
-      statusLabels[c.status].toLowerCase().includes(lower)
-  );
-
-  setCustomers(filtered);
-};
+    showAlertHTML(customerDetailsHtml); // לא מעביר אייקון
 
 
+  };
 
 
   const getValuseToTable = (): ValuesToTable[] => {
@@ -339,14 +125,27 @@ export const CustomersList = () => {
       id: customer.id!,
       name: customer.name,
       phone: customer.phone,
-      email: customer.email || "",
-      businessName: customer.businessName || "לא זמין",
-      businessType: customer.businessType || "לא זמין",
+      email: customer.email,
+      businessName: customer.businessName,
+      businessType: customer.businessType,
       status: customer.status,
+      image: "https://images.pexels.com/photos/2072162/pexels-photo-2072162.jpeg",  //לקחת את התמונה של הלקוח מהדרייב
     }));
   };
 
   const columns: TableColumn<ValuesToTable>[] = [
+    {
+      header: "",
+      accessor: "image",
+      render: (value, row) => (
+        <div className="flex justify-center">
+          <img
+            src={value}
+            alt="Customer Image"
+            className="w-10 h-10 rounded-full object-cover transition duration-200 ease-in-out border-2 border-transparent hover:border-blue-500 cursor-pointer"
+            onClick={() => showCustomerDetailsAlert(row)} />
+        </div>),
+    },
     { header: "שם", accessor: "name" },
     { header: "פלאפון", accessor: "phone" },
     { header: "מייל", accessor: "email" },
@@ -371,13 +170,19 @@ export const CustomersList = () => {
   ];
 
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
-    try {
-      await deleteCustomer(val.id);
+    const confirmed = await ShowAlertWarn('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?', 'לא ניתן לשחזר את המידע לאחר מחיקה.');
 
-      alert("לקוח נמחק בהצלחה");
-    } catch (error) {
-      console.error("שגיאה במחיקת לקוח:", error);
-      alert("מחיקה נכשלה");
+    if (confirmed) {
+
+      await deleteCustomer(val.id);
+      showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
+      const latestError = useCustomerStore.getState().error;
+      if (latestError) {
+        // נניח שהשגיאה מכילה את ההודעה שהגדרת ב-store
+        const errorMessage = latestError || 'שגיאה בלתי צפויה';
+        console.error('Error:', errorMessage);
+        showAlert("שגיאה במחיקת לקוח", errorMessage, "error");
+      }
     }
   };
 
@@ -391,130 +196,113 @@ export const CustomersList = () => {
   ).current;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
     const value = e.target.value;
+    console.log("value", value);
+
     setTerm(value);
     setSearchTerm(value);
     debouncedSearch(value);
-  };
+  }
 
-  const translateStatus = (status: CustomerStatus): string => {
-    switch (term) {
-      case "פעיל":
-        return CustomerStatus.ACTIVE;
-      case "הודעת עזיבה":
-        return CustomerStatus.NOTICE_GIVEN;
-      case "עזב":
-        return CustomerStatus.EXITED;
-      case "בהמתנה":
-        return CustomerStatus.PENDING;
-      default:
-        return status; // מחזיר את הסטטוס המקורי אם לא נמצא ת
+
+  const searchInApi = async(e: { key: string; }) => {
+    //איך ידעו שבלחיצה על אנטר זה מחפש בשרת?...
+    if (
+      (e.key === "Enter" && searchTerm.trim())
+      || customers.length === 0 // אין תוצאות בדף הנוכחי
+    ) {
+      console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
+
+      await searchCustomersByText(searchTerm)
+        // .then(() => {
+        //   console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
+        // }).catch((error) => {
+        //   console.error("שגיאה בחיפוש מהשרת:", error);
+        // });
     }
-  };
+  }
 
   return (
     <>
-      {isLoading ? (
+
+      <div className="p-6">
         <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
-          טוען...
+          לקוחות
         </h2>
-      ) : (
-        <div className="p-6">
-          <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
-            לקוחות
-          </h2>
-          <ExportToExcel data={customers} fileName="לקוחות" />
-          <br />
-          <br />
-          <Stack spacing={2} direction="row">
-            <TextField
-              label="חיפוש"
-              fullWidth
-              value={searchTerm}
-              onChange={handleChange}
-              onKeyDown={(e) => {
-                if (
-                  (e.key === "Enter" && searchTerm.trim()) ||
-                  customers.length === 0 // אין תוצאות בדף הנוכחי
-                ) {
-                  console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
+        <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate("new")}
+          >
+          הוספת לקוח חדש
+          </Button><br />
+        <ExportToExcel data={customers} fileName="לקוחות" />
+        <br />
+        <br />
+        <Stack spacing={2} direction="row">
+          <TextField
+            label="חיפוש"
+            fullWidth
+            value={searchTerm}
+            onChange={handleChange}
+            onKeyDown={searchInApi}
+          />
+        </Stack>
+        <br />
 
-                  axios
-                    .get("http://localhost:3001/api/customers/search", {
-                      params: { text: searchTerm },
-                    })
-                    .then((response) => {
-                      const data: Customer[] = response.data.map(
-                        (item: any) => ({
-                          ...item,
-                          businessName: item.business_name,
-                          businessType: item.business_type,
-                        })
-                      );
+        <div className="relative">
 
-                      setCustomers(data);
-                      allCustomersRef.current = data;
-                      console.log("✅ תוצאות שהגיעו מהשרת:", data.length);
-                    })
-                    .catch((error) => {
-                      console.error("שגיאה בחיפוש מהשרת:", error);
-                    });
-                }
-              }}
-            />
-          </Stack>
-          <br />
           <Table<ValuesToTable>
             data={getValuseToTable()}
             columns={columns}
             onDelete={deleteCurrentCustomer}
             onUpdate={editCustomer}
-            renderActions={(row) => (
-              <>
-                <NavLink
-                  to={`:${row.id}/dashboard`}
-                  className="text-blue-500 hover:underline ml-2"
-                >
-                  לוח בקרה
-                </NavLink>
-                <NavLink
-                  to={`:${row.id}/contract`}
-                  className="text-blue-500 hover:underline ml-2"
-                >
-                  חוזה לקוח
-                </NavLink>
-              </>
-            )}
-          />{" "}
+          />
+          {loading && (
+            <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+              <div className="loader border-8 border-gray-300 border-t-8 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div> {/* גלגל טעינה */}
+            </div>
+          )}
+        </div>
+        <div className="flex justify-center space-x-4 my-4">
           <Button
-            variant="secondary"
-            disabled={page <= 1}
-            onClick={() => {
-              if (page > 1) {
-                const prevPage = page - 1;
-                setPage(prevPage);
-                fetchCustomers(prevPage, 20, "");
+            variant={currentPage > 1 ? "secondary" : "accent"}
+            disabled={currentPage <= 1}
+            onClick={async () => {
+              if (currentPage > 1) {
+                await fetchPrevPage()
               }
             }}
           >
-            דף הקודם
+            <span>❮❮</span> הקודם
           </Button>
           <Button
-            variant="secondary"
-            // disabled={!hasMore}
-            onClick={() => {
-              // if (hasMore) {
-              const nextPage = page + 1;
-              setPage(nextPage);
-              fetchCustomers(nextPage, 20, "");
-              // }
+            variant={customers.length == limit ? "secondary" : "accent"}
+            disabled={customers.length < limit}
+            onClick={async () => {
+              if (customers.length == limit) {
+                await fetchNextPage()
+              }
             }}
           >
-            דף הבא
+            הבא <span>❯❯</span>
           </Button>
-          <div ref={loaderRef} className="h-4"></div>
         </div>
-      )}
+        <div ref={loaderRef} className="h-4"></div>
+
+      </div>
+
     </>
   );
+};
+const formatDate = (dateString: DateISO) => {
+  if (!dateString) return 'לא זמין'; // אם התאריך ריק, מחזירים 'לא זמין'
+
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0'); // יום
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // חודש (מתחילים מ-0)
+  const year = String(date.getFullYear()).slice(-2); // שנה (שני תווים אחרונים)
+
+  return `${day}/${month}/${year}`; // מחזירים בפורמט DD/MM/YY
 };

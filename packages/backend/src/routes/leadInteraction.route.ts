@@ -7,7 +7,7 @@ routerInteraction.get('/', controllerInteraction.getAllInteractions);
 
 routerInteraction.post('/', controllerInteraction.postInteractionToLead);
 
-routerInteraction.patch('/:id', controllerInteraction.patchInteractions);
+routerInteraction.patch('/:id', controllerInteraction.patchInteraction);
 
 routerInteraction.delete('/:id', controllerInteraction.deleteInteraction);
 

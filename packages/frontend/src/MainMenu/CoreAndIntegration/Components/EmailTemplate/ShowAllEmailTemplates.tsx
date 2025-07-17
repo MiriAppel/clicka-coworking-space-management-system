@@ -1,11 +1,12 @@
 import { Table, TableColumn } from '../../../../Common/Components/BaseComponents/Table';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
-// import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
+import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
 import { EmailTemplate } from 'shared-types';
 import { useEffect, useState } from 'react';
 import { UpdateEmailTemplate } from './UpdateEmailTemplate';
 import { AddEmailTemplate } from './AddEmailTemplate';
 import { useEmailTemplateStore } from '../../../../Stores/CoreAndIntegration/emailTemplateStore';
+import { PreviewEmailTemplate } from './PreviewEmailTemplate';
 
 export const EmailTemplateTable = () => {
   const {
@@ -19,10 +20,18 @@ export const EmailTemplateTable = () => {
   const [showUpdateEmailTemplate, setShowUpdateEmailTemplate] = useState(false);
   const [showAddEmailTemplate, setShowAddEmailTemplate] = useState(false);
   const [selectedEmailTemplate, setSelectedEmailTemplate] = useState<EmailTemplate | null>(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [selectedTemplateForPreview, setSelectedTemplateForPreview] = useState<EmailTemplate | null>(null);
+  const [renderedHtml, setRenderedHtml] = useState<string | null>(null);
 
   useEffect(() => {
-    getEmailTemplates();
+    const fetchEmailTemplates = async () => {
+      await getEmailTemplates();
+    };
+    fetchEmailTemplates();
   }, [getEmailTemplates]);
+
+  const sortedEmailTemplates = [...emailTemplates].sort((a, b) => a.name.localeCompare(b.name));
 
   const handleUpdate = (emailTemplate: EmailTemplate) => {
     setSelectedEmailTemplate(emailTemplate);
@@ -33,12 +42,10 @@ export const EmailTemplateTable = () => {
     if (window.confirm(`האם אתה בטוח שברצונך למחוק את ${emailTemplate.name}?`)) {
       try {
         await deleteEmailTemplate(emailTemplate.id as string);
-        // showAlert("", "תבנית המייל נמחקה בהצלחה", "success");
-        alert("תבנית המייל נמחקה בהצלחה");
+        showAlert("", "תבנית המייל נמחקה בהצלחה", "success");
       } catch (error) {
         console.error("Error deleting email template:", error);
-        // showAlert("שגיאה", "מחיקת תבנית המייל נכשלה. נסה שוב", "error");
-        alert("מחיקת תבנית המייל נכשלה. נסה שוב");
+        showAlert("שגיאה", "מחיקת תבנית המייל נכשלה. נסה שוב", "error");
       }
     }
   };
@@ -51,58 +58,53 @@ export const EmailTemplateTable = () => {
     setShowUpdateEmailTemplate(false);
     setShowAddEmailTemplate(false);
     setSelectedEmailTemplate(null);
+    setShowPreviewModal(false);
+    setSelectedTemplateForPreview(null);
+    setRenderedHtml(null); // אפס תצוגה מקדימה כשסוגרים
   };
 
   const handleEmailTemplateUpdated = () => {
-    getEmailTemplates(); // רענון הרשימה
+    getEmailTemplates();
     handleCloseModals();
   };
 
   const handlePreview = (emailTemplate: EmailTemplate) => {
-    // כאן ניתן להוסיף לוגיקה להצגת תצוגה מקדימה של תבנית הדוא"ל
-    console.log("Previewing email template:", emailTemplate);
-  }
-
+    setSelectedTemplateForPreview(emailTemplate);
+    setShowPreviewModal(true);
+  };
 
   const emailTemplateColumns: TableColumn<EmailTemplate>[] = [
     { header: "שם", accessor: "name" },
     { header: "נושא", accessor: "subject" },
-    { header: "גוף HTML", accessor: "bodyHtml" },
     { header: "גוף הטקסט", accessor: "bodyText" },
-    { header: "שפה", accessor: "language" },
-    { header: "משתנים", accessor: "variables"}
-    // { header: "משתנים", accessor: "variables", render: (value: string[]) => value.join(', ') }
-    // {
-    //     header: "פעולות",
-    //     render: (emailTemplate: EmailTemplate) => (
-    //         <div>
-    //             <Button onClick={() => handleUpdate(emailTemplate)}>Update</Button>
-    //             <Button onClick={() => handlePreview(emailTemplate)}>Preview</Button>
-    //             <Button onClick={() => handleDelete(emailTemplate)}>Delete</Button>
-    //         </div>
-    //     )
-    // }
+    { header: "שפה", accessor: "language", render: value => value === 'he' ? 'עברית' : 'English' },
+    {
+      header: "משתנים",
+      accessor: "variables",
+      render: (variables: string[]) => variables.join(', ') // המרה למחרוזת עם פסיקים ורווחים
+    }
   ];
 
-  if (loading) {
+  // הצגת HTML בלבד אם קיים
+  if (renderedHtml !== null) {
     return (
-      <div className="flex justify-center items-center p-8">
-        <div className="text-lg">טוען תבניות דוא"ל...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          שגיאה: {error}
+      <div dir="rtl" style={{ padding: '2rem', background: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div dangerouslySetInnerHTML={{ __html: renderedHtml }} />
+        <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', width: '100%' }}>
+          <Button onClick={() => setRenderedHtml(null)}>חזור</Button>
         </div>
       </div>
     );
   }
 
-  // אם מציגים טופס הוספה או עדכון
+  if (loading) {
+    return <div className="p-6">טוען תבניות דוא"ל...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-red-600">שגיאה: {error}</div>;
+  }
+
   if (showAddEmailTemplate) {
     return (
       <AddEmailTemplate
@@ -122,40 +124,33 @@ export const EmailTemplateTable = () => {
     );
   }
 
+  if (showPreviewModal && selectedTemplateForPreview) {
+    return (
+      <PreviewEmailTemplate
+        emailTemplate={selectedTemplateForPreview}
+        onClose={handleCloseModals}
+        onRenderHtml={setRenderedHtml} // העברת פונקציה להצגת HTML
+      />
+    );
+  }
+
   return (
     <div className="p-6">
-      {/* כותרת וכפתור הוספה */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">ניהול תבניות דוא"ל</h2>
-        <Button
-          variant="primary"
-          onClick={handleAddEmailTemplate}
-          className="flex items-center gap-2"
-        >
-          <span>+</span>
-          הוסף תבנית דוא"ל חדשה
-        </Button>
+        <Button onClick={handleAddEmailTemplate}>+ הוסף תבנית דוא"ל</Button>
       </div>
 
-      {/* סטטיסטיקות
-      <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-        <div className="text-sm text-gray-600">
-          Total Email Tsemplates: <span className="font-semibold">{emailTemplates.length}</span>
-          {" | "}
-          Active Users: <span className="font-semibold">
-            {users.filter(user => user.active).length}
-          </span>
-        </div>
-      </div> */}
-
-      {/* טבלת תבניות מייל */}
       <Table<EmailTemplate>
-        data={emailTemplates}
+        data={sortedEmailTemplates}
         columns={emailTemplateColumns}
         dir="rtl"
         onUpdate={handleUpdate}
         onDelete={handleDelete}
+        renderActions={(emailTemplate: EmailTemplate) => (
+          <Button onClick={() => handlePreview(emailTemplate)}>תצוגה מקדימה</Button>
+        )}
       />
-    </div>
+    </div >
   );
 };

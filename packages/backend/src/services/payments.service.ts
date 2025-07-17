@@ -34,7 +34,39 @@ export class PaymentService extends baseService<PaymentModel> {
 
   return data as PaymentModel[];
 };
+async getPaymentByDateAndCIds(params: {
+  dateFrom: string;
+  dateTo: string;
+  customerIds?: ID[]; // תמיכה בריבוי לקוחות
+}): Promise<Payment[]> {
+  try {
+    let query = supabase.from('payment').select('*');
 
+    if (params.customerIds?.length) {
+      query = query.in('customer_id', params.customerIds); // ✅ סינון לפי כמה לקוחות
+    }
+    if (params.dateFrom) {
+      query = query.gte('date', params.dateFrom);
+    }
+    if (params.dateTo) {
+      query = query.lte('date', params.dateTo);
+    }
+
+    query = query.order('date', { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching payments:', error);
+      return [];
+    }
+
+    return data as Payment[];
+  } catch (err) {
+    console.error('Unexpected error fetching payments:', err);
+    return [];
+  }
+}
   getPaymentByPage = async (filters: {
         page?: string ;
         limit?: number;
@@ -72,8 +104,39 @@ export class PaymentService extends baseService<PaymentModel> {
           PaymentModel
         return PaymentModel.fromDatabaseFormatArray(customers)
       };
-    }
 
+
+    async getPaymentByDate(params: { dateFrom: string; dateTo: string; customerId?: ID }): Promise<Payment[]> {
+    try {
+      let query = supabase.from('payment').select('*');
+
+      if (params.customerId) {
+        query = query.eq('customer_id', params.customerId);
+      }
+      if (params.dateFrom) {
+        query = query.gte('date', params.dateFrom);
+      }
+      if (params.dateTo) {
+        query = query.lte('date', params.dateTo);
+      }
+
+      // מיון מהחדש לישן לפי תאריך
+      query = query.order('date', { ascending: false });
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching payments:', error);
+        return [];
+      }
+
+      return data as Payment[];
+    } catch (err) {
+      console.error('Unexpected error fetching payments:', err);
+      return [];
+    }
+  }
+    }
 //   getCustomerBalance(customerId: ID)/*: CustomerBalance*/ {
 //     // שליפת כל החשבוניות של הלקוח שלא שולמו במלואן
 //     // חישוב סך כל החשבוניות שעדיין פתוחות

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { EmailTemplate } from 'shared-types';
-import { axiosInstance } from '../../Services/Axios';
+import axiosInstance from '../../Service/Axios';
 
 interface EmailTemplateState {
   emailTemplates: EmailTemplate[];
@@ -14,11 +14,11 @@ interface EmailTemplateState {
   createEmailTemplate: (emailTemplate: EmailTemplate) => Promise<EmailTemplate | null>;
   deleteEmailTemplate: (id: string) => Promise<EmailTemplate | null>;
   updateEmailTemplate: (id: string, newEmailTemplate: EmailTemplate) => Promise<EmailTemplate | null>;
-  // previewEmailTemplate: (id: string, variables: Record<string, string>) => Promise<string | null>;
+  previewEmailTemplate: (id: string, variables: Record<string, string>) => Promise<string | null>;
   clearError: () => void;
 }
 
-export const useEmailTemplateStore = create<EmailTemplateState>((set, get) => ({
+export const useEmailTemplateStore = create<EmailTemplateState>((set) => ({
   emailTemplates: [],
   currentEmailTemplate: null,
   loading: false,
@@ -28,7 +28,7 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set, get) => ({
   getEmailTemplates: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get<EmailTemplate[]>('/api/emailTemplate');
+      const response = await axiosInstance.get<EmailTemplate[]>('/emailTemplate');
       set({ emailTemplates: response.data, loading: false });
     } catch (error) {
       console.error('Error getting all emailTemplates:', error);
@@ -48,7 +48,7 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set, get) => ({
     }
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get<EmailTemplate>(`/api/emailTemplate/${id}`);
+      const response = await axiosInstance.get<EmailTemplate>(`/emailTemplate/${id}`);
       set({ currentEmailTemplate: response.data, loading: false });
       return response.data;
     } catch (error) {
@@ -65,7 +65,7 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set, get) => ({
   createEmailTemplate: async (emailTemplate: EmailTemplate): Promise<EmailTemplate | null> => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.post('/api/emailTemplate', emailTemplate);
+      const response = await axiosInstance.post('/emailTemplate', emailTemplate);
       const newEmailTemplate = response.data;
       // עדכון רשימת תבניות המייל
       set(state => ({
@@ -87,7 +87,7 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set, get) => ({
   deleteEmailTemplate: async (id: string): Promise<EmailTemplate | null> => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.delete(`/api/emailTemplate/${id}`);
+      const response = await axiosInstance.delete(`/emailTemplate/${id}`);
       const deletedEmailTemplate = response.data;
       // הסרת תבנית המייל מהרשימה
       set(state => ({
@@ -110,7 +110,7 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set, get) => ({
   updateEmailTemplate: async (id: string, newEmailTemplate: EmailTemplate): Promise<EmailTemplate | null> => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.put(`/api/emailTemplate/${id}`, newEmailTemplate);
+      const response = await axiosInstance.put(`/emailTemplate/${id}`, newEmailTemplate);
       const updatedEmailTemplate = response.data;
       // עדכון תבנית המייל ברשימה
       set(state => ({
@@ -135,10 +135,13 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set, get) => ({
   previewEmailTemplate: async (id: string, variables: Record<string, string>): Promise<string | null> => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.post(`/api/emailTemplate/${id}/preview`, { variables });
-      const renderedHtml = response.data.renderedHtml;
+      const response = await axiosInstance.post(`/emailTemplate/${id}/preview`, { variables });
+      console.log(":package: Full response data:", response.data);
+      const renderedHtml = typeof response.data === 'string'
+        ? response.data
+        : response.data.renderedHtml;
       set({ loading: false });
-      return renderedHtml;
+      return renderedHtml ?? null;
     } catch (error) {
       console.error('Error previewing email template:', error);
       set({ error: 'Error previewing email template', loading: false });

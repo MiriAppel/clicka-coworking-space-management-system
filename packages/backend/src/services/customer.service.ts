@@ -2,6 +2,7 @@ import { CustomerModel } from "../models/customer.model";
 import { baseService } from "./baseService";
 import { serviceCustomerPeriod } from "./customerPeriod.service";
 import {
+  ContractStatus,
   CreateCustomerRequest,
   CustomerPeriod,
   CustomerStatus,
@@ -15,9 +16,14 @@ import {
 } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
+import { ContractModel } from "../models/contract.model";
+import { contractService } from '../services/contract.service';
+import { customerPaymentMethodModel } from "../models/customerPaymentMethod.model";
+import { serviceCustomerPaymentMethod } from "./customerPaymentMethod.service";
 import { EmailTemplateService } from "./emailTemplate.service";
 import { EmailTemplateModel } from "../models/emailTemplate.model";
 import { sendEmail } from "./gmail-service";
+import { log } from "node:console";
 
 export class customerService extends baseService<CustomerModel> {
   constructor() {
@@ -26,7 +32,18 @@ export class customerService extends baseService<CustomerModel> {
 
   getAllCustomers = async (): Promise<CustomerModel[] | null> => {
     const customers = await this.getAll();
-    return CustomerModel.fromDatabaseFormatArray(customers); // המרה לסוג UserModel
+
+    const customersWithPayments = await Promise.all(
+      customers.map(async (customer) => {
+        if (customer.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
+          const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(customer.id!);
+          customer.paymentMethods = paymentMethods || [];
+        }
+        return customer;
+      })
+    );
+
+    return CustomerModel.fromDatabaseFormatArray(customersWithPayments); // המרה לסוג UserModel
   };
   //מחזיר את כל הסטטוסים של הלקוח
   getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
@@ -35,16 +52,20 @@ export class customerService extends baseService<CustomerModel> {
 
   //לא הבנתי מה היא צריכה לעשות
   getCustomersToNotify = async (
-    id: ID,
+    id: ID
   ): Promise<GetCustomersRequest[] | null> => {
     return [];
   };
 
+
+
   createCustomer = async (
-    newCustomer: CreateCustomerRequest,
+    newCustomer: CreateCustomerRequest
   ): Promise<CustomerModel> => {
     console.log("in servise");
     console.log(newCustomer);
+
+    //מה לעשות עם זה: paymentMethods!!
 
     const customerData: CustomerModel = {
       name: newCustomer.name,
@@ -54,17 +75,16 @@ export class customerService extends baseService<CustomerModel> {
       businessName: newCustomer.businessName,
       businessType: newCustomer.businessType,
       status: CustomerStatus.ACTIVE,
-      currentWorkspaceType: newCustomer.workspaceType,
+      currentWorkspaceType: newCustomer.currentWorkspaceType,
       workspaceCount: newCustomer.workspaceCount,
       contractSignDate: newCustomer.contractSignDate,
       contractStartDate: newCustomer.contractStartDate,
       billingStartDate: newCustomer.billingStartDate,
       notes: newCustomer.notes,
       invoiceName: newCustomer.invoiceName,
-      paymentMethodsType: newCustomer.paymentMethodType,
+      paymentMethodType: newCustomer.paymentMethodType,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      paymentMethods: [],
       toDatabaseFormat() {
         return {
           name: this.name,
@@ -81,7 +101,7 @@ export class customerService extends baseService<CustomerModel> {
           billing_start_date: this.billingStartDate,
           notes: this.notes,
           invoice_name: this.invoiceName,
-          payment_methods_type: this.paymentMethodsType,
+          payment_methods_type: this.paymentMethodType,
           created_at: this.createdAt,
           updated_at: this.updatedAt,
         };
@@ -93,25 +113,156 @@ export class customerService extends baseService<CustomerModel> {
 
     console.log(customerData);
 
-    await this.post(customerData);
+    const customer = await this.post(customerData);
+
+    const newContract: ContractModel = {
+      customerId: customer.id!,
+      version: 1,
+      status: ContractStatus.DRAFT,
+      signDate: newCustomer.contractSignDate,
+      startDate: newCustomer.contractStartDate,
+      //   endDate?: string;
+      terms: {  //ערכים התחלתיים לבנתיים
+        workspaceType: newCustomer.currentWorkspaceType,
+        workspaceCount: newCustomer.workspaceCount,
+        duration: 1,
+        monthlyRate: 0,
+        renewalTerms: "",
+        terminationNotice: 0
+      },
+      documents: newCustomer.contractDocuments || [],
+      //   signedBy?: string;
+      //   witnessedBy?: string;
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      toDatabaseFormat() {
+        return {
+          customer_id: this.customerId,
+          version: this.version,
+          status: this.status,
+          sign_date: this.signDate,
+          start_date: this.startDate,
+          end_date: this.endDate,
+          terms: this.terms,
+          documents: this.documents,
+          signed_by: this.signedBy,
+          witnessed_by: this.witnessedBy,
+          created_at: this.createdAt,
+          updated_at: this.updatedAt
+        };
+      }
+    }
+    const serviceContract = new contractService();
+
+    const contract = await serviceContract.post(newContract)
+
+    console.log("new contract in customer service");
+    console.log(contract);
+
+    //create customer payment method
+    if (newCustomer.paymentMethodType == PaymentMethodType.CREDIT_CARD) {
+      const newPaymentMethod: customerPaymentMethodModel = {
+        customerId: customer.id!,
+        isActive: true,
+        creditCardExpiry: newCustomer.paymentMethod?.creditCardExpiry,
+        creditCardHolderIdNumber: newCustomer.paymentMethod?.creditCardHolderIdNumber,
+        creditCardHolderPhone: newCustomer.paymentMethod?.creditCardHolderPhone,
+        creditCardNumber: newCustomer.paymentMethod?.creditCardNumber,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        toDatabaseFormat() {
+          return {
+            customer_id: this.customerId,
+            credit_card_number: this.creditCardNumber,
+            credit_card_expiry: this.creditCardExpiry,
+            credit_card_holder_id_number: this.creditCardHolderIdNumber,
+            credit_card_holder_phone: this.creditCardHolderPhone,
+            is_active: this.isActive,
+            created_at: this.createdAt,
+            updated_at: this.updatedAt
+          };
+        }
+      }
 
 
-    //יש להעביר את פרטי הלקוח והחוזה למערכת החיוב (של Team 4 - Billing) לצורך חישוב תמחור והכנת חיובים ראשוניים.
+      const paymentMethod = await serviceCustomerPaymentMethod.post(newPaymentMethod)
+
+      console.log("paymentMethod in service");
+      console.log(paymentMethod);
+    }
+
+
+
 
     // קריאה לשירותי התראות/מייל מתאימים לאחר המרה מוצלחת קשור לקבוצה 1
 
     return customerData;
   };
 
-  updateCustomer = async (dataToUpdate: Partial<CustomerModel>, id: ID) => {
-    ((dataToUpdate.updatedAt = new Date().toISOString()),
-      this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id));
-  };
+  updateCustomer = async (dataToUpdate: any, id: ID) => {
+    console.log("updateCustomer called with data:", dataToUpdate);
+
+    try {
+      await this.patch(CustomerModel.partialToDatabaseFormat(dataToUpdate), id); // תפס את השגיאה
+      if (dataToUpdate.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
+        // אם סוג התשלום הוא כרטיס אשראי, נעדכן את שיטת התשלום
+        //אם כבר היה שיטת תשלום אז נעדכן, אחרת ניצור
+        const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(id);
+        console.log("paymentMethods in updateCustomer", paymentMethods);
+        if (paymentMethods && paymentMethods.length > 0) {
+          // אם יש כבר שיטת תשלום, נעדכן אותה
+          const paymentMethodData = {
+            ...paymentMethods[0], // נשתמש בנתונים הקיימים
+            isActive: true,
+            creditCardNumber: dataToUpdate.creditCardNumber,
+            creditCardExpiry: dataToUpdate.creditCardExpiry,
+            creditCardHolderIdNumber: dataToUpdate.creditCardHolderIdNumber,
+            creditCardHolderPhone: dataToUpdate.creditCardHolderPhone,
+            updatedAt: new Date().toISOString(),
+          };
+          console.log("paymentMethodData in updateCustomer", paymentMethodData);
+
+          await serviceCustomerPaymentMethod.patch(customerPaymentMethodModel.partialToDatabaseFormat(paymentMethodData), paymentMethods[0].id!);
+        } else {
+          // אם אין שיטת תשלום, ניצור חדשה
+          const newPaymentMethod: customerPaymentMethodModel = {
+            customerId: id,
+            isActive: true,
+            creditCardExpiry: dataToUpdate.creditCardExpiry,
+            creditCardHolderIdNumber: dataToUpdate.creditCardHolderIdNumber,
+            creditCardHolderPhone: dataToUpdate.creditCardHolderPhone,
+            creditCardNumber: dataToUpdate.creditCardNumber,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            toDatabaseFormat() {
+              return {
+                customer_id: this.customerId,
+                credit_card_number: this.creditCardNumber,
+                credit_card_expiry: this.creditCardExpiry,
+                credit_card_holder_id_number: this.creditCardHolderIdNumber,
+                credit_card_holder_phone: this.creditCardHolderPhone,
+                is_active: this.isActive,
+                created_at: this.createdAt,
+                updated_at: this.updatedAt
+              };
+            }
+          }
+
+
+          await serviceCustomerPaymentMethod.post(newPaymentMethod)
+        }
+
+      }
+    } catch (error) {
+      console.error("שגיאה בעדכון הלקוח:", error);
+      throw error; // זרוק את השגיאה הלאה
+    }
+  }
 
   // יצרית הודעת עזיבה של לקוח
   postExitNotice = async (
     exitNotice: RecordExitNoticeRequest,
-    id: ID,
+    id: ID
   ): Promise<void> => {
     const updateStatus: UpdateCustomerRequest = {
       status: CustomerStatus.PENDING,
@@ -165,13 +316,7 @@ export class customerService extends baseService<CustomerModel> {
   };
 
   getCustomersByText = async (text: string): Promise<CustomerModel[]> => {
-    const searchFields = [
-      "name",
-      "phone",
-      "business_name",
-      "business_type",
-      "email",
-    ];
+    const searchFields = ["name", "phone", "business_name", "business_type", "email"];
 
     const filters = searchFields
       .map((field) => `${field}.ilike.%${text}%`)
@@ -189,8 +334,10 @@ export class customerService extends baseService<CustomerModel> {
       return [];
     }
 
-    return data as CustomerModel[];
+    const customers = data || [];
+    return CustomerModel.fromDatabaseFormatArray(customers);
   };
+
 
   //מחזיר את כל הלקוחות רק של העמוד הראשון
   getCustomersByPage = async (filters: {
@@ -217,18 +364,30 @@ export class customerService extends baseService<CustomerModel> {
       .order("created_at", { ascending: false })
       .range(from, to);
 
-    console.log("Supabase data:", data);
+    // console.log("Supabase data:", data);
     console.log("Supabase error:", error);
 
     if (error) {
       console.error("❌ Supabase error:", error.message || error);
       return Promise.reject(
-        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`),
+        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
       );
     }
 
+
     const customers = data || [];
-    return CustomerModel.fromDatabaseFormatArray(customers);
+
+    const customersWithPayments = await Promise.all(
+      customers.map(async (customer) => {
+        if (customer.payment_methods_type === PaymentMethodType.CREDIT_CARD) {
+          const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(customer.id!);
+          customer.paymentMethods = paymentMethods || [];
+        }
+        return customer;
+      })
+    );
+
+    return CustomerModel.fromDatabaseFormatArray(customersWithPayments);
   };
 
   emailService = new EmailTemplateService();
@@ -240,8 +399,12 @@ export class customerService extends baseService<CustomerModel> {
   ): Promise<void> => {
     const customer = await this.getById(id);
 
+    console.log("Customer in sendStatusChangeEmails:", customer);
+    console.log("Details for change status:", detailsForChangeStatus);
+
+
     // סטטוסים שדורשים התראה לצוות
-    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE"];
+    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE","ACTIVE"];
     const shouldNotifyTeam = notifyTeamStatuses.includes(
       detailsForChangeStatus.newStatus,
     );
@@ -257,10 +420,12 @@ export class customerService extends baseService<CustomerModel> {
     // }
 
     // תרגום הסטטוס לעברית
-    const statusTranslations: Record<string, string> = {
-      NOTICE_GIVEN: "ניתנה הודעה",
-      TERMINATED: "סיום העסקה",
+
+    const statusTranslations: Record<CustomerStatus, string> = {
       ACTIVE: "פעיל",
+      NOTICE_GIVEN: "הודעת עזיבה",
+      EXITED: "עזב",
+      PENDING: "בהמתנה",
     };
 
     const effectiveDate = new Date(detailsForChangeStatus.effectiveDate);
@@ -272,8 +437,9 @@ export class customerService extends baseService<CustomerModel> {
       minute: "2-digit",
     });
 
-    detailsForChangeStatus.effectiveDate = formattedDate;
-    const status = statusTranslations[detailsForChangeStatus.newStatus] ||
+    detailsForChangeStatus.effectiveDate = formattedDate;    
+    
+    const status = statusTranslations[detailsForChangeStatus.newStatus as CustomerStatus] ||
       detailsForChangeStatus.newStatus;
 
     // פונקציה לשליחת מייל לצוות
@@ -296,6 +462,9 @@ export class customerService extends baseService<CustomerModel> {
             "סיבה": detailsForChangeStatus.reason || "ללא סיבה מצוינת",
           },
         );
+
+        console.log("Rendered HTML for team email:\n", renderedHtml);
+
 
         const response = await sendEmail(
           "me",
@@ -361,6 +530,7 @@ export class customerService extends baseService<CustomerModel> {
 
     //מוסיף למערך הפרומיסים רק אם זה הצליח
     if (shouldNotifyTeam) {
+      console.log("Sending email to team for status change:", customer.name, status);
       emailPromises.push(
         sendTeamEmail().catch((err) => {
           console.error("שגיאה בשליחת מייל לצוות", err);

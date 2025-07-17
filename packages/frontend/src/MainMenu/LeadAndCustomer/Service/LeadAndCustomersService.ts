@@ -8,8 +8,9 @@ import {
   CreateCustomerRequest,
   RecordExitNoticeRequest,
   Contract,
+  StatusChangeRequest,
 } from 'shared-types';
-import { axiosInstance } from '../../../Services/Axios';
+import { axiosInstance } from '../../../Service/Axios';
 
 // ---------- לידים ----------
 

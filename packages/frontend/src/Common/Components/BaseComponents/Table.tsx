@@ -50,6 +50,7 @@ export const Table = <T extends Record<string, any>>({
           effectiveDir === "rtl" ? "text-right" : "text-left"
         )}
         style={{
+           tableLayout: "fixed", // Makes sure the table layout is fixed
           fontFamily:
             effectiveDir === "rtl"
               ? theme.typography.fontFamily.hebrew
@@ -65,8 +66,8 @@ export const Table = <T extends Record<string, any>>({
                 key={idx}
                 scope="col" //מגדיר את זה בראש הטבלה 
                 className={clsx(
-                  "border px-4 py-2 font-semibold",
-                  idx > 1 ? "hidden md:table-cell" : ""
+                  "border px-4 py-2 font-semibold"
+                  // , idx > 1 ? "hidden md:table-cell" : ""
                 )}
               >
                 {/* //מגדירים לכל אאינדקסים KEY מיוחד כדי שנדע על איזה אלמנט אנחנו מדברים  */}
@@ -100,7 +101,7 @@ export const Table = <T extends Record<string, any>>({
                 // {/* //ניגש לכל מה שכתוב בעמודות לדוג אם ACCESOR=NAME אז מדפיס לי ROW[NAME] */}
               ))}
 
-              <td className="border px-4 py-2 flex gap-2 justify-center">
+              <td className="border-t px-4 py-2 flex gap-2 justify-center">
                 {typeof renderActions === "function" && renderActions(row)}
                 <Button
                   variant="secondary"
