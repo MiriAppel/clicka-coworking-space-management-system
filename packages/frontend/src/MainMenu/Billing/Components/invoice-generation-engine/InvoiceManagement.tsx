@@ -1,7 +1,4 @@
 
-
-
-
 import React, { useState, useEffect } from 'react';
 import { useInvoiceStore } from '../../../../Stores/Billing/invoiceStore';
 import { InvoiceStatus, BillingItemType, CreateInvoiceRequest } from 'shared-types';
@@ -149,8 +146,6 @@ export const InvoiceManagement: React.FC = () => {
   ];
 
   const tableData = (invoices && Array.isArray(invoices) ? invoices : []).map((invoice, index) => {
-console.log("55555555555555",invoice);
-
 
     return {
       ...invoice,
@@ -184,152 +179,8 @@ console.log("55555555555555",invoice);
     setEditingInvoice(null);
   };
 
-  // const handleEdit = (invoice: any) => {
-
-  //     setEditingInvoice(invoice);
-  //     const formDataForEdit = {
-  //         customerId: invoice.customer_id || '',
-  //         customerName: invoice.customer_name || '',
-  //         issueDate: invoice.issue_date && !isNaN(new Date(invoice.issue_date).getTime())
-  //             ? new Date(invoice.issue_date).toISOString().split('T')[0]
-  //             : new Date().toISOString().split('T')[0],
-  //         dueDate: invoice.due_date && !isNaN(new Date(invoice.due_date).getTime())
-  //             ? new Date(invoice.due_date).toISOString().split('T')[0]
-  //             : new Date().toISOString().split('T')[0],
-  //         items: invoice.items && invoice.items.length > 0
-  //             ? invoice.items.map((item: any) => ({
-  //                 description: item.description || '',
-  //                 quantity: item.quantity || 1,
-  //                 unit_price: item.unit_price || 0,
-  //                 type: item.type || BillingItemType.WORKSPACE
-  //             }))
-  //             : [{
-  //                 description: '',
-  //                 quantity: 1,
-  //                 unitPrice: 0,
-  //                 type: BillingItemType.WORKSPACE
-  //             }]
-  //     };
-  //     const itemsHtml = formDataForEdit.items.map((item: any, index: number) => `
-  //     <div id="item-${index}" style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 4px;">
-  //         <h4>פריט ${index + 1}</h4>
-  //         <div>
-  //             <label>תיאור:</label>
-  //             <input id="description-${index}" type="text" value="${item.description}" required />
-  //         </div>
-  //         <div>
-  //             <label>כמות:</label>
-  //             <input id="quantity-${index}" type="number" value="${item.quantity}" min="1" required />
-  //         </div>
-  //         <div>
-  //             <label>מחיר יחידה:</label>
-  //             <input id="unitPrice-${index}" type="number" value="${item.unitPrice}" min="0" step="0.01" required />
-  //         </div>
-  //         <div>
-  //             <label>סוג:</label>
-  //             <select id="type-${index}">
-  //                 <option value="${BillingItemType.WORKSPACE}" ${item.type === BillingItemType.WORKSPACE ? 'selected' : ''}>Workspace</option>
-  //                 <option value="${BillingItemType.MEETING_ROOM}" ${item.type === BillingItemType.MEETING_ROOM ? 'selected' : ''}>Meeting Room</option>
-  //                 <option value="${BillingItemType.LOUNGE}" ${item.type === BillingItemType.LOUNGE ? 'selected' : ''}>Lounge</option>
-  //                 <option value="${BillingItemType.SERVICE}" ${item.type === BillingItemType.SERVICE ? 'selected' : ''}>Service</option>
-  //                 <option value="${BillingItemType.DISCOUNT}" ${item.type === BillingItemType.DISCOUNT ? 'selected' : ''}>Discount</option>
-  //                 <option value="${BillingItemType.OTHER}" ${item.type === BillingItemType.OTHER ? 'selected' : ''}>Other</option>
-  //             </select>
-  //         </div>
-  //     </div>
-  // `).join('');
-
-  //     const formHtml = `
-  //     <div>
-  //         <div>
-  //             <label>מזהה לקוח:</label>
-  //             <input id="customerId" type="text" value="${formDataForEdit.customerId}" required />
-  //         </div>
-  //         <div>
-  //             <label>שם לקוח:</label>
-  //             <input id="customerName" type="text" value="${formDataForEdit.customerName}" required />
-  //         </div>
-  //         <div>
-  //             <label>תאריך הנפקה:</label>
-  //             <input id="issueDate" type="date" value="${formDataForEdit.issueDate}" required />
-  //         </div>
-  //         <div>
-  //             <label>תאריך פירעון:</label>
-  //             <input id="dueDate" type="date" value="${formDataForEdit.dueDate}" required />
-  //         </div>
-  //         <div>
-  //             <h3>פריטי החשבונית</h3>
-  //             <div id="items-container">
-  //                 ${itemsHtml}
-  //             </div>
-  //         </div>
-  //     </div>
-  // `;
-
-  //     Swal.fire({
-  //         title: 'עריכת חשבונית',
-  //         html: formHtml,
-  //         showCancelButton: true,
-  //         confirmButtonText: 'עדכן חשבונית',
-  //         cancelButtonText: 'ביטול',
-  //         width: '800px',
-  //         preConfirm: () => {
-  //             const customerId = (document.getElementById('customerId') as HTMLInputElement).value;
-  //             const customerName = (document.getElementById('customerName') as HTMLInputElement).value;
-  //             const issueDate = (document.getElementById('issueDate') as HTMLInputElement).value;
-  //             const dueDate = (document.getElementById('dueDate') as HTMLInputElement).value;
-
-  //             if (!customerId || !customerName || !issueDate || !dueDate) {
-  //                 Swal.showValidationMessage('אנא מלא את כל השדות');
-  //                 return false;
-  //             }
-
-  //             const items = formDataForEdit.items.map((_: any, index: number) => ({
-  //                 description: (document.getElementById(`description-${index}`) as HTMLInputElement).value,
-  //                 quantity: parseInt((document.getElementById(`quantity-${index}`) as HTMLInputElement).value),
-  //                 unitPrice: parseFloat((document.getElementById(`unitPrice-${index}`) as HTMLInputElement).value),
-  //                 type: (document.getElementById(`type-${index}`) as HTMLSelectElement).value
-  //             }));
-
-  //             return {
-  //                 customerId,
-  //                 customerName,
-  //                 issueDate,
-  //                 dueDate,
-  //                 items
-  //             };
-  //         }
-  //     }).then(async (result) => {
-  //         if (result.isConfirmed) {
-  //             const subtotal = result.value.items.reduce((sum: number, item: any) => sum + (item.quantity * item.unitPrice), 0);
-  //             const taxAmount = subtotal * 0.17;
-
-  //             const updateData = {
-  //                 customer_id: result.value.customerId,
-  //                 customer_name: result.value.customerName,
-  //                 issue_date: result.value.issueDate,
-  //                 due_date: result.value.dueDate,
-  //                 subtotal: subtotal,
-  //                 tax_total: taxAmount,
-  //             };
-
-  //             try {
-  //                 await updateInvoice(invoice.id, updateData);
-  //                 Swal.fire('הצלחה!', 'החשבונית עודכנה בהצלחה', 'success');
-  //                 setEditingInvoice(null);
-  //             } catch (error) {
-  //                 console.error('שגיאה בעדכון חשבונית:', error);
-  //                 Swal.fire('שגיאה!', 'אירעה שגיאה בעדכון החשבונית', 'error');
-  //             }
-  //         }
-  //     });
-  // };
-
-
-
   const handleEdit = async (invoice: any) => {
     try {
-      // טען את פריטי החשבונית באותו אופן כמו בפונקציה הקיימת
       const response: any = await getAllInvoiceItems(invoice.id);
       let invoiceItems = [];
       if (Array.isArray(response.invoiceItems)) {
@@ -351,6 +202,7 @@ console.log("55555555555555",invoice);
           : new Date().toISOString().split('T')[0],
         items: invoiceItems.length > 0
           ? invoiceItems.map((item: any) => ({
+            id: item.id, // ✔ שמירת ID
             description: item.description || '',
             quantity: item.quantity || 1,
             unitPrice: item.unit_price || 0,
@@ -365,64 +217,68 @@ console.log("55555555555555",invoice);
       };
 
       const itemsHtml = formDataForEdit.items.map((item: any, index: number) => `
-            <div id="item-${index}" style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 4px;">
-                <h4>פריט ${index + 1}</h4>
-                <div>
-                    <label>תיאור:</label>
-                    <input id="description-${index}" type="text" value="${item.description || ''}" required />
-                </div>
-                <div>
-                    <label>כמות:</label>
-                    <input id="quantity-${index}" type="number" value="${item.quantity || 1}" min="1" required />
-                </div>
-                <div>
-                    <label>מחיר יחידה:</label>
-                    <input id="unitPrice-${index}" type="number" value="${item.unitPrice || 0}" min="0" step="0.01" required />
-                </div>
-                <div>
-                    <label>סוג:</label>
-                    <select id="type-${index}">
-                        <option value="${BillingItemType.WORKSPACE}" ${item.type === BillingItemType.WORKSPACE ? 'selected' : ''}>Workspace</option>
-                        <option value="${BillingItemType.MEETING_ROOM}" ${item.type === BillingItemType.MEETING_ROOM ? 'selected' : ''}>Meeting Room</option>
-                        <option value="${BillingItemType.LOUNGE}" ${item.type === BillingItemType.LOUNGE ? 'selected' : ''}>Lounge</option>
-                        <option value="${BillingItemType.SERVICE}" ${item.type === BillingItemType.SERVICE ? 'selected' : ''}>Service</option>
-                        <option value="${BillingItemType.DISCOUNT}" ${item.type === BillingItemType.DISCOUNT ? 'selected' : ''}>Discount</option>
-                        <option value="${BillingItemType.OTHER}" ${item.type === BillingItemType.OTHER ? 'selected' : ''}>Other</option>
-                    </select>
-                </div>
-            </div>
-        `).join('');
+      <div id="item-${index}" style="border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 4px;">
+        <h4>פריט ${index + 1}</h4>
+        <div>
+          <label>תיאור:</label>
+          <input id="description-${index}" type="text" value="${item.description || ''}" required />
+        </div>
+        <div>
+          <label>כמות:</label>
+          <input id="quantity-${index}" type="number" value="${item.quantity || 1}" min="1" required />
+        </div>
+        <div>
+          <label>מחיר יחידה:</label>
+          <input id="unitPrice-${index}" type="number" value="${item.unitPrice || 0}" min="0" step="0.01" required />
+        </div>
+        <div>
+          <label>סוג:</label>
+          <select id="type-${index}">
+            <option value="${BillingItemType.WORKSPACE}" ${item.type === BillingItemType.WORKSPACE ? 'selected' : ''}>Workspace</option>
+            <option value="${BillingItemType.MEETING_ROOM}" ${item.type === BillingItemType.MEETING_ROOM ? 'selected' : ''}>Meeting Room</option>
+            <option value="${BillingItemType.LOUNGE}" ${item.type === BillingItemType.LOUNGE ? 'selected' : ''}>Lounge</option>
+            <option value="${BillingItemType.SERVICE}" ${item.type === BillingItemType.SERVICE ? 'selected' : ''}>Service</option>
+            <option value="${BillingItemType.DISCOUNT}" ${item.type === BillingItemType.DISCOUNT ? 'selected' : ''}>Discount</option>
+            <option value="${BillingItemType.OTHER}" ${item.type === BillingItemType.OTHER ? 'selected' : ''}>Other</option>
+          </select>
+        </div>
+      </div>
+    `).join('');
 
       const formHtml = `
-            <div>
-                <div>
-                    <label>מזהה לקוח:</label>
-                    <input id="customerId" type="text" value="${formDataForEdit.customerId || ''}" required />
-                </div>
-                <div>
-                    <label>שם לקוח:</label>
-                    <input id="customerName" type="text" value="${formDataForEdit.customerName || ''}" required />
-                </div>
-                <div>
-                    <label>תאריך הנפקה:</label>
-                    <input id="issueDate" type="date" value="${formDataForEdit.issueDate}" required />
-                </div>
-                <div>
-                    <label>תאריך פירעון:</label>
-                    <input id="dueDate" type="date" value="${formDataForEdit.dueDate}" required />
-                </div>
-                <div>
-                    <h3>פריטי החשבונית</h3>
-                    <div id="items-container">
-                        ${itemsHtml}
-                    </div>
-                </div>
-            </div>
-        `;
+      <div>
+        <div>
+          <label>מזהה לקוח:</label>
+          <input id="customerId" type="text" value="${formDataForEdit.customerId || ''}" required />
+        </div>
+        <div>
+          <label>שם לקוח:</label>
+          <input id="customerName" type="text" value="${formDataForEdit.customerName || ''}" required />
+        </div>
+        <div>
+          <label>תאריך הנפקה:</label>
+          <input id="issueDate" type="date" value="${formDataForEdit.issueDate}" required />
+        </div>
+        <div>
+          <label>תאריך פירעון:</label>
+          <input id="dueDate" type="date" value="${formDataForEdit.dueDate}" required />
+        </div>
+        <div>
+          <h3>פריטי החשבונית</h3>
+          <div id="items-container">
+            ${itemsHtml}
+          </div>
+        </div>
+      </div>
+    `;
 
       Swal.fire({
         title: 'עריכת חשבונית',
-        html: formHtml,
+        html: `
+  <div style="height: 350px; overflow-y: auto; direction: rtl;">
+    ${formHtml}
+  </div>
+`,
         showCancelButton: true,
         confirmButtonText: 'עדכן חשבונית',
         cancelButtonText: 'ביטול',
@@ -437,8 +293,8 @@ console.log("55555555555555",invoice);
             Swal.showValidationMessage('אנא מלא את כל השדות');
             return false;
           }
-
-          const items = formDataForEdit.items.map((_: any, index: number) => ({
+          const items = formDataForEdit.items.map((itemOrig: any, index: number) => ({
+            id: itemOrig.id, // 👈 קריטי!
             description: (document.getElementById(`description-${index}`) as HTMLInputElement).value,
             quantity: parseInt((document.getElementById(`quantity-${index}`) as HTMLInputElement).value),
             unitPrice: parseFloat((document.getElementById(`unitPrice-${index}`) as HTMLInputElement).value),
@@ -463,7 +319,14 @@ console.log("55555555555555",invoice);
             issue_date: result.value.issueDate,
             due_date: result.value.dueDate,
             subtotal: subtotal,
-            tax_total: taxAmount,
+            tax_total: Math.round(taxAmount),
+            items: result.value.items.map((item: any) => ({
+              id: item.id, // חשוב!
+              description: item.description,
+              quantity: item.quantity,
+              unit_price: item.unitPrice,
+              type: item.type
+            }))
           };
 
           try {
@@ -482,6 +345,7 @@ console.log("55555555555555",invoice);
       Swal.fire('שגיאה', 'אירעה שגיאה בטעינת פריטי החשבונית', 'error');
     }
   };
+
 
   ///////////////////////////////
 

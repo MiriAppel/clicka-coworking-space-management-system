@@ -14,8 +14,6 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KE
 //crud functions
 // יצירת חשבונית חדשה 
 
-
-
 export async function serviceCreateInvoice(data: Partial<InvoiceModel>): Promise<InvoiceModel> {
   const { data: invoiceData, error } = await supabase
     .from('invoice')
@@ -62,75 +60,26 @@ export async function serviceGetAllInvoiceItems(invoice_id: UUID): Promise<Invoi
 
 }
 
-// קבלת כל החשבוניות עם JOIN
-// export async function serviceGetAllInvoices(): Promise<InvoiceModel[]> {
-//     console.log('🔍 בודק את מבנה הטבלאות...');
-//     console.log('=== SERVICE START ===');
-//     const { data, error } = await supabase
-//         .from('invoice')
-//         .select(`
-//             *,
-//             invoice_item (*)
-//         `)
-//         .order('created_at', { ascending: false });
 
-//     console.log('=== DATA ===', data);
-//     console.log('=== ERROR ===', error);
-
-//     if (error) {
-//         console.error('❌ שגיאה בשליפת חשבוניות:', error);
-//         throw new Error(error.message);
-//     }
-
-//     if (!data || data.length === 0) {
-//         console.log('📭 לא נמצאו חשבוניות');
-//         return [];
-//     }
-
-//     // המרה לפורמט הנכון
-//     const invoicesWithItems = data.map(invoice => {
-//         console.log('🔄 מעבד חשבונית:', invoice.invoice_number);
-//         console.log('📋 פריטים גולמיים:', invoice.invoice_item);
-
-//         return {
-//             ...invoice,
-//             items: Array.isArray(invoice.invoice_item) ? invoice.invoice_item : []
-//         };
-//     }) as InvoiceModel[];
-
-//     console.log('=== FINAL RESULT ===');
-//     console.log('📊 מספר חשבוניות:', invoicesWithItems.length);
-//     if (invoicesWithItems.length > 0) {
-//         console.log('🧾 חשבונית ראשונה:', JSON.stringify(invoicesWithItems[0], null, 2));
-//     }
-
-//     return invoicesWithItems;
-// }
-
-export async function serviceGetInvoiceById(id: ID): Promise<InvoiceModel | null> {
-  const { data: invoice, error } = await supabase
+export async function serviceGetInvoiceById(id: string) {
+  const { data: invoiceData, error } = await supabase
     .from('invoice')
-    .select(`
-            *,
-            invoice_item (*)
-        `)
+    .select('*') 
     .eq('id', id)
     .single();
+  if (error || !invoiceData) throw new Error('חשבונית לא נמצאה');
 
-  if (error) {
-    if (error.code === 'PGRST116') { // No rows found
-      return null;
-    }
-    throw new Error(error.message);
-  }
+  const { data: items, error: itemsError } = await supabase
+    .from('invoice_item')
+    .select('*')
+    .eq('invoice_id', id);
 
-  // המרה לפורמט הרצוי
-  const invoiceWithItems = {
-    ...invoice,
-    items: invoice.invoice_item || []
-  } as InvoiceModel;
+  if (itemsError) throw new Error('שגיאה בשליפת פרטי חיוב');
 
-  return invoiceWithItems;
+  return {
+    ...invoiceData,
+    items 
+  };
 }
 
 
@@ -163,7 +112,6 @@ export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceMo
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) return null;
 
-  // ✅ הוספת עדכון פרטי חיוב (invoice_item)
   if (updateData.items && Array.isArray(updateData.items)) {
     for (const item of updateData.items) {
       if (!item.id) continue;

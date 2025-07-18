@@ -140,21 +140,7 @@ export const useInvoiceStore = create<InvoiceState>()(
             throw error;
           }
         },
-        // updateInvoice: async (invoiceNumber, updates) => {
-        //   try {
-        //     const response = await axios.put(`http://localhost:3001/api/invoices/${invoiceNumber}`, updates);
-        //     set((state) => ({
-        //       invoices: state.invoices.map(invoice =>
-        //         invoice.invoice_number === invoiceNumber ? { ...invoice, ...response.data } : invoice
-        //       )
-        //     }));
-        //     return response.data;
-        //   } catch (error) {
-        //     set({ error: 'Error updating invoice' });
-        //     console.error('Error updating invoice:', error);
-        //     throw error;
-        //   }
-        // },
+
 
         // מחיקת חשבונית
         deleteInvoice: async (id) => {
