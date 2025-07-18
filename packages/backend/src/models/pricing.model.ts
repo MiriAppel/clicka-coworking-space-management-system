@@ -88,7 +88,7 @@ export class PricingTierModel implements PricingTier{
     effectiveDate: DateISO;
     createdAt: DateISO;
     updatedAt: DateISO;
-    constructor(data: { // שינוי: הקונסטרקטור מקבל אובייקט data
+    constructor(data: { 
         id?: ID;
         workspaceType: WorkspaceType;
         year1Price: number;

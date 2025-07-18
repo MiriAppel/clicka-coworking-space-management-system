@@ -26,21 +26,21 @@ const router = Router();
 // === שכבות תמחור לסביבת עבודה ===
 // פעולות יצירה ועדכון דורשות הרשאת מנהל
 router.post("/workspace", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), createPricingTierController); 
-router.post("/workspace/history", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), createPricingTierWithHistoryController); // שינוי כאן
+router.post("/workspace/history", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), createPricingTierWithHistoryController);
 
 // פעולות קריאה (GET) אינן דורשות הרשאת מנהל (עבור "רחל")
 router.get("/workspace/current/:workspaceType", getCurrentPricingTierController);
 router.get("/workspace/history/:workspaceType", getPricingHistoryController);
 
 // פעולות עדכון ומחיקה דורשות הרשאת מנהל
-router.put("/workspace/:id", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), updatePricingTierController); // שינוי כאן
-router.delete("/workspace/:id", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), deletePricingTierController); // *** זהו השינוי הקריטי לבעיה הנוכחית ***
-router.put("/workspace", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), bulkUpdatePricingTiersController); // שינוי כאן
+router.put("/workspace/:id", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), updatePricingTierController);
+router.delete("/workspace/:id", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), deletePricingTierController); 
+router.put("/workspace", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), bulkUpdatePricingTiersController);
 
 // === תמחור חדרי ישיבות ===
 // פעולות יצירה ועדכון דורשות הרשאת מנהל
 router.post("/meeting-room", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), createMeetingRoomPricingController);
-router.post("/meeting-room/history", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), createMeetingRoomPricingWithHistoryController); // ✅ נוספה כאן
+router.post("/meeting-room/history", authorizeUser([UserRole.ADMIN, UserRole.SYSTEM_ADMIN, UserRole.MANAGER]), createMeetingRoomPricingWithHistoryController); 
 
 // פעולות קריאה (GET) אינן דורשות הרשאת מנהל
 router.get("/meeting-room/current", getCurrentMeetingRoomPricingController);

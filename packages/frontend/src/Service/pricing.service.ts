@@ -15,7 +15,7 @@ const API_BASE_URL = '/api/pricing';
 
 // פונקציית עזר לחילוץ הודעת שגיאה
 function extractErrorMessage(error: any): string {
- /* if (axios.isAxiosError(error) && error.response) {
+ if (axios.isAxiosError(error) && error.response) {
     // ננסה לחלץ את הודעת השגיאה מהתגובה של השרת
     const responseData = error.response.data;
     console.log('Axios Error Response Data:', responseData); // הדפסה לבדיקה
@@ -39,7 +39,7 @@ function extractErrorMessage(error: any): string {
   // אם זו לא שגיאת Axios או שאין תגובה מהשרת
   console.log('General Error Object:', error); // הדפסה לבדיקה
   return error.message || 'שגיאה בלתי צפויה.';
-  */
+  
  return "";
 }
 
