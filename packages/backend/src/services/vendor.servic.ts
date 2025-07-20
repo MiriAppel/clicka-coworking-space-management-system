@@ -7,15 +7,15 @@ export async function create(
     try {
         const newVendorModel = new VendorModel({
             name: request.name,
-            contact_name: request.contact_name,
+            contact_name: request.contactName,
             phone: request.phone,
             email: request.email,
             address: request.address,
             website: (request as any).website, // אם קיים ב-CreateVendorRequest, ודא שהטיפוס כולל זאת
             tax_id: request.taxId,
             payment_terms: PaymentTerms.COD,
-            preferred_payment_method: request.preferred_payment_method,
-            category: request.category,
+            preferred_payment_method: PaymentMethod.BankTransfer,
+            category: VendorCategory.Other,
             status: VendorStatus.Inactive, // סטטוס ברירת מחדל אם לא נשלח
             notes: request.notes,
             // documents: request.documents || [],

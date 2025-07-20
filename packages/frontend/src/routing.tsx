@@ -9,8 +9,12 @@ import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/Le
 import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
-import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
+import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
+import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import MainLayout from './layout/MainLayout';
+import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
+import { ExpenseDetails } from './MainMenu/Billing/Components/expenseManagementSystem/expenseDetails';
+import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 // import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
@@ -19,7 +23,6 @@ import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
-
 import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
@@ -52,15 +55,21 @@ export const Routing = () => {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<App />} />
+        <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
+        <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        <Route path="billing/*" element={<BillingRouting />} />
+        <Route path="expenses" element={<ExpenseList />} />
+        <Route path="expenses/expense-form" element={<CreateExpenseForm />} />
+        <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
         <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
-        <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
-        <Route path="payment" element={<PaymentForm />} />
+        <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />        <Route path="payment" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        <Route path="expense-form" element={<CreateExpenseForm />} />
 
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
@@ -71,7 +80,6 @@ export const Routing = () => {
         <Route path="/pricing/meeting-room" element={<PricingSectionPage type="meeting-room" />} />
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
          <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
-
       </Route>
     </Routes>
   );

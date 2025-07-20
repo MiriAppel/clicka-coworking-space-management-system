@@ -1,10 +1,15 @@
 
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import type { CreateExpenseRequest, UpdateExpenseRequest, GetExpensesRequest, MarkExpenseAsPaidRequest } from 'shared-types';
+import type { CreateExpenseRequest, UpdateExpenseRequest, GetExpensesRequest, MarkExpenseAsPaidRequest, Expense } from 'shared-types';
+import { ExpenseModel } from '../models/expense.model';
+import { baseService } from './baseService';
 dotenv.config();
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
-export class ExpenseService {
+export class ExpenseService extends baseService<ExpenseModel> {
+  constructor() {
+    super('expense');
+  }
   async createExpense(expenseData: CreateExpenseRequest) {
     try {
       const { data, error } = await supabase
@@ -22,6 +27,45 @@ export class ExpenseService {
       return null;
     }
   }
+
+  getExpensesByPage = async (filters: {
+    page?: number;
+    limit?: number;
+  }): Promise<Expense[]> => {
+    console.log("Service getExpensesByPage called with:", filters);
+
+    const { page, limit } = filters;
+
+    const pageNum = Number(filters.page);
+    const limitNum = Number(filters.limit);
+
+    if (!Number.isInteger(pageNum) || !Number.isInteger(limitNum)) {
+      throw new Error("Invalid filters provided for pagination");
+    }
+
+    const from = (pageNum - 1) * limitNum;
+    const to = from + limitNum - 1;
+
+    const { data, error } = await supabase
+      .from("expense")
+      .select("*")
+      .order("id", { ascending: false })
+      .range(from, to);
+
+    console.log("Supabase data:", data);
+    console.log("Supabase error:", error);
+
+    if (error) {
+      console.error("❌ Supabase error:", error.message || error);
+      return Promise.reject(
+        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
+      );
+    }
+
+    const leads = data || [];
+    return ExpenseModel.fromDatabaseFormatArray(leads)
+  };
+
   async getExpenses1() {
     try {
       const { data, error } = await supabase
@@ -40,15 +84,15 @@ export class ExpenseService {
   async getExpenses(filters: GetExpensesRequest) {
     try {
       let query = supabase.from('expense').select('*');
-console.log("Using filters:", {
-  vendorId: filters.vendorId,
-  category: filters.category,
-  status: filters.status,
-  dateFrom: filters.dateFrom,
-  dateTo: filters.dateTo,
-  sortBy: filters.sortBy,
-  sortDirection: filters.sortDirection
-});
+      console.log("Using filters:", {
+        vendorId: filters.vendorId,
+        category: filters.category,
+        status: filters.status,
+        dateFrom: filters.dateFrom,
+        dateTo: filters.dateTo,
+        sortBy: filters.sortBy,
+        sortDirection: filters.sortDirection
+      });
       if (filters.vendorId) {
         query = query.eq('vendor_id', filters.vendorId);
       }
@@ -153,4 +197,5 @@ console.log("Using filters:", {
       return false;
     }
   }
+
 }
