@@ -46,8 +46,8 @@ export interface BillingItem {
   tax_amount: number;
   workspace_type?: WorkspaceType;
   booking_id?: ID;
-  created_at: DateISO;
-  updated_at: DateISO;
+  createdAt: DateISO;
+  updatedAt: DateISO;
   
 }
 
@@ -77,8 +77,8 @@ export interface Invoice {
   // billingPeriodEnd :DateISO
   // templateId:ID 
   //
-  created_at: DateISO;
-  updated_at: DateISO;
+  createdAt: DateISO;
+  updatedAt: DateISO;
 }
 
 // Payment model
@@ -94,8 +94,8 @@ export interface Payment {
   date: DateISO;
   notes?: string;
   receipt_file?: FileReference;
-  created_at: DateISO;
-  updated_at: DateISO;
+  createdAt: DateISO;
+  updatedAt: DateISO;
 }
 
 // Create invoice request

@@ -20,8 +20,8 @@ export const usePaymentStore = create<PaymentState>((set) => ({
             amount: 50,
             method: PaymentMethodType.CASH,
             date: '2024-06-10',
-            created_at: '2024-06-10',
-            updated_at: '2024-06-10'
+            createdAt: '2024-06-10',
+            updatedAt: '2024-06-10'
         }
     ],
     getAllPayments: async () => {},

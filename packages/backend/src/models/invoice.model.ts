@@ -15,8 +15,8 @@ export class InvoiceModel implements Invoice {
     taxtotal: number;
     payment_due_reminder?: boolean | undefined;
     payment_dueReminder_sentAt?: any;
-    created_at: DateISO;  // Changed from createdAt
-    updated_at: DateISO;  // Changed from updatedAt
+    createdAt: DateISO;  
+    updatedAt: DateISO; 
 
     constructor(
         id: ID,
@@ -31,8 +31,8 @@ export class InvoiceModel implements Invoice {
         tax_total: number,
         payment_due_reminder?: boolean | undefined,
         payment_dueReminder_sentAt?: any,
-        created_at?: DateISO,  // Changed from createdAt
-        updated_at?: DateISO   // Changed from updatedAt
+        createdAt?: DateISO, 
+        updatedAt?: DateISO   
     ) {
         this.id = id;
         this.invoice_number = invoice_number;
@@ -46,8 +46,8 @@ export class InvoiceModel implements Invoice {
         this.tax_total = tax_total;
         this.payment_due_reminder = payment_due_reminder;
         this.payment_dueReminder_sentAt = payment_dueReminder_sentAt;
-        this.created_at = created_at ?? new Date().toISOString();  // Changed from createdAt
-        this.updated_at = updated_at ?? new Date().toISOString();  // Changed from updatedAt
+        this.createdAt = createdAt ?? new Date().toISOString();  
+        this.updatedAt = updatedAt ?? new Date().toISOString(); 
         this.taxtotal = 0;
     }
 
@@ -63,8 +63,8 @@ export class InvoiceModel implements Invoice {
             tax_total: this.tax_total,
             payment_due_reminder: this.payment_due_reminder,
             payment_dueReminder_sentAt: this.payment_dueReminder_sentAt,
-            created_at: this.created_at,  // Changed from createdAt
-            updated_at: this.updated_at   // Changed from updatedAt
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt 
         }
     }
 }
@@ -81,8 +81,8 @@ export class InvoiceItemModel implements BillingItem {
     tax_amount: number;
     workspace_type?: any;
     booking_id?: any;
-    created_at: DateISO;
-    updated_at: DateISO;
+    createdAt: DateISO;
+    updatedAt: DateISO;
     constructor(
         id: ID,
         invoice_id: UUID,
@@ -95,8 +95,8 @@ export class InvoiceItemModel implements BillingItem {
         tax_amount: number,
         workspace_type?: any,
         booking_id?: any,
-        created_at?: DateISO,
-        updated_at?: DateISO
+        createdAt?: DateISO,
+        updatedAt?: DateISO
     ) {
         this.id = id;
         this.invoice_id = invoice_id;
@@ -109,8 +109,8 @@ export class InvoiceItemModel implements BillingItem {
         this.tax_amount = tax_amount;
         this.workspace_type = workspace_type;
         this.booking_id = booking_id;
-        this.created_at = created_at ?? new Date().toISOString();
-        this.updated_at = updated_at ?? new Date().toISOString();
+        this.createdAt = createdAt ?? new Date().toISOString();
+        this.updatedAt = updatedAt ?? new Date().toISOString();
     }
 
 
@@ -127,8 +127,8 @@ export class InvoiceItemModel implements BillingItem {
             tax_amount: this.tax_amount,
             workspace_type: this.workspace_type,
             booking_id: this.booking_id,
-            createdAt: this.created_at,
-            updatedAt: this.updated_at
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt
 
         };
     }

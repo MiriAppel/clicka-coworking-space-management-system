@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useInvoiceStore } from '../../../../Stores/Billing/invoiceStore';
 import { InvoiceStatus, BillingItemType, CreateInvoiceRequest } from 'shared-types';
@@ -27,6 +26,7 @@ export const InvoiceManagement: React.FC = () => {
     calculateOpenInvoicesTotal,
     clearError
   } = useInvoiceStore();
+
   const [showForm, setShowForm] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus>(InvoiceStatus.DRAFT);
   const [emailData, setEmailData] = useState({ invoiceId: '', email: '' });
@@ -141,25 +141,27 @@ export const InvoiceManagement: React.FC = () => {
     { header: 'מס', accessor: 'tax_total' },
     { header: 'תזכורת לתשלום נשלחה בתאריך', accessor: 'payment_due_reminder_sent_at' },
     { header: 'נוצר בתאריך', accessor: 'created_at' },
-    { header: 'עודכן בתאריך', accessor: 'updated_at' }
+    { header: 'עודכן בתאריך', accessor: 'updated_at' },
   ];
 
-  const tableData = (invoices && Array.isArray(invoices) ? invoices : []).map((invoice, index) => {
+  const tableData = (invoices && Array.isArray(invoices) ? invoices : []).map((invoice: any) => {
+  const createdAt = invoice.created_at ? new Date(invoice.created_at).toLocaleDateString('he-IL') : '';
+  const updatedAt = invoice.updated_at ? new Date(invoice.updated_at).toLocaleDateString('he-IL') : '';
 
-    return {
-      ...invoice,
-      issue_date: invoice.issue_date ? new Date(invoice.issue_date).toLocaleDateString('he-IL') : '',
-      due_date: invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('he-IL') : '',
-      subtotal: invoice.subtotal ? `₪${invoice.subtotal.toFixed(2)}` : '₪0.00',
-      tax_total: invoice.taxtotal ? `₪${invoice.taxtotal.toFixed(2)}` : '₪0.00',
-      status: invoice.status ? invoice.status.replace('_', ' ') : '',
-      payment_due_reminder_sent_at: invoice.payment_dueReminder_sentAt ?
-        new Date(invoice.payment_dueReminder_sentAt).toLocaleDateString('he-IL') : 'לא נשלחה',
-      created_at: invoice.created_at ? invoice.created_at : '',
-      updated_at: invoice.updated_at ? invoice.updated_at : '',
-
-    };
-  });
+  return {
+    ...invoice,
+    issue_date: invoice.issue_date ? new Date(invoice.issue_date).toLocaleDateString('he-IL') : '',
+    due_date: invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('he-IL') : '',
+    subtotal: invoice.subtotal ? `₪${invoice.subtotal.toFixed(2)}` : '₪0.00',
+    tax_total: invoice.taxtotal ? `₪${invoice.taxtotal.toFixed(2)}` : '₪0.00',
+    status: invoice.status ? invoice.status.replace('_', ' ') : '',
+    payment_due_reminder_sent_at: invoice.payment_dueReminder_sentAt ?
+      new Date(invoice.payment_dueReminder_sentAt).toLocaleDateString('he-IL') : 'לא נשלחה',
+    
+    createdAt,
+    updatedAt
+  };
+});
 
   const resetForm = () => {
     setFormData({
@@ -409,39 +411,39 @@ export const InvoiceManagement: React.FC = () => {
   //   }
   // };
   const handleDelete = async (id: string) => {
-  try {
-    const result = await Swal.fire({
-      title: 'מחיקת חשבונית',
-      text: 'האם אתה בטוח שברצונך למחוק את החשבונית?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'מחק',
-      cancelButtonText: 'ביטול',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6'
-    });
+    try {
+      const result = await Swal.fire({
+        title: 'מחיקת חשבונית',
+        text: 'האם אתה בטוח שברצונך למחוק את החשבונית?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'מחק',
+        cancelButtonText: 'ביטול',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6'
+      });
 
-    if (!result.isConfirmed) return;
+      if (!result.isConfirmed) return;
 
-    await deleteInvoice(id);
+      await deleteInvoice(id);
 
-    Swal.fire({
-      title: 'הצלחה!',
-      text: 'החשבונית נמחקה בהצלחה',
-      icon: 'success',
-      confirmButtonText: 'סגור'
-    });
+      Swal.fire({
+        title: 'הצלחה!',
+        text: 'החשבונית נמחקה בהצלחה',
+        icon: 'success',
+        confirmButtonText: 'סגור'
+      });
 
-  } catch (error) {
-    console.error('שגיאה במחיקת חשבונית:', error);
-    Swal.fire({
-      title: 'שגיאה!',
-      text: 'אירעה שגיאה במחיקת החשבונית',
-      icon: 'error',
-      confirmButtonText: 'סגור'
-    });
-  }
-};
+    } catch (error) {
+      console.error('שגיאה במחיקת חשבונית:', error);
+      Swal.fire({
+        title: 'שגיאה!',
+        text: 'אירעה שגיאה במחיקת החשבונית',
+        icon: 'error',
+        confirmButtonText: 'סגור'
+      });
+    }
+  };
 
 
   return (

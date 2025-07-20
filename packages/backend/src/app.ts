@@ -42,8 +42,6 @@ import router from './routes';
 const app = express();
 dotenv.config();
 
-
-
 // Create Express app
 setupSwagger(app);
 
@@ -94,7 +92,7 @@ app.use('/api/payment', routerPayment);
 // app.use('/api/translate', translationRouter);
 // app.use('/api/leadInteraction', routerCstomer);
 app.use('/api/payment', routerPayment);
-
+app.use('/api/invoices', invoiceRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

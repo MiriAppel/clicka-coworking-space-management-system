@@ -62,8 +62,8 @@ export const useInvoiceStore = create<InvoiceState>()(
                 items: [],
                 subtotal: 100,
                 taxtotal: 17,
-                created_at: '2024-06-01',
-                updated_at: '2024-06-01'
+                createdAt: '2024-06-01',
+                updatedAt: '2024-06-01'
               }
             ],
             loading: false

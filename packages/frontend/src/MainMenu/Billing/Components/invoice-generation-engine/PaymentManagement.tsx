@@ -56,8 +56,8 @@ const PaymentManagement: React.FC = () => {
   invoice_id: formData.invoiceId,
   date: new Date().toISOString(),
   transaction_reference: formData.reference || '',
-  created_at: editingPayment ? payments.find(p => p.id === editingPayment)?.created_at || '' : new Date().toISOString(),
-  updated_at: new Date().toISOString()
+  createdAt: editingPayment ? payments.find(p => p.id === editingPayment)?.createdAt || '' : new Date().toISOString(),
+  updatedAt: new Date().toISOString()
   // status: formData.status,  // להסיר אם לא קיים בממשק
 };
 
