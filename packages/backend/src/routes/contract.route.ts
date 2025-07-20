@@ -10,6 +10,9 @@ routerContract.get('ending-soon', contractControler.getContractsEndingSoon);
 
 routerContract.get('customer/:customerId', contractControler.getContractById); 
 
+// routerContract.get("/search", contractControler.searchContractsByText);
+
+
 // (POST)
 routerContract.post('/', contractControler.postNewContract); 
 

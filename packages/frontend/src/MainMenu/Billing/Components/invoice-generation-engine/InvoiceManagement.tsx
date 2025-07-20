@@ -27,7 +27,6 @@ export const InvoiceManagement: React.FC = () => {
     calculateOpenInvoicesTotal,
     clearError
   } = useInvoiceStore();
-
   const [showForm, setShowForm] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus>(InvoiceStatus.DRAFT);
   const [emailData, setEmailData] = useState({ invoiceId: '', email: '' });

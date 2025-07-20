@@ -18,7 +18,23 @@ export const oauth2Client = new google.auth.OAuth2(
 // function to generate the authentication URL for Google OAuth2
 //function to replace the code with the tokens received from Google
 export async function getTokens(code: string) {
+
+
+
+  console.log('Authorization code received:', code);
+
   const { tokens } = await oauth2Client.getToken(code);
+  console.log('Granted scopes:', tokens.scope);
+
+  try {
+    const tokenInfo = await axios.get(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${tokens.access_token}`);
+    console.log('Token info from Google:', tokenInfo.data);
+    console.log('Granted scopes from tokens object:', tokens.scope ?? 'No scope info in tokens object');
+
+  } catch (e) {
+    console.error('Error fetching token info:', e);
+  }
+
   oauth2Client.setCredentials(tokens);
   return {
     access_token: tokens.access_token!,

@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { SendEmailRequest } from 'shared-types/google';
+import { SendEmailRequest } from 'shared-types';
 
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();

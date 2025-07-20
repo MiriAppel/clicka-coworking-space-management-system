@@ -9,7 +9,6 @@ import type {
   VendorCategory,
   VendorStatus,
 } from "shared-types";
-
 export class VendorModel implements Vendor {
   id: ID;
   name: string;
@@ -27,7 +26,6 @@ export class VendorModel implements Vendor {
   // documents?: FileReference[];
   createdAt: DateISO;
   updatedAt: DateISO;
-
   constructor(params: {
     id?: ID;
     name: string;
@@ -63,7 +61,6 @@ export class VendorModel implements Vendor {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
   }
-
   toDatabaseFormat() {
     return {
       name: this.name,
@@ -83,7 +80,6 @@ export class VendorModel implements Vendor {
       updated_at: this.updatedAt,
     };
   }
-
   static fromDatabaseFormat(dbData: any): VendorModel {
     return new VendorModel({
       id: dbData.id,
@@ -104,7 +100,6 @@ export class VendorModel implements Vendor {
       updatedAt: dbData.updatedAt,
     });
   }
-
   static fromDatabaseFormatArray(dbDataArray: any[]): VendorModel[] {
     return dbDataArray.map(dbData => VendorModel.fromDatabaseFormat(dbData));
   }
