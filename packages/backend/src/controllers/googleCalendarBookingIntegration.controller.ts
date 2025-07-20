@@ -211,7 +211,7 @@ export const shareCalendar = async (req: Request, res: Response) => {
 }
 
 function extractToken(req: Request): string | null {
-  const auth = req.headers.Authorization;
+  const auth = req.headers.authorization;
   if (typeof auth === 'string' && auth.startsWith('Bearer ')) {
     return auth.split(' ')[1];
   }

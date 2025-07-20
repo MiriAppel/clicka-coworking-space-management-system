@@ -13,9 +13,7 @@ function logUserActivity(userId: string, action: string) {
 }
 
 export class BookingService {
-    static getBookingByEventId(id: string | null | undefined): any {
-        throw new Error("Method not implemented.");
-    }
+  
    
   async createBooking(book: BookingModel): Promise<BookingModel | null> {
     try {
@@ -60,21 +58,6 @@ export class BookingService {
   }
   
 
-//   async createBooking(book: BookingModel): Promise<BookingModel | null> {
-//     console.log('📦 Inserting booking:', book.toDatabaseFormat());
-//     const { data, error } = await supabase
-//       .from('booking')
-//       .insert([book.toDatabaseFormat()])
-//       .select()
-//       .single();
-//    if (error) {
-//   console.log('❌ Supabase Insert Error:', error); // ✅ הוספתי הדפסה מפורטת
-// throw new Error(`Failed to create booking: ${error.message}`);
-//   }
-//     const createdBook =   BookingModel.fromDatabaseFormat(data);
-//     logUserActivity(book.id ?? book.roomName, 'book created');
-//     return createdBook;
-//     }
   async getAllBooking() {
     try {
       const { data, error } = await supabase
@@ -130,8 +113,8 @@ export class BookingService {
           return true; 
   }
   
-  //קבלת  פגישה לפי ID
-  async  getBookingById(id:string) {
+   //קבלת  פגישה לפי ID
+  static async getBookingById(id?:string|null) {
            const { data, error } = await supabase
                   .from('booking')
                   .select('*')
@@ -150,7 +133,7 @@ export class BookingService {
               return booking;
   }
   //googleeventIdקבלת  פגישה לפי ID
-  async  getBookingByEventId(googleEventId:string) {
+  static async  getBookingByEventId(googleEventId:string) {
            const { data, error } = await supabase
                   .from('booking')
                   .select('*')

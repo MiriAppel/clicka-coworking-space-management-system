@@ -43,7 +43,7 @@ export class BookingController {
 
  async  getBookingById(req: Request, res: Response){
     try{
-        const getBooking=await this.bookingservice.getBookingById(req.params.id);
+        const getBooking = await BookingService.getBookingById(req.params.id ? req.params.id : null);
         res.json(getBooking);
     }
     catch(err){
@@ -52,7 +52,7 @@ res.status(500).json({massage:'err.massage'});
 }
  async  getBookingByEventId(req: Request, res: Response){
     try{
-       const getBooking = await this.bookingservice.getBookingByEventId(req.params.eventId);
+       const getBooking = await BookingService.getBookingByEventId(req.params.eventId);
 
         res.json(getBooking);
     }

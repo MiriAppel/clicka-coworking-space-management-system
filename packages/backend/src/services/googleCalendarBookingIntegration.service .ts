@@ -21,34 +21,42 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export const getGoogleCalendarEvents = async (calendarId: string, token: string): Promise<Event[] | null> => {
     //שליפת כל האירועים לפי לוח
      const events = await getEvents(calendarId, token);
-    //  console.log(events); // הדפס את האירועים המתקבלים
+  
 
     // המרת האירועים לאובייקטים מסוג GoogleCalendarEvent
-    const newEvents: Event[] = events.map(event => ({
-        
-    id: event.id || '',  // או זרוק שגיאה אם id לא קיים
-    calendarId: calendarId,
-    summary: event.summary || '',
-    description: event.description || '',
-    location: event.location || '',
-    start: {
-        dateTime: event.start?.dateTime || '',
-        timeZone: event.start?.timeZone || '',
-    },
-    end: {
-        dateTime: event.end?.dateTime || '',
-        timeZone: event.end?.timeZone || '',
-    },
-    attendees: event.attendees ? event.attendees.map(attendee => ({
-        email: attendee.email || '',
-        displayName: attendee.displayName || '',
-        // responseStatus: attendee.responseStatus,
-    })) : [],
-    // status:  BookingService.getBookingByEventId(event.id).status||"" , //
-    status: "", // ← זה צריך להיות סטטוס ההזמנה, לא האירוע
-    created: event.created || '',
-    updated: event.updated || '',
-    htmlLink: event.htmlLink || '',
+const newEvents: Event[] = await Promise.all(events.map(async event => {
+    console.log("event in the getGoogleCalendarEvents\n",event);
+    console.log(event.id, "event.id in the getGoogleCalendarEvents\n",event.id);
+
+    const booking = await BookingService.getBookingByEventId(event.id!);
+    console.log(booking, "booking in the getGoogleCalendarEvents\n");
+    
+    console.log(booking?.status, "booking?.status in the getGoogleCalendarEvents\n",booking?.status);
+    
+    return {
+        id: event.id || '',  // או זרוק שגיאה אם id לא קיים
+        calendarId: calendarId,
+        summary: event.summary || '',
+        description: event.description || '',
+        location: event.location || '',
+        start: {
+            dateTime: event.start?.dateTime || '',
+            timeZone: event.start?.timeZone || '',
+        },
+        end: {
+            dateTime: event.end?.dateTime || '',
+            timeZone: event.end?.timeZone || '',
+        },
+        attendees: event.attendees ? event.attendees.map(attendee => ({
+            email: attendee.email || '',
+            displayName: attendee.displayName || '',
+            
+        })) : [],
+        status: booking!.status ,
+        created: event.created || '',
+        updated: event.updated || '',
+        htmlLink: event.htmlLink || '',
+    };
 }));
 
     return newEvents;
@@ -238,137 +246,6 @@ await BookingService.updateBooking(bookingModel.id!, bookingModel);
 
 }
 
-// export const createCalendarEvent = async (calendarId: string,
-//     event: CalendarEventInput,
-//     token: string, booking: string) => {
-//     const sync = new CalendarSyncModel({
-//         bookingId: booking,
-//         calendarId: calendarId,
-//         lastSyncAt: new Date().toISOString(),
-//         syncStatus: CalendarSyncStatus.SYNCED,
-//         syncErrors: []
-//     });
-//     try {
-//         const statusEvent = await createEvent(calendarId, event, token);
-
-//         if (!statusEvent || !statusEvent.id) {
-//             sync.syncStatus = CalendarSyncStatus.FAILED; // במקרה ואין id
-//         // } else if (!booking.approvedBy) {
-//         //     sync.syncStatus = CalendarSyncStatus.PENDING;
-//         } else {
-//             sync.syncStatus = CalendarSyncStatus.SYNCED; // מסונכרן
-//         }
-
-//         await createCalendarSync(sync);
-//     } catch (error) {
-//         console.log("checking the type of",error);
-
-//     let errorMessage = 'An unknown error occurred'; // הודעת שגיאה ברירת מחדל
-
-//     if (error instanceof Error) {
-//         errorMessage = error.message; // אם error הוא אובייקט שגיאה
-//     } else if (typeof error === 'string') {
-//         errorMessage = error; // אם error הוא מחרוזת
-//     }
-
-//     if (errorMessage.includes('Conflict detected')) {
-//         sync.syncStatus = CalendarSyncStatus.CONFLICT;
-//         //יש כאן בעיה - עובד או מוסיף אובייקט עם conflict 
-//         //ומחזיר 200
-//         //או זורק שגיאת 500...
-//         // throw new Error('Conflict detected: Unable to create event.');
-//     } else {
-//         sync.syncStatus = CalendarSyncStatus.FAILED;
-//         if (!sync.syncErrors) {
-//             sync.syncErrors = [];
-//         }
-//         sync.syncErrors.push(errorMessage);
-//     }
-
-//     await createCalendarSync(sync);
-// }
-
-// }
-
-// export const createCalendarEvent = async (calendarId: string,
-//     event: CalendarEventInput,
-//     token: string, booking: BookingModel) => {
-//     try {
-//         const statusEvent = createEvent(calendarId, event, token);
-//         // const result = await createEvent(calendarId, event, token);
-
-// // if (result.success) {
-// //   console.log("Event created:", result.data);
-// // } else if (result.conflict) {
-// //   console.log(result.message);
-// // } else {
-// //   console.error("Failed to create event:", result.message);
-// // }
-
-//         const sync = new CalendarSyncModel({
-//             bookingId: booking.id,
-//             calendarId: calendarId,
-//             lastSyncAt: new Date().toISOString(),
-//             syncStatus: CalendarSyncStatus.SYNCED,
-//             syncErrors: [] // או undefined אם אין שגיאות
-//         });
-//         //אם יש קונפליקט של זמן
-//         // if (!statusEvent) {
-//         //     sync.syncStatus = CalendarSyncStatus.CONFLICT; // אם האירוע לא נוצר בהצלחה
-//         //     // sync.syncErrors = ["Failed to create event in Google Calendar"];
-//         // }
-//         // //אם לא אושר ע"י מנהל או לא אושר בכלל
-//         // if (!booking.approvedBy) {
-//         //     sync.syncStatus = CalendarSyncStatus.PENDING
-//         // }
-//         // //אם ההוספה לא צלחה
-//         // if (!(await statusEvent).created) {
-//         //     sync.syncStatus = CalendarSyncStatus.FAILED
-//         // }
-//         // Call the service-layer function directly since you don't have a Response object here
-//         try {
-//             const create = await createCalendarSync(sync);
-//         } 
-//         catch (error) {
-
-
-//         }
-
-
-//     } catch (error) {
-
-// const sync = new CalendarSyncModel({
-//             bookingId: booking.id,
-//             calendarId: calendarId,
-//             lastSyncAt: new Date().toISOString(),
-//             syncStatus: CalendarSyncStatus.CONFLICT,
-//             syncErrors: [] // או undefined אם אין שגיאות
-//         });
-//            try {
-//             const create = await createCalendarSync(sync);
-//         } 
-//         catch (error) {
-
-
-//         }
-//     }
-
-
-
-//     // // react- פונקציה זו מקבלת פרטי אירוע מ
-//     // //שמחזירה סטטוס סינכרון createCalendarSync שולחת לפונקציה
-
-//     // // approvedAt approvedBy ו-וגם יש הרשאה להזמנה  CalendarSyncStatus.SYNCED  במידה והסטטוס
-//     // // נוצרה ע"י לאה שארר-createGoogleCalendarEvent(event)  מבצעת שליחה לפונקצית הוספת אירוע
-//     // // calendarשתוסיף את האירוע  ב 
-
-//     // //faild/pending אם הסטטוס ????
-
-//     // // detectCalendarConflicts תתבצע שליחה ל conflict-אם הסטטוס 
-//     // //תקבל את הקונפליקטים הקיימים
-//     // //ותציג את ההצעות לפתרון הקונפליקטים
-
-// }
 
 export const detectCalendarConflicts = async (calendar: CalendarSync): Promise<CalendarConflict[]> => {
     const conflicts: CalendarConflict[] = [];
