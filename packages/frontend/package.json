@@ -86,6 +86,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-transform-explicit-resource-management": "^7.28.0",
     "@types/glob": "^9.0.0",
     "@types/lodash": "^4.17.20",
     "@types/mime": "^4.0.0",

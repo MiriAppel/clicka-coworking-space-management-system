@@ -10,6 +10,7 @@ import { DynamicReportBuilder } from './Common/Components/BaseComponents/Dynamic
 
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 
+import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -39,8 +40,7 @@ function App() {
 
   return (
     <AuthProvider>
-    <div className="App">
-      
+    <div className="App">     
       <header className="App-header">
         <h3>welcome to our world</h3>
         <h1>Clicka</h1>

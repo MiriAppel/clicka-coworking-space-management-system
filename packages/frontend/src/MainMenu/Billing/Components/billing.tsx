@@ -1,5 +1,5 @@
 import { Route, Routes, useNavigate } from 'react-router-dom';
-// import '../Css/billing.css'
+// import '../Css/Billing.css';
 import { FinancialReportsDashboard } from './FinancialReports/FinancialReportsDashboard';
 
 export const Billing = () => {
