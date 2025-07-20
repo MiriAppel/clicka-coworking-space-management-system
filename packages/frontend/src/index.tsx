@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
-import reportWebVitals from './reportWebVitals';
+// import  from './';
 import { Routing } from './routing';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ThemeProvider } from './Common/Components/themeConfig';
@@ -28,5 +28,3 @@ root.render(
  </React.StrictMode>
 );
 console.log("ENV clientId:", process.env.REACT_APP_GOOGLE_CLIENT_ID);
-
-reportWebVitals();

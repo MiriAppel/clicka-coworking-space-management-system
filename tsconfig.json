@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext", "deno.ns"],
+    "strict": true,
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node"
+  }
+}
