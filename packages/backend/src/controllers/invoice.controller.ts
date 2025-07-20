@@ -36,6 +36,8 @@ export async function createInvoice(req: Request, res: Response): Promise<void> 
 // /**
 //  * בקר לקבלת כל החשבוניות
 //  */
+
+
 export const getAllInvoices = async (_req: Request, res: Response) => {
   try {
     const invoices = await serviceGetAllInvoices();
@@ -48,8 +50,11 @@ export const getAllInvoices = async (_req: Request, res: Response) => {
     res.status(500).json({ message: (error as Error).message });
   }
 };
+
+
 //  * בקר לקבלת כל פרטי החשבוניות
 //  */
+
 
 export const getAllInvoiceItems = async (req: Request, res: Response) => {
   try {
@@ -64,6 +69,10 @@ export const getAllInvoiceItems = async (req: Request, res: Response) => {
   }
 };
 
+
+
+
+
 /**
  * בקר לקבלת חשבונית לפי מזהה
  */
@@ -74,12 +83,10 @@ export const getInvoiceById = async (req: Request, res: Response): Promise<void>
   try {
     const id = req.params.id as ID;
     const invoice = await serviceGetInvoiceById(id);
-
     if (!invoice) {
       res.status(404).json({ message: "חשבונית לא נמצאה" });
       return;
     }
-
     res.status(200).json(invoice);
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
@@ -90,20 +97,14 @@ export const getInvoiceById = async (req: Request, res: Response): Promise<void>
  * בקר לעדכון חשבונית
  */
 export const updateInvoice = async (req: Request, res: Response): Promise<void> => {
-
-  console.log('=== updateInvoice CALLED ===');
-
   try {
     const id = req.params.id as ID;
-    console.log('ID שהתקבל:', id);
     const updateData = req.body;
     const updatedInvoice = await serviceUpdateInvoice(id, updateData);
-
     if (!updatedInvoice) {
       res.status(404).json({ message: "חשבונית לא נמצאה" });
       return;
     }
-
     res.status(200).json({
       message: "חשבונית עודכנה בהצלחה",
       invoice: updatedInvoice
@@ -125,7 +126,7 @@ export const updateInvoice = async (req: Request, res: Response): Promise<void> 
  */
 export const deleteInvoice = async (req: Request, res: Response): Promise<void> => {
   try {
-  const id = req.params.id as string;
+    const id = req.params.id as string;
     const isDeleted = await serviceDeleteInvoice(id);
 
     if (!isDeleted) {

@@ -456,7 +456,7 @@ export const InvoiceManagement: React.FC = () => {
         </div>
       )}
 
-      <div>
+      {/* <div>
         <Button
           onClick={() => {
             if (showForm && !editingInvoice) {
@@ -469,7 +469,7 @@ export const InvoiceManagement: React.FC = () => {
         >
           {showForm ? 'ביטול' : 'יצירת חשבונית חדשה'}
         </Button>
-      </div>
+      </div> */}
 
       {showForm && (
         <div>
