@@ -7,6 +7,7 @@ import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/Aut
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 import { Button } from './Common/Components/BaseComponents/Button';
 import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
+import LanguageSelector from './Common/Components/LanguageSelector';
 
 
 function App() {
@@ -15,6 +16,11 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const lang = localStorage.getItem('language') || 'he';
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+  }, []);
   useEffect(() => {
     fetch('http://localhost:3001/api/health')
       .then((response) => {
@@ -33,34 +39,34 @@ function App() {
         setLoading(false);
       });
   }, []);
-  
+
 
   return (
     <AuthProvider>
-    <div className="App">
-      
-      <header className="App-header">
-        <h3>welcome to our world</h3>
-        <h1>Clicka</h1>
-        <h2>Co-working Space Management System</h2>
-      </header>
-<Button
-  onClick={() => navigate('/graph')}
-  
-  className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
->
- 
-  graph
-</Button>
-      <div className='menu' style={{ backgroundColor: 'black' }}>
-      </div>
-     
-      <Accesibility></Accesibility>
+      <div className="App">
+
+        <header className="App-header">
+          <h3>welcome to our world</h3>
+          <h1>Clicka</h1>
+          <h2>Co-working Space Management System</h2>
+        </header>
+        <Button
+          onClick={() => navigate('/graph')}
+
+          className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
+        >
+
+          graph
+        </Button>
+        <div className='menu' style={{ backgroundColor: 'black' }}>
+        </div>
+        <LanguageSelector></LanguageSelector>
+        <Accesibility></Accesibility>
 
         <AuthenticationScreen />
-    </div>
+      </div>
     </AuthProvider>
-    
+
   );
 }
 
