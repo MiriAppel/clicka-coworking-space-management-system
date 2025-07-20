@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-import { getAllContracts, deleteContract} from "../../Service/LeadAndCustomersService";
+import {
+  Table,
+  TableColumn,
+} from "../../../../Common/Components/BaseComponents/Table";
+import {
+  getAllContracts,
+  deleteContract,
+} from "../../Service/LeadAndCustomersService";
 import { Contract, ContractStatus, ID } from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
@@ -36,7 +42,6 @@ const formatDate = (iso?: string) => {
   return `${day}/${month}/${year}`;
 };
 
-
 export const ContractManagement = () => {
   const navigate = useNavigate();
   type ContractWithCustomerName = Contract & {
@@ -56,7 +61,7 @@ export const ContractManagement = () => {
           signDate: c.signDate,
           startDate: c.startDate ?? "",
           endDate: c.endDate,
-          terms: c.terms, 
+          terms: c.terms,
           documents: c.documents,
           signedBy: c.signedBy,
           witnessedBy: c.witnessedBy,
@@ -64,7 +69,7 @@ export const ContractManagement = () => {
           updatedAt: c.updatedAt,
           customerName: c.customerName ?? "",
         }));
-        setContracts(converted);        
+        setContracts(converted);
       })
       .catch((err) => console.error("שגיאה בטעינת חוזים:", err));
   }, []);
@@ -86,15 +91,18 @@ export const ContractManagement = () => {
     { header: "כמות עמדות", accessor: "workspaceCount" },
   ];
 
-const handleDeleteContract = (row: ValuesToTable) => {
-  if (!window.confirm("האם אתה בטוח שברצונך למחוק את החוזה?")) return;
-  deleteContract(row.id)
-    .then(() => {
-      setContracts((prev) => prev.filter((c) => c.id !== row.id));
-      showAlert("מחיקה", "החוזה נמחק בהצלחה", "success");
-    })
-    .catch((err) => {console.log("שגיאה במחיקת חוזה:", err), showAlert("מחיקה", "שגיאה במחיקת חוזה", "error")});
-};
+  const handleDeleteContract = (row: ValuesToTable) => {
+    if (!window.confirm("האם אתה בטוח שברצונך למחוק את החוזה?")) return;
+    deleteContract(row.id)
+      .then(() => {
+        setContracts((prev) => prev.filter((c) => c.id !== row.id));
+        showAlert("מחיקה", "החוזה נמחק בהצלחה", "success");
+      })
+      .catch((err) => {
+        console.log("שגיאה במחיקת חוזה:", err);
+        showAlert("מחיקה", "שגיאה במחיקת חוזה", "error");
+      });
+  };
 
   const handleUpdateContract = (val: ValuesToTable) => {
     navigate(`edit/${val.id}`, { state: { customerName: val.customerName } });
@@ -103,7 +111,15 @@ const handleDeleteContract = (row: ValuesToTable) => {
   // פעולות לכל שורה בטבלה
   const renderActions = (row: ValuesToTable) => (
     <div className="flex gap-2">
-      <Button variant="secondary" size="sm" onClick={() => navigate(`customer/${row.customerId}`, { state: { customerName: row.customerName } })}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() =>
+          navigate(`customer/${row.customerId}`, {
+            state: { customerName: row.customerName },
+          })
+        }
+      >
         פרטי חוזה
       </Button>
     </div>
@@ -111,7 +127,6 @@ const handleDeleteContract = (row: ValuesToTable) => {
 
   return (
     <div className="p-6" dir="rtl">
-
       <Button
         variant="primary"
         size="md"
@@ -135,4 +150,4 @@ const handleDeleteContract = (row: ValuesToTable) => {
       />
     </div>
   );
-}
+};

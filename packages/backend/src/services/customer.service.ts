@@ -24,6 +24,8 @@ import { EmailTemplateService } from "./emailTemplate.service";
 import { EmailTemplateModel } from "../models/emailTemplate.model";
 import { sendEmail } from "./gmail-service";
 import { log } from "node:console";
+import { changeCustomerStatus } from "../controllers/customer.controller";
+import { token } from "morgan";
 
 export class customerService extends baseService<CustomerModel> {
   constructor() {
@@ -388,9 +390,37 @@ export class customerService extends baseService<CustomerModel> {
     );
 
     return CustomerModel.fromDatabaseFormatArray(customersWithPayments);
-  };
+  }; 
 
   emailService = new EmailTemplateService();
+  
+
+  confirmEmail = async (email: string, id: ID) => {
+
+    try{
+    const customerToUpdate = await this.getById(id);
+    customerToUpdate.email = email;
+    customerToUpdate.status = CustomerStatus.ACTIVE;
+  
+    await this.patch(customerToUpdate, id);
+
+    await fetch('/api/customer/' + id + '/status-change', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status: CustomerStatus.ACTIVE,
+      }),
+    });
+
+    console.log('אימות הסתיים בהצלחה');
+  } catch (error) {
+    console.error('שגיאה באימות:', error);
+  }
+    
+
+  }
 
   sendStatusChangeEmails = async (
     detailsForChangeStatus: StatusChangeRequest,
@@ -426,6 +456,7 @@ export class customerService extends baseService<CustomerModel> {
       NOTICE_GIVEN: "הודעת עזיבה",
       EXITED: "עזב",
       PENDING: "בהמתנה",
+      CREATED: "נוצר"
     };
 
     const effectiveDate = new Date(detailsForChangeStatus.effectiveDate);

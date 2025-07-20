@@ -1,4 +1,3 @@
-
 import { CustomerRegistrationForm } from "../Customers/customerForm";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
@@ -57,26 +56,6 @@ export const InterestedCustomerRegistration: React.FC = () => {
         };
 
         console.log(customerRequest);
-        try {
-    // שלב 1: רישום המשתמש ב־Supabase
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email: data.email,
-      password: "Temporary123!",
-    });
-    if (signUpError) throw signUpError;
-
-    const user = signUpData?.user;
-    if (!user) throw new Error("User not returned from signUp");
-
-    // שלב 2: בניית אובייקט הלקוח (ללא מייל אם רוצים להמתין לאימות)
-    const customerRequest: CreateCustomerRequest = {
-      ...data,
-      email: undefined, // הסרה כדי לחכות לאימות
-      auth_user_id: user.id, // מאוד חשוב
-    };
-
-    console.log("Customer request:", JSON.stringify(customerRequest, null, 2));
-
 
         await createCustomer(customerRequest);
 

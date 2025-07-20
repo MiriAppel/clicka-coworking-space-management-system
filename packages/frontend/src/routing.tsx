@@ -14,6 +14,7 @@ import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+// import EmailConfirmationPage from './MainMenu/LeadAndCustomer/Components/Leads/EmailConfirmationPage';
 
 
 export const Routing = () => {
@@ -56,6 +57,7 @@ export const Routing = () => {
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        {/* <Route path="/email-confirmation" element={<EmailConfirmationPage />} /> */}
 
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />

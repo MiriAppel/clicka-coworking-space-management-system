@@ -125,7 +125,7 @@ export const CustomersList = () => {
       id: customer.id!,
       name: customer.name,
       phone: customer.phone,
-      email: customer.email,
+      email: customer.email ?? "",
       businessName: customer.businessName,
       businessType: customer.businessType,
       status: customer.status,

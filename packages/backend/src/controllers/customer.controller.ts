@@ -257,6 +257,58 @@ export const getCustomerPaymentMethods = async (req: Request, res: Response) => 
 //         res.status(500).json({ message: 'Error fetching status changes', error});
 //     }
 // }
+
+export const confirmEmail = async (req: Request, res: Response) => {
+  try {
+    const email = req.params.email;
+    const id = req.params.id;
+
+    if (!email || !id) {
+      return res.status(400).send(createHtmlMessage("שגיאה: אימייל או מזהה חסרים"));
+    }
+
+    await serviceCustomer.confirmEmail(email, id);
+
+    res.send(createHtmlMessage("האימות הצליח! תודה שהצטרפת :)"));
+  } catch (error) {
+    console.error("Error in confirmEmail:", error);
+    res.status(500).send(createHtmlMessage("אירעה שגיאה באימות, נסה שוב מאוחר יותר."));
+  }
+};
+
+function createHtmlMessage(message: string) {
+  return `
+    <html dir="rtl">
+      <head>
+        <title>אימות מייל</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+            background-color: #f5f5f5;
+            color: #333;
+          }
+          .box {
+            background: white;
+            display: inline-block;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+          }
+        </style>
+      </head>
+      <body>
+        <div class="box">
+          <h1>${message}</h1>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+
+
 export const changeCustomerStatus = async (req: Request, res: Response) => {
   try {
     console.log("changeCustomerStatus called with params:", req.params);
