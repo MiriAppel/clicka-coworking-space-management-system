@@ -83,8 +83,8 @@ const MeetingRoomPricingForm: React.FC<Props> = ({ initialData, onSuccess }) => 
         <NumberInputField 
           name="hourlyRate" 
           label="תעריף לשעה" 
-          required // פרופ זה צריך להיות מטופל ב-NumberInputField
-          min={0}  // פרופ זה צריך להיות מטופל ב-NumberInputField
+          required 
+          min={0}  
         />
         <NumberInputField 
           name="discountedHourlyRate" 

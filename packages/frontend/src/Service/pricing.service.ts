@@ -115,7 +115,6 @@ export async function createOrUpdatePricingTier(data: PricingTierCreateRequest):
     const response = await axios.post<PricingTier>(`${API_BASE_URL}/tier`, data);
     return response.data;
   } catch (error: any) {
-    // זו הפונקציה הספציפית שמעלה את השגיאה "תאריך התחולה מתנגש..."
     throw new Error(extractErrorMessage(error));
   }
 }

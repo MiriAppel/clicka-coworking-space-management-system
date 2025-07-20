@@ -14,6 +14,7 @@ import { useForm, Controller, FormProvider } from 'react-hook-form';
 import clsx from 'clsx';
 import { useTheme } from '../../../../Common/Components/themeConfig';
 
+
 interface Props {
   type: 'workspace' | 'meeting-room' | 'lounge';
 }
@@ -36,6 +37,7 @@ const workspaceOptions = [
 ];
 
 const PricingSectionPage: React.FC<Props> = ({ type }) => {
+  
   const [section, setSection] = useState<'current' | 'create' | 'edit' | 'history'>('current');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +48,7 @@ const PricingSectionPage: React.FC<Props> = ({ type }) => {
 
   const methods = useForm<FormInputs>({
     defaultValues: {
+      
       workspaceType: workspaceOptions[0].value as WorkspaceType,
       effectiveDate: '',
     },
@@ -110,6 +113,7 @@ const PricingSectionPage: React.FC<Props> = ({ type }) => {
   }, [type, watchedWorkspaceType]);
 
   useEffect(() => {
+    
     if (section === 'current') {
       fetchCurrentPrice();
     } else {
@@ -128,6 +132,7 @@ const PricingSectionPage: React.FC<Props> = ({ type }) => {
     }
   }, [section, fetchHistoryPrices, methods]);
 
+  
   useEffect(() => {
     setSelectedEffectiveDate(watchedEffectiveDate);
   }, [watchedEffectiveDate]);
@@ -385,7 +390,7 @@ const PricingSectionPage: React.FC<Props> = ({ type }) => {
       </div>
     );
   };
-
+// console.log('role from cookie:', Cookies.get('role'));
   const isAdmin = ['ADMIN', 'SYSTEM_ADMIN', 'MANAGER'].includes(
     Cookies.get('role') || ''
   );
