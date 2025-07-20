@@ -43,6 +43,7 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   WALL: 'קיר',
   COMPUTER_STAND: 'עמדת מחשב',
   RECEPTION_DESK: 'דלפק קבלה',
+  BASE: 'בסיס',
 };
 
 const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {

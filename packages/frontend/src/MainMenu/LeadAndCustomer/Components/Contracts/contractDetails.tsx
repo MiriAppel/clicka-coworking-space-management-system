@@ -22,6 +22,7 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
     WALL: "קיר",
     RECEPTION_DESK: "דלפק קבלה",
     COMPUTER_STAND: "עמדת מחשב",
+    BASE: "בסיס",
 };
 
 const formatDate = (iso?: string) => {
