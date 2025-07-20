@@ -2,11 +2,21 @@ import { create } from 'zustand';
 import { Booking } from 'shared-types/booking';
 import axiosInstance from '../../Service/Axios';
 
+interface Feature {
+  id: string;
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
+
 interface BookingState {
   bookings: Booking[];
   currentBooking: Booking | null;
   loading: boolean;
   error: string | null;
+
+
+  
 
   // CRUD actions
   getAllBookings: () => Promise<void>;
@@ -19,6 +29,8 @@ interface BookingState {
   clearError: () => void;
   getCustomerByPhoneOrEmail: (value: string) => Promise<any>;
   getAllRooms: () => Promise<{ id: string; name: string }[]>;
+  features: Feature[];
+  getAllFeatures: () => Promise<void>;
 }
 
 export const useBookingStore = create<BookingState>((set, get) => ({
@@ -158,6 +170,18 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       console.error('שגיאה בשליפת רשימת חדרים:', error);
       set({ error: 'שגיאה בשליפת רשימת חדרים', loading: false });
       return [];
+    }
+  },
+  features: [],
+
+  getAllFeatures: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axiosInstance.get<Feature[]>('/api/features/getAllFeaturs');
+      set({ features: response.data, loading: false });
+    } catch (error) {
+      console.error('Error fetching features:', error);
+      set({ error: 'שגיאה בשליפת כל התכונות', loading: false });
     }
   },
 }));

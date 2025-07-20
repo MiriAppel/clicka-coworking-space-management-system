@@ -19,7 +19,7 @@ import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
-import routerMap from './routes/WorkspaceMapRoute';
+import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
@@ -29,7 +29,7 @@ import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 import userRouter from './routes/user.route';
 import router from './routes';
 
-import routerMap from './routes/mapLayout.route';
+// import routerMap from './routes/mapLayout.route';
 import routerLayout from './routes/mapLayout.route';
 import routerCalendarSync from './routes/calendar-route';
 // import cookieParser from "cookie-parser";

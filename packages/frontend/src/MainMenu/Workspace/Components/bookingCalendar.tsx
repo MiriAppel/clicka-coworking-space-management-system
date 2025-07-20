@@ -132,7 +132,6 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   setFormInitialData({
     startDate: selectInfo.startStr.slice(0, 10),
     startTime: selectInfo.startStr.slice(11, 16),
-    endDate: selectInfo.endStr.slice(0, 10),
     endTime: selectInfo.endStr.slice(11, 16),
     selectedRoomId: roomId,
     // אפשר להוסיף כאן עוד נתונים אם יש

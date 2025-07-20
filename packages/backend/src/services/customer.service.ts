@@ -30,21 +30,42 @@ export class customerService extends baseService<CustomerModel> {
     super("customer");
   }
 
+  // getAllCustomers = async (): Promise<CustomerModel[] | null> => {
+  //   const customers = await this.getAll();
+
+  //   const customersWithPayments = await Promise.all(
+  //     customers.map(async (customer) => {
+  //       if (customer.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
+  //         const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(customer.id!);
+  //         customer.paymentMethods = paymentMethods || [];
+  //         console.log("Customers fetched from DB:", customers);
+  //       }
+  //       return customer;
+  //     })
+  //   );
+
+  //   return CustomerModel.fromDatabaseFormatArray(customersWithPayments); // המרה לסוג UserModel
+  // };
   getAllCustomers = async (): Promise<CustomerModel[] | null> => {
     const customers = await this.getAll();
-
+    console.log("Customers raw from getAll:", customers);
+    if (!customers) {
+      return null;
+    }
     const customersWithPayments = await Promise.all(
       customers.map(async (customer) => {
         if (customer.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
           const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(customer.id!);
           customer.paymentMethods = paymentMethods || [];
+          console.log("Customers fetched from DB:", customers);
         }
         return customer;
       })
     );
-
     return CustomerModel.fromDatabaseFormatArray(customersWithPayments); // המרה לסוג UserModel
   };
+  
+  
   //מחזיר את כל הסטטוסים של הלקוח
   getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
     return Object.values(CustomerStatus) as CustomerStatus[];

@@ -40,7 +40,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     fetchCustomers: async () => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(BASE_API_URL);
+            const response = await fetch(`${BASE_API_URL}/`);
             if (!response.ok) {
                 throw new Error("Failed to fetch customers");
             }

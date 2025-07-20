@@ -146,15 +146,6 @@ export const exchangeCodeAndFetchUser = async (
     return {
       user,
       token: jwtToken,
-<<<<<<< HEAD
-      sessionId: newSessionId,
-       googleAccessToken: tokens.access_token,
-      // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
-      expiresAt: tokens.expires_at
-    };
-=======
->>>>>>> origin/main
-
       sessionId: newSessionId,
        //googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
