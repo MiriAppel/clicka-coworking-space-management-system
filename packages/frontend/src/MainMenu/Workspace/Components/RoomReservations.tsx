@@ -58,6 +58,13 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
     const customers = useCustomerStore((s) => s.customers);
     const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> origin/googleSyncByNechami
     const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
     const status = useWatch({ control: methods.control, name: "customerStatus" });
     const phoneOrEmail = useWatch({ control: methods.control, name: "phoneOrEmail" });
@@ -80,6 +87,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     }, []);
     useEffect(() => {
       fetchCustomers();
+
       getAllRooms().then((rooms: Room[]) => {
         setRoomOptions(
           rooms.map((room) => ({
@@ -121,7 +129,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           if (customer) {
             methods.setValue("customerId", customer.id);
             methods.setValue("name", customer.name);
-            console.log("שם הלקוח:", customer.name);
+            // console.log("שם הלקוח:", customer.name);
             methods.setValue("email", customer.email);
             methods.setValue("phone", customer.phone);
           }
@@ -183,18 +191,28 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       const selectedRoom = roomOptions.find((room) => room.value === data.selectedRoomId);
       const roomName = selectedRoom?.label ?? "Unknown";
 
+      // Always include all fields required by Booking type
       const base = {
         id: uuidv4(),
-        name,
         roomId: data.selectedRoomId,
         roomName,
+        customerId: null,
+        customerName: null,
+        externalUserName: null,
+        externalUserEmail: null,
+        externalUserPhone: null,
         startTime,
         endTime: endTime,
         status: BookingStatus.PENDING,
+        notes: "",
+        googleCalendarEventId: null,
         totalHours: 0,
         chargeableHours: 0,
         totalCharge: 0,
+<<<<<<< HEAD
         googleCalendarEventId: data.selectedRoomId,
+=======
+>>>>>>> origin/googleSyncByNechami
         isPaid: false,
         approvedBy: "",
         approvedAt: new Date().toISOString(),
@@ -203,6 +221,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       };
 
       if (data.customerStatus === "customer") {
+<<<<<<< HEAD
         console.log("customerId", data.customerId);
         console.log("customerName", data.name);
         console.log("customerPhone", data.phone);
@@ -210,6 +229,17 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           ...base,
           customerId: data.customerId ?? "",
           customerName: name,
+=======
+         console.log("customerId",data.customerId);
+         console.log("customerName",data.name);
+         console.log("customerPhone",data.phone);
+
+
+        return {
+          ...base,
+          customerId: data.customerId ?? "",
+          customerName: name ,
+>>>>>>> origin/googleSyncByNechami
 
         };
       }
@@ -221,13 +251,21 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         externalUserPhone: data.phone ?? "",
       };
     };
+<<<<<<< HEAD
+=======
+    // console.log("סטטוס נוכחי:", status);
+>>>>>>> origin/googleSyncByNechami
     const handleSubmit = async (data: FormFields) => {
+
       try {
         if (data.customerStatus === "customer") {
           if (!data.customerId) {
             alert("יש לבחור לקוח מהרשימה או לפי מייל/טלפון");
             return;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/googleSyncByNechami
           }
         } else {
           if (!data.name || !data.phone || !data.email) {
@@ -235,15 +273,34 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
             return;
           }
         }
-
+   
+        
         const bookingPayload = convertFormToBooking(data);
+             console.log(bookingPayload, "Booking payload before masad");
         const result = await createBooking(bookingPayload);
+<<<<<<< HEAD
         const resultCalendar = await createBookingInCalendar(bookingPayload, "primary");
         if (result) {
           methods.reset();
           onSubmit?.();
         }
         if (resultCalendar) {
+=======
+        // console.log("Booking created:",  bookingPayload);
+
+        // if (result) {
+        //   alert("ההזמנה נוצרה בהצלחה");
+        //   methods.reset();
+        //   onSubmit?.();
+        // }
+        console.log("Booking payload: before calendar", bookingPayload);
+
+        const resultCalendar = await createBookingInCalendar(bookingPayload, "primary");
+         console.log(resultCalendar,"Booking created:"  );
+
+        if (resultCalendar) {
+          alert("ההזמנה נוצרה בהצלחה");
+>>>>>>> origin/googleSyncByNechami
           methods.reset();
           onSubmit?.();
         }
@@ -279,6 +336,29 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
                   />
                   לקוח חיצוני
                 </label>
+<<<<<<< HEAD
+=======
+              </fieldset> */}
+              <fieldset>
+                <legend>סטטוס לקוח</legend>
+                <label>
+                  <input
+                    type="radio"
+                    value="customer"
+                    {...methods.register("customerStatus")}
+                    defaultChecked
+                  />
+                  לקוח קיים
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    value="external"
+                    {...methods.register("customerStatus")}
+                  />
+                  לקוח חיצוני
+                </label>
+>>>>>>> origin/googleSyncByNechami
               </fieldset>
 
 

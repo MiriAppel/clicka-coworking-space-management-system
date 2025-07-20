@@ -245,7 +245,7 @@ if (loading) {
             <option value="">בחר חלל עבודה</option>
             {spaces.length > 0 && spaces.map((space) => (
               <option key={space.id} value={space.id}>
-                {space.name}  {space.room && `(חדר: ${space.room})`}
+                {space.name}  
               </option>
             ))}
           </select>

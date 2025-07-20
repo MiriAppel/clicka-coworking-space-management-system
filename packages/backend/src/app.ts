@@ -45,7 +45,6 @@ setupSwagger(app);
 
 // Apply middlewares
 app.use(cookieParser());
-
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
@@ -55,7 +54,6 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
-
 app.use(urlencoded({ extended: true }));
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
@@ -90,11 +88,12 @@ app.use('/api/contract', routerContract);
 app.use('/api/payment', routerPayment);
 // app.use('/api/translate', translationRouter);
 // app.use('/api/leadInteraction', routerCstomer);
-app.use('/api/payment', routerPayment);
 app.use('/api/layout',routerLayout);
 app.use('/api/calendar-sync',routerCalendarSync)
 app.use('/api',router)
 app.use('/api/book', bookRouter);
+app.use('/api/payment', routerPayment);
+
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
@@ -150,5 +149,4 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     './src/services/*.ts'
   ],
 };
-
 export default app;

@@ -9,7 +9,12 @@ import { createEvent } from './calendar-service'
 import { BookingModel } from "../models/booking.model";
 import * as syncController from "../controllers/googleCalendarBookingIntegration.controller";
 import {BookingService} from "./booking.service"
+<<<<<<< HEAD
 // import { log } from "util";
+=======
+import { log } from "util";
+import { Event } from "shared-types/google";
+>>>>>>> origin/googleSyncByNechami
 // טוען את משתני הסביבה מקובץ .env
 dotenv.config();
 
@@ -17,13 +22,40 @@ const supabaseUrl = process.env.SUPABASE_URL || ''; // החלף עם ה-URL של
 const supabaseAnonKey = process.env.SUPABASE_KEY || ''; // החלף עם ה-Anon Key שלך
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export const getGoogleCalendarEvents = async (calendarId: string, token: string): Promise<GoogleCalendarEvent[] | null> => {
+export const getGoogleCalendarEvents = async (calendarId: string, token: string): Promise<Event[] | null> => {
     //שליפת כל האירועים לפי לוח
-    const events = getEvents(calendarId, token);
-    {
+     const events = await getEvents(calendarId, token);
+    //  console.log(events); // הדפס את האירועים המתקבלים
 
-    }
-    return null;
+    // המרת האירועים לאובייקטים מסוג GoogleCalendarEvent
+    const newEvents: Event[] = events.map(event => ({
+        
+    id: event.id || '',  // או זרוק שגיאה אם id לא קיים
+    calendarId: calendarId,
+    summary: event.summary || '',
+    description: event.description || '',
+    location: event.location || '',
+    start: {
+        dateTime: event.start?.dateTime || '',
+        timeZone: event.start?.timeZone || '',
+    },
+    end: {
+        dateTime: event.end?.dateTime || '',
+        timeZone: event.end?.timeZone || '',
+    },
+    attendees: event.attendees ? event.attendees.map(attendee => ({
+        email: attendee.email || '',
+        displayName: attendee.displayName || '',
+        // responseStatus: attendee.responseStatus,
+    })) : [],
+    // status:  BookingService.getBookingByEventId(event.id).status||"" , //
+    status: "", // ← זה צריך להיות סטטוס ההזמנה, לא האירוע
+    created: event.created || '',
+    updated: event.updated || '',
+    htmlLink: event.htmlLink || '',
+}));
+
+    return newEvents;
 }
 
 export const createCalendarSync = async (sync: CalendarSyncModel): Promise<CalendarSyncModel | null> => {
@@ -150,15 +182,12 @@ export const createCalendarEvent = async (calendarId: string,
     //ולהוסיף אותו לאובייקט המתאים במסד
 
     //אם ההזמנה לא מאושרת-אין אפשרות ליצור אירוע
-    if (!booking.approvedBy) {
-
-        throw new Error('Booking must be approved by someone before creating a calendar event.');
-    }
-    console.log("booking is aproved by", booking.approvedBy);
+    console.log('Booking object:', booking);
+    console.log('token object:', token);
+    console.log('calendarId object:', calendarId);
     
     console.log("booking before the convert\n",booking);
     const calendarEvent = await convertBookingToCalendarEvent(booking);
-    console.log(calendarEvent);
     try {
         const statusEvent = await createEvent(calendarId, calendarEvent, token);
         console.log("statusEvent\n", statusEvent);
@@ -173,19 +202,16 @@ export const createCalendarEvent = async (calendarId: string,
           if (!booking.id) {
             throw new Error('Booking ID is required to update the booking.');
           }
-          BookingService.updateBooking(booking.id, booking);
+          console.log('Type of updatedData:', booking.constructor.name);
 
+          console.log(booking, "booking in ??????????????????????????\n  ,",booking.id);
+          
+        const bookingModel = booking instanceof BookingModel
+  ? booking
+  : new BookingModel(booking);
+await BookingService.updateBooking(bookingModel.id!, bookingModel);
 
-        // if (!statusEvent || !statusEvent.id) {
-        //     sync.syncStatus = CalendarSyncStatus.FAILED; // במקרה ואין id
-        //     // } else if (!booking.approvedBy) {
-        //     //     sync.syncStatus = CalendarSyncStatus.PENDING;
-        // }
-        //  else {
-        //     sync.syncStatus = CalendarSyncStatus.SYNCED; // מסונכרן
-        // }
-
-        // await createCalendarSync(sync);
+       
     } catch (error) {
         console.log("checking the type of", error);
 

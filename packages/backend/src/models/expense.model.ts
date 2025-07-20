@@ -1,5 +1,4 @@
 import type{ DateISO, Expense, ExpenseCategory, ExpensePaymentMethod, ExpenseStatus, FileReference, ID } from "shared-types";
-
 export class ExpenseModel implements Expense {
   id: ID;
   vendor_id: ID;
@@ -18,11 +17,10 @@ export class ExpenseModel implements Expense {
   invoice_file?: FileReference;
   receipt_file?: FileReference;
   notes?: string;
-  approved_by?: ID; 
-  approvedAt?: DateISO; 
+  approved_by?: ID;
+  approvedAt?: DateISO;
   createdAt: DateISO;
   updatedAt: DateISO;
-
   constructor(
     id: ID,
     vendor_id: ID,
