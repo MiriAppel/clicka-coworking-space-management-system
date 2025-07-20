@@ -7,7 +7,7 @@ import { useAuthStore } from '../../../../Stores/CoreAndIntegration/useAuthStore
 import { useGoogleLogin } from '@react-oauth/google';
 import { Button as CustomButton } from '../Button';
 import { showAlert } from '../ShowAlert';
-import { useTheme } from '../../themeConfig';
+import { useTheme } from '../themeConfig';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_FILE_TYPES = [
