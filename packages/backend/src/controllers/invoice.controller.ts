@@ -125,8 +125,8 @@ export const updateInvoice = async (req: Request, res: Response): Promise<void> 
  */
 export const deleteInvoice = async (req: Request, res: Response): Promise<void> => {
   try {
-    const number = req.params.invoice_number as string;
-    const isDeleted = await serviceDeleteInvoice(number);
+  const id = req.params.id as string;
+    const isDeleted = await serviceDeleteInvoice(id);
 
     if (!isDeleted) {
       res.status(404).json({ message: "חשבונית לא נמצאה" });

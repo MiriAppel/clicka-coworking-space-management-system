@@ -232,6 +232,7 @@ export const InvoiceManagement: React.FC = () => {
           <input id="unitPrice-${index}" type="number" value="${item.unitPrice || 0}" min="0" step="0.01" required />
         </div>
         <div>
+  
           <label>סוג:</label>
           <select id="type-${index}">
             <option value="${BillingItemType.WORKSPACE}" ${item.type === BillingItemType.WORKSPACE ? 'selected' : ''}>Workspace</option>
@@ -294,7 +295,7 @@ export const InvoiceManagement: React.FC = () => {
             return false;
           }
           const items = formDataForEdit.items.map((itemOrig: any, index: number) => ({
-            id: itemOrig.id, // 👈 קריטי!
+            id: itemOrig.id,
             description: (document.getElementById(`description-${index}`) as HTMLInputElement).value,
             quantity: parseInt((document.getElementById(`quantity-${index}`) as HTMLInputElement).value),
             unitPrice: parseFloat((document.getElementById(`unitPrice-${index}`) as HTMLInputElement).value),
@@ -349,10 +350,6 @@ export const InvoiceManagement: React.FC = () => {
 
   ///////////////////////////////
 
-
-
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const subtotal = formData.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0);
@@ -395,70 +392,58 @@ export const InvoiceManagement: React.FC = () => {
     }
   };
 
-  const addItem = () => {
-    setFormData(prev => ({
-      ...prev,
-      items: [...prev.items, {
-        description: '',
-        quantity: 1,
-        unitPrice: 0,
-        type: BillingItemType.WORKSPACE
-      }]
-    }));
-  };
 
-  const updateItem = (index: number, field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      items: prev.items.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item
-      )
-    }));
-  };
 
-  const removeItem = (index: number) => {
-    if (formData.items.length > 1) {
-      setFormData(prev => ({
-        ...prev,
-        items: prev.items.filter((_, i) => i !== index)
-      }));
-    }
-  };
+  // const handleDelete = async (id: string) => {
+  //   console.log('מתחיל מחיקה של חשבונית עם ID:', id);
+  //   console.log('סוג המזהה:', typeof id);
 
-  const handleSendEmail = async () => {
-    if (!emailData.invoiceId || !emailData.email) return;
+  //   if (!window.confirm(`האם אתה בטוח שברצונך למחוק את החשבונית?`)) {
+  //     return;
+  //   }
 
-    try {
-      await sendInvoiceByEmail(emailData.invoiceId, emailData.email);
-      setEmailData({ invoiceId: '', email: '' });
-    } catch (error) {
-      console.error('שגיאה בשליחת מייל:', error);
-    }
-  };
-
-  const handleStatusUpdate = async (invoiceId: string, status: InvoiceStatus) => {
-    try {
-      await updateInvoiceStatus(invoiceId, status);
-    } catch (error) {
-      console.error('שגיאה בעדכון סטטוס:', error);
-    }
-  };
-
+  //   try {
+  //     await deleteInvoice(id);
+  //     console.log('חשבונית נמחקה בהצלחה');
+  //   } catch (error) {
+  //     console.error('שגיאה במחיקת חשבונית:', error);
+  //   }
+  // };
   const handleDelete = async (id: string) => {
-    console.log('מתחיל מחיקה של חשבונית עם ID:', id);
-    console.log('סוג המזהה:', typeof id);
+  try {
+    const result = await Swal.fire({
+      title: 'מחיקת חשבונית',
+      text: 'האם אתה בטוח שברצונך למחוק את החשבונית?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'מחק',
+      cancelButtonText: 'ביטול',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6'
+    });
 
-    if (!window.confirm(`האם אתה בטוח שברצונך למחוק את החשבונית?`)) {
-      return;
-    }
+    if (!result.isConfirmed) return;
 
-    try {
-      await deleteInvoice(id);
-      console.log('חשבונית נמחקה בהצלחה');
-    } catch (error) {
-      console.error('שגיאה במחיקת חשבונית:', error);
-    }
-  };
+    await deleteInvoice(id);
+
+    Swal.fire({
+      title: 'הצלחה!',
+      text: 'החשבונית נמחקה בהצלחה',
+      icon: 'success',
+      confirmButtonText: 'סגור'
+    });
+
+  } catch (error) {
+    console.error('שגיאה במחיקת חשבונית:', error);
+    Swal.fire({
+      title: 'שגיאה!',
+      text: 'אירעה שגיאה במחיקת החשבונית',
+      icon: 'error',
+      confirmButtonText: 'סגור'
+    });
+  }
+};
+
 
   return (
     <div className="invoice-management">

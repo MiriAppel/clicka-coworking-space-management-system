@@ -83,8 +83,6 @@ export async function serviceGetInvoiceById(id: string) {
 }
 
 
-
-
 // עדכון חשבונית
 export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceModel & { items?: any[] }>): Promise<any> {
   const dataToUpdate: any = {
@@ -189,5 +187,4 @@ export async function serviceDeleteInvoice(id: ID): Promise<boolean> {
     throw new Error(error.message);
   return true;
 
-  //return deleteInvoice(id);
 }
