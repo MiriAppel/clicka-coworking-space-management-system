@@ -76,7 +76,7 @@ export class customerService extends baseService<CustomerModel> {
       idNumber: newCustomer.idNumber,
       businessName: newCustomer.businessName,
       businessType: newCustomer.businessType,
-      status: CustomerStatus.ACTIVE,
+      status: CustomerStatus.CREATED,
       currentWorkspaceType: newCustomer.currentWorkspaceType,
       workspaceCount: newCustomer.workspaceCount,
       contractSignDate: newCustomer.contractSignDate,
@@ -434,7 +434,7 @@ export class customerService extends baseService<CustomerModel> {
 
 
     // סטטוסים שדורשים התראה לצוות
-    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE","ACTIVE"];
+    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE","CREATED"];
     const shouldNotifyTeam = notifyTeamStatuses.includes(
       detailsForChangeStatus.newStatus,
     );

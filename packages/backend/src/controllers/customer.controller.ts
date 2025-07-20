@@ -61,6 +61,8 @@ export const postCustomer = async (req: Request, res: Response) => {
 
     if (!email || !token)
       res.status(401).json("its have a problam on email or token");
+    
+    
 
     // sendEmail( "me",
     //       {
@@ -259,22 +261,32 @@ export const getCustomerPaymentMethods = async (req: Request, res: Response) => 
 // }
 
 export const confirmEmail = async (req: Request, res: Response) => {
-  try {
-    const email = req.params.email;
-    const id = req.params.id;
+  const email = req.params.email;
+  const id = req.params.id;
 
-    if (!email || !id) {
-      return res.status(400).send(createHtmlMessage("שגיאה: אימייל או מזהה חסרים"));
+  if (!email || !id) {
+    return res.status(400).send(createHtmlMessage("שגיאה: אימייל או מזהה חסרים"));
+  }
+
+  try {
+    await serviceCustomer.confirmEmail(email, id);
+    res.send(createHtmlMessage("האימות הצליח! תודה שהצטרפת אלינו."));
+
+  } catch (error: any) {
+    console.error("שגיאה באימות:", error);
+
+    // אם מדובר בשגיאת דופליקציה (email כבר קיים)
+    if (error?.code === "23505") {
+      return res.status(400).send(createHtmlMessage("האימייל הזה כבר קיים במערכת."));
     }
 
-    await serviceCustomer.confirmEmail(email, id);
-
-    res.send(createHtmlMessage("האימות הצליח! תודה שהצטרפת :)"));
-  } catch (error) {
-    console.error("Error in confirmEmail:", error);
-    res.status(500).send(createHtmlMessage("אירעה שגיאה באימות, נסה שוב מאוחר יותר."));
+    // כל שגיאה אחרת
+    res
+      .status(500)
+      .send(createHtmlMessage("אירעה שגיאה במהלך האימות. אנא נסה שוב מאוחר יותר."));
   }
 };
+
 
 function createHtmlMessage(message: string) {
   return `
