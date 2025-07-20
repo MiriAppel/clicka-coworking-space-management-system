@@ -98,6 +98,23 @@ res.status(500).json({massage:err.massage});
   }
   } 
 
+  export async function getHistory(req: Request, res: Response) {
+  try {
+    const { date: dateParam } = req.params; 
+    if (!dateParam) {
+      return res.status(400).json({ error: 'Date parameter is required' });
+    }
+    const date = new Date(dateParam);
+    if (isNaN(date.getTime())) {
+      return res.status(400).json({ error: 'Invalid date format' });
+    }
+    const result = await occupancyTrendService.getHistory(date);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('Error in controller:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 
  //דיווח תפוסה לפי סוג חלל עבודה ופרק זמן
  export async function getSnapshotReport(req:Request,res:Response) {

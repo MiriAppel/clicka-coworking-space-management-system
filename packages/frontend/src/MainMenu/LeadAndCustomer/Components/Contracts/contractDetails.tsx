@@ -18,6 +18,10 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
     DESK_IN_ROOM: "שולחן בחדר",
     OPEN_SPACE: "עמדה במרחב פתוח",
     KLIKAH_CARD: "כרטיס קליקה",
+    DOOR_PASS: "כרטיס כניסה",
+    WALL: "קיר",
+    RECEPTION_DESK: "דלפק קבלה",
+    COMPUTER_STAND: "עמדת מחשב",
 };
 
 const formatDate = (iso?: string) => {

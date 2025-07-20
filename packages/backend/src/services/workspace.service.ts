@@ -21,8 +21,6 @@ async  createWorkspace(Workspace: WorkspaceModel): Promise<WorkspaceModel | null
           .insert([Workspace.toDatabaseFormat()])
           .select()
           .single();
-    
-    
        if (error) {
       console.log('❌ Supabase Insert Error:', error); // ✅ הוספתי הדפסה מפורטת
     throw new Error(`Failed to create workspace: ${error.message}`);
