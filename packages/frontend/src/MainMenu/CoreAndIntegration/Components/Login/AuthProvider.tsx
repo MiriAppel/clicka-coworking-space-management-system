@@ -32,11 +32,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (data.error === 'TokenExpired') {
             console.log(" Token expired, trying to refresh...");
             try {
-              const refreshRes = await axiosInstance.post("/auth/refresh");
+              const refreshRes = await axiosInstance.post("/api/auth/refresh");
               if (refreshRes.status === 200) {
                 console.log("Refresh token success");
-                const res = await axiosInstance.get("/auth/verify");
+                const res = await axiosInstance.get("/api/auth/verify");
+                 console.log("more!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1\n");
+
                 if (res.status === 200) {
+                  
                   const data = res.data;
                   setUser(data.user);
                   return;
@@ -79,11 +82,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
       }, 30000); // כל 30 שניות
     }
-
-    return () => {
-      if (interval) clearInterval(interval); // ניקוי כאשר הקומפוננטה מוסרת
-    };
-  }, [user, clearUser]);
+  })
+  //   return () => {
+  //     if (interval) clearInterval(interval); // ניקוי כאשר הקומפוננטה מוסרת
+  //   };
+  // }, [user, clearUser]);
 
   // if(isLoading){
   //     return <div className="auth-loading"> מאמת זהות...</div>

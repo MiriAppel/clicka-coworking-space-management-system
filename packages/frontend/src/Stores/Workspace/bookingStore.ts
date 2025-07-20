@@ -1,4 +1,3 @@
-// src/store/booking.store.ts
 import { create } from 'zustand';
 import { Booking } from 'shared-types/booking';
 import axiosInstance from '../../Service/Axios';
@@ -13,6 +12,8 @@ interface BookingState {
   getAllBookings: () => Promise<void>;
   getBookingById: (id: string) => Promise<Booking | null>;
   createBooking: (booking: Booking) => Promise<Booking | null>;
+  createBookingInCalendar: (booking: Booking, calendarId: string) => Promise<Booking | null>;
+  //|boolean
   updateBooking: (id: string, updated: Booking) => Promise<Booking | null>;
   deleteBooking: (id: string) => Promise<boolean>;
   setCurrentBooking: (booking: Booking | null) => void;
@@ -53,6 +54,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   createBooking: async (booking: Booking) => {
     set({ loading: true, error: null });
+    
     try {
       // מוודאים שה־payload נכון
       const response = await axiosInstance.post("/book", booking);
@@ -70,6 +72,46 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return null;
     }
   },
+ createBookingInCalendar: async (booking: Booking, calendarId: string) => {
+  console.log(booking,"booking in createBookingInCalendar??????????????????????????\n");
+  
+    const googleAccessToken = localStorage.getItem('google_token'); // שיניתי כאן
+    console.log("Google Access Token:", googleAccessToken);
+    
+    // if (googleAccessToken) {
+    //   // אין צורך לשמור את הטוקן שוב
+    // } else {
+    //   console.log("token not found in localStorage\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    // }
+    set({ loading: true, error: null });
+    try {
+      // const x= BookingModel 
+      
+      const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${googleAccessToken}`,
+        },
+        body: {
+         booking:booking
+        }
+      });
+      const created = response.data;
+console.log(created,"created in createBookingInCalendar??????????????????????????\n");
+
+      set(state => ({
+        bookings: [...state.bookings, created],
+        loading: false,
+      }));
+//return true;
+      return created;
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      set({ error: 'בcalenar שגיאה ביצירת הזמנה', loading: false });
+      return null;
+    }
+  }
+,
 
   updateBooking: async (id: string, updated: Booking) => {
     set({ loading: true, error: null });
@@ -131,7 +173,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   getAllRooms: async (): Promise<{ id: string; name: string }[]> => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get('/rooms/getAllRooms');
+      const response = await axiosInstance.get('rooms/getAllRooms');
       console.log("🎯 rooms from server:", response.data); // חשוב!
       return response.data;
     } catch (error) {
@@ -140,7 +182,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return [];
     }
   },
-  
-  
-  
+
+
+
 }));

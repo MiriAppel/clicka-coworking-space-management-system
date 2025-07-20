@@ -32,7 +32,6 @@ export const LoginWithGoogle = () => {
         onSuccess: async (codeResponse: { code: any; }) => {
             try {
                 console.log('Code received from Google:', codeResponse);
-
                 const response = await axiosInstance.post<LoginResponse>(
                     '/auth/google',
                     { code: codeResponse.code },
@@ -42,11 +41,133 @@ export const LoginWithGoogle = () => {
                         },
                     }
                 );
-
                 console.log('Server response:', response.data);
-                setUser(response.data.user);
+                // setUser(response.data.user);
                 setSessionId(response.data.sessionId!)
                 // Optionally, you can handle the token and expiration here
+                // נניח שזה השדה שבו נשמר ה-access token
+                setUser(response.data.user);
+                const googleAccessToken = response.data.googleAccessToken; // ← שימוש בטוקן של גוגל
+                if (googleAccessToken) {
+                    localStorage.setItem('google_token', googleAccessToken); // שמירה ב-localStorage
+                    // בדיקת POST calendar
+                    // fetch('http://localhost:3001/api/calendar/calendars/primary/events', {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         'Authorization': `Bearer ${googleAccessToken}`,
+                    //     },
+                    //     body: JSON.stringify({
+                    //         summary: '   יש התנגשות?????',
+                    //         start: {
+                    //             dateTime: new Date('2025-07-10T11:30:00+03:00').toISOString(),
+                    //             timeZone: 'Asia/Jerusalem'
+                    //         },
+                    //         end: {
+                    //             dateTime: new Date('2025-07-10T12:35:00+03:00').toISOString(), // תאריך end מאוחר יותר
+                    //             timeZone: 'Asia/Jerusalem'
+                    //         },
+                    //         recurrence: ['RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=4']
+                    //     }),
+                    // })
+                    //     .then(res => res.json())
+                    //     .then(data => console.log('POST event:', data))
+                    //     .catch(err => console.error(err))
+                    // בדיקת POST -calendarSync-כולל השמירה במסד!!!!
+                    fetch('http://localhost:3001/api/calendar-sync/add/primary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${googleAccessToken}`,
+                        },
+                        body: JSON.stringify({
+
+                            booking: {
+                                id: "3da78a90-fe85-4e66-bb26-e22c34f63b1c",
+                                roomId: "10da8c25-6b79-48f3-8c50-f506b3ea16ee",
+                                roomName: "gggg",
+                                customerId: null,
+                                customerName: null,
+                                externalUserName: "ללי",
+                                externalUserEmail: "m0556722858@gmail.com",
+                                externalUserPhone: "0556723622",
+                                startTime: "2025-07-18T10:17:00.000Z",
+                                endTime: "2025-07-18T12:17:00.000Z",
+                                status: "PENDING",
+                                notes: null,
+                                googleCalendarEventId: null,
+                                totalHours: 0,
+                                chargeableHours: 0,
+                                totalCharge: 0,
+                                isPaid: false,
+                            approvedBy: "clicka manager Nechami",
+                                approvedAt: "2025-07-15 12:17:29.982418+00",
+                                createdAt: "2025-07-15 12:17:29.982418+00",
+                                updatedAt: "2025-07-15 12:17:29.982418+00"
+                            }
+
+                        }),
+                    })
+                        .then(res => res.json())
+                        .then(data => console.log('POST event:', data))
+                        .catch(err => console.error(err));
+
+                    // בדיקת GET calendar
+                    fetch('http://localhost:3001/api/calendar/calendars/primary/events', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${googleAccessToken}`,
+                        },
+                    })
+                        .then(res => res.json())
+                        .then(data => console.log('GET events:', data))
+                        .catch(err => console.error(err))
+                    // עם המרות לריאקט בדיקת GET calendar
+                    fetch('http://localhost:3001/api/calendar-sync/all/primary', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${googleAccessToken}`,
+                        },
+                    })
+                        .then(res => res.json())
+                        .then(data => console.log('GET events:', data))
+                        .catch(err => console.error(err))
+                    // בדיקת PATCH calendar
+                    // const eventId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
+                    // fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${eventId}`, {
+                    //     method: 'PATCH',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         'Authorization': `Bearer ${googleAccessToken}`,
+                    //     },
+                    //     body: JSON.stringify({
+                    //         summary: 'אירוע מעודכן',
+                    //         description: 'עודכן מה-frontend',
+                    //         recurrence: ['RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=4'],
+                    //     }),
+                    // })
+                    //     .then(res => res.json())
+                    //     .then(data => console.log('אירוע עודכן:', data))
+                    //     .catch(err => console.error('שגיאה בעדכון:', err));
+                    // בדיקת DELETE calendar
+                    // const evenId = 'l6vt5oo4l9a2816g4vbaje5v6g_20250721T120000Z';
+                    // fetch(`http://localhost:3001/api/calendar/calendars/primary/events/${evenId}`, {
+                    //     method: 'DELETE',
+                    //     headers: {
+                    //         'Authorization': `Bearer ${googleAccessToken}`,
+                    //     },
+                    // })
+                    //     .then(res => {
+                    //         if (res.ok) {
+                    //             console.log('האירוע נמחק בהצלחה!');
+                    //         } else {
+                    //             res.json().then(data => console.error('שגיאה במחיקה:', data));
+                    //         }
+                    //     })
+                    // .catch(err => console.error('שגיאה במחיקה:', err));
+                }
+                //עד כאן
+           
             } catch (error: any) {
                 if (axios.isAxiosError(error) && error.response?.status === 401) {
                     showAlert("", "המשתמש לא מורשה לגשת למשאב זה", "error");
@@ -67,10 +188,8 @@ export const LoginWithGoogle = () => {
              include_granted_scopes: 'false',
         }
     } as any);
-
     return (
         <button onClick={() => login()}> Google התחבר עם </button>
     );
 };
-
 
