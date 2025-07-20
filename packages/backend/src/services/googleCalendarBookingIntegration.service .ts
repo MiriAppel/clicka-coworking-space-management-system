@@ -9,7 +9,7 @@ import { createEvent } from './calendar-service'
 import { BookingModel } from "../models/booking.model";
 import * as syncController from "../controllers/googleCalendarBookingIntegration.controller";
 import {BookingService} from "./booking.service"
-import { log } from "util";
+// import { log } from "util";
 import { Event } from "shared-types/google";
 // טוען את משתני הסביבה מקובץ .env
 dotenv.config();

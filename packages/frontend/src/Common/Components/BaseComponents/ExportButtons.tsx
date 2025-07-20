@@ -67,10 +67,7 @@ export const ExportButtons = ({
       </Button>
     </div>
   );
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/main
 };
 
 

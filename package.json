@@ -52,14 +52,7 @@
     "typescript": "^5.8.3",
     "yarn": "^1.22.22",
     "zod": "^3.25.67",
-    "zustand": "^5.0.6",
-    "react-hook-form": "^7.58.1",
-    "react-responsive": "^10.0.1",
-    "sweetalert2": "^11.22.2",
-    "sweetalert2-react-content": "^5.1.0",
-    "ts-node": "^10.9.2",
-    "yarn": "^1.22.22",
-    "zod": "^3.25.67"
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@types/aria-query": "^5.0.4",
