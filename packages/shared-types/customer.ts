@@ -30,7 +30,8 @@ export enum WorkspaceType {
       DOOR_PASS = "DOOR_PASS",
     WALL = "WALL",
     COMPUTER_STAND = "COMPUTER_STAND",
-    RECEPTION_DESK = "RECEPTION_DESK"
+    RECEPTION_DESK = "RECEPTION_DESK",
+    BASE = "BASE",
 }
 
 
