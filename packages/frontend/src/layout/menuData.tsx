@@ -73,6 +73,7 @@ export const menus: Menu[] = [
     icon: <Settings size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'משתמשים', path: '/users' },
+      { label: 'פעולות משתמשים', path: '/UserActions' },
       { label: 'הרשאות', path: '/permissions' },
       { label: 'הגדרות', path: '/settings' },
       { label: 'אינטגרציות', path: '/integrations' }

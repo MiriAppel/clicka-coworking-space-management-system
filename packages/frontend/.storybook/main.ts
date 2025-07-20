@@ -11,8 +11,8 @@ function getAbsolutePath(value: string): any {
 }
 const config: StorybookConfig = {
   "stories": [
-    "../src/**/*.mdx",
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+    "../*.mdx",
+  "../src/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)"
   ],
   "addons": [
     getAbsolutePath('@storybook/preset-create-react-app'),

@@ -27,6 +27,8 @@ import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import router from './routes';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
+import auditLogRouter from './routes/auditLog.route';
+
 
 // Create Express app
 const app = express();
@@ -47,8 +49,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(json());
 
 app.use(urlencoded({ extended: true }));
-// app.use(globalAuditMiddleware);
+app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
+app.use('/api/audit-logs', auditLogRouter);
 app.use('/api/customers', routerCstomer);
 app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);

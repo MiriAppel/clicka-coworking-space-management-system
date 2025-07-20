@@ -13,6 +13,7 @@ import MainLayout from './layout/MainLayout';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { Billing } from './MainMenu/Billing/Components/Billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
+import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLogTable';
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -57,6 +58,7 @@ export const Routing = () => {
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
+        <Route path="UserActions" element={< AuditLogTable />} />
      
       </Route>
     </Routes>
