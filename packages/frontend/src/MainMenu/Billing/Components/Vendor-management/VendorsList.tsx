@@ -100,6 +100,7 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
           </>
         )}
       />
+
     </div>
   );
-}
+} 

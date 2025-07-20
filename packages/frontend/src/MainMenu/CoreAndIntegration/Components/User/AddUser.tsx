@@ -9,6 +9,7 @@ import { useUserStore } from '../../../../Stores/CoreAndIntegration/userStore';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
 
 const schema = z.object({
   email: z.string().email("Invalid Email").nonempty("EMAIL is required"),
@@ -43,7 +44,7 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
     try {
       const newUser: User = {
         id: "",
-        email: data.email,
+        email: data.email.toLowerCase(),
         firstName: data.firstName,
         lastName: data.lastName,
         role: data.role as UserRole,
@@ -57,12 +58,12 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
       const createdUser = await createUser(newUser);
 
       if (createdUser) {
-        alert("User created successfully!");
+        showAlert("", "המשתמש נוסף בהצלחה", "success");
         onUserAdded?.();
         onClose?.();
       }
     } catch (error) {
-      alert("Failed to create user. Please try again.");
+        showAlert("שגיאה", "הוספת המשתמש נכשלה. נסה שוב", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -114,17 +115,6 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
           >
             {isSubmitting ? "Creating..." : "Create User"}
           </Button>
-
-          {onClose && (
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onClose}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-          )}
         </div>
       </Form>
     </div>

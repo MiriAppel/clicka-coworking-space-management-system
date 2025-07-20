@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "incremental": false,
+     "typeRoots": ["./node_modules/@types"],
     "lib": [
       "dom",
       "dom.iterable",
@@ -23,7 +24,9 @@
     "paths": {
       "shared-types": ["../shared-types/src"]
     },
+    "types": []
     // "types": ["cookie-parser"]
   },
   "include": ["src", "../shared-types/src"]
+  
 }

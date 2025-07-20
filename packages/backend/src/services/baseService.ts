@@ -1,20 +1,10 @@
 import type { ID } from "shared-types";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../db/supabaseClient";
 
-const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_KEY || ""; // שימי לב לשם המדויק
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error(
-    "חסרים ערכים ל־SUPABASE_URL או SUPABASE_SERVICE_KEY בקובץ הסביבה"
-  );
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export class baseService<T> {
   // בשביל שם המחלקה
-  constructor(private tableName: string) { }
+  constructor(private tableName: string) {}
 
   getById = async (id: ID): Promise<T> => {
     const { data, error } = await supabase
@@ -35,38 +25,16 @@ export class baseService<T> {
     return data;
   };
 
-  getByFilters = async (filters: { q?: string; page?: number; limit?: number;}): Promise<T[]> => {
-    const { q, page, limit } = filters;
-
-    let query = supabase.from(this.tableName).select("*");
-
-    if (q) {
-      const searchValue = `%${q}%`;
-      query = query.or(
-        `name.ilike.${searchValue},email.ilike.${searchValue},phone.ilike.${searchValue},id_number.ilike.${searchValue}`
-      );
-    }
-    if (page && limit) {
-      const from = (page - 1) * limit;
-      const to = from + limit - 1;
-      query = query.range(from, to);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("Error fetching filtered data:", error);
-      throw error;
-    }
-
-    return data ?? [];
-  };
-
+  
   getAll = async (): Promise<T[]> => {
-    console.log("🧾 טבלה:", this.tableName);
+    // console.log("🧾 טבלה:", this.tableName);
 
-    const { data, error } = await supabase.from(this.tableName).select("*");
+    const { data, error } = await supabase
+    .from(this.tableName)
+    .select("*, lead_interaction(*)")
 
+    console.log(data);
+    
     if (!data || data.length === 0) {
       console.log(` אין נתונים בטבלה ${this.tableName}`);
       return []; // תחזירי מערך ריק במקום לזרוק שגיאה
@@ -81,17 +49,18 @@ export class baseService<T> {
   };
 
   patch = async (dataToUpdate: Partial<T>, id: ID): Promise<T> => {
-    
     let dataForInsert = dataToUpdate;
-    if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
-      try{
-      dataForInsert = (dataToUpdate as any).toDatabaseFormat();
-      console.log(dataForInsert);
+    (dataToUpdate as any).updated_at = new Date().toISOString();
 
-      }catch (error){
+    if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
+      try {
+        dataForInsert = (dataToUpdate as any).toDatabaseFormat();
+        console.log(dataForInsert);
+
+      } catch (error) {
         console.error("שגיאה בהמרה", error)
       }
-    }
+    }    
 
     const { data, error } = await supabase
       .from(this.tableName)
@@ -120,6 +89,9 @@ export class baseService<T> {
       dataForInsert = (dataToAdd as any).toDatabaseFormat();
       console.log(dataForInsert);
     }
+
+    // if (this.tableName === "customer")
+    //  await CustomerAuthentication((dataForInsert as any).email);
 
     const { data, error } = await supabase
       .from(this.tableName)

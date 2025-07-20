@@ -7,7 +7,11 @@ export enum RoomType {
   MEETING_ROOM = 'MEETING_ROOM',
   LOUNGE = 'LOUNGE'
 }
-
+export interface RoomFeature {
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
 // Room status enum
 export enum RoomStatus {
   AVAILABLE = 'AVAILABLE',
@@ -24,10 +28,16 @@ export enum BookingStatus {
   CANCELED = 'CANCELED',
   COMPLETED = 'COMPLETED'
 }
+export interface RoomFeature {
+  id?: ID;
+  description?: string;
+  IsIncluded: boolean;
+  additionalCost: number;
+}
 
 // Room model
 export interface Room {
-  id: ID;
+  id?: ID;
   name: string;
   description?: string;
   type: RoomType;
@@ -38,11 +48,25 @@ export interface Room {
   googleCalendarId?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
+    positionX: number;
+  positionY: number;
+  workspaceMapId: ID; // Assuming this is a reference to a WorkspaceMap
+  // ממדי סביבת העבודה
+  width: number;
+  height: number;
 }
+export interface BookingRules {
+  MinimumBookingMinutes: number;
+  MaximumBookingMinutes: number;
+  AdvanceBookingDays: number;
+  RequiredApproval: boolean;
+  FreeHoursForKlikcaCard: number;
+}
+
 
 // Booking model
 export interface Booking {
-  id: ID;
+  id?: ID;
   roomId: ID;
   roomName: string;
   customerId?: ID;

@@ -7,11 +7,11 @@ import { Eclipse, Keyboard, Languages, X, Globe } from "lucide-react";
 export const Accesibility = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen && dialogRef.current) {
-      dialogRef.current.focus();
+    if (isOpen && Ref.current) {
+      Ref.current.focus();
     }
   }, [isOpen]);
 
@@ -59,27 +59,27 @@ export const Accesibility = () => {
 
      {isOpen && (
   <div
-    role="dialog"
-    ref={dialogRef}
+    role=""
+    ref={Ref}
     tabIndex={-1}
-    aria-labelledby="a11y-dialog-title"
+    aria-labelledby="a11y--title"
     className="fixed top-16 right-0 h-auto w-56 bg-white rounded-l-lg p-4 shadow-lg flex flex-col space-y-3 z-50"
     style={{
       fontFamily: theme.lang === "he" ? "Noto Sans Hebrew" : "Inter",
       direction: theme.direction,
       color: theme.colors.text,
-      backgroundColor: theme.colors.background || 'white', 
+     // backgroundColor: theme.colors.background || 'white', 
     }}
   >
-    <h2 id="a11y-dialog-title" className="text-lg font-bold mb-3">
+    <h2 id="a11y--title" className="text-lg font-bold mb-3">
       Accesibility Options
     </h2>
 
    <Button
   className="bg-gray-100 rounded p-2 hover:bg-gray-200 transition flex items-center justify-center"
   onClick={toggleHighContrast}
-  title={theme.isHighContrast ? "Desactivar alto contraste" : "Activar alto contraste"}
-  aria-label={theme.isHighContrast ? "Desactivar alto contraste" : "Activar alto contraste"}
+  title={theme.isHighContrast ? "Disable high contrast" : "Active high contrast"}
+  aria-label={theme.isHighContrast ? "Disable high contrast" : "Active high contrast"}
 > Hight Contrast
   <Eclipse size={20} />
 </Button>
@@ -88,8 +88,8 @@ export const Accesibility = () => {
    <Button
   className="bg-gray-100 rounded p-2 hover:bg-gray-200 transition flex items-center justify-center"
   onClick={toggleKeyboardNavigation}
-  title={theme.isKeyboardNavigation ? "Desactivar navegación por teclado" : "Activar navegación por teclado"}
-  aria-label={theme.isKeyboardNavigation ? "Desactivar navegación por teclado" : "Activar navegación por teclado"}
+  title={theme.isKeyboardNavigation ? "Disable keyboard navigation" : "Enable keyboard navigation"}
+  aria-label={theme.isKeyboardNavigation ? "Disable keyboard navigation" : "Enable keyboard navigation"}
 > Keyboard Navigation
   <Keyboard size={20} />
 </Button>
@@ -97,8 +97,8 @@ export const Accesibility = () => {
    <Button
   className="bg-gray-100 rounded p-2 hover:bg-gray-200 transition flex items-center justify-center"
   onClick={() => setLanguage("he")}
-  title="Cambiar a Hebreo"
-  aria-label="Cambiar a Hebreo"
+  title="Change to Hebrew"
+  aria-label="Change to Hebrew"
 > Change to Hebrew 
   <Languages size={20} />
 </Button>
@@ -106,8 +106,8 @@ export const Accesibility = () => {
     <Button
   className="bg-gray-100 rounded p-2 hover:bg-gray-200 transition flex items-center justify-center"
   onClick={() => setLanguage("en")}
-  title="Cambiar a Inglés"
-  aria-label="Cambiar a Inglés"
+  title="Change to English"
+  aria-label="Change to English"
 > Change to English 
   <Globe size={20} />
  </Button>
@@ -115,8 +115,8 @@ export const Accesibility = () => {
     <Button
   className="bg-red-500 text-white rounded p-2 hover:bg-red-600 transition mt-2 flex items-center justify-center"
   onClick={() => setIsOpen(false)}
-  title="Cerrar"
-  aria-label="Cerrar"
+  title="Close"
+  aria-label="Close"
 > Close 
   <X size={20} />
 </Button>

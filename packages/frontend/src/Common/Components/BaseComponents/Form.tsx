@@ -7,6 +7,7 @@ import {
   FieldValues,
   UseFormReturn,
   DefaultValues,
+
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodType } from "zod";
@@ -56,6 +57,7 @@ const internalMethods = useForm<T>({
 
   return (
     <FormProvider {...methods}>
+
       <form
         dir={effectiveDir}
         data-testid={testId}
@@ -72,8 +74,10 @@ const internalMethods = useForm<T>({
               : theme.typography.fontFamily.latin,
         }}
         role="form"
+
         aria-label={label ? t(label) : undefined}
       >
+
         {label && (
           <h2
             className="text-xl font-semibold mb-4 col-span-full"
@@ -82,23 +86,28 @@ const internalMethods = useForm<T>({
             }}
             tabIndex={-1}
           >
+
             {t(label)}
+
           </h2>
         )}
 
         {methods.formState.errors.root && (
           <div
+
             className="text-red-600 text-sm mb-2 col-span-full"
             role="alert"
             aria-live="assertive"
             tabIndex={-1}
             style={{
               color: theme.colors.semantic.error,
+
             }}
           >
             {methods.formState.errors.root.message}
           </div>
         )}
+
 
         {children}
       </form>

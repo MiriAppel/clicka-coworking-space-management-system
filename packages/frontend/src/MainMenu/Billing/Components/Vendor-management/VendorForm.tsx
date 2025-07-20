@@ -4,119 +4,152 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Vendor, VendorCategory } from "shared-types";
 
 // ייבוא קומפוננטות UI מותאמות אישית
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
+import { PaymentMethod } from "shared-types";
+import { Vendor, VendorCategory } from "shared-types";
 
-// טיפוס פרופס לקומפוננטה: רשימת ספקים ופונקציית עדכון שלהם
+// טיפוס פרופס: מערך ספקים ופונקציית עדכון שלהם
 type VendorFormProps = {
   vendors: Vendor[];
   setVendors: React.Dispatch<React.SetStateAction<Vendor[]>>;
 };
 
-// הגדרת סכמת ולידציה עם zod
+// סכמת ולידציה עם zod לכל השדות
 const schema = z.object({
-  // שדה שם - מחרוזת לא ריקה
+  // שם הספק - חובה
   name: z.string().nonempty("חובה למלא שם"),
-  // שדה קטגוריה - בחירה מתוך enum
+  // קטגוריה מתוך enum - חובה
   category: z.nativeEnum(VendorCategory, {
     errorMap: () => ({ message: "חובה לבחור קטגוריה" }),
   }),
-  // שדה טלפון - מחרוזת עם בדיקת Regex למספר תקין
-  phone: z
-    .string()
-    .nonempty("חובה למלא טלפון")
-    .refine((val) => /^0\d{8,9}$/.test(val), {
-      message: "מספר טלפון לא תקין",
-    }),
-  // שדה אימייל - מחרוזת עם בדיקת אימייל תקין
+  // טלפון - חובה עם בדיקת פורמט
+  phone: z.string().nonempty("חובה למלא טלפון").refine((val) => /^0\d{8,9}$/.test(val), {
+    message: "מספר טלפון לא תקין",
+  }),
+  // אימייל - חובה ובדיקה תקינות
   email: z.string().email("אימייל לא תקין").nonempty("חובה למלא אימייל"),
-  // שדה כתובת - מחרוזת לא ריקה
+  // כתובת - חובה
   address: z.string().nonempty("חובה למלא כתובת"),
+  // איש קשר - חובה
+  contact_name: z.string().nonempty("חובה למלא איש קשר"),
+  // אתר - אופציונלי
+  website: z.string().optional(),
+  // ח.פ - אופציונלי
+  taxId: z.string().optional(),
+  // אמצעי תשלום מועדף - אופציונלי
+  preferred_payment_method: z.string().optional(),
+
+  notes: z.string().optional(),
 });
 
-// קומפוננטת טופס הספק
+// קומפוננטת הטופס
 export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
-  // קריאה לפרמטר id מהכתובת לצורך עריכה
+  // שליפת מזהה ספק מה-URL
   const { id } = useParams();
-  // ניווט בין דפים
   const navigate = useNavigate();
 
-  // מציאת ספק לעריכה לפי ה-id מהכתובת
+  // חיפוש ספק קיים לעריכה
   const editingVendor = vendors.find((v) => v.id === id);
 
-  // אתחול ניהול הטופס עם react-hook-form וקישור לסכמת zod
+  // אתחול ניהול טופס עם סכמת Zod
   const methods = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    mode: "onSubmit", // ביצוע ולידציה רק בעת שליחה
+    mode: "onSubmit",
   });
 
-  // אפקט להרצת איפוס שדות אם אנחנו בעריכה
+  // טעינת ערכים קיימים אם מדובר בעריכה
   useEffect(() => {
     if (editingVendor) {
-      // איפוס הערכים לטופס עם ערכי הספק הקיים
       methods.reset({
         name: editingVendor.name,
         category: editingVendor.category,
         phone: editingVendor.phone || "",
         email: editingVendor.email || "",
         address: editingVendor.address || "",
+        contact_name: editingVendor.contact_name || "",
+        website: editingVendor.website || "",
+        taxId: editingVendor.tax_id || "",
+        preferred_payment_method: editingVendor.preferred_payment_method,
+        notes: editingVendor.notes || "",
       });
     }
   }, [editingVendor, methods]);
-
-  // פונקציית טיפול בשליחה של הטופס
-  const handleSubmit = (data: z.infer<typeof schema>) => {
-    if (editingVendor) {
-      // אם מדובר בעריכה, מעדכנים את הספק הקיים
-      const updatedVendor: Vendor = {
-        ...editingVendor,
-        ...data,
-        updatedAt: new Date().toISOString(), // עדכון זמן שינוי
-      };
-      // מעדכנים את מערך הספקים עם הספק החדש
-      setVendors((prev) =>
-        prev.map((v) => (v.id === id ? updatedVendor : v))
-      );
-      alert("הספק עודכן בהצלחה");
-    } else {
-      // אם זה הוספת ספק חדש
-      const newVendor: Vendor = {
-        ...data,
-        id: (vendors.length + 1).toString(), // יצירת מזהה חדש (פשטני)
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      // הוספת הספק החדש למערך
-      setVendors([...vendors, newVendor]);
-      alert("הספק נוסף בהצלחה");
+  function mapToPaymentMethod(value?: string): PaymentMethod | undefined {
+    switch (value) {
+      case "CREDIT_CARD":
+        return PaymentMethod.CREDIT_CARD;
+      case "BANK_TRANSFER":
+        return PaymentMethod.BANK_TRANSFER;
+      case "CASH":
+        return PaymentMethod.CASH;
+      case "CHECK":
+        return PaymentMethod.CHECK;
+      case "OTHER":
+        return PaymentMethod.OTHER;
+      default:
+        return undefined;
     }
+  }
+  // שליחת טופס
+  const handleSubmit = async (data: z.infer<typeof schema>) => {
+    try {
+      const formattedData = {
+        ...data,
+        preferred_payment_method: mapToPaymentMethod(data.preferred_payment_method),
+      };
 
-    // ניווט חזרה לרשימת הספקים
-    navigate("/vendors");
+      if (editingVendor) {
+        // עדכון ספק קיים
+        const updatedVendor: Vendor = {
+          ...editingVendor,
+          ...formattedData,
+          updatedAt: new Date().toISOString(),
+        };
+        setVendors((prev) => prev.map((v) => (v.id === id ? updatedVendor : v)));
+        alert("הספק עודכן בהצלחה");
+      } else {
+        // יצירת ספק חדש
+        const response = await fetch("http://localhost:3001/vendor/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formattedData), // כאן אנחנו משתמשים במשתנה שהגדרנו
+        });
+
+        if (!response.ok) throw new Error("שגיאה בהוספת ספק");
+
+        const newVendor = await response.json();
+        setVendors([...vendors, newVendor]);
+        alert("הספק נוסף בהצלחה");
+      }
+
+      navigate("/vendors");
+    } catch (error) {
+      console.error("שגיאה:", error);
+      alert("אירעה שגיאה. נסה שוב.");
+    }
   };
 
-  // מבנה התצוגה של הטופס
   return (
     <div>
-      {/* כותרת מרכזית */}
+      {/* כותרת הטופס */}
       <h1 className="text-3xl font-bold text-center text-blue-600 my-4">
         {editingVendor ? "עריכת ספק" : "הוספת ספק"}
       </h1>
-      {/* קומפוננטת טופס מותאמת אישית - מקבלת פרופס לניהול טופס */}
+
+      {/* טופס */}
       <Form
         label={editingVendor ? "ערוך ספק" : "הוסף ספק חדש"}
-        schema={schema} // הסכמת ולידציה להצגה שגיאות
-        onSubmit={handleSubmit} // פונקציית טיפול בשליחה
-        methods={methods} // כלים של react-hook-form
-        dir="rtl" // כיוון כתיבה מימין לשמאל
+        schema={schema}
+        onSubmit={handleSubmit}
+        methods={methods}
+        dir="rtl"
         className="mx-auto mt-10"
       >
-        {/* שדות הטופס */}
         <InputField name="name" label="שם" required />
         <SelectField
           name="category"
@@ -125,13 +158,30 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
           options={[
             { value: VendorCategory.Services, label: "שירותים" },
             { value: VendorCategory.Equipment, label: "ציוד" },
+            { value: VendorCategory.Maintenance, label: "תַחזוּקָה" },
+            { value: VendorCategory.Other, label: "אחר" },
           ]}
         />
         <InputField name="phone" label="טלפון" required />
         <InputField name="email" label="אימייל" required />
         <InputField name="address" label="כתובת" required />
+        <InputField name="contact_name" label="איש קשר" required />
+        <InputField name="website" label="אתר אינטרנט" />
+        <InputField name="taxId" label="ח.פ" />
+        <SelectField
+          name="preferred_payment_method"
+          label="אמצעי תשלום מועדף"
+          options={[
+            { value: PaymentMethod.CREDIT_CARD, label: "כרטיס אשראי" },
+            { value: PaymentMethod.BANK_TRANSFER, label: "העברה בנקאית" },
+            { value: PaymentMethod.CASH, label: "מזומן" },
+            { value: PaymentMethod.CHECK, label: "צ'ק" },
+            { value: PaymentMethod.OTHER, label: "אחר" },
+          ]}
+        />
 
-        {/* כפתור שמירה */}
+        <InputField name="notes" label="הערות" />
+
         <Button variant="primary" size="sm" type="submit">
           שמור
         </Button>

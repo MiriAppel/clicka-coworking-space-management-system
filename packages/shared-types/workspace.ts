@@ -8,17 +8,19 @@ export enum SpaceStatus {
   OCCUPIED = 'OCCUPIED',
   RESERVED = 'RESERVED',
   MAINTENANCE = 'MAINTENANCE',
-  INACTIVE = 'INACTIVE'
+  INACTIVE = 'INACTIVE',
+  NONE = 'NONE',
 }
 
 // Space model
 export interface Space {
-  id: ID;
+  id?: ID;
   name: string;
   description?: string;
   type: WorkspaceType;
   status: SpaceStatus;
-  room?: string;
+  workspaceMapId?: ID
+  // room?: string;
   currentCustomerId?: ID;
   currentCustomerName?: string;
   positionX: number;

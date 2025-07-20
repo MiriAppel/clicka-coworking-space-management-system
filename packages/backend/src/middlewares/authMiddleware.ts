@@ -15,8 +15,7 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
   }
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string; email: string; googleId: string };
-    //this part need to work when will be a connection to DB
-    const result = await userService.loginByGoogleId(payload.userId);
+    const result = await userService.loginByGoogleId(payload.googleId);
     if (!result) {
       res.status(404).json({ error: 'user not found' });
       return;
@@ -32,7 +31,7 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
     (req as any).sessionId = { sessionId };
     next();
   } catch (err: any) {
-    if (err.name === 'TokenExpiredError') {
+    if (err.message == 'TokenExpiredError') {
       res.status(401).json({ error: 'TokenExpired' });
       return;
     }

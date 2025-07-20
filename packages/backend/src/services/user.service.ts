@@ -2,37 +2,33 @@ import { createClient } from '@supabase/supabase-js';
 import { UserModel } from '../models/user.model'; // נניח שהמודל User נמצא באותו תיק
 import { logUserActivity } from '../utils/logger';
 import dotenv from 'dotenv';
+import { LoginResponse, UserRole } from 'shared-types';
+import { Response } from 'express';
+import { supabase } from '../db/supabaseClient';
 //טוען את משתני הסביבה מהקובץ .env
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_KEY || '';
-console.log(supabaseUrl, supabaseAnonKey);
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-
 export class UserService {
 
-    // פונקציה ליצירת משתמש
+
     async createUser(user: UserModel): Promise<UserModel | null> {
         try {
+            if (await this.getUserByEmail(user.email)) {
+                throw new Error(`User with email ${user.email} already exists`);
+            }
             const { data, error } = await supabase
                 .from('users') // שם הטבלה ב-Supabase
                 .insert([user.toDatabaseFormat()])
                 .select()
                 .single();
-
             const createdUser = UserModel.fromDatabaseFormat(data);
-            // רישום פעילות המשתמש
             logUserActivity(user.id ? user.id : user.firstName, 'User created');
-            //החזרת המשתמש שנוצר
             return createdUser;
         }
         catch (error) {
             console.error('Error creating user:', error);
-            throw error; // זריקת השגיאה כדי לטפל בה במקום אחר
+            throw error; 
         }
-
     }
 
     // פונקציה לקבל את כל המשתמשים
@@ -78,14 +74,17 @@ export class UserService {
         }
     }
 
-   async getUserByEmail (email: string): Promise<UserModel | null> {
+    async getUserByEmail(email: string): Promise<UserModel | null> {
         try {
             const { data, error } = await supabase
                 .from('users')
                 .select('*')
                 .eq('email', email)
                 .single();
-
+            if (error || !data) {
+                console.error('Error fetching user by Google ID:', error || 'No user found');
+                return null;
+            }
             const user = UserModel.fromDatabaseFormat(data); // המרה לסוג UserModel
             // רישום פעילות המשתמש
             logUserActivity(user.id ? user.id : user.firstName, 'User fetched by email');
@@ -128,12 +127,12 @@ export class UserService {
                 .select('*')
                 .eq('google_id', googleId)
                 .single();
-            
-        if (error || !data) {
-            console.warn(`No user found for Google ID: ${googleId}`);
-            return null;
-        }
+            if (error || !data) {
+                console.error('Error fetching user by Google ID:', error || 'No user found');
+                return null;
+            }
             const user = UserModel.fromDatabaseFormat(data); // המרה לסוג UserModel
+
             // רישום פעילות המשתמש
             logUserActivity(user.id ? user.id : user.firstName, 'User logged in by Google ID');
             // מחזיר את המשתמש שנמצא
@@ -189,4 +188,23 @@ export class UserService {
             throw error; // זריקת השגיאה כדי לטפל בה במקום אחר
         }
     }
+
+
+    createRoleCookies(res: Response<LoginResponse | { error: string }>, roleUser: UserRole): void{
+        // שליפת ה-role מתוך ה-resulte
+        const role = roleUser;
+        // הגדרת cookie עם ה-role
+        res.cookie('role', role, {
+            httpOnly: true ,// httpOnly כדי למנוע גישה דרך JavaScript
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+    }
+    clearRoleCookie = (res: Response): void => {
+    res.clearCookie('role', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    });
+};
 }
