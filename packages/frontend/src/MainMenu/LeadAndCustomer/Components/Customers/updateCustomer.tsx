@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Customer, CustomerPaymentMethod } from "shared-types";
+import { Customer, CustomerPaymentMethod, WorkspaceType } from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
 import { CustomerRegistrationForm } from "./customerForm";
+import { cu } from "@fullcalendar/core/internal-common";
 
 
 export const UpdateCustomer: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { updateCustomer } = useCustomerStore();
+    const { updateCustomer, loading } = useCustomerStore();
 
     // קבלת ערכי הלקוח מהעמוד הקודם
     const customer: Customer = location.state?.data;
@@ -18,6 +19,10 @@ export const UpdateCustomer: React.FC = () => {
 
     const defaultValues = {
         ...customer,
+        currentWorkspaceType: customer.currentWorkspaceType || WorkspaceType.DESK_IN_ROOM,
+        contractSignDate: customer.contractSignDate || new Date().toISOString().split("T")[0],
+        contractStartDate: customer.contractStartDate || new Date().toISOString().split("T")[0],
+        billingStartDate: customer.billingStartDate || new Date().toISOString().split("T")[0],
         creditCardNumber: firstPayment.creditCardNumber || "",
         creditCardExpiry: firstPayment.creditCardExpiry || "",
         creditCardHolderIdNumber: firstPayment.creditCardHolderIdNumber || customer.idNumber || "",
@@ -25,6 +30,7 @@ export const UpdateCustomer: React.FC = () => {
     };
     // פונקציית שליחה
     const onSubmit = async (data: any) => {
+
         const newCustomer: Partial<Customer> = { ...data };
         console.log("עדכון לקוח עם הנתונים in updatecustomer:", newCustomer);
         
@@ -38,14 +44,21 @@ export const UpdateCustomer: React.FC = () => {
         }
     };
 
-    return (
-        <CustomerRegistrationForm
-            defaultValues={defaultValues}
-            onSubmit={onSubmit}
-            title="עדכון פרטי לקוח"
-            subtitle="ערוך את הפרטים הרצויים"
-            isEditMode={true}
-        />
+     return (
+        <div className="relative">
+            <CustomerRegistrationForm
+                defaultValues={defaultValues}
+                onSubmit={onSubmit}
+                title="עדכון פרטי לקוח"
+                subtitle="ערוך את הפרטים הרצויים"
+                isEditMode={true}
+            />
+            {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+                </div>
+            )}
+        </div>
     );
 };
 

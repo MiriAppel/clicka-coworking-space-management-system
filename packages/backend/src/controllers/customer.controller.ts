@@ -28,9 +28,6 @@ export const postCustomer = async (req: Request, res: Response) => {
   try {
     const newCustomer: CreateCustomerRequest = req.body;
 
-    // console.log("in controller");
-    // console.log(newCustomer);
-
     const customer = await serviceCustomer.createCustomer(newCustomer);
     console.log("in controller");
     console.log(customer);

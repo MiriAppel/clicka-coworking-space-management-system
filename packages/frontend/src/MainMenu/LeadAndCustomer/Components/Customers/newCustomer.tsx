@@ -7,7 +7,7 @@ import { CreateCustomerRequest, PaymentMethodType } from "shared-types";
 
 export const NewCustomerPage: React.FC = () => {
     const navigate = useNavigate();
-    const { createCustomer } = useCustomerStore();
+    const { createCustomer, loading } = useCustomerStore();
 
     const onSubmit = async (data: any) => {
 
@@ -65,12 +65,19 @@ export const NewCustomerPage: React.FC = () => {
 
     }
 
-    return (
-        <CustomerRegistrationForm
-            defaultValues={{}} // אין ערכי ברירת מחדל
-            onSubmit={onSubmit}
-            title="יצירת לקוח חדש"
-            subtitle="מלא את כל הפרטים"
-        />
+     return (
+        <div className="relative">
+            <CustomerRegistrationForm
+                defaultValues={{}} // אין ערכי ברירת מחדל
+                onSubmit={onSubmit}
+                title="יצירת לקוח חדש"
+                subtitle="מלא את כל הפרטים"
+            />
+            {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+                </div>
+            )}
+        </div>
     );
 };

@@ -140,7 +140,7 @@ export const LeadInteractions = () => {
         <div className="relative flex flex-col items-start">
           <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
           <Button
-            onClick={() => navigate("interestedCustomerRegistration")}
+            onClick={() => navigate("")}
             variant="primary"
             size="sm"
           >

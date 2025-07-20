@@ -62,8 +62,8 @@ export class customerService extends baseService<CustomerModel> {
   createCustomer = async (
     newCustomer: CreateCustomerRequest
   ): Promise<CustomerModel> => {
-    console.log("in servise");
-    console.log(newCustomer);
+    // console.log("in servise");
+    // console.log(newCustomer);
 
     //מה לעשות עם זה: paymentMethods!!
 
@@ -74,7 +74,7 @@ export class customerService extends baseService<CustomerModel> {
       idNumber: newCustomer.idNumber,
       businessName: newCustomer.businessName,
       businessType: newCustomer.businessType,
-      status: CustomerStatus.ACTIVE,
+      status: CustomerStatus.CREATED,
       currentWorkspaceType: newCustomer.currentWorkspaceType,
       workspaceCount: newCustomer.workspaceCount,
       contractSignDate: newCustomer.contractSignDate,
@@ -426,6 +426,7 @@ export class customerService extends baseService<CustomerModel> {
       NOTICE_GIVEN: "הודעת עזיבה",
       EXITED: "עזב",
       PENDING: "בהמתנה",
+      CREATED: "נוצר",
     };
 
     const effectiveDate = new Date(detailsForChangeStatus.effectiveDate);

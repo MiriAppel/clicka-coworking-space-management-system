@@ -11,8 +11,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
     const location = useLocation();
     const lead: Lead | undefined = location.state?.data;
 
-    const { createCustomer } = useCustomerStore();
-    const { handleUpdateLead } = useLeadsStore();
+    const { createCustomer, loading } = useCustomerStore();
+    const { handleUpdateLead, loading: loadingLead } = useLeadsStore();
 
     const onSubmit = async (data: any) => {
 
@@ -79,11 +79,18 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
 
     return (
-        <CustomerRegistrationForm
-            defaultValues={lead}
-            onSubmit={onSubmit}
-            title="רישום מתעניין ללקוח"
-            subtitle="מלא את הפרטים החסרים"
-        />
+        <div className="relative">
+            <CustomerRegistrationForm
+                defaultValues={lead}
+                onSubmit={onSubmit}
+                title="רישום מתעניין ללקוח"
+                subtitle="מלא את הפרטים החסרים"
+            />
+            {(loading || loadingLead) && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+                </div>
+            )}
+        </div>
     );
 };

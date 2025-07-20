@@ -309,4 +309,5 @@ const statusLabels: Record<CustomerStatus, string> = {
     NOTICE_GIVEN: "הודעת עזיבה",
     EXITED: "עזב",
     PENDING: "בהמתנה",
+    CREATED: "נוצר"
 };

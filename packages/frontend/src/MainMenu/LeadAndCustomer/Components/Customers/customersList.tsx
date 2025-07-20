@@ -32,6 +32,7 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "הודעת עזיבה",
   EXITED: "עזב",
   PENDING: "בהמתנה",
+  CREATED: "נוצר",
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
@@ -71,7 +72,7 @@ export const CustomersList = () => {
   } = useCustomerStore();
 
   useEffect(() => {
-    fetchCustomersByPage()    
+    fetchCustomersByPage()
   }, [fetchCustomersByPage]);
 
 
@@ -187,6 +188,8 @@ export const CustomersList = () => {
 
   const editCustomer = (val: ValuesToTable) => {
     const selected = customers.find((c) => c.id === val.id);
+    console.log("selected customer", selected);
+
     navigate("update", { state: { data: selected } });
   };
 
@@ -205,7 +208,7 @@ export const CustomersList = () => {
   }
 
 
-  const searchInApi = async(e: { key: string; }) => {
+  const searchInApi = async (e: { key: string; }) => {
     //איך ידעו שבלחיצה על אנטר זה מחפש בשרת?...
     if (
       (e.key === "Enter" && searchTerm.trim())
@@ -214,11 +217,11 @@ export const CustomersList = () => {
       console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
 
       await searchCustomersByText(searchTerm)
-        // .then(() => {
-        //   console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
-        // }).catch((error) => {
-        //   console.error("שגיאה בחיפוש מהשרת:", error);
-        // });
+      // .then(() => {
+      //   console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
+      // }).catch((error) => {
+      //   console.error("שגיאה בחיפוש מהשרת:", error);
+      // });
     }
   }
 
@@ -230,12 +233,12 @@ export const CustomersList = () => {
           לקוחות
         </h2>
         <Button
-            variant="primary"
-            size="sm"
-            onClick={() => navigate("new")}
-          >
+          variant="primary"
+          size="sm"
+          onClick={() => navigate("new")}
+        >
           הוספת לקוח חדש
-          </Button><br />
+        </Button><br />
         <ExportToExcel data={customers} fileName="לקוחות" />
         <br />
         <br />
@@ -259,8 +262,8 @@ export const CustomersList = () => {
             onUpdate={editCustomer}
           />
           {loading && (
-            <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-              <div className="loader border-8 border-gray-300 border-t-8 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div> {/* גלגל טעינה */}
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
             </div>
           )}
         </div>

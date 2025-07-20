@@ -12,7 +12,6 @@ import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
 import { CustomersList } from "./Customers/customersList"
 import { LeadInteractions } from "./Interactions/leadIntersection";
 import { InteractionForm } from "./Interactions/interactionForm";
-// import { addInteraction } from "./Interactions/leadInteractionDetails";
 import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { NewCustomerPage } from "./Customers/newCustomer";
@@ -42,7 +41,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
             <Route path="leads/intersections/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
-            <Route path="leads/intersections/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => handleCreateInteraction(lead)} onCancel={() => {
+            <Route path="leads/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => handleCreateInteraction(lead)} onCancel={() => {
                 nav('/leadAndCustomer/leads/intersections')
             }} />} />
         </Routes>
