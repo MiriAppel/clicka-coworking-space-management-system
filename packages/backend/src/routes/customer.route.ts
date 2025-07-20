@@ -7,22 +7,26 @@ const routerCustomer = express.Router();
 // (GET)
 // routerCustomer.get('/by-page', customerController.getCustomersByPage);
 
-routerCustomer.get('/', customerController.getAllCustomers); 
+routerCustomer.get('/page', customerController.getCustomersByPage); 
 
-// routerCustomer.get('/page', customerController.getCustomersByPage); 
+routerCustomer.get('/', customerController.getAllCustomers); 
 
 routerCustomer.get('/status/all', customerController.getAllCustomerStatus);
 
 routerCustomer.get('/notify/:id', customerController.getCustomersToNotify); 
 
+routerCustomer.get('/search', customerController.searchCustomersByText);
+
 routerCustomer.get('/:id', customerController.getCustomerById); 
 
-// routerCustomer.get("/search", customerController.searchCustomersByText);
+routerCustomer.get('/:id/payment-methods', customerController.getCustomerPaymentMethods);
 
 //(POST)
 routerCustomer.post('/:id/exit-notice', customerController.postExitNotice); 
 
 routerCustomer.post('/post-customer', customerController.postCustomer); 
+
+routerCustomer.post('/:id/status-change', customerController.changeCustomerStatus)
 
 //PATCH/PUT)
 routerCustomer.patch('/:id', customerController.patchCustomer); 

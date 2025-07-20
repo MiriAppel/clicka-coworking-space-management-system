@@ -1,32 +1,23 @@
 import { useNavigate } from "react-router-dom";
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { NavLink } from "react-router";
 import { ExportToExcel } from "../exportToExcel";
-import {
-  Table,
-  TableColumn,
-} from "../../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus } from "shared-types";
-import { deleteCustomer } from "../../Service/LeadAndCustomersService";
 import { Stack, TextField } from "@mui/material";
-import axios from "axios";
 import debounce from "lodash/debounce";
-import { Pencil, Trash } from "lucide-react";
-import { supabase } from "../../../../Service/supabaseClient";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import { set } from "lodash";
-import { text } from "body-parser";
-// import { supabase } from "../../../../Services/supabaseClient";
+import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
+import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
+import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
+
+import {
+  CustomerStatus,
+  DateISO,
+  PaymentMethodType,
+  WorkspaceType,
+} from "shared-types";
 
 interface ValuesToTable {
   id: string;
-  name: string;
-  phone: string;
-  email: string;
-  status: CustomerStatus;
-  businessName: string;
-  businessType: string;
 }
 
 const statusLabels: Record<CustomerStatus, string> = {
@@ -36,200 +27,77 @@ const statusLabels: Record<CustomerStatus, string> = {
   PENDING: "בהמתנה",
 };
 
+const workspaceTypeLabels: Record<WorkspaceType, string> = {
+  PRIVATE_ROOM: 'חדר פרטי',
+  DESK_IN_ROOM: 'שולחן בחדר',
+  OPEN_SPACE: 'אופן ספייס',
+  KLIKAH_CARD: 'כרטיס קליקה',
+  DOOR_PASS: 'דלת כניסה',
+  WALL: 'קיר',
+  COMPUTER_STAND: 'עמדת מחשב',
+  RECEPTION_DESK: 'דלפק קבלה',
+};
+
+const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
+  CREDIT_CARD: 'כרטיס אשראי',
+  BANK_TRANSFER: 'העברה בנקאית',
+  CHECK: 'שיק',
+  CASH: 'מזומן',
+  OTHER: 'אחר',
+};
+
+const formatDate = (dateString: DateISO | undefined) => {
+  if (!dateString) return "לא זמין";
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}/${month}/${year}`;
+};
+
 export const CustomersList = () => {
   const navigate = useNavigate();
   const loaderRef = useRef<HTMLDivElement | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [customers, setCustomers] = useState<Customer[]>([]);
 
-  const allCustomersRef = useRef<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [term, setTerm] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const [page, setPage] = useState(1);
-  // const [hasMore, setHasMore] = useState(true);
 
-  //   const fetchCustomers = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       const data = await getAllCustomers();
-  //       setCustomers(data);
-  //     } catch (error) {
-  //       console.error("Error fetching customers:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  const fetchCustomers = async (
-    page: number,
-    limit: number,
-    searchTerm = ""
-  ) => {
-    try {
-      setIsLoading(true);
-      const response = await axios.get(
-        "http://localhost:3001/api/customers/by-page",
-        {
-          params: { page, limit },
-        }
-      );
+  const {
+    customers,
+    deleteCustomer,
+    loading,
+    currentPage,
+    limit,
+    searchCustomersByText,
+    fetchCustomersByPage,
+    searchCustomersInPage,
+    fetchNextPage,
+    fetchPrevPage,
+  } = useCustomerStore();
 
-      const data: Customer[] = response.data;
+  useEffect(() => {
+    fetchCustomersByPage();
+  }, [fetchCustomersByPage]);
 
-      // setHasMore(data.length === limit); // אם פחות מה-limit, אין עוד דפים
-
-      // תמיד להחליף את הסטייט בתוצאות הדף בלבד (לא להוסיף)
-      setCustomers(data);
-      allCustomersRef.current = data;
-    } catch (error) {
-      console.error("שגיאה ב-fetchCustomers:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSearch = (term: string) => {
+    searchCustomersInPage(term);
   };
-  useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setIsSearching(false);
-      fetchCustomers(page, 20, "");
-    }
-  }, [searchTerm]);
-
-  useEffect(() => {
-    fetchCustomers(page, 20, searchTerm).then(() => {
-      console.log(
-        "✅ אחרי fetchCustomers - כמות לקוחות ב־allCustomers:",
-        allCustomersRef.current.length
-      );
-    });
-  }, [page]);
-
-  useEffect(() => {
-    if (!loaderRef.current || isSearching) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setPage((prev) => prev + 1);
-      }
-    });
-
-    observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [isSearching]);
-
-  //צריך בשביל זה גישה
-  //  useEffect(() => {
-  //       const channel = supabase
-  //         .channel('public:customer')
-  //         .on(
-  //           'postgres_changes',
-  //           { event: '*', schema: 'public', table: 'customer' },
-  //           (payload) => {
-  //             console.log('Change detected:', payload); // הוסף לוג כדי לבדוק אם האירועים מתקבלים
-  //             fetchCustomers(page, 20, ""); // ודא שהפונקציה זו מוגדרת
-  //           }
-  //         )
-  //         .subscribe();
-
-  //       return () => {
-  //         supabase.removeChannel(channel);
-  //       };
-  //   }, []);
-
-  useEffect(() => {
-    if (!loaderRef.current || isSearching) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setPage((prev) => prev + 1);
-      }
-    });
-    observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [isSearching]);
-
-  // הפונקציה שמטפלת בשינוי החיפוש
- const handleSearch = (term: string) => {
-  setTerm(term);
-  setSearchTerm(term);
-
-  if (!term.trim()) {
-    // אם ריק, מחזירים לתצוגה רגילה
-    setIsSearching(false);
-    fetchCustomers(page, 20, "");
-    return;
-  }
-
-  setIsSearching(true);
-  const lower = term.toLowerCase();
-
-  const filtered = allCustomersRef.current.filter(
-    (c) =>
-      c.name.toLowerCase().includes(lower) ||
-      c.phone.toLowerCase().includes(lower) ||
-      c.email.toLowerCase().includes(lower) ||
-      c.businessName?.toLowerCase().includes(lower) ||
-      c.businessType?.toLowerCase().includes(lower) ||
-      statusLabels[c.status].toLowerCase().includes(lower)
-  );
-
-  setCustomers(filtered);
-};
-
-
-
-
-  const getValuseToTable = (): ValuesToTable[] => {
-    return customers.map((customer) => ({
-      id: customer.id!,
-      name: customer.name,
-      phone: customer.phone,
-      email: customer.email,
-      businessName: customer.businessName || "לא זמין",
-      businessType: customer.businessType || "לא זמין",
-      status: customer.status,
-    }));
-  };
-
-  const columns: TableColumn<ValuesToTable>[] = [
-    { header: "שם", accessor: "name" },
-    { header: "פלאפון", accessor: "phone" },
-    { header: "מייל", accessor: "email" },
-    {
-      header: "סטטוס",
-      accessor: "status",
-      render: (value, row) => (
-        <div className="flex justify-between items-center">
-          {statusLabels[row.status as CustomerStatus] || row.status}
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => navigate(`updateStatus/${row.id}`)}
-          >
-            <Pencil size={10} />
-          </Button>
-        </div>
-      ),
-    },
-    { header: "שם העסק", accessor: "businessName" },
-    { header: "סוג עסק", accessor: "businessType" },
-  ];
 
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
-    try {
-      await deleteCustomer(val.id)
-      await fetchCustomers(page, 20, "");
-      // setCustomers((prev) => prev.filter(customer => customer.id !== val.id));
-      // allCustomersRef.current = allCustomersRef.current.filter((customer) => customer.id !== val.id);
+    const confirmed = await ShowAlertWarn(
+      "האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?",
+      "לא ניתן לשחזר את המידע לאחר מחיקה."
+    );
+
+    if (confirmed) {
+      await deleteCustomer(val.id);
       showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Axios error:', error.response?.data);
-        showAlert("שגיאה במחיקת לקוח", `שגיאה מהשרת: ${error.response?.data.error.details || 'שגיאה לא ידועה'}`, "error");
-      } else {
-        // טיפול בשגיאות אחרות
-        console.error('Unexpected error:', error);
-        showAlert("שגיאה במחיקת לקוח", 'שגיאה בלתי צפויה', "error");
+      const latestError = useCustomerStore.getState().error;
+      if (latestError) {
+        const errorMessage = latestError || "שגיאה בלתי צפויה";
+        console.error("Error:", errorMessage);
+        showAlert("שגיאה במחיקת לקוח", errorMessage, "error");
       }
-      // showAlert("שגיאה", `מחיקת לקוח נכשלה\n${error}`, "error");
     }
   };
 
@@ -249,131 +117,108 @@ export const CustomersList = () => {
     debouncedSearch(value);
   };
 
-  const translateStatus = (status: CustomerStatus): string => {
-    switch (term) {
-      case "פעיל":
-        return CustomerStatus.ACTIVE;
-      case "הודעת עזיבה":
-        return CustomerStatus.NOTICE_GIVEN;
-      case "עזב":
-        return CustomerStatus.EXITED;
-      case "בהמתנה":
-        return CustomerStatus.PENDING;
-      default:
-        return status; // מחזיר את הסטטוס המקורי אם לא נמצא ת
+  const searchInApi = async (e: { key: string }) => {
+    if (
+      (e.key === "Enter" && searchTerm.trim()) ||
+      customers.length === 0
+    ) {
+      await searchCustomersByText(searchTerm);
     }
   };
 
+  const getCardData = () => {
+    return customers.map((c) => ({
+      id: c.id!,
+      name: c.name,
+      phone: c.phone,
+      email: c.email,
+      businessName: c.businessName,
+      businessType: c.businessType,
+      status: c.status,
+      idNumber: c.idNumber,
+      currentWorkspaceType: c.currentWorkspaceType,
+      workspaceCount: c.workspaceCount,
+      contractSignDate: c.contractSignDate,
+      contractStartDate: c.contractStartDate,
+      billingStartDate: c.billingStartDate,
+      notes: c.notes,
+      invoiceName: c.invoiceName,
+      paymentMethodType: c.paymentMethodType,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+    }));
+  };
+
   return (
-    <>
-      {isLoading ? (
-        <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
-          טוען...
-        </h2>
-      ) : (
-        <div className="p-6">
-          <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
-            לקוחות
-          </h2>
-          <ExportToExcel data={customers} fileName="לקוחות" />
-          <br />
-          <br />
-          <Stack spacing={2} direction="row">
-            <TextField
-              label="חיפוש"
-              fullWidth
-              value={searchTerm}
-              onChange={handleChange}
-              onKeyDown={(e) => {
-                if (
-                  (e.key === "Enter" && searchTerm.trim()) ||
-                  customers.length === 0 // אין תוצאות בדף הנוכחי
-                ) {
-                  console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
+    <div className="p-6">
+      <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
+        לקוחות
+      </h2>
 
-                  axios
-                    .get("http://localhost:3001/api/customers/search", {
-                      params: { text: searchTerm },
-                    })
-                    .then((response) => {
-                      const data: Customer[] = response.data.map(
-                        (item: any) => ({
-                          ...item,
-                          businessName: item.business_name,
-                          businessType: item.business_type,
-                        })
-                      );
+    <div className="flex items-center gap-4 mb-4">
+  <Button variant="primary" size="sm" onClick={() => navigate("new")} className="flex gap-1 items-center">
+    ➕ הוספת לקוח חדש
+  </Button>
+  <ExportToExcel data={customers} fileName="לקוחות" />
+</div>
 
-                      setCustomers(data);
-                      allCustomersRef.current = data;
-                      console.log("✅ תוצאות שהגיעו מהשרת:", data.length);
-                    })
-                    .catch((error) => {
-                      console.error("שגיאה בחיפוש מהשרת:", error);
-                    });
-                }
-              }}
+      <br />
+      <Stack spacing={2} direction="row">
+        <TextField
+          label="חיפוש"
+          fullWidth
+          value={searchTerm}
+          onChange={handleChange}
+          onKeyDown={searchInApi}
+        />
+      </Stack>
+
+      <div className="relative mt-6">
+        <div className="grid gap-4">
+          {getCardData().map((customer) => (
+            <ExpandableCustomerCard
+              key={customer.id}
+              {...customer}
+              onEdit={() => editCustomer({ id: customer.id })}
+              onDelete={() => deleteCurrentCustomer({ id: customer.id })}
             />
-          </Stack>
-          <br />
-          <Table<ValuesToTable>
-            data={getValuseToTable()}
-            columns={columns}
-            onDelete={deleteCurrentCustomer}
-            onUpdate={editCustomer}
-            renderActions={(row) => (
-              <>
-                {/* <NavLink
-                  to={`:${row.id}/dashboard`}
-                  className="text-blue-500 hover:underline ml-2"
-                >
-                  לוח בקרה
-                </NavLink>
-                <NavLink
-                  to={`:${row.id}/contract`}
-                  className="text-blue-500 hover:underline ml-2"
-                >
-                  חוזה לקוח
-                </NavLink> */}
-                <Button
-                  onClick={() => navigate(`:${row.id}`, { state: { data: customers.find(c => c.id == row.id) } })}
-                  variant="primary"
-                  size="sm"
-                >
-                  פרטי הלקוח
-                </Button>
-              </>
-            )}
-          />{" "}
-          <Button
-            variant="secondary"
-            disabled={page <= 1}
-            onClick={() => {
-              if (page > 1) {
-                const prevPage = page - 1;
-                setPage(prevPage);
-                fetchCustomers(prevPage, 20, "");
-              }
-            }}
-          >
-            דף הקודם
-          </Button>
-          <Button
-            variant="secondary"
-            // disabled={!hasMore}
-            onClick={() => {
-              // if (hasMore) {
-              const nextPage = page + 1;
-              setPage(nextPage);
-              fetchCustomers(nextPage, 20, "");
-              // }
-            }}
-          >
-            <span></span> הבא
-          </Button>
-          <div ref={loaderRef} className="h-4"></div>
+          ))}
         </div>
-      )}
-    </>
+
+        {loading && (
+          <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+            <div className="loader border-8 border-gray-300 border-t-8 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
+          </div>
+        )}
+      </div>
+
+
+      <div className="flex justify-center space-x-4 my-4">
+        <Button
+          variant={currentPage > 1 ? "secondary" : "accent"}
+          disabled={currentPage <= 1}
+          onClick={async () => {
+            if (currentPage > 1) {
+              await fetchPrevPage();
+            }
+          }}
+        >
+          <span>❮❮</span> הקודם
+        </Button>
+        <Button
+          variant={customers.length === limit ? "secondary" : "accent"}
+          disabled={customers.length < limit}
+          onClick={async () => {
+            if (customers.length === limit) {
+              await fetchNextPage();
+            }
+          }}
+        >
+          הבא <span>❯❯</span>
+        </Button>
+      </div>
+
+      <div ref={loaderRef} className="h-4"></div>
+    </div>
   );
 };

@@ -14,18 +14,13 @@ export enum TimePeriod {
   YEARLY = 'YEARLY'
 }
 export enum ReportType {
+  CUSTOMER_AGING = 'CUSTOMER_AGING',
   REVENUE = 'REVENUE',
   EXPENSES = 'EXPENSES',
   PROFIT_LOSS = 'PROFIT_LOSS',
   CASH_FLOW = 'CASH_FLOW',
-  CUSTOMER_AGING = 'CUSTOMER_AGING',
   OCCUPANCY_REVENUE = 'OCCUPANCY_REVENUE'
 }
-
-
-
-
-
 // Export format
 export enum ExportFormat {
   CSV = 'CSV',
@@ -55,7 +50,6 @@ percentage: number;
 }[];
 monthlyTrend: {
 month: string;
-
 totalExpenses: number;
 topCategories: {
 category: ExpenseCategory;
@@ -63,6 +57,27 @@ amount: number;
 }[];
 }[];
 }
+export interface OccupancyRevenueReportData {
+  occupancyData: {
+    date: string; // ISO או YYYY-MM לפי groupBy
+    totalSpaces: number;
+    occupiedSpaces: number;
+    openSpaceCount: number;
+    deskInRoomCount: number;
+    privateRoomCount: number;
+    roomForThreeCount: number;
+    klikahCardCount: number;
+    occupancyRate: number; // אחוז תפוסה
+    revenue: number; // הכנסה ממקומות תפוסים
+  }[];
+  summary: {
+    averageOccupancyRate: number; // ממוצע אחוזי תפוסה
+    maxOccupancyRate: number;     // התפוסה המקסימלית בתקופה
+    minOccupancyRate: number;     // התפוסה המינימלית בתקופה
+    totalCustomerCount: number;   // מספר לקוחות כולל
+  };
+}
+
 // Occupancy report request
 export interface OccupancyReportRequest {
   period: TimePeriod;
@@ -83,7 +98,7 @@ export interface OccupancyReportResponse {
     openSpaceCount: number;
     deskInRoomCount: number;
     privateRoomCount: number;
-    roomForThreeCount: number;
+    // roomForThreeCount: number;
     klikahCardCount: number;
     occupancyRate: number; // Percentage
   }[];
@@ -130,13 +145,38 @@ export interface RevenueReportResponse {
     percentOfTotal: number;
   }[];
 }
+export interface ProfitLossReportData {
+  totalRevenue: number;
+  totalExpenses: number;
+  totalProfit: number;
+  breakdown: {
+    date: string; // YYYY-MM או YYYY-MM-DD לפי groupBy
+    revenue: number;
+    expenses: number;
+    profit: number;
+  }[];
+}
+export interface CashFlowReportData {
+  totalPayments: number; // סה"כ תשלומים שהתקבלו
+  totalExpenses: number; // סה"כ הוצאות
+  cashFlow: number; // תזרים מזומנים (תשלומים - הוצאות)
+  breakdown: {
+    date: string; // YYYY-MM או YYYY-MM-DD לפי groupBy
+    totalPayments: number; // סה"כ תשלומים בתקופה
+  }[]; // נתוני תשלומים לפי תקופה
+  revenueByCategory: {
+    category: string; // שם הקטגוריה (למשל: 'Workspace', 'Meeting Room', 'Lounge', 'Other')
+    amount: number; // הסכום שהתקבל בקטגוריה
+  }[]; // סיכום הכנסות לפי קטגוריה
+}
+
 export interface ReportData {
 revenueData: RevenueReportData;
 expenseData: ExpenseReportData;
-// profitLossData: ProfitLossReportData;
-// cashFlowData: CashFlowReportData;
+profitLossData: ProfitLossReportData;
+cashFlowData: CashFlowReportData;
 // customerAgingData: CustomerAgingReportData;
-// occupancyRevenueData: OccupancyRevenueReportData;
+occupancyRevenueData: OccupancyRevenueReportData;
 }
 // Expense report request
 export interface ExpenseReportRequest {

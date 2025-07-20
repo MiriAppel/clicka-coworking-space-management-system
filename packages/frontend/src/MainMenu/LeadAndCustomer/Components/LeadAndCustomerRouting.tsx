@@ -15,9 +15,7 @@ import { InteractionForm } from "./Interactions/interactionForm";
 // import { addInteraction } from "./Interactions/leadInteractionDetails";
 import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
-import { CustomerDetails } from "./Customers/customerDetails";
-
-import LeadSourcesPieChart from './Leads/LeadSourcesPieChart';
+import { NewCustomerPage } from "./Customers/newCustomer";
 
 export const LeadAndCustomerRouting = () => {
     const nav = useNavigate()
@@ -29,13 +27,15 @@ export const LeadAndCustomerRouting = () => {
             <Route path="/" element={<LeadAndCustomer />} />
             <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
-            <Route path="customers/:customerId" element={<CustomerDetails />} />
+            <Route path="customers/new" element={<NewCustomerPage />} />
+            {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
             <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
             <Route path="contracts" element={<ContractManagement />} />
             <Route path="contracts/:customerId" element={<ContractDetails />} />
             <Route path="contracts/new" element={<AddContract />} />
+            <Route path="leads" element={<LeadInteractions />} />
             <Route path="leads" element={<LeadInteractions />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             

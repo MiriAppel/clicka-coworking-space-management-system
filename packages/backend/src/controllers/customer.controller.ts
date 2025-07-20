@@ -3,10 +3,12 @@ import { customerService } from "../services/customer.service";
 import {
   CreateCustomerRequest,
   ID,
-  PaymentMethodType,
-  ContractStatus,
+  StatusChangeRequest,
+
 } from "shared-types";
 import { contractService } from "../services/contract.service";
+import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.service";
+import { UserTokenService } from "../services/userTokenService";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
@@ -33,14 +35,17 @@ export const postCustomer = async (req: Request, res: Response) => {
     console.log("in controller");
     console.log(customer);
 
-        res.status(200).json(customer);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching customers', error });
-    }
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching customers', error });
+  }
 }
 
 export const getCustomerById = async (req: Request, res: Response) => {
+
   const { id } = req.params;
+  console.log("in getCustomerById", id);
+
   try {
     const customer = await serviceCustomer.getById(id);
     if (customer) {
@@ -57,13 +62,13 @@ export const searchCustomersByText = async (req: Request, res: Response) => {
   try {
     const text = req.query.text as string;
 
-    if (!text || text.trim() === "") {
-      return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
-    }
+    // if (!text || text.trim() === "") {
+    //   return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
+    // }
 
     console.log("מחפש לקוחות עם טקסט:", text);
     const leads = await serviceCustomer.getCustomersByText(text);
-    console.log("לקוחות שמצאתי:", leads);
+    // console.log("לקוחות שמצאתי:", leads);
 
     return res.json(leads);
   } catch (error) {
@@ -166,6 +171,7 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
 export const patchCustomer = async (req: Request, res: Response) => {
   const { id } = req.params;
   const updateData = req.body; // נתוני העדכון החלקיים
+  console.log("Update data received in patchCustomer controller:", updateData);
 
   try {
     // await serviceCustomer.patch(updateData, id)
@@ -176,6 +182,16 @@ export const patchCustomer = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error patching customer", error });
   }
 };
+
+export const getCustomerPaymentMethods = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(id);
+    res.status(200).json(paymentMethods);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching customer payment methods", error });
+  }
+}
 
 // לשאול את שולמית לגבי זה
 
@@ -203,3 +219,40 @@ export const patchCustomer = async (req: Request, res: Response) => {
 //         res.status(500).json({ message: 'Error fetching status changes', error});
 //     }
 // }
+export const changeCustomerStatus = async (req: Request, res: Response) => {
+  try {
+    console.log("changeCustomerStatus called with params:", req.params);
+    const userTokenService = new UserTokenService();
+    const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
+    const statusChangeData : StatusChangeRequest = req.body; // פרטים לשינוי הסטטוס
+
+    const token = await userTokenService.getSystemAccessToken();
+    console.log("changeCustomerStatus called with token:", token);
+
+    // הנחת שהמשתמש מחובר ויש לו מזהה
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing access token" });
+    }
+
+    if (!id || !statusChangeData) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
+    await serviceCustomer.sendStatusChangeEmails(
+      statusChangeData,
+      id,
+      token
+    );
+
+    res
+      .status(200)
+      .json({ message: "Status change processed and emails sent." });
+  } catch (error) {
+    console.error("Error in changeCustomerStatus:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+

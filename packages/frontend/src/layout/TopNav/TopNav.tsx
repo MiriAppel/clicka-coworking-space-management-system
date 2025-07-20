@@ -5,6 +5,7 @@ import MobileMenu from '../MobileMenu/MobileMenu';
 import { useMediaQuery } from 'react-responsive';
 import { menus } from '../menuData';
 import { T } from '../../Common/Service/T';
+import logo from '../Assets/Klika Logo.jpg'; 
 
 const TopNav = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -12,15 +13,16 @@ const TopNav = () => {
   const navRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [clickedMenuKey, setClickedMenuKey] = useState<string>('');
-  const isMobile = useMediaQuery({ maxWidth: 970 });
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   const isMenuOpen = (menu: string) =>
     openMenu === menu || (hoveredMenu === menu && !openMenu);
 
   const toggleMenu = (menu: string) => {
-    setOpenMenu((prev) => (prev === menu ? null : menu));
+    setOpenMenu(prev => (prev === menu ? null : menu));
   };
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const isMobile = useMediaQuery({ maxWidth: 970 });
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -34,6 +36,12 @@ const TopNav = () => {
 
   return (
     <nav className={styles.topNav} ref={navRef}>
+      {!isMobile && (
+        <div className={styles.logoWrapper}>
+          <img src={logo} alt="Clicka Logo" className={styles.logo} />
+        </div>
+      )}
+
       {isMobile && !mobileOpen && (
         <button
           onClick={() => setMobileOpen(true)}
@@ -43,14 +51,13 @@ const TopNav = () => {
           ☰
         </button>
       )}
-
       {isMobile && (
         <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
       )}
 
       {!isMobile && (
         <ul className={styles.navList}>
-          {menus.map((menu) => (
+          {menus.map(menu => (
             <li
               key={menu.key}
               className={`${styles.navItem} ${

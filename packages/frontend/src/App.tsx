@@ -9,6 +9,7 @@ import { Button } from './Common/Components/BaseComponents/Button';
 import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
 import LanguageSelector from './Common/Components/LanguageSelector';
 
+import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -43,26 +44,28 @@ function App() {
 
   return (
     <AuthProvider>
-      <div className="App">
-
-        <header className="App-header">
-          <h3>welcome to our world</h3>
-          <h1>Clicka</h1>
-          <h2>Co-working Space Management System</h2>
-        </header>
-        <Button
-          onClick={() => navigate('/graph')}
-
-          className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
-        >
-
-          graph
-        </Button>
-        <div className='menu' style={{ backgroundColor: 'black' }}>
-        </div>
-        <LanguageSelector></LanguageSelector>
-        <Accesibility></Accesibility>
-
+    <div className="App">     
+      <header className="App-header">
+        <h3>welcome to our world</h3>
+        <h1>Clicka</h1>
+        <h2>Co-working Space Management System</h2>
+      </header>
+<Button
+  onClick={() => navigate('/graph')}
+  
+  className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
+>
+ 
+  graph
+</Button>
+      <div className='menu' style={{ backgroundColor: 'black' }}>
+      </div>
+     
+      <Accesibility></Accesibility>
+       <Routes>
+          <Route path="/pricing" element={<PricingConfigurationPage />} />
+          {/* אפשר להוסיף כאן ראוטים נוספים */}
+        </Routes>
         <AuthenticationScreen />
       </div>
     </AuthProvider>
