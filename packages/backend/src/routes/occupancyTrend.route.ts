@@ -15,6 +15,7 @@ occupancyrouter.get('/:id/export', OccupancyTrendControllers.exportOccupancyTren
 occupancyrouter.post('/createTrend', OccupancyTrendControllers.createTrend);
 occupancyrouter.delete('/deleteTrend/:id', OccupancyTrendControllers.deleteTrend);
 occupancyrouter.get('/getTrendById/:id', OccupancyTrendControllers.getTrendById);
+occupancyrouter.get('/getHistory/:date',OccupancyTrendControllers.getHistory);
 
 export default occupancyrouter;
 

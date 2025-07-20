@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAssignmentStore } from "../../../Stores/Workspace/assigmentStore";
+import { WorkspaceType } from "shared-types"; 
 
 interface AssignmentFormProps {
   onSubmit?: (data: any) => Promise<void>;
@@ -8,13 +9,14 @@ interface AssignmentFormProps {
   // Props פשוטים וישירים
   workspaceId?: string | number;
   workspaceName?: string;
+  workspaceType?: WorkspaceType;
   customerId?: string | number;
   customerName?: string;
   assignedDate?: string;
   unassignedDate?: string;
   notes?: string;
   assignedBy?: string;
-  status?: 'ACTIVE' | 'INACTIVE' | 'ENDED';
+  status?: 'ACTIVE' | 'SUSPENDED' | 'ENDED';
 }
 
 export const AssignmentForm: React.FC<AssignmentFormProps> = ({
@@ -22,6 +24,7 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   title = "הקצאת חלל עבודה",
   workspaceId,
   workspaceName,
+  workspaceType,
   customerId,
   customerName,
   assignedDate,
@@ -35,13 +38,17 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
     customers,
     loading,
     error,
+    conflictCheck, 
     getAllSpaces,
     getAllCustomers,
     createAssignment,
+    checkConflicts,
     clearError,
   } = useAssignmentStore();
+  
+  const [isCheckingConflicts, setIsCheckingConflicts] = useState(false);
 
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit, reset, watch } = useForm({
     defaultValues: {
       workspaceId: workspaceId || "",
       customerId: customerId || "",
@@ -52,6 +59,11 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
       status: status,
     },
   });
+
+  // מעקב אחר שינויים בשדות
+  const watchedWorkspaceId = watch("workspaceId");
+  const watchedAssignedDate = watch("assignedDate");
+  const watchedUnassignedDate = watch("unassignedDate");
 
  useEffect(() => { 
   const loadData = async () => {
@@ -72,6 +84,50 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
     clearError();
   };
 }, []); // ← רק פעם אחת בטעינה
+
+  // בדיקת קונפליקטים בזמן אמת
+  useEffect(() => {
+    const checkForConflicts = async () => {
+      if (watchedWorkspaceId && watchedAssignedDate) {
+        setIsCheckingConflicts(true);
+        try {
+          await checkConflicts(
+            watchedWorkspaceId,
+            watchedAssignedDate,
+            watchedUnassignedDate || undefined
+          );
+        } catch (error) {
+          console.error('Error checking conflicts:', error);
+        } finally {
+          setIsCheckingConflicts(false);
+        }
+      }
+    };
+
+    const timeoutId = setTimeout(checkForConflicts, 500);
+    return () => clearTimeout(timeoutId);
+  }, [watchedWorkspaceId, watchedAssignedDate, watchedUnassignedDate, checkConflicts]);
+
+const filteredSpaces = React.useMemo(() => {
+    if (!workspaceType) {
+      return spaces;
+    }
+    
+    console.log('Filtering spaces by type:', workspaceType);
+    console.log('Available spaces:', spaces.map(s => ({ id: s.id, name: s.name, type: s.type })));
+    
+    const filtered = spaces.filter(space => {
+      // נקה את הערך מגרשיים מיותרים אם יש
+      const spaceType = typeof space.type === 'string' 
+        ? space.type.replace(/^"(.*)"$/, '$1') 
+        : space.type;
+      
+      return spaceType === workspaceType;
+    });
+    
+    console.log('Filtered spaces:', filtered);
+    return filtered;
+  }, [spaces, workspaceType]);
 
 // הוספת useEffect נפרד לdebug
 useEffect(() => {
@@ -129,6 +185,45 @@ if (loading) {
         </div>
       )}
 
+      
+      {/* הצגת תוצאות בדיקת קונפליקטים */}
+      {isCheckingConflicts && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600 mr-2"></div>
+            <span className="text-sm text-yellow-800">בודק קונפליקטים...</span>
+          </div>
+        </div>
+      )}
+
+      {conflictCheck && !isCheckingConflicts && (
+        <div className={`mb-4 p-3 rounded-md ${
+          conflictCheck.hasConflicts 
+            ? 'bg-red-50 border border-red-200' 
+            : 'bg-green-50 border border-green-200'
+        }`}>
+          <div className={`text-sm font-medium ${
+            conflictCheck.hasConflicts ? 'text-red-800' : 'text-green-800'
+          }`}>
+            {conflictCheck.message}
+          </div>
+          
+          {conflictCheck.hasConflicts && conflictCheck.conflicts.length > 0 && (
+            <div className="mt-2 text-xs text-red-600">
+              <strong>קונפליקטים:</strong>
+              <ul className="mt-1 list-disc list-inside">
+                {conflictCheck.conflicts.map((conflict, index) => (
+                  <li key={index}>
+                    {conflict.assignedDate} - {conflict.unassignedDate || 'ללא תאריך סיום'}
+                    {conflict.notes && ` (${conflict.notes})`}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* חלל עבודה */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -150,7 +245,7 @@ if (loading) {
             <option value="">בחר חלל עבודה</option>
             {spaces.length > 0 && spaces.map((space) => (
               <option key={space.id} value={space.id}>
-                {space.name} {space.capacity && `(${space.capacity} מקומות)`}
+                {space.name}  
               </option>
             ))}
           </select>
@@ -242,7 +337,7 @@ if (loading) {
           className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="ACTIVE">פעיל</option>
-          <option value="INACTIVE">לא פעיל</option>
+          <option value="SUSPENDED">מושעה</option>
           <option value="ENDED">הסתיים</option>
         </select>
       </div>
@@ -252,8 +347,7 @@ if (loading) {
         disabled={loading}
         className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
       >
-        {loading ? "שומר..." : "שמור הקצאה"}
-      </button>
+ {loading ? "שומר..." : conflictCheck?.hasConflicts ? "שמור למרות קונפליקטים" : "שמור הקצאה"}      </button>
     </form>
   );
 };

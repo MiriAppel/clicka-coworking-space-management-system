@@ -48,6 +48,12 @@ export interface Room {
   googleCalendarId?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
+    positionX: number;
+  positionY: number;
+  workspaceMapId: ID; // Assuming this is a reference to a WorkspaceMap
+  // ממדי סביבת העבודה
+  width: number;
+  height: number;
 }
 export interface BookingRules {
   MinimumBookingMinutes: number;

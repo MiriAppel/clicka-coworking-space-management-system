@@ -87,4 +87,35 @@ export class SpaceAssignmentController {
             res.status(500).json({ message: 'Error deleting assignment' });
         }
     }
+
+    async checkConflicts(req: Request, res: Response) {
+        try {
+            const { workspaceId, assignedDate, unassignedDate, excludeId } = req.body;
+            
+            console.log('Checking conflicts for:', { workspaceId, assignedDate, unassignedDate, excludeId });
+            
+            const conflicts = await this.spaceAssignmentService.checkConflicts(
+                workspaceId, 
+                assignedDate, 
+                unassignedDate, 
+                excludeId
+            );
+            
+            res.status(200).json({
+                hasConflicts: conflicts.length > 0,
+                conflicts: conflicts,
+                message: conflicts.length > 0 
+                    ? `נמצאו ${conflicts.length} קונפליקטים` 
+                    : 'אין קונפליקטים'
+            });
+        } catch (error) {
+            console.error('Error checking conflicts:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            res.status(500).json({ 
+                error: "Failed to check conflicts", 
+                details: errorMessage 
+            });
+        }
+    }
+
 }

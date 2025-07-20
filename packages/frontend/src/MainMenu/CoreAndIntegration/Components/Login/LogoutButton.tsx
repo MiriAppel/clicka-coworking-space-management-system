@@ -1,7 +1,6 @@
-import axios from 'axios';
 import { useAuthStore } from '../../../../Stores/CoreAndIntegration/useAuthStore'; // ודאי שהנתיב נכון
 import { useNavigate } from 'react-router-dom';
-import { axiosInstance } from '../../../../Services/Axios';
+import { axiosInstance } from '../../../../Service/Axios';
 
 export const LogoutButton = () => {
   const clearAuth = useAuthStore((state) => state.clearUser); // Function that clears the auth state
@@ -9,7 +8,8 @@ export const LogoutButton = () => {
 
   const handleLogout = async () => {
     try {
-      await axiosInstance.post('/api/auth/logout', {}, { withCredentials: true });
+      await axiosInstance.post('/auth/logout'); // Adjust the endpoint as necessary
+      console.log('Logout successful');
       clearAuth();
       navigate('/'); // // Or any other page
     } catch (error) {

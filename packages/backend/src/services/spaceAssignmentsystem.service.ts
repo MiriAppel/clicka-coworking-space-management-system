@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { RoomModel } from "../models/room.model";
-import type { ID } from "shared-types";
+import type { DateRangeFilter, ID, OccupancyReportResponse } from "shared-types";
 import dotenv from 'dotenv';
 import { SpaceAssignmentModel } from '../models/spaceAssingment.model';
 dotenv.config();
@@ -88,4 +88,73 @@ async  getSpaceById(id:string) {
             const space = SpaceAssignmentModel.fromDatabaseFormat(data);
             return space;
 }
+
+   // בדיקת קונפליקטים
+    async checkConflicts(
+        workspaceId: string, 
+        assignedDate: string, 
+        unassignedDate?: string, 
+        excludeId?: string
+    ): Promise<SpaceAssignmentModel[]> {
+        try {
+            console.log('Checking conflicts in DB for:', { workspaceId, assignedDate, unassignedDate, excludeId });
+            
+            let query = supabase
+                .from('space_assignment')
+                .select('*')
+                .eq('workspace_id', workspaceId)
+                .in('status', ['ACTIVE']); // לא כולל ENDED
+            
+            // אם יש excludeId (למקרה של עדכון), לא לכלול אותו
+            if (excludeId) {
+                query = query.neq('id', excludeId);
+            }
+            
+            const { data, error } = await query;
+            
+            if (error) {
+                console.error('Supabase error in checkConflicts:', error);
+                throw new Error(`Failed to check conflicts: ${error.message}`);
+            }
+            
+            if (!data || data.length === 0) {
+                console.log('No existing assignments found');
+                return [];
+            }
+            
+            // המרה לאובייקטים
+            const existingAssignments = data.map(item => SpaceAssignmentModel.fromDatabaseFormat(item));
+            console.log('Found existing assignments:', existingAssignments.length);
+            
+            // בדיקת חפיפות
+            const conflicts = existingAssignments.filter(existing => {
+                const existingStart = new Date(existing.assignedDate);
+                const existingEnd = existing.unassignedDate ? new Date(existing.unassignedDate) : null;
+                const newStart = new Date(assignedDate);
+                const newEnd = unassignedDate ? new Date(unassignedDate) : null;
+                
+                // אם ההקצאה הקיימת אין לה תאריך סיום - היא פעילה לתמיד
+                if (!existingEnd) {
+                    // אם ההקצאה החדשה מתחילה אחרי הקיימת - יש קונפליקט
+                    return newStart >= existingStart;
+                }
+                
+                // אם להקצאה החדשה אין תאריך סיום
+                if (!newEnd) {
+                    // אם היא מתחילה לפני שהקיימת מסתיימת - יש קונפליקט
+                    return newStart <= existingEnd;
+                }
+                
+                // בדיקת חפיפה רגילה
+                return (newStart <= existingEnd && newEnd >= existingStart);
+            });
+            
+            console.log('Found conflicts:', conflicts.length);
+            return conflicts;
+            
+        } catch (error) {
+            console.error('Error in checkConflicts:', error);
+            throw error;
+        }
+    }
 }
