@@ -49,7 +49,6 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     loading,
     error,
     fetchBookings,
-    createBooking,
     updateBooking,
     deleteBooking
   } = useBookingCalendarStore();
@@ -255,31 +254,31 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     }
   };
 
-  const handleEditBooking = async (booking: any) => {
-    // יצירת פורם דינמי לעדכון
-    const newStartTime = prompt('זמן התחלה (YYYY-MM-DDTHH:MM):', booking.startTime?.slice(0, 16));
-    if (!newStartTime) return;
+  // const handleEditBooking = async (booking: any) => {
+  //   // יצירת פורם דינמי לעדכון
+  //   const newStartTime = prompt('זמן התחלה (YYYY-MM-DDTHH:MM):', booking.startTime?.slice(0, 16));
+  //   if (!newStartTime) return;
     
-    const newEndTime = prompt('זמן סיום (YYYY-MM-DDTHH:MM):', booking.endTime?.slice(0, 16));
-    if (!newEndTime) return;
+  //   const newEndTime = prompt('זמן סיום (YYYY-MM-DDTHH:MM):', booking.endTime?.slice(0, 16));
+  //   if (!newEndTime) return;
     
-    const newNotes = prompt('הערות:', booking.notes || '');
+  //   const newNotes = prompt('הערות:', booking.notes || '');
     
-    // יצירת אובייקט עדכון לפי הטייפס
-    const updateData: UpdateBookingRequest = {
-      startTime: newStartTime,
-      endTime: newEndTime,
-      notes: newNotes || undefined
-    };
+  //   // יצירת אובייקט עדכון לפי הטייפס
+  //   const updateData: UpdateBookingRequest = {
+  //     startTime: newStartTime,
+  //     endTime: newEndTime,
+  //     notes: newNotes || undefined
+  //   };
     
-    try {
-      await updateBooking(booking.id, updateData);
-      alert('ההזמנה עודכנה בהצלחה!');
-    } catch (error) {
-      alert('שגיאה בעדכון ההזמנה');
-      console.error('Update error:', error);
-    }
-  };
+  //   try {
+  //     await updateBooking(booking.id, updateData);
+  //     alert('ההזמנה עודכנה בהצלחה!');
+  //   } catch (error) {
+  //     alert('שגיאה בעדכון ההזמנה');
+  //     console.error('Update error:', error);
+  //   }
+  // };
 
   const handleAdvancedEdit = async (booking: any) => {
     const formData = {

@@ -10,23 +10,23 @@ import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAler
 export const LoginWithGoogle = () => {
     // const setUser = useAuthStore((state) => state.setUser);
     const { setUser, setSessionId } = useAuthStore();
-    interface GoogleCodeResponse {
-        code: string;
-        // Add other properties if needed
-    }
+    // interface GoogleCodeResponse {
+    //     code: string;
+    //     // Add other properties if needed
+    // }
 
-    interface GoogleLoginConfig {
-        flow: 'auth-code';
-        onSuccess: (codeResponse: GoogleCodeResponse) => Promise<void>;
-        onError: (error: unknown) => void;
-        scope: string;
-        redirect_uri: string;
-        extraQueryParams: {
-            prompt: string;
-            access_type: string;
-            include_granted_scopes: string;
-        };
-    }
+    // interface GoogleLoginConfig {
+    //     flow: 'auth-code';
+    //     onSuccess: (codeResponse: GoogleCodeResponse) => Promise<void>;
+    //     onError: (error: unknown) => void;
+    //     scope: string;
+    //     redirect_uri: string;
+    //     extraQueryParams: {
+    //         prompt: string;
+    //         access_type: string;
+    //         include_granted_scopes: string;
+    //     };
+    // }
 
     const login = useGoogleLogin({
         flow: 'auth-code',

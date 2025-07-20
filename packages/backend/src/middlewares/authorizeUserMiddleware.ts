@@ -21,6 +21,8 @@ export const authorizeUser = (permission: UserRole[]) => {
 
             // שליפת ה role מהטוקן
             const userRole = payload.role as UserRole;
+            console.log('User role:', userRole);
+            
 
             // בדיקה אם יש role בטוקן
             if (!userRole) {

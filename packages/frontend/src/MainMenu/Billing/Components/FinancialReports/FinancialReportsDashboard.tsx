@@ -4,10 +4,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { useTheme } from '../../../../Common/Components/themeConfig';
-
+// import { useTheme } from '../../../../Common/Components/themeConfig';
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
@@ -72,7 +70,7 @@ export const FinancialReportsDashboard: React.FC = () => {
       customerIds: [],
     },
   });
-  const { theme } = useTheme();  // גישה לנושא הצבעים
+  // const { theme } = useTheme();  // גישה לנושא הצבעים
 
   const fetchReport = useFinancialReportsStore((s) => s.fetchReport);
   const reportData = useFinancialReportsStore((s) => s.reportData);

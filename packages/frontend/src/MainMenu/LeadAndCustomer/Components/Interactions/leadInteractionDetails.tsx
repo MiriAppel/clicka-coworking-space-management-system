@@ -1,9 +1,8 @@
 import { FaPhone, FaEnvelope, FaUsers, FaQuestion } from "react-icons/fa";
-import React, { useEffect, useState } from "react";
 import { FaTrash, FaPen } from "react-icons/fa"; // ייבוא האייקונים
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { useLocation, useNavigate } from "react-router-dom";
-import { InteractionType, Lead, LeadInteraction } from "shared-types";
+import { useNavigate } from "react-router-dom";
+import { InteractionType } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { ChartData, ChartDisplay } from "../../../../Common/Components/BaseComponents/Graph";
 import { set } from "lodash";
@@ -25,7 +24,7 @@ export const LeadInteractionDetails = () => {
   const navigate = useNavigate();
   const selectedLead = useLeadsStore(state => state.selectedLead);
   const { handleDeleteInteraction, handleSelectLead, resetSelectedLead } = useLeadsStore();
-  const location = useLocation();
+  // const location = useLocation();
   const isEditModalOpen = useLeadsStore(state => state.isEditModalOpen);
   const setIsEditModalOpen = useLeadsStore(state => state.setIsEditModalOpen);
   const editingInteraction = useLeadsStore(state => state.editingInteraction);

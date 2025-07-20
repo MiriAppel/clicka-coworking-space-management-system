@@ -12,7 +12,6 @@ type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteractio
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 
 export const LeadInteractions = () => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const navigate = useNavigate();
@@ -44,7 +43,7 @@ export const LeadInteractions = () => {
     fetchLeads().then(() => {
       allLeadsRef.current = useLeadsStore.getState().leads;
     });
-  }, [page]);
+  }, [page,fetchLeads]);
 
   useEffect(() => {
     const handleScroll = () => {

@@ -25,6 +25,7 @@ export const useScreenReader = (): ScreenReaderHook => {
     return () => {
       removeReadingEventListeners();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScreenReaderMode]);
 
   const isSpeechSupported = (): boolean => {
@@ -45,6 +46,7 @@ export const useScreenReader = (): ScreenReaderHook => {
     } else {
       disableScreenReaderMode();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isScreenReaderMode]);
 
   const speak = (text: string, options?: { rate?: number; pitch?: number; volume?: number }): void => {

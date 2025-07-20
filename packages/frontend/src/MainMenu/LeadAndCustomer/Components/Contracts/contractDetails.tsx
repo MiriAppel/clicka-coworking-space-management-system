@@ -1,4 +1,4 @@
-import { Navigate, useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { Contract, ContractStatus, FileReference, WorkspaceType } from "shared-types";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";

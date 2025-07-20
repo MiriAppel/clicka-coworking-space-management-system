@@ -1,4 +1,4 @@
-import { ID, LoginResponse, User } from "shared-types";
+import { ID, LoginResponse, User, UserRole } from "shared-types";
 import { getGoogleUserInfo, getTokens } from "./googleAuthService";
 import jwt from "jsonwebtoken";
 import { saveUserTokens } from "./tokenService";
@@ -6,7 +6,6 @@ import { randomUUID } from "crypto";
 import { UserService } from "./user.service";
 import { sendEmail } from "./gmail-service";
 import { EmailTemplateService } from "./emailTemplate.service";
-import { link } from "fs";
 
 export const sendVerificationEmail = async (
   link: string,
@@ -57,7 +56,7 @@ export const sendVerificationEmail = async (
 };
 
 export const generateJwtToken = (
-  payload: { userId: string; email: string; googleId: string },
+  payload: { userId: string; email: string; googleId: string; role: UserRole},
 ): string => {
   return jwt.sign(
     {

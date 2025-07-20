@@ -1,4 +1,4 @@
-import { Children, ReactNode, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
@@ -9,7 +9,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const { setUser, clearUser, setLoading, setSessionId, sessionId, user } = useAuthStore();
+  const { setUser, clearUser, setLoading, setSessionId, user } = useAuthStore();
 
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         setLoading(true);
         let res = await axiosInstance.get("/auth/verify");
-        if (res.status == 200) {
+        if (res.status === 200) {
           console.log("Authenticated successfully");
           const data = res.data;
           setUser(data.user);
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user != null) {
       interval = setInterval(async () => {
         try {
-          const res = await axiosInstance.get("/auth/verify");
+          await axiosInstance.get("/auth/verify");
         } catch (err: any) {
           if (axios.isAxiosError(err) && err.response?.status === 409) {
             console.warn("Session ID mismatch - logging out.");

@@ -6,7 +6,7 @@ import { SelectField } from "../../../../Common/Components/BaseComponents/Select
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { postNewContract } from "../../Service/LeadAndCustomersService";
 import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 // enums

@@ -78,7 +78,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         );
       };
       fetchRooms();
-    }, []);
+    }, [getAllRooms]);
 
     useEffect(() => {
       const fetchCustomer = async () => {
@@ -97,7 +97,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         }
       };
       fetchCustomer();
-    }, [status, phoneOrEmail, methods]);
+    }, [status, phoneOrEmail, methods, getCustomerByPhoneOrEmail]);
 
     const convertFormToBooking = (data: FormFields) => {
       const startTime = `${data.startDate}T${data.startTime}:00.000Z`;

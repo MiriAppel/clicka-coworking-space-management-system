@@ -9,58 +9,58 @@ import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
 import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
 
-import {
-  CustomerStatus,
-  DateISO,
-  PaymentMethodType,
-  WorkspaceType,
-} from "shared-types";
+// import {
+//  // CustomerStatus,
+//   DateISO,
+//   PaymentMethodType,
+//  // WorkspaceType,
+// } from "shared-types";
 
 interface ValuesToTable {
   id: string;
 }
 
-const statusLabels: Record<CustomerStatus, string> = {
-  ACTIVE: "פעיל",
-  NOTICE_GIVEN: "הודעת עזיבה",
-  EXITED: "עזב",
-  PENDING: "בהמתנה",
-};
+// const statusLabels: Record<CustomerStatus, string> = {
+//   ACTIVE: "פעיל",
+//   NOTICE_GIVEN: "הודעת עזיבה",
+//   EXITED: "עזב",
+//   PENDING: "בהמתנה",
+// };
 
-const workspaceTypeLabels: Record<WorkspaceType, string> = {
-  PRIVATE_ROOM: 'חדר פרטי',
-  DESK_IN_ROOM: 'שולחן בחדר',
-  OPEN_SPACE: 'אופן ספייס',
-  KLIKAH_CARD: 'כרטיס קליקה',
-  DOOR_PASS: 'דלת כניסה',
-  WALL: 'קיר',
-  COMPUTER_STAND: 'עמדת מחשב',
-  RECEPTION_DESK: 'דלפק קבלה',
-};
+// const workspaceTypeLabels: Record<WorkspaceType, string> = {
+//   PRIVATE_ROOM: 'חדר פרטי',
+//   DESK_IN_ROOM: 'שולחן בחדר',
+//   OPEN_SPACE: 'אופן ספייס',
+//   KLIKAH_CARD: 'כרטיס קליקה',
+//   DOOR_PASS: 'דלת כניסה',
+//   WALL: 'קיר',
+//   COMPUTER_STAND: 'עמדת מחשב',
+//   RECEPTION_DESK: 'דלפק קבלה',
+// };
 
-const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
-  CREDIT_CARD: 'כרטיס אשראי',
-  BANK_TRANSFER: 'העברה בנקאית',
-  CHECK: 'שיק',
-  CASH: 'מזומן',
-  OTHER: 'אחר',
-};
+// const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
+//   CREDIT_CARD: 'כרטיס אשראי',
+//   BANK_TRANSFER: 'העברה בנקאית',
+//   CHECK: 'שיק',
+//   CASH: 'מזומן',
+//   OTHER: 'אחר',
+// };
 
-const formatDate = (dateString: DateISO | undefined) => {
-  if (!dateString) return "לא זמין";
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear()).slice(-2);
-  return `${day}/${month}/${year}`;
-};
+// const formatDate = (dateString: DateISO | undefined) => {
+//   if (!dateString) return "לא זמין";
+//   const date = new Date(dateString);
+//   const day = String(date.getDate()).padStart(2, "0");
+//   const month = String(date.getMonth() + 1).padStart(2, "0");
+//   const year = String(date.getFullYear()).slice(-2);
+//   return `${day}/${month}/${year}`;
+// };
 
 export const CustomersList = () => {
   const navigate = useNavigate();
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [term, setTerm] = useState("");
+  // const [term, setTerm] = useState("");
 
   const {
     customers,
@@ -112,7 +112,7 @@ export const CustomersList = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setTerm(value);
+    // setTerm(value);
     setSearchTerm(value);
     debouncedSearch(value);
   };

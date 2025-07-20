@@ -1,7 +1,5 @@
-import { use } from "react";
 import { LoginWithGoogle } from "./LoginButton";
 import { LogoutButton } from "./LogoutButton";
-import { useEffect } from "react";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 export const AuthenticationScreen = () => {
   const { user, isAuthenticated } = useAuthStore();

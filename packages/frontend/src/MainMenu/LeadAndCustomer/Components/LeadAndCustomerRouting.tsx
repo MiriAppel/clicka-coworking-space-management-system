@@ -4,8 +4,6 @@ import { ContractManagement } from "./Contracts/contractManagement";
 import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
-import { LeadsHomePage } from "./Leads/leadHomePage";
-import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";

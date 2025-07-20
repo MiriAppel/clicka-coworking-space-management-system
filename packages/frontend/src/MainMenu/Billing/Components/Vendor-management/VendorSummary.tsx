@@ -17,16 +17,16 @@ export default function VendorSummary({ vendors, setVendors }: VendorSummaryProp
   const navigate = useNavigate();
 
   // ה-Hooks חייבים להיקרא תמיד - לכן הם תמיד בראש הפונקציה
-const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [summary, setSummary] = useState<null | {
-    totalExpenses: number;
-    expenseCount: number;
-    lastExpenseDate: string | null;
-    averageExpense: number;
-    onTimePayments: number;
-    latePayments: number;
-    averagePaymentDays: number;
-  }>(null);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  // const [summary, setSummary] = useState<null | {
+  //   totalExpenses: number;
+  //   expenseCount: number;
+  //   lastExpenseDate: string | null;
+  //   averageExpense: number;
+  //   onTimePayments: number;
+  //   latePayments: number;
+  //   averagePaymentDays: number;
+  // }>(null);
 
   // חיפוש ספק לפי מזהה
   const vendor = vendors.find((v) => v.id === id);
@@ -38,7 +38,7 @@ const [expenses, setExpenses] = useState<Expense[]>([]);
       try {
         const res = await fetch(`http://localhost:3001/expense/getExpensesByVendorId/${id}`);
         const data = await res.json();
-         console.log('הוצאות מהשרת:', data);  
+        console.log('הוצאות מהשרת:', data);
         setExpenses(data);
       } catch (err) {
         console.error(err);

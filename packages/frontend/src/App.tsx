@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-// import { Button } from './Common/Components/BaseComponents/Button';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 import { Button } from './Common/Components/BaseComponents/Button';
-import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
-
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 
-import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 
 function App() {
-  const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,14 +22,14 @@ function App() {
         }
         return response.json();
       })
-      .then((data) => {
-        setHealthStatus(data);
-        setLoading(false);
-      })
+      // .then((data) => {
+      //   // setHealthStatus(data);
+      //   // setLoading(false);
+      // })
       .catch((err) => {
         console.error('Error fetching API health:', err);
-        setError('Could not connect to API server. Make sure it is running.');
-        setLoading(false);
+        // setError('Could not connect to API server. Make sure it is running.');
+        // setLoading(false);
       });
   }, []);
   

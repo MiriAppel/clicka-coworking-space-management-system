@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
-import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import VendorSummary from './MainMenu/Billing/Components/Vendor-management/VendorSummary';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
@@ -18,8 +17,6 @@ import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
-import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
-
 import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
