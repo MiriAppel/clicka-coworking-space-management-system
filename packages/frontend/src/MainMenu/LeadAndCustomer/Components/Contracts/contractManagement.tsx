@@ -5,10 +5,7 @@ import {
   getAllContracts,
   deleteContract,
 } from "../../Service/LeadAndCustomersService";
-<<<<<<< HEAD
-=======
 import { Table , TableColumn } from "../../../../Common/Components/BaseComponents/Table";
->>>>>>> origin/main
 import { Contract, ContractStatus, ID } from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
