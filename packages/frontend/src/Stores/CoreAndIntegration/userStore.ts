@@ -1,10 +1,6 @@
 import { create } from 'zustand';
 import { User } from 'shared-types';
 import { axiosInstance } from '../../Service/Axios';
-<<<<<<< HEAD
-=======
-
->>>>>>> origin
 
 interface UserState {
   users: User[];
