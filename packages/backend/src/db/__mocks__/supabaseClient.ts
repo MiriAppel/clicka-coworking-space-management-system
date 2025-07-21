@@ -1,11 +1,26 @@
 // // src/__mocks__/supabaseClient.ts
-// // זה קובץ ה-mock של supabaseClient.ts
-// // Jest יחפש קובץ עם שם זהה לזה שאתה מייבא ב-pricing.service.ts
-// // וייטען את ה-mock הזה במקומו.
-
-// // Mock את ה-Supabase client.
-// // תצטרך לממש את הפונקציות שאתה משתמש בהן בקובץ השירות שלך
-// // כמו .from(), .select(), .insert(), .update(), .delete(), .eq(), .lte(), .order(), .limit(), .single(), .maybeSingle()
+// import { Request, Response } from "express";
+// import {
+//   createPricingTier,
+//   createPricingTierWithHistory,
+//   getPricingHistory,
+//   getCurrentPricingTier,
+//   updatePricingTier,
+//   bulkUpdatePricingTiers,
+//   deletePricingTier,
+//   createMeetingRoomPricing,
+//   createMeetingRoomPricingWithHistory, // Adding this import, was missing but used below
+//   getMeetingRoomPricingHistory,
+//   getCurrentMeetingRoomPricing,
+//   updateMeetingRoomPricing,
+//   deleteMeetingRoomPricing,
+//   createLoungePricing,
+//   createLoungePricingWithHistory, // Adding this import, was missing but used below
+//   getLoungePricingHistory,
+//   getCurrentLoungePricing,
+//   updateLoungePricing,
+//   deleteLoungePricing
+// } from "../../services/pricing.service";
 
 // const mockData = {}; // אובייקט שישמש כ"מסד נתונים" וירטואלי לבדיקות
 

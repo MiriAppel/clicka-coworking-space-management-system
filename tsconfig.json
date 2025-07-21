@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["esnext", "deno.ns"],
+    "lib": ["esnext"],
     "strict": true,
     "module": "esnext",
     "target": "esnext",

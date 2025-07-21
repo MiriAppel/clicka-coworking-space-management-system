@@ -6,11 +6,23 @@
 //   createPricingTierWithHistory,
 //   updatePricingTier,
 //   createOrUpdatePricingTier,
+//   getCurrentPricingTier,
+//   getPricingHistory,
+//   deletePricingTier,
+//   createMeetingRoomPricing,
+//   updateMeetingRoomPricing,
+//   getCurrentMeetingRoomPricing,
+//   deleteMeetingRoomPricing,
+//   createLoungePricing,
+//   updateLoungePricing,
+//   getCurrentLoungePricing,
+//   deleteLoungePricing
 //   // ... ייבא את כל הפונקציות שאתה רוצה לבדוק
-// } from '../pricing.service';
-// import { supabase, setMockMaybeSingleResult, setMockSingleResult, resetMocks, mockSupabase } from '../__mocks__/supabaseClient';
-// import { PricingTierModel } from '../models/pricing.model'; // ייבא את המודל אם אתה משתמש בו לבניית אובייקטים
-
+// } from '../services/pricing.service';
+// import { supabase, setMockMaybeSingleResult, setMockSingleResult, resetMocks, mockSupabase } from '../db/__mocks__/supabaseClient';
+// import { PricingTierModel, MeetingRoomPricingModel, LoungePricingModel } from '../models/pricing.model'; //
+// import { Request, Response } from "express";
+// import { SupabaseClient } from '@supabase/supabase-js';
 // // כדי לוודא שכל בדיקה מתחילה "נקייה"
 // beforeEach(() => {
 //   resetMocks(); // איפוס ה-mocks לפני כל בדיקה
@@ -500,6 +512,688 @@
 //     });
 // });
 
-// // ... המשך לכתוב בדיקות עבור כל פונקציה אחרת בקובץ
-// // לדוגמה: updatePricingTier, getCurrentPricingTier, deletePricingTier,
-// // וכן את הפונקציות עבור MeetingRoomPricing ו-LoungePricing
+// // src/__tests__/pricing.service.test.ts
+// // ... (הקוד הקיים מהדוגמאות הקודמות - imports, beforeEach, ו-describe בלוקים שכבר כתבתם) ...
+
+
+// beforeEach(() => {
+//   resetMocks();
+//   jest.clearAllMocks(); // ודא שכל ה-mocks מאופסים
+// });
+
+// // ... (ה-describe בלוקים הקיימים: 'validatePrices', 'checkEffectiveDateConflict', 'createPricingTier', 'createPricingTierWithHistory', 'createOrUpdatePricingTier') ...
+
+// describe('updatePricingTier', () => {
+//   const existingId = 'existing-pricing-tier-id';
+//   const existingPricingTier = {
+//     id: existingId,
+//     workspace_type: 'Desk',
+//     year1_price: 100,
+//     year2_price: 90,
+//     year3_price: 80,
+//     year4_price: 70,
+//     effective_date: '2025-01-01',
+//     active: true,
+//     created_at: '2024-01-01T00:00:00.000Z',
+//     updated_at: '2024-01-01T00:00:00.000Z',
+//   };
+
+//   it('should update an existing pricing tier successfully', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: existingPricingTier, error: null });
+
+//     // Mock שאין קונפליקט תאריכים (עם החרגת ה-ID של הרשומה המעודכנת)
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').neq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+
+//     // Mock פעולת העדכון
+//     const updatedData = { ...existingPricingTier, year1_price: 120, updated_at: new Date().toISOString() };
+//     mockSupabase.from('pricing_tiers').update.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: updatedData, error: null });
+
+//     const request = {
+//       id: existingId,
+//       year1Price: 120,
+//       effectiveDate: '2025-01-01', // אותו תאריך או תאריך עתידי
+//     };
+
+//     const result = await updatePricingTier(request);
+
+//     expect(mockSupabase.from('pricing_tiers').update).toHaveBeenCalledTimes(1);
+//     expect(mockSupabase.from('pricing_tiers').update).toHaveBeenCalledWith(
+//       expect.objectContaining({ year1_price: 120 })
+//     );
+//     expect(result.id).toBe(existingId);
+//     expect(result.year1Price).toBe(120);
+//   });
+
+//   it('should throw an error if the pricing tier does not exist', async () => {
+//     // Mock אחזור הרשומה הקיימת - לא נמצאה
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116', message: 'No rows found' } });
+
+//     const request = {
+//       id: 'non-existent-id',
+//       year1Price: 120,
+//       effectiveDate: '2025-01-01',
+//     };
+
+//     await expect(updatePricingTier(request)).rejects.toThrow('שכבת התמחור לעדכון לא נמצאה.');
+//   });
+
+//   it('should throw an error for negative prices in update request', async () => {
+//     const request = {
+//       id: existingId,
+//       year1Price: -50, // מחיר שלילי
+//       effectiveDate: '2025-01-01',
+//     };
+//     await expect(updatePricingTier(request)).rejects.toThrow('לא ניתן להזין מחירים שליליים');
+//   });
+
+//   it('should throw an error if effectiveDate is in the past', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: existingPricingTier, error: null });
+
+//     const request = {
+//       id: existingId,
+//       year1Price: 120,
+//       effectiveDate: '2024-01-01', // תאריך בעבר
+//     };
+
+//     await expect(updatePricingTier(request)).rejects.toThrow('תאריך התחולה חייב להיות היום או בעתיד.');
+//   });
+
+//   it('should throw an error if effectiveDate conflicts with another tier (excluding self)', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: existingPricingTier, error: null });
+
+//     // Mock שקיים קונפליקט תאריכים
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').neq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').maybeSingle.mockResolvedValueOnce({ data: { id: 'other-tier' }, error: null });
+
+//     const request = {
+//       id: existingId,
+//       year1Price: 120,
+//       effectiveDate: '2025-01-01',
+//     };
+
+//     await expect(updatePricingTier(request)).rejects.toThrow(/מתנגש עם שכבה קיימת/);
+//   });
+
+//   it('should throw an error if Supabase update fails', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: existingPricingTier, error: null });
+
+//     // Mock שאין קונפליקט תאריכים
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').neq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+
+//     // Mock פעולת העדכון לזרוק שגיאה
+//     mockSupabase.from('pricing_tiers').update.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: null, error: { message: 'DB error' } });
+
+//     const request = {
+//       id: existingId,
+//       year1Price: 120,
+//       effectiveDate: '2025-01-01',
+//     };
+
+//     await expect(updatePricingTier(request)).rejects.toThrow('הפעולה לעדכון שכבת תמחור נכשלה.');
+//   });
+// });
+
+// describe('getCurrentPricingTier', () => {
+//   it('should return the current active pricing tier for a workspace type', async () => {
+//     const today = new Date().toISOString().split('T')[0];
+//     const mockPricingData = {
+//       id: 'current-active-id',
+//       workspace_type: 'Desk',
+//       effective_date: today,
+//       active: true,
+//       year1_price: 150,
+//       year2_price: 140,
+//       year3_price: 130,
+//       year4_price: 120,
+//     };
+
+//     // Mock אחזור הנתונים
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').lte.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').order.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').limit.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: mockPricingData, error: null });
+
+//     const result = await getCurrentPricingTier('Desk');
+
+//     expect(mockSupabase.from('pricing_tiers').eq).toHaveBeenCalledWith('workspace_type', 'Desk');
+//     expect(mockSupabase.from('pricing_tiers').eq).toHaveBeenCalledWith('active', true);
+//     expect(mockSupabase.from('pricing_tiers').lte).toHaveBeenCalledWith('effective_date', today);
+//     expect(mockSupabase.from('pricing_tiers').order).toHaveBeenCalledWith('effective_date', { ascending: false });
+//     expect(mockSupabase.from('pricing_tiers').limit).toHaveBeenCalledWith(1);
+
+//     expect(result).toBeInstanceOf(PricingTierModel);
+//     expect(result.id).toBe('current-active-id');
+//     expect(result.year1Price).toBe(150);
+//   });
+
+//   it('should return null if no current active pricing tier is found', async () => {
+//     // Mock שלא נמצאו רשומות
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').lte.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').order.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').limit.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116', message: 'No rows found' } });
+
+//     const result = await getCurrentPricingTier('Office');
+//     expect(result).toBeNull();
+//   });
+
+//   it('should throw an error if Supabase query fails (not PGRST116)', async () => {
+//     // Mock שגיאה ממסד הנתונים
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').lte.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').order.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').limit.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: null, error: { message: 'Database query error' } });
+
+//     await expect(getCurrentPricingTier('Desk')).rejects.toThrow('נכשל באחזור שכבת התמחור הנוכחית');
+//   });
+// });
+
+// describe('getPricingHistory', () => {
+//   it('should return pricing history sorted by effectiveDate descending', async () => {
+//     const mockHistoryData = [
+//       { id: 'id1', workspace_type: 'Desk', effective_date: '2025-01-01', year1_price: 100, active: true },
+//       { id: 'id2', workspace_type: 'Desk', effective_date: '2024-06-01', year1_price: 90, active: false },
+//       { id: 'id3', workspace_type: 'Desk', effective_date: '2023-12-01', year1_price: 80, active: false },
+//     ];
+
+//     // Mock אחזור הנתונים
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').order.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').get.mockResolvedValueOnce({ data: mockHistoryData, error: null }); // שימו לב לשינוי ל-.get() אם זו הפונקציה שנקראת
+
+//     const result = await getPricingHistory('Desk');
+
+//     expect(mockSupabase.from('pricing_tiers').eq).toHaveBeenCalledWith('workspace_type', 'Desk');
+//     expect(mockSupabase.from('pricing_tiers').order).toHaveBeenCalledWith('effective_date', { ascending: false });
+//     expect(result.length).toBe(3);
+//     expect(result[0]).toBeInstanceOf(PricingTierModel);
+//     expect(result[0].id).toBe('id1');
+//     expect(result[1].id).toBe('id2');
+//   });
+
+//   it('should return an empty array if no history is found', async () => {
+//     mockSupabase.from('pricing_tiers').select.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').order.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').get.mockResolvedValueOnce({ data: [], error: null });
+
+//     const result = await getPricingHistory('NonExistentType');
+//     expect(result).toEqual([]);
+//   });
+// });
+
+// describe('deletePricingTier', () => {
+//   it('should delete a pricing tier successfully', async () => {
+//     const tierId = 'tier-to-delete';
+
+//     // Mock פעולת המחיקה
+//     mockSupabase.from('pricing_tiers').delete.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: { id: tierId }, error: null });
+
+//     await expect(deletePricingTier(tierId)).resolves.toBeUndefined(); // הפונקציה לא מחזירה ערך
+
+//     expect(mockSupabase.from('pricing_tiers').delete).toHaveBeenCalledTimes(1);
+//     expect(mockSupabase.from('pricing_tiers').eq).toHaveBeenCalledWith('id', tierId);
+//   });
+
+//   it('should throw an error if the pricing tier to delete is not found', async () => {
+//     const tierId = 'non-existent-id';
+
+//     // Mock שהמחיקה לא מצאה רשומה
+//     mockSupabase.from('pricing_tiers').delete.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116', message: 'No rows found' } });
+
+//     await expect(deletePricingTier(tierId)).rejects.toThrow('שכבת התמחור למחיקה לא נמצאה.');
+//   });
+
+//   it('should throw an error if Supabase delete operation fails', async () => {
+//     const tierId = 'some-id';
+
+//     // Mock שגיאה ממסד הנתונים
+//     mockSupabase.from('pricing_tiers').delete.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').eq.mockReturnThis();
+//     mockSupabase.from('pricing_tiers').single.mockResolvedValueOnce({ data: null, error: { message: 'DB delete error' } });
+
+//     await expect(deletePricingTier(tierId)).rejects.toThrow('הפעולה למחיקת שכבת תמחור נכשלה.');
+//   });
+// });
+
+// describe('createMeetingRoomPricing', () => {
+//   it('should create a new meeting room pricing tier', async () => {
+//     const now = new Date();
+//     const request = {
+//       name: 'Standard Room',
+//       effectiveDate: now.toISOString().split('T')[0],
+//       pricePerHour: 50,
+//       pricePerDay: 400,
+//       freeHoursKlikahCard: 2,
+//     };
+
+//     // Mock checkEffectiveDateConflict
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+
+//     // Mock insert
+//     const mockInsertData = {
+//       id: 'new-meeting-room-id',
+//       name: request.name,
+//       effective_date: request.effectiveDate,
+//       price_per_hour: request.pricePerHour,
+//       price_per_day: request.pricePerDay,
+//       free_hours_klikah_card: request.freeHoursKlikahCard,
+//       active: true,
+//       created_at: now.toISOString(),
+//       updated_at: now.toISOString(),
+//     };
+//     mockSupabase.from('meeting_room_pricing').insert.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: mockInsertData, error: null });
+
+//     const result = await createMeetingRoomPricing(request);
+
+//     expect(result).toBeInstanceOf(MeetingRoomPricingModel);
+//     expect(result.id).toBe('new-meeting-room-id');
+//     expect(result.name).toBe('Standard Room');
+//     expect(result.active).toBe(true);
+//     expect(mockSupabase.from('meeting_room_pricing').insert).toHaveBeenCalledTimes(1);
+//     expect(mockSupabase.from('meeting_room_pricing').insert).toHaveBeenCalledWith(
+//       expect.objectContaining({ name: 'Standard Room', active: true })
+//     );
+//   });
+
+//   it('should throw an error for negative prices or free hours', async () => {
+//     const request = {
+//       name: 'Standard Room',
+//       effectiveDate: '2025-08-01',
+//       pricePerHour: -50, // מחיר שלילי
+//       pricePerDay: 400,
+//       freeHoursKlikahCard: 2,
+//     };
+//     await expect(createMeetingRoomPricing(request)).rejects.toThrow('לא ניתן להזין מחירים שליליים');
+
+//     const request2 = {
+//       name: 'Standard Room',
+//       effectiveDate: '2025-08-01',
+//       pricePerHour: 50,
+//       pricePerDay: 400,
+//       freeHoursKlikahCard: -1, // שעות חינם שליליות
+//     };
+//     await expect(createMeetingRoomPricing(request2)).rejects.toThrow('לא ניתן להזין מחירים שליליים');
+//   });
+
+//   it('should throw an error if effectiveDate is in the past', async () => {
+//     const request = {
+//       name: 'Standard Room',
+//       effectiveDate: '2024-01-01', // תאריך בעבר
+//       pricePerHour: 50,
+//       pricePerDay: 400,
+//       freeHoursKlikahCard: 2,
+//     };
+//     await expect(createMeetingRoomPricing(request)).rejects.toThrow('תאריך התחולה חייב להיות היום או בעתיד.');
+//   });
+// });
+
+// describe('updateMeetingRoomPricing', () => {
+//   const existingId = 'existing-mr-pricing-id';
+//   const existingMrPricing = {
+//     id: existingId,
+//     name: 'Existing Room',
+//     effective_date: '2025-01-01',
+//     price_per_hour: 50,
+//     price_per_day: 400,
+//     free_hours_klikah_card: 2,
+//     active: true,
+//     created_at: '2024-01-01T00:00:00.000Z',
+//     updated_at: '2024-01-01T00:00:00.000Z',
+//   };
+
+//   it('should update an existing meeting room pricing tier', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: existingMrPricing, error: null });
+
+//     // Mock checkEffectiveDateConflict (no conflict)
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').neq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+
+//     // Mock update operation
+//     const updatedData = { ...existingMrPricing, price_per_hour: 60 };
+//     mockSupabase.from('meeting_room_pricing').update.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: updatedData, error: null });
+
+//     const request = {
+//       id: existingId,
+//       pricePerHour: 60,
+//       effectiveDate: '2025-01-01',
+//     };
+
+//     const result = await updateMeetingRoomPricing(request);
+//     expect(result.id).toBe(existingId);
+//     expect(result.pricePerHour).toBe(60);
+//   });
+
+//   it('should throw an error for negative prices/free hours in update', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: existingMrPricing, error: null });
+
+//     const request = {
+//       id: existingId,
+//       pricePerHour: -10,
+//       effectiveDate: '2025-01-01',
+//     };
+//     await expect(updateMeetingRoomPricing(request)).rejects.toThrow('לא ניתן להזין מחירים שליליים');
+//   });
+
+//   it('should throw an error if effectiveDate is in the past for update', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: existingMrPricing, error: null });
+
+//     const request = {
+//       id: existingId,
+//       pricePerHour: 50,
+//       effectiveDate: '2024-01-01', // תאריך בעבר
+//     };
+//     await expect(updateMeetingRoomPricing(request)).rejects.toThrow('תאריך התחולה חייב להיות היום או בעתיד.');
+//   });
+// });
+
+// describe('getCurrentMeetingRoomPricing', () => {
+//   it('should return the current active meeting room pricing', async () => {
+//     const today = new Date().toISOString().split('T')[0];
+//     const mockData = {
+//       id: 'current-mr-id',
+//       name: 'Standard Room',
+//       effective_date: today,
+//       price_per_hour: 50,
+//       active: true,
+//     };
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').lte.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').order.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').limit.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: mockData, error: null });
+
+//     const result = await getCurrentMeetingRoomPricing();
+//     expect(result).toBeInstanceOf(MeetingRoomPricingModel);
+//     expect(result.id).toBe('current-mr-id');
+//   });
+
+//   it('should return null if no current active meeting room pricing is found', async () => {
+//     mockSupabase.from('meeting_room_pricing').select.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').lte.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').order.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').limit.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116', message: 'No rows found' } });
+
+//     const result = await getCurrentMeetingRoomPricing();
+//     expect(result).toBeNull();
+//   });
+// });
+
+// describe('deleteMeetingRoomPricing', () => {
+//   it('should delete a meeting room pricing tier successfully', async () => {
+//     const mrId = 'mr-to-delete';
+//     mockSupabase.from('meeting_room_pricing').delete.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: { id: mrId }, error: null });
+
+//     await expect(deleteMeetingRoomPricing(mrId)).resolves.toBeUndefined();
+//     expect(mockSupabase.from('meeting_room_pricing').delete).toHaveBeenCalledWith(); // Called with no args after eq
+//     expect(mockSupabase.from('meeting_room_pricing').eq).toHaveBeenCalledWith('id', mrId);
+//   });
+
+//   it('should throw an error if meeting room pricing to delete is not found', async () => {
+//     const mrId = 'non-existent-mr-id';
+//     mockSupabase.from('meeting_room_pricing').delete.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').eq.mockReturnThis();
+//     mockSupabase.from('meeting_room_pricing').single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116', message: 'No rows found' } });
+
+//     await expect(deleteMeetingRoomPricing(mrId)).rejects.toThrow('תמחור חדר ישיבות למחיקה לא נמצא.');
+//   });
+// });
+
+// describe('createLoungePricing', () => {
+//   it('should create a new lounge pricing tier', async () => {
+//     const now = new Date();
+//     const request = {
+//       name: 'Standard Lounge',
+//       effectiveDate: now.toISOString().split('T')[0],
+//       dayPassPrice: 100,
+//       monthlyPrice: 500,
+//       eveningRate: 70,
+//       memberDiscountRate: 10, // Member discount less than evening rate
+//     };
+
+//     // Mock checkEffectiveDateConflict
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+
+//     // Mock insert
+//     const mockInsertData = {
+//       id: 'new-lounge-id',
+//       name: request.name,
+//       effective_date: request.effectiveDate,
+//       day_pass_price: request.dayPassPrice,
+//       monthly_price: request.monthlyPrice,
+//       evening_rate: request.eveningRate,
+//       member_discount_rate: request.memberDiscountRate,
+//       active: true,
+//       created_at: now.toISOString(),
+//       updated_at: now.toISOString(),
+//     };
+//     mockSupabase.from('lounge_pricing').insert.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: mockInsertData, error: null });
+
+//     const result = await createLoungePricing(request);
+
+//     expect(result).toBeInstanceOf(LoungePricingModel);
+//     expect(result.id).toBe('new-lounge-id');
+//     expect(result.memberDiscountRate).toBe(10);
+//   });
+
+//   it('should throw an error if memberDiscountRate is greater than eveningRate', async () => {
+//     const request = {
+//       name: 'Standard Lounge',
+//       effectiveDate: '2025-08-01',
+//       dayPassPrice: 100,
+//       monthlyPrice: 500,
+//       eveningRate: 70,
+//       memberDiscountRate: 80, // Greater than eveningRate
+//     };
+//     await expect(createLoungePricing(request)).rejects.toThrow('שיעור ההנחה לחבר (memberDiscountRate) אינו יכול להיות גבוה מתעריף הערב (eveningRate).');
+//   });
+
+//   it('should throw an error for negative prices in lounge pricing', async () => {
+//     const request = {
+//       name: 'Standard Lounge',
+//       effectiveDate: '2025-08-01',
+//       dayPassPrice: -10, // שלילי
+//       monthlyPrice: 500,
+//       eveningRate: 70,
+//       memberDiscountRate: 10,
+//     };
+//     await expect(createLoungePricing(request)).rejects.toThrow('לא ניתן להזין מחירים שליליים');
+//   });
+// });
+
+// describe('updateLoungePricing', () => {
+//   const existingId = 'existing-lounge-pricing-id';
+//   const existingLoungePricing = {
+//     id: existingId,
+//     name: 'Existing Lounge',
+//     effective_date: '2025-01-01',
+//     day_pass_price: 100,
+//     monthly_price: 500,
+//     evening_rate: 70,
+//     member_discount_rate: 10,
+//     active: true,
+//     created_at: '2024-01-01T00:00:00.000Z',
+//     updated_at: '2024-01-01T00:00:00.000Z',
+//   };
+
+//   it('should update an existing lounge pricing tier', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: existingLoungePricing, error: null });
+
+//     // Mock checkEffectiveDateConflict (no conflict)
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').neq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').maybeSingle.mockResolvedValueOnce({ data: null, error: null });
+
+//     // Mock update operation
+//     const updatedData = { ...existingLoungePricing, day_pass_price: 120 };
+//     mockSupabase.from('lounge_pricing').update.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: updatedData, error: null });
+
+//     const request = {
+//       id: existingId,
+//       dayPassPrice: 120,
+//       effectiveDate: '2025-01-01',
+//     };
+
+//     const result = await updateLoungePricing(request);
+//     expect(result.id).toBe(existingId);
+//     expect(result.dayPassPrice).toBe(120);
+//   });
+
+//   it('should throw an error if memberDiscountRate becomes greater than eveningRate after update', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: existingLoungePricing, error: null });
+
+//     const request = {
+//       id: existingId,
+//       memberDiscountRate: 80, // יגרום לשגיאה אם eveningRate נשאר 70
+//       eveningRate: 70, // לוודא שנשלח גם eveningRate
+//       effectiveDate: '2025-01-01',
+//     };
+//     await expect(updateLoungePricing(request)).rejects.toThrow('שיעור ההנחה לחבר (memberDiscountRate) אינו יכול להיות גבוה מתעריף הערב (eveningRate).');
+//   });
+
+//   it('should throw an error for negative prices in update request', async () => {
+//     // Mock אחזור הרשומה הקיימת
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: existingLoungePricing, error: null });
+
+//     const request = {
+//       id: existingId,
+//       dayPassPrice: -10,
+//       effectiveDate: '2025-01-01',
+//     };
+//     await expect(updateLoungePricing(request)).rejects.toThrow('לא ניתן להזין מחירים שליליים');
+//   });
+// });
+
+// describe('getCurrentLoungePricing', () => {
+//   it('should return the current active lounge pricing', async () => {
+//     const today = new Date().toISOString().split('T')[0];
+//     const mockData = {
+//       id: 'current-lounge-id',
+//       name: 'Standard Lounge',
+//       effective_date: today,
+//       day_pass_price: 100,
+//       active: true,
+//     };
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').lte.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').order.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').limit.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: mockData, error: null });
+
+//     const result = await getCurrentLoungePricing();
+//     expect(result).toBeInstanceOf(LoungePricingModel);
+//     expect(result.id).toBe('current-lounge-id');
+//   });
+
+//   it('should return null if no current active lounge pricing is found', async () => {
+//     mockSupabase.from('lounge_pricing').select.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').lte.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').order.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').limit.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116', message: 'No rows found' } });
+
+//     const result = await getCurrentLoungePricing();
+//     expect(result).toBeNull();
+//   });
+// });
+
+// describe('deleteLoungePricing', () => {
+//   it('should delete a lounge pricing tier successfully', async () => {
+//     const loungeId = 'lounge-to-delete';
+//     mockSupabase.from('lounge_pricing').delete.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: { id: loungeId }, error: null });
+
+//     await expect(deleteLoungePricing(loungeId)).resolves.toBeUndefined();
+//     expect(mockSupabase.from('lounge_pricing').eq).toHaveBeenCalledWith('id', loungeId);
+//   });
+
+//   it('should throw an error if lounge pricing to delete is not found', async () => {
+//     const loungeId = 'non-existent-lounge-id';
+//     mockSupabase.from('lounge_pricing').delete.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').eq.mockReturnThis();
+//     mockSupabase.from('lounge_pricing').single.mockResolvedValueOnce({ data: null, error: { code: 'PGRST116', message: 'No rows found' } });
+
+//     await expect(deleteLoungePricing(loungeId)).rejects.toThrow('תמחור לאונג\' למחיקה לא נמצא.');
+//   });
+// });
