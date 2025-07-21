@@ -8,6 +8,7 @@ import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 import { Button } from './Common/Components/BaseComponents/Button';
 import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
 import LanguageSelector from './Common/Components/LanguageSelector';
+import { VoiceCommand } from './VoiceAssistant';
 
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 
@@ -43,8 +44,11 @@ function App() {
 
 
   return (
+    
     <AuthProvider>
-    <div className="App">     
+      <VoiceCommand/>
+    <div className="App">
+      
       <header className="App-header">
         <h3>welcome to our world</h3>
         <h1>Clicka</h1>
