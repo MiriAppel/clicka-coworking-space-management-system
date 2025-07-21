@@ -85,7 +85,6 @@
     ]
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@storybook/addon-docs": "9.0.16",
     "@storybook/addon-knobs": "^8.0.1",
     "@storybook/addon-links": "^9.0.16",
@@ -94,9 +93,7 @@
     "@storybook/preset-create-react-app": "9.0.16",
     "@storybook/react": "^9.0.16",
     "@storybook/react-webpack5": "9.0.16",
-=======
     "@babel/plugin-transform-explicit-resource-management": "^7.28.0",
->>>>>>> origin
     "@types/glob": "^9.0.0",
     "@types/lodash": "^4.17.20",
     "@types/mime": "^4.0.0",
