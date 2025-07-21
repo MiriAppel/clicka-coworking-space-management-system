@@ -16,22 +16,25 @@ import interactionRouter from './routes/leadInteraction.route';
 import dotenv from 'dotenv';
 import routerAuth from './routes/auth';
 import { Request, Response } from 'express';
-import cookieParser from "cookie-parser";
+import cookieParser from 'cookie-parser';
 import bookRouter from './routes/booking.route';
 import workspaceRouter from './routes/workspace.route';
 import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
-import routerMap from './routes/WorkspaceMapRoute';
+import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import emailTemplateRouter from './routes/emailTemplate.route';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 import invoiceRouter from './routes/invoice.route';
+import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
 import router from './routes';
+import auditLogRouter from './routes/auditLog.route';
+import { file } from 'googleapis/build/src/apis/file';
 
 
 // import cookieParser from "cookie-parser";
@@ -46,7 +49,7 @@ dotenv.config();
 setupSwagger(app);
 
 // Apply middlewares
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
@@ -60,6 +63,8 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
+app.use('/api/audit-logs', auditLogRouter);
+app.use('/api/translate', translationRouter);
 app.use('/api/customers', routerCustomer);
 app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
@@ -78,7 +83,6 @@ app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
-// app.use('/api/translate', translationRouter);
 app.use('/api/auth', routerAuth);
 app.use('/api', router);
 app.use('/api/expenses', expenseRouter);
@@ -89,7 +93,6 @@ app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/payment', routerPayment);
-// app.use('/api/translate', translationRouter);
 // app.use('/api/leadInteraction', routerCstomer);
 app.use('/api/payment', routerPayment);
 app.use('/api/invoices', invoiceRouter);
@@ -98,7 +101,6 @@ app.use('/api/invoices', invoiceRouter);
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-// app.use('/translations', translationRouter);
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);

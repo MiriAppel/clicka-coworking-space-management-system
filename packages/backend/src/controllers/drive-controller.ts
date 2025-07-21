@@ -1,40 +1,107 @@
 import { Request, Response, NextFunction } from 'express';
+import * as tokenService from '../services/tokenService';
 import {
   uploadFileToDrive,
   getFileFromDrive,
   deleteFileFromDrive,
   shareDriveFile,
-  getFileMetadataFromDrive 
+  getFileMetadataFromDrive ,
+  uploadFileToFolderPath
+  // //getFileMetadataFromDrive
+  // getFileFromDrive
+  // getOrCreateFolderIdByPath
+  //  uploadFileToDrive
+  //  createFolderInDrive
+  //  findFolderByName
+  //  shareDriveFile
+  //  deleteFileFromDrive
+  //  getOrCreateFolderByPath
+  //  uploadFileToFolderPath
+
+  
 } from '../services/drive-service';
 import {
   validateUploadFile,
   validateFileId,
   validateSharePermissions
 } from '../utils/validateDriveInput';
+import { UserTokenService } from '../services/userTokenService';
 
 interface MulterRequest extends Request {
   file: Express.Multer.File;
 }
 
+// export async function postFile(req: Request, res: Response, next: NextFunction) {
+//   console.log('uploadFile hit');
+//   console.log('req.file:', req.file);
+//   const token = req.headers.authorization?.split(' ')[1];
+//   if (!token) return next({ status: 401, message: 'Missing token' });
+//   const file = req.file;
+//   if (!file) return next({ status: 400, message: 'Missing file' });
+//   try {
+//     validateUploadFile(req);
+//     const result = await uploadFileToDrive(file, token);
+//     res.status(201).json(result);
+//   } catch (err: any) {
+//     if (!err.status) err.status = 500;
+//     next(err);
+//   }
+// }
+//חדש
 export async function postFile(req: Request, res: Response, next: NextFunction) {
   console.log('uploadFile hit');
   console.log('req.file:', req.file);
-  const token = req.headers.authorization?.split(' ')[1];
+  console.log('req.body:', req.body);
+  const user = await tokenService.getUserFromCookie(req);
+    const userTokenService = new UserTokenService();
+    let token;
+    if (user) {
+      token = await userTokenService.getAccessTokenByUserId(user.userId);
+    }
+  //const token = req.headers.authorization?.split(' ')[1];
   if (!token) return next({ status: 401, message: 'Missing token' });
+
   const file = req.file;
   if (!file) return next({ status: 400, message: 'Missing file' });
+
+  // קבל פרמטרים מה-body
+  const { folderId, folderPath, category, customerId, description } = req.body;
+          
   try {
     validateUploadFile(req);
-    const result = await uploadFileToDrive(file, token);
-    res.status(201).json(result);
+    
+    let result;
+    
+    if (folderPath) {
+      // אם נשלח path, השתמש בפונקציה החדשה
+      console.log(`Uploading to folder path: ${folderPath}`);
+      result = await uploadFileToFolderPath(file, token, folderPath);
+    } else if (folderId) {
+      // אם נשלח ID ישירות
+      console.log(`Uploading to folder ID: ${folderId}`);
+      result = await uploadFileToDrive(file, token, folderId);
+    } else {
+      // אם לא נשלח כלום, העלה לשורש
+      console.log('Uploading to root folder');
+      result = await uploadFileToDrive(file, token);
+    }
+    
+    res.status(201).json({
+      ...result,
+      message: 'קובץ הועלה בהצלחה',
+      uploadedToPath: folderPath || 'Root',
+      folderId: result.parents?.[0] || 'Root'
+    });
   } catch (err: any) {
+    console.error('Upload error:', err);
     if (!err.status) err.status = 500;
     next(err);
   }
 }
 
 export async function getFile(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   const fileId = req.params.fileId;
   console.log('fileId:', req.params.fileId);
   if (!token) return next({ status: 401, message: 'Missing token' });
@@ -49,7 +116,8 @@ export async function getFile(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function getFileMetadata(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   const fileId = req.params.fileId;
   if (!token) return next({ status: 401, message: 'Missing token' });
   try {
@@ -63,7 +131,8 @@ export async function getFileMetadata(req: Request, res: Response, next: NextFun
 }
 
 export async function deleteFile(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   const fileId = req.params.fileId;
   if (!token) return next({ status: 401, message: 'Missing token' });
   try {
@@ -77,7 +146,8 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
 }
 
 export async function shareFile(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   const fileId = req.params.fileId;
   const permissions = req.body;
   if (!token) return next({ status: 401, message: 'Missing token' });

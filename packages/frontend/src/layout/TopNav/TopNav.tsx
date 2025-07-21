@@ -4,6 +4,7 @@ import styles from './TopNav.module.css';
 import MobileMenu from '../MobileMenu/MobileMenu';
 import { useMediaQuery } from 'react-responsive';
 import { menus } from '../menuData';
+import { T } from '../../Common/Service/T';
 import logo from '../Assets/Klika Logo.jpg'; 
 
 const TopNav = () => {
@@ -70,7 +71,7 @@ const TopNav = () => {
                   className={styles.navButton}
                   onClick={() => toggleMenu(menu.key)}
                 >
-                  {menu.icon} {menu.title}
+                  {menu.icon} <T k={menu.title} />
                 </span>
                 {isMenuOpen(menu.key) && (
                   <ul className={styles.dropdown}>
@@ -83,7 +84,7 @@ const TopNav = () => {
                           setClickedMenuKey(menu.key);
                         }}
                       >
-                        {item.label}
+                        <T k={item.label} />
                       </li>
                     ))}
                   </ul>
