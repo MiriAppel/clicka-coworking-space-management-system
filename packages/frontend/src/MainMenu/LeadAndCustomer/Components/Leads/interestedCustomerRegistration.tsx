@@ -66,6 +66,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
     try {
       await createCustomer(customerRequest);
+      
 
       showAlert("", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
 
