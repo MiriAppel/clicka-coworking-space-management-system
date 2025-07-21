@@ -4,13 +4,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PaymentMethod, Vendor, VendorCategory } from "shared-types";
 
 // ייבוא קומפוננטות UI מותאמות אישית
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
+import { PaymentMethod } from "shared-types";
+import { Vendor, VendorCategory } from "shared-types";
 
 // טיפוס פרופס: מערך ספקים ופונקציית עדכון שלהם
 type VendorFormProps = {

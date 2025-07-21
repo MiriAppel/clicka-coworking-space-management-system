@@ -1,12 +1,47 @@
 import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 import * as tokenService from '../services/tokenService';
-import { LoginResponse } from "shared-types";
+import { LoginResponse, StatusChangeRequest } from "shared-types";
 import { HttpStatusCode } from 'axios';
+import { UserService } from '../services/user.service';
+import { UserTokenService } from '../services/userTokenService';
+import { customerService } from '../services/customer.service';
+import { CustomerModel } from '../models/customer.model';
+
+const userService=new UserService();
+const userTokenService = new UserTokenService();
+
+const customerO = new customerService();
+
+// export const confirmEmail = async (req: Request, res: Response) => {
+//   try {
+//     const verificationId = req.query.id as string; // מזהה ייחודי שנשלח במייל
+    
+//     if (!verificationId) {
+//       return res.status(400).send("Missing verification ID");
+//     }
+
+//     const newCustomer: CustomerModel = {
+
+//     }
+
+//     // נניח שמירת שדה "emailConfirmed" בלקוח לפי מזהה זה
+//     const updated = await customerO.updateCustomer(verificationId);
+
+//     if (!updated) {
+//       return res.status(404).send("Verification ID not found or already confirmed");
+//     }
+
+//     // אפשר להחזיר דף תודה או הפניה לעמוד כלשהו
+//     res.send("Email confirmed successfully! תודה שהאמת את המייל.");
+//   } catch (error) {
+//     console.error("Error confirming email:", error);
+//     res.status(500).send("Server error");
+//   }
+// };
 
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
   console.log('Received Google auth code:', req.body.code);
-
   try {
     const { code } = req.body;
     if (!code) {
@@ -16,6 +51,8 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     const loginResult = await authService.exchangeCodeAndFetchUser(code);
     console.log('Login result:', loginResult);
     tokenService.setAuthCookie(res, loginResult.token, loginResult.sessionId!);
+    
+    userService.createRoleCookies(res, loginResult.user.role);   
     const response = {
       ...loginResult,
       message: 'התחברת בהצלחה. נותקת ממכשירים אחרים.'
@@ -30,7 +67,7 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
     }
     else {
       console.error('Google login failed:', error);
-      res.status(500).json({ error: 'Authentication failed' });
+      res.status(400).json({ error: 'Authentication failed' });
     }
   }
 
@@ -38,9 +75,13 @@ export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResp
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const user = await tokenService.getUserFromCookie(req);
+    const user = await tokenService.getUserFromCookie(req); 
     if (user) {
       await tokenService.logoutUser(user.userId, res);
+      const sessionId = req.cookies.sessionId;
+      if (sessionId) {
+        await userTokenService.deleteUserSession(user.userId, sessionId);
+      }
     }
   } catch (error) {
     console.error('Logout failed:', error);
@@ -48,6 +89,13 @@ export const logout = async (req: Request, res: Response) => {
   finally {
     // Clear the auth cookie
     tokenService.clearAuthCookie(res);
+    userService.clearRoleCookie(res);
+    
+  }
+  try {
+    
+  } catch (error) {
+    
   }
   res.status(200).json({ message: 'Logged out successfully' });
 };

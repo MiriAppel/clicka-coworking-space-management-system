@@ -1,8 +1,6 @@
 import { LeadInteractionModel } from "../models/leadInteraction.model";
 import { baseService } from "./baseService";
 
-
-
 export class interactionService extends baseService<LeadInteractionModel> {
   constructor() {
     super("lead_interaction");

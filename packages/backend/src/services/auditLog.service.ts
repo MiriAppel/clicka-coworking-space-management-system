@@ -4,13 +4,10 @@ import { Request } from 'express';
 import { getUserFromCookie } from '../services/tokenService'; // או מהמיקום שבו הפונקציה נמצאת
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import { supabase } from '../db/supabaseClient';
 
 // טוען את משתני הסביבה מהקובץ .env
 dotenv.config();
-
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export class AuditLogService {
   
@@ -191,7 +188,7 @@ export class AuditLogService {
 
   // פונקציה עזר לקבלת פרטי המשתמש מהקוקי
   getUserInfoFromRequest(req: Request): { userId: string; email: string; googleId: string } | null {
-    return getUserFromCookie(req);
+    return  getUserFromCookie(req);
   }
 
   // פונקציה לספירת audit logs לפי משתמש

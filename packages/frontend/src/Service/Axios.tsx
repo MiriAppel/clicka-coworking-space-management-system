@@ -11,4 +11,8 @@ export const axiosInstance = axios.create({
       withCredentials: true, // Enable sending cookies with requests
     });
     
+<<<<<<< HEAD
     export default axiosInstance;
+=======
+    export default axiosInstance;
+>>>>>>> origin
