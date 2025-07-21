@@ -14,8 +14,9 @@ export async function create(
             website: (request as any).website, // אם קיים ב-CreateVendorRequest, ודא שהטיפוס כולל זאת
             tax_id: request.taxId,
             payment_terms: PaymentTerms.COD,
-            preferred_payment_method: request.preferred_payment_method,
-            category: request.category,
+            preferred_payment_method: PaymentMethod.BANK_TRANSFER,
+            
+            category: VendorCategory.Other,
             status: VendorStatus.Inactive, // סטטוס ברירת מחדל אם לא נשלח
             notes: request.notes,
             // documents: request.documents || [],

@@ -10,6 +10,7 @@ async createRoom(req: Request, res: Response) {
   try {
     const roomData = {
       ...req.body,
+        workspaceMapId: req.body.workspace_map_id, // ← שורת התיקון
     };
 
     const room = new RoomModel(roomData);
