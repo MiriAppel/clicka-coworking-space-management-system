@@ -50,14 +50,7 @@ function App() {
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
-<Button
-  onClick={() => navigate('/graph')}
-  
-  className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
->
- 
-  graph
-</Button>
+
       <div className='menu' style={{ backgroundColor: 'black' }}>
       </div>
      
