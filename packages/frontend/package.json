@@ -21,6 +21,7 @@
     "@mui/x-data-grid": "^8.5.1",
     "@react-oauth/google": "^0.12.2",
     "@storybook/addon-docs": "^9.0.16",
+    "@storybook/test-runner": "^0.23.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -85,6 +86,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-transform-explicit-resource-management": "^7.28.0",
     "@storybook/addon-docs": "9.0.16",
     "@storybook/addon-knobs": "^8.0.1",
     "@storybook/addon-links": "^9.0.16",
@@ -93,7 +95,6 @@
     "@storybook/preset-create-react-app": "9.0.16",
     "@storybook/react": "^9.0.16",
     "@storybook/react-webpack5": "9.0.16",
-    "@babel/plugin-transform-explicit-resource-management": "^7.28.0",
     "@types/glob": "^9.0.0",
     "@types/lodash": "^4.17.20",
     "@types/mime": "^4.0.0",
