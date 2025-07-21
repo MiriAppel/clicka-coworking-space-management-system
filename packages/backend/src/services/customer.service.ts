@@ -24,6 +24,8 @@ import { EmailTemplateService } from "./emailTemplate.service";
 import { EmailTemplateModel } from "../models/emailTemplate.model";
 import { sendEmail } from "./gmail-service";
 import { log } from "node:console";
+import { changeCustomerStatus } from "../controllers/customer.controller";
+import { token } from "morgan";
 
 export class customerService extends baseService<CustomerModel> {
   constructor() {
@@ -74,7 +76,7 @@ export class customerService extends baseService<CustomerModel> {
       idNumber: newCustomer.idNumber,
       businessName: newCustomer.businessName,
       businessType: newCustomer.businessType,
-      status: CustomerStatus.ACTIVE,
+      status: CustomerStatus.CREATED,
       currentWorkspaceType: newCustomer.currentWorkspaceType,
       workspaceCount: newCustomer.workspaceCount,
       contractSignDate: newCustomer.contractSignDate,
@@ -388,9 +390,37 @@ export class customerService extends baseService<CustomerModel> {
     );
 
     return CustomerModel.fromDatabaseFormatArray(customersWithPayments);
-  };
+  }; 
 
   emailService = new EmailTemplateService();
+  
+
+  confirmEmail = async (email: string, id: ID) => {
+
+    try{
+    const customerToUpdate = await this.getById(id);
+    customerToUpdate.email = email;
+    customerToUpdate.status = CustomerStatus.ACTIVE;
+  
+    await this.patch(customerToUpdate, id);
+
+    await fetch('/api/customer/' + id + '/status-change', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status: CustomerStatus.ACTIVE,
+      }),
+    });
+
+    console.log('אימות הסתיים בהצלחה');
+  } catch (error) {
+    console.error('שגיאה באימות:', error);
+  }
+    
+
+  }
 
   sendStatusChangeEmails = async (
     detailsForChangeStatus: StatusChangeRequest,
@@ -404,7 +434,7 @@ export class customerService extends baseService<CustomerModel> {
 
 
     // סטטוסים שדורשים התראה לצוות
-    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE","ACTIVE"];
+    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE","CREATED"];
     const shouldNotifyTeam = notifyTeamStatuses.includes(
       detailsForChangeStatus.newStatus,
     );
@@ -415,9 +445,9 @@ export class customerService extends baseService<CustomerModel> {
 
     const emailPromises: Promise<any>[] = [];
 
-    function encodeSubject(subject: string): string {
-      return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
-    }
+    // function encodeSubject(subject: string): string {
+    //   return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+    // }
 
     // תרגום הסטטוס לעברית
 
@@ -426,6 +456,7 @@ export class customerService extends baseService<CustomerModel> {
       NOTICE_GIVEN: "הודעת עזיבה",
       EXITED: "עזב",
       PENDING: "בהמתנה",
+      CREATED: "נוצר"
     };
 
     const effectiveDate = new Date(detailsForChangeStatus.effectiveDate);
@@ -470,7 +501,7 @@ export class customerService extends baseService<CustomerModel> {
           "me",
           {
             to: ["diversitech25clicka@gmail.com"],
-            subject: encodeSubject(template.subject),
+            subject: template.subject,
             body: renderedHtml,
             isHtml: true,
           },
@@ -519,8 +550,8 @@ export class customerService extends baseService<CustomerModel> {
       return sendEmail(
         "me",
         {
-          to: [customer.email],
-          subject: encodeSubject(template.subject),
+          to: [customer.email ?? ""],
+          subject: template.subject,
           body: renderedHtml,
           isHtml: true,
         },
@@ -548,17 +579,49 @@ export class customerService extends baseService<CustomerModel> {
     //אם פרומיס אחד נכשל זה לא מפעיל את השליחה
     await Promise.all(emailPromises);
   };
+
+  CustomerAuthentication = async (
+    id: ID,
+    token: any,
+  ): Promise<void> => {
+    const customer = await this.getById(id);
+
+    // פונקציה לשליחת מייל לצוות
+    const sendEmailToAuth = async () => {
+      try {
+        const template = await this.emailService.getTemplateByName(
+          "אימות לקוח",
+        );
+
+        if (!template) {
+          console.warn("Team email template not found");
+          return;
+        }
+        const renderedHtml = await this.emailService.renderTemplate(
+          template.bodyHtml,
+          {},
+        );
+
+        const response = await sendEmail(
+          "me",
+          {
+            to: [customer.email ?? ""],
+            subject: template.subject,
+            body: renderedHtml,
+            isHtml: true,
+          },
+          token,
+        );
+        console.log(template.subject);
+
+        console.log("HTML before sending:\n", renderedHtml);
+      } catch (err) {
+        console.error("שגיאה בשליחת מייל לצוות:", err);
+      }
+    };
+    sendEmailToAuth();
+  };
 }
-//  export const CustomerAuthentication = async (email: string) => {
-//     const { data, error } = await supabase.auth.api.sendVerificationEmail(email);
-
-//   if (error) {
-//     console.error("Error sending verification email:", error);
-//     throw error;
-//   }
-
-//   console.log("Verification email sent to:", email);
-// }
 
 const serviceCustomer = new customerService();
 

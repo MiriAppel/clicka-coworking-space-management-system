@@ -7,6 +7,8 @@ const routerCustomer = express.Router();
 // (GET)
 // routerCustomer.get('/by-page', customerController.getCustomersByPage);
 
+routerCustomer.get('/confirm-email/:id/:email', customerController.confirmEmail);
+
 routerCustomer.get('/page', customerController.getCustomersByPage); 
 
 routerCustomer.get('/', customerController.getAllCustomers); 
@@ -29,6 +31,7 @@ routerCustomer.post('/post-customer', customerController.postCustomer);
 routerCustomer.post('/:id/status-change', customerController.changeCustomerStatus)
 
 //PATCH/PUT)
+
 routerCustomer.patch('/:id', customerController.patchCustomer); 
 
 routerCustomer.delete('/:id', customerController.deleteCustomer);
