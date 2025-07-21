@@ -14,6 +14,7 @@ import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { Billing } from './MainMenu/Billing/Components/Billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
+import { SendEmail } from './MainMenu/CoreAndIntegration/Components/SendEmail/SendEmail';
 
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
@@ -60,6 +61,7 @@ export const Routing = () => {
         <Route path="users" element={< UserTable />} />
         <Route path="meetingRooms" element={<RoomReservations />} />  
         <Route path="emailTemplate" element={< EmailTemplateTable />} />
+        <Route path="sendEmails" element={< SendEmail />} />
       </Route>
     </Routes>
   );

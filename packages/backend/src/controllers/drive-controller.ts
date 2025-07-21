@@ -4,13 +4,14 @@ import {
   getFileFromDrive,
   deleteFileFromDrive,
   shareDriveFile,
-  getFileMetadataFromDrive 
+  getFileMetadataFromDrive
 } from '../services/drive-service';
 import {
   validateUploadFile,
   validateFileId,
   validateSharePermissions
 } from '../utils/validateDriveInput';
+import { UserTokenService } from '../services/userTokenService';
 
 interface MulterRequest extends Request {
   file: Express.Multer.File;
@@ -19,7 +20,8 @@ interface MulterRequest extends Request {
 export async function postFile(req: Request, res: Response, next: NextFunction) {
   console.log('uploadFile hit');
   console.log('req.file:', req.file);
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken();
   if (!token) return next({ status: 401, message: 'Missing token' });
   const file = req.file;
   if (!file) return next({ status: 400, message: 'Missing file' });
@@ -34,7 +36,8 @@ export async function postFile(req: Request, res: Response, next: NextFunction) 
 }
 
 export async function getFile(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   const fileId = req.params.fileId;
   console.log('fileId:', req.params.fileId);
   if (!token) return next({ status: 401, message: 'Missing token' });
@@ -49,7 +52,8 @@ export async function getFile(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function getFileMetadata(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   const fileId = req.params.fileId;
   if (!token) return next({ status: 401, message: 'Missing token' });
   try {
@@ -63,7 +67,8 @@ export async function getFileMetadata(req: Request, res: Response, next: NextFun
 }
 
 export async function deleteFile(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   const fileId = req.params.fileId;
   if (!token) return next({ status: 401, message: 'Missing token' });
   try {
@@ -77,7 +82,8 @@ export async function deleteFile(req: Request, res: Response, next: NextFunction
 }
 
 export async function shareFile(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(' ')[1];
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   const fileId = req.params.fileId;
   const permissions = req.body;
   if (!token) return next({ status: 401, message: 'Missing token' });

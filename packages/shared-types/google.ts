@@ -1,6 +1,7 @@
 // google-types.d.ts
 
 import { ApiResponse, ID, FileReference } from './core';
+import { Buffer } from 'buffer';
 
 // Google OAuth token data
 export interface GoogleOAuthTokenData {
@@ -177,6 +178,21 @@ export interface GmailMessage {
   };
   sizeEstimate?: number;
   raw?: string;
+}
+
+// Send email request
+export interface SendEmail {
+  to: string[];
+  cc?: string[];
+  bcc?: string[];
+  subject: string;
+  body: string;
+  isHtml?: boolean;
+  attachments?: {
+    filename: string;
+    mimeType: string;
+    data: Buffer | string;
+  }[];
 }
 
 // Send email request

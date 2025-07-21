@@ -1,42 +1,137 @@
 import { google } from 'googleapis';
-import { SendEmailRequest } from 'shared-types/google';
+import { SendEmail, SendEmailRequest } from 'shared-types/google';
 
 function getAuth(token: string) {
-  const auth = new google.auth.OAuth2();
-  auth.setCredentials({ access_token: token });
-  return auth;
+  const client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
+  );
+  client.setCredentials({ access_token: token });
+  return client;
 }
 
-function encodeMessage(request: SendEmailRequest): string {
-  const boundary = '__BOUNDARY__';
+function encodeMessage(request: SendEmail): string {
+  const boundaryMixed = '__MIXED_BOUNDARY__';
+  const boundaryAlt = '__ALT_BOUNDARY__';
+
   const headers = [
     `From: me`,
     `To: ${request.to.join(', ')}`,
     request.cc?.length ? `Cc: ${request.cc.join(', ')}` : '',
     request.bcc?.length ? `Bcc: ${request.bcc.join(', ')}` : '',
     `Subject: ${request.subject}`,
-    `MIME-Version: 1.0`,
-    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+    'MIME-Version: 1.0',
+    `Content-Type: multipart/mixed; boundary="${boundaryMixed}"`,
   ].filter(Boolean).join('\n');
-  const bodyPlain = request.isHtml ? '' : request.body;
+
+  const bodyPlain = request.isHtml ? 'This email requires an HTML viewer.' : request.body;
   const bodyHtml = request.isHtml ? request.body : '';
-  const message = [
-    headers,
+
+  const altPart = [
+    `--${boundaryMixed}`,
+    `Content-Type: multipart/alternative; boundary="${boundaryAlt}"`,
     '',
-    `--${boundary}`,
+    `--${boundaryAlt}`,
     'Content-Type: text/plain; charset="UTF-8"',
+    'Content-Transfer-Encoding: 7bit',
     '',
     bodyPlain,
-    `--${boundary}`,
+    `--${boundaryAlt}`,
     'Content-Type: text/html; charset="UTF-8"',
+    'Content-Transfer-Encoding: 7bit',
     '',
     bodyHtml,
-    `--${boundary}--`,
+    `--${boundaryAlt}--`,
   ].join('\n');
-  return Buffer.from(message).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+  const attachmentParts = request.attachments?.map((attachment) => {
+    const base64Content = typeof attachment.data === 'string'
+      ? attachment.data
+      : attachment.data.toString('base64');
+
+    return [
+      `--${boundaryMixed}`,
+      `Content-Type: ${attachment.mimeType}; name="${attachment.filename}"`,
+      'Content-Transfer-Encoding: base64',
+      `Content-Disposition: attachment; filename="${attachment.filename}"`,
+      '',
+      base64Content,
+    ].join('\n');
+  }) || [];
+
+  const fullMessage = [
+    headers,
+    '',
+    altPart,
+    ...attachmentParts,
+    `--${boundaryMixed}--`,
+  ].join('\n');
+
+  return Buffer.from(fullMessage)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
 }
 
-export async function sendEmail(userId: string, request: SendEmailRequest, token: string) {
+const MAX_BATCH_SIZE = 10; // כמות המיילים בכל קבוצה
+const RETRY_LIMIT = 6;
+
+export async function sendEmailsInBatch(
+  emails: SendEmail[],
+  accessToken: string
+): Promise<void> {
+  const auth = new google.auth.OAuth2();
+  auth.setCredentials({ access_token: accessToken });
+
+  for (let i = 0; i < emails.length; i += MAX_BATCH_SIZE) {
+    const batch = emails.slice(i, i + MAX_BATCH_SIZE);
+
+    for (const email of batch) {
+      await retryWithBackoff(() => sendSingleEmail(email, auth));
+    }
+
+    // המתנה בין קבוצות כדי למנוע עומס
+    await delay(1000);
+  }
+}
+async function sendSingleEmail(email: SendEmail, auth: any) {
+  const raw = encodeMessage(email); // פונקציה שיוצרת מייל מקודד
+   const gmail = google.gmail({ version: 'v1', auth });
+  await gmail.users.messages.send({
+    auth,
+    userId: 'me',
+    requestBody: {
+      raw,
+    },
+  });
+}
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+async function retryWithBackoff(fn: () => Promise<void>, retries = RETRY_LIMIT): Promise<void> {
+  let delayMs = 1000;
+
+  for (let i = 0; i < retries; i++) {
+    try {
+      await fn();
+      return;
+    } catch (err: any) {
+      const errorCode = err?.code || err?.response?.status;
+
+      if ([429, 403].includes(errorCode)) {
+        console.warn(`⏳ ניסיון ${i + 1} נכשל - ממתין ${delayMs}ms`);
+        await delay(delayMs);
+        delayMs *= 2; // exponential backoff
+      } else {
+        throw err; // שגיאה אחרת – זרקי מיד
+      }
+    }
+  }
+  throw new Error(`שליחה נכשלה לאחר ${RETRY_LIMIT} ניסיונות`);
+}
+
+export async function sendEmail(userId: string, request: SendEmail, token: string) {
   const gmail = google.gmail({ version: 'v1', auth: getAuth(token) });
   const raw = encodeMessage(request);
   const res = await gmail.users.messages.send({ userId, requestBody: { raw } });
