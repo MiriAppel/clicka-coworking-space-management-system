@@ -72,5 +72,3 @@ export const LoginWithGoogle = () => {
         <button onClick={() => login()}> Google התחבר עם </button>
     );
 };
-
-
