@@ -16,16 +16,16 @@ const upload = multer({
     cb(null, true);
   }
 });
-const router = Router();
+const driveRouter = Router();
 
 // בלי as any - אמור לעבוד עכשיו!
-router.get('/v3/files/:fileId/metadata', getFileMetadata);
-router.get('/v3/files/:fileId', getFile);
-router.post('/v3/files', upload.single('file'), postFile);
-router.delete('/v3/files/:fileId', deleteFile);
-router.post('/v3/files/:fileId/permissions', shareFile);
+driveRouter.get('/v3/files/:fileId/metadata', getFileMetadata);
+driveRouter.get('/v3/files/:fileId', getFile);
+driveRouter.post('/v3/files', upload.single('file'), postFile);
+driveRouter.delete('/v3/files/:fileId', deleteFile);
+driveRouter.post('/v3/files/:fileId/permissions', shareFile);
 
 // נתיב העלאה נוסף
-router.post('/upload', upload.single('file'), postFile);
+driveRouter.post('/upload', upload.single('file'), postFile);
 
-export default router;
+export default driveRouter;

@@ -66,7 +66,7 @@ function App() {
           {/* אפשר להוסיף כאן ראוטים נוספים */}
         </Routes>
         <AuthenticationScreen />
-        
+        <FileUploader folderPath="test/folder" />
 
       </div>
     </AuthProvider>

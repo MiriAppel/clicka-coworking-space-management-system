@@ -23,7 +23,7 @@ import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
-import userRouter from './routes/user.route';
+// import userRouter from './routes/user.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
@@ -38,6 +38,7 @@ import routerLayout from './routes/mapLayout.route';
 import routerCalendarSync from './routes/googleCalendarBookingIntegration.route';
 import userRouter from './routes/user.route';
 import { file } from 'googleapis/build/src/apis/file';
+import driveRouter from './routes/drive-route';
 
 // import cookieParser from "cookie-parser";
 // const cookieParser = require("cookie-parser")
@@ -79,6 +80,7 @@ app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/pricing', routerPricing);
 app.use('/api/emailTemplate', emailTemplateRouter);
+app.use('/api/drive', driveRouter);
 
 app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
