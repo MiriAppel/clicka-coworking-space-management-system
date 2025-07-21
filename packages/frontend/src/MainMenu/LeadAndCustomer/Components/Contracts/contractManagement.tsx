@@ -2,14 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import {
-  Table,
-  TableColumn,
-} from "../../../../Common/Components/BaseComponents/Table";
-import {
   getAllContracts,
   deleteContract,
 } from "../../Service/LeadAndCustomersService";
-import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+import { Table , TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { Contract, ContractStatus, ID } from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
