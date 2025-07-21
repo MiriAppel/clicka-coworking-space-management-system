@@ -38,7 +38,7 @@ export const createPricingTierController = async (req: Request, res: Response) =
     const newTier = new PricingTierModel(req.body); // יצירת מופע מודל מ-req.body
     
     
-    const tier = await createPricingTier(newTier, "system" as any); // העברת המודל
+    const tier = await createPricingTier(newTier); // העברת המודל
     res.status(201).json(tier);
     console.log("pricing.routes loaded");
 
@@ -51,7 +51,7 @@ export const createPricingTierController = async (req: Request, res: Response) =
 export const createPricingTierWithHistoryController = async (req: Request, res: Response) => {
   try {
     const newTier = new PricingTierModel(req.body); // יצירת מופע מודל מ-req.body
-    const tier = await createPricingTierWithHistory(newTier, "system" as any); // העברת המודל
+    const tier = await createPricingTierWithHistory(newTier); // העברת המודל
     res.status(201).json(tier);
   } catch (error: any) {
     res.status(400).json({ error: error.message });

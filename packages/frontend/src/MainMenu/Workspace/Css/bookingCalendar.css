@@ -1,237 +1,248 @@
-/* Container עיקרי */Add commentMore actions
-.booking-calendar-container {
-    background: #E0E0E0;
-    min-height: 100vh;
-    padding: 24px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+/* ===== כללי בסיס ===== */
+.fc {
+  direction: rtl;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+/* ===== עיצוב כפתורים מקורי ===== */
+.fc-button {
+  background-color: #007BFF !important;
+  border: 1px solid #007BFF !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 8px 16px !important;
+  transition: all 0.2s ease !important;
 }
 
-/* Header */
-.calendar-header {
-    background: #fff;
-    border-radius: 12px;
-    padding: 32px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
-    border-left: 4px solid #007BFF;
-    border-top: 1px solid #E0E0E0;
+.fc-button:hover {
+  background-color: #a5d8ff !important;
+  border-color: #007BFF !important;
+  color: #007BFF !important;
 }
 
-.calendar-title {
-    color: #007BFF;
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    line-height: 1.2;
+.fc-button:focus {
+  box-shadow: 0 0 0 3px #a5d8ff !important;
+  outline: none !important;
 }
 
-.calendar-subtitle {
-    color: #007BFF;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.5;
+/* ===== עיצוב כותרות הימים ===== */
+.fc-col-header-cell {
+  background: #F8F9FA !important;
+  color: #007BFF !important;
+  font-weight: 600 !important;
+  padding: 16px 12px !important; /* גובה / ריווח פנימי מקורי */
+  font-size: 14px !important;
+  text-align: center !important;
+  border-right: 3px solid #e5e7eb !important;
+  border-left: 3px solid #e5e7eb !important;
 }
 
-/* Calendar Container */
-.calendar-wrapper {
-    background: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
-    border: 1px solid #E0E0E0;
+/* ===== שיפור כותרות ימים Cushion ===== */
+.fc-col-header-cell-cushion {
+  padding: 16px 12px !important;
+  font-weight: 600 !important;
+  color: #007BFF !important;
 }
 
-/* Day Headers */
-.fc .fc-col-header-cell {
-    background: #F8F9FA !important;
-    color: #007BFF !important;
-    font-weight: 600 !important;
-    padding: 16px 12px !important;
-    border: none !important;
-    font-size: 14px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
+
+/* ===== כלל גובה מאוחד לכל התאים - 60px ===== */
+.fc-timegrid-slot {
+  height: 60px !important;
+  min-height: 60px !important;
 }
 
-/* Today Header */
-.fc .fc-col-header-cell.fc-day-today {
-    background: #007BFF !important;
-    color: #fff !important;
+/* ===== כלל גבולות מאוחד לכל העמודות - 3px ===== */
+.fc-timegrid-col,
+.fc-timegrid-axis,
+.fc-col-header-cell {
+  border-right: 3px solid #e5e7eb !important;
+  border-left: 3px solid #e5e7eb !important;
 }
 
-/* Time Labels */
-.fc .fc-timegrid-slot-label {
-    background: #fff !important;
-    color: #007BFF !important;
-    font-weight: 500 !important;
-    border-right: 3px solid #a5d8ff !important;
-    border-bottom: 1px solid #E0E0E0 !important;
-    padding: 12px 16px !important;
-    font-size: 13px !important;
-    font-family: 'SF Mono', Monaco, monospace !important;
-    transition: all 0.2s ease !important;
+/* ===== עיצוב היום הנוכחי - מרוכז ומאוחד ===== */
+.fc-day-today {
+  background-color: #e0f2fe !important; /* רקע השעות תכלת */
 }
 
-/* Time Labels of today */
-.fc .fc-timegrid-col.fc-day-today .fc-timegrid-slot-label {
-    background: #a5d8ff !important;
-    color: #007BFF !important;
+.fc-col-header-cell.fc-day-today {
+  background-color: #007BFF !important; /* רקע כחול */
 }
 
-/* Time Labels Hover */
-.fc .fc-timegrid-slot-label:hover {
-    background: #a5d8ff !important;
-    color: #007BFF !important;
+.fc-col-header-cell.fc-day-today .fc-col-header-cell-cushion {
+  color: #ffffff !important; /* כיתוב לבן */
+  font-weight: 700 !important;
 }
 
-/* Buttons */
-.fc .fc-button-primary {
-    background: #007BFF !important;
-    border: 1px solid #007BFF !important;
-    color: #fff !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-    padding: 10px 20px !important;
-    font-size: 14px !important;
-    text-transform: none !important;
-    letter-spacing: 0.25px !important;
-    transition: all 0.2s ease !important;
-    box-shadow: 0 2px 4px rgba(0,123,255,0.2) !important;
+/* ===== שאר העיצוב המקורי ===== */
+.fc-toolbar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
 }
 
-.fc .fc-button-primary:hover {
-    background: #a5d8ff !important;
-    color: #007BFF !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
+.fc-col-header-cell-cushion {
+  padding: 8px;
+  font-weight: 600;
+  color: #374151;
 }
 
-.fc .fc-button-primary:focus {
-    box-shadow: 0 0 0 3px #a5d8ff !important;
-    outline: none !important;
+.fc-timegrid-slot-label-cushion {
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
 }
 
-/* Calendar Title */
-.fc .fc-toolbar-title {
-    color: #007BFF !important;
-    font-weight: 700 !important;
-    font-size: 20px !important;
-    line-height: 1.2 !important;
+.fc-event {
+  border-radius: 6px;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Today Highlight */
-.fc .fc-day-today {
-    background: #a5d8ff !important;
-    border: 2px solid #007BFF !important;
+.fc-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.fc .fc-timegrid-col.fc-day-today {
-    background: #E0E0E0 !important;
-    border-left: 3px solid #007BFF !important;
-    border-right: 3px solid #007BFF !important;
+.fc-event-title {
+  padding: 2px 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.fc .fc-day-today .fc-daygrid-day-number {
-    background: #007BFF !important;
-    color: #fff !important;
-    border-radius: 50% !important;
-    width: 32px !important;
-    height: 32px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-weight: 700 !important;
-    font-size: 14px !important;
-    box-shadow: 0 4px 8px rgba(0,123,255,0.3) !important;
+.fc-event-time {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  padding: 0 6px;
 }
 
-/* Events */
-.fc .fc-event {
-    background: #a5d8ff !important;
-    color: #007BFF !important;
-    border: none !important;
-    border-radius: 6px !important;
-    font-weight: 500 !important;
-    font-size: 13px !important;
-    padding: 4px 8px !important;
-    box-shadow: 0 2px 4px rgba(0,123,255,0.3) !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
-    height: 100% !important;
-    min-height: 100% !important;
+.booking-status-pending {
+  background-color: #fbbf24;
+  color: #92400e;
 }
 
-.fc .fc-event:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 8px rgba(0,123,255,0.4) !important;
-    background: #007BFF !important;
-    color: #fff !important;
+.booking-status-approved {
+  background-color: #10b981;
+  color: #065f46;
 }
 
-/* Selection Highlight */
-.fc .fc-highlight {
-    background: #a5d8ff !important;
-    border: 2px dashed #007BFF !important;
-    border-radius: 4px !important;
+.booking-status-rejected {
+  background-color: #ef4444;
+  color: #991b1b;
 }
 
-/* Grid Styling */
-.fc .fc-scrollgrid {
-    border: 1px solid #E0E0E0 !important;
-    border-radius: 8px !important;
-    overflow: hidden !important;
+.booking-status-canceled {
+  background-color: #6b7280;
+  color: #374151;
 }
 
-.fc .fc-scrollgrid td, 
-.fc .fc-scrollgrid th {
-    border-color: #E0E0E0 !important;
+.booking-status-completed {
+  background-color: #3b82f6;
+  color: #1e40af;
 }
 
-/* Time Slots */
-.fc .fc-timegrid-slot {
-    height: 60px !important;
-    min-height: 60px !important;
-    border-bottom: 1px solid #fff !important;
+.fc-button {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.fc .fc-timegrid-slot-major {
-    height: 60px !important;
-    min-height: 60px !important;
-    border-bottom: 1px solid #E0E0E0 !important;
+.fc-button:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
 }
 
-.fc .fc-timegrid-slot-minor {
-    height: 60px !important;
-    min-height: 60px !important;
+.fc-button:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
 }
 
-/* Hover Effects */
-.fc .fc-timegrid-col:hover {
-    background: #a5d8ff !important;
-    transition: background-color 0.2s ease !important;
+.fc-button-active {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
-/* Focus States */
-.fc .fc-button-primary:focus {
-    outline: none !important;
+.fc-non-business {
+  background-color: #f9fafb;
 }
 
-/* Responsive Design */
+.fc-highlight {
+  background-color: rgba(59, 130, 246, 0.2);
+  border: 2px dashed #3b82f6;
+}
+
+.fc-scrollgrid {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.fc-timegrid-divider {
+  border-top: 2px solid #e5e7eb;
+}
+
 @media (max-width: 768px) {
-    .booking-calendar-container {
-        padding: 16px;
-    }
-    .calendar-header {
-        padding: 24px;
-    }
-    .calendar-title {
-        font-size: 24px;
-    }
-    .calendar-wrapper {
-        padding: 16px;
-    }
-    .fc .fc-col-header-cell {
-        padding: 12px 8px !important;
-        font-size: 12px !important;
-    }
+  .fc-toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .fc-timegrid-slot {
+    height: 50px !important;
+    min-height: 50px !important;
+  }
+  
+  .fc-event {
+    font-size: 0.75rem;
+  }
+  
+  .fc-timegrid-slot-label-cushion {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+  }
+}
+
+.fc-event {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fc-timegrid-event {
+  margin: 1px 2px;
+}
+
+.fc-timegrid-event-harness {
+  margin-right: 2px;
+  margin-left: 2px;
+}
+
+.fc-direction-rtl .fc-timegrid-col-events {
+  margin: 0 2px 0 0;
+}
+
+.fc-direction-rtl .fc-timegrid-event {
+  margin-right: 0;
+  margin-left: 2px;
 }
