@@ -161,7 +161,6 @@ const statusLabels: Record<CustomerStatus, string> = {
   EXITED: "עזב",
   PENDING: "בהמתנה",
 };
-
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
   PRIVATE_ROOM: "חדר פרטי",
   DESK_IN_ROOM: "שולחן בחדר",
@@ -170,7 +169,7 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   DOOR_PASS: "כרטיס כניסה",
   WALL: "קיר",
   COMPUTER_STAND: "עמדת מחשב",
-  RECEPTION_DESK: "דלפק קבלה",
+  RECEPTION_DESK: "דלפק קבלה"
 };
 
 
