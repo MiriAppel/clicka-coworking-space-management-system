@@ -69,7 +69,7 @@ app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
 app.use('/api/space', spaceRouter);
-app.use('/api/map',routerMap);
+// app.use('/api/map',routerMap);
  // User routes
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
