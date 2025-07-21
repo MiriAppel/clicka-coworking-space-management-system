@@ -2,10 +2,12 @@ import { WorkspaceMap } from 'shared-types/workspaceMap';
 import type{ DateISO, ID, SpaceStatus, WorkspaceType } from "shared-types";
 
 
+
 export class WorkspaceMapModel implements WorkspaceMap {
   id?: ID;
   name: string;
   lastUpdated: DateISO;
+
 
   constructor(params:{id: ID,name: string, lastUpdated: DateISO}) {
     this.id = params.id || undefined;

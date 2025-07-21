@@ -201,7 +201,7 @@ export const ManagementWorkspace = () => {
             label="workspace_map_id"
             fullWidth
             name="workspace_map_id"
-            value={newSpace.workspaceMapId}
+            // value={newSpace.workspaceMapId}
             onChange={handleChange}
             required
             style={{ marginBottom: "10px" }}
