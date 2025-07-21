@@ -21,9 +21,11 @@ import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementW
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
-import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
 import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
+// import EmailConfirmationPage from './MainMenu/LeadAndCustomer/Components/Leads/EmailConfirmationPage';
+
+import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';

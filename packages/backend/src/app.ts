@@ -16,6 +16,7 @@ import interactionRouter from './routes/leadInteraction.route';
 import dotenv from 'dotenv';
 import routerAuth from './routes/auth';
 import { Request, Response } from 'express';
+
 import cookieParser from "cookie-parser";
 import workspaceRouter from './routes/workspace.route';
 import featureRouter from './routes/roomFaeature.route';
@@ -35,6 +36,8 @@ import translationRouter from './routes/translation.route';
 import routerMap from './routes/mapLayout.route';
 import routerLayout from './routes/mapLayout.route';
 import routerCalendarSync from './routes/googleCalendarBookingIntegration.route';
+import userRouter from './routes/user.route';
+import { file } from 'googleapis/build/src/apis/file';
 
 // import cookieParser from "cookie-parser";
 // const cookieParser = require("cookie-parser")

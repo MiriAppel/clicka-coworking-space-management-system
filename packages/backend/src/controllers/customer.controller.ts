@@ -9,9 +9,14 @@ import {
 import { contractService } from "../services/contract.service";
 import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.service";
 import { UserTokenService } from "../services/userTokenService";
+import { sendEmail } from "../services/gmail-service";
+import { EmailTemplateService } from "../services/emailTemplate.service";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
+const userTokenService = new UserTokenService();
+const emailService = new EmailTemplateService();
+
 
 export const getAllCustomers = async (req: Request, res: Response) => {
   try {
@@ -30,8 +35,43 @@ export const postCustomer = async (req: Request, res: Response) => {
 
     // console.log("in controller");
     // console.log(newCustomer);
+    const email = newCustomer.email;
 
     const customer = await serviceCustomer.createCustomer(newCustomer);
+
+    const token = await userTokenService.getSystemAccessToken();
+
+    const template = await emailService.getTemplateByName(
+          "אימות לקוח",
+    );
+    if (!template) {
+          console.warn("Team email template not found");
+          return;
+        }
+        // const renderedHtml = await emailService.renderTemplate(
+        //   template.bodyHtml,
+        //   {
+        //     "שם": customer.name,
+        //     "סטטוס": status,
+        //     "תאריך": formattedDate,
+        //     "סיבה": detailsForChangeStatus.reason || "ללא סיבה מצוינת",
+        //   },
+        // );
+    
+
+    if (!email || !token)
+      res.status(401).json("its have a problam on email or token");
+    
+    
+
+    // sendEmail( "me",
+    //       {
+    //         to: [email ?? ""],
+    //         subject: template.subject,
+    //         body: renderedHtml,
+    //         isHtml: true,
+    //       },
+    //       token,)
     console.log("in controller");
     console.log(customer);
 
@@ -219,6 +259,68 @@ export const getCustomerPaymentMethods = async (req: Request, res: Response) => 
 //         res.status(500).json({ message: 'Error fetching status changes', error});
 //     }
 // }
+
+export const confirmEmail = async (req: Request, res: Response) => {
+  const email = req.params.email;
+  const id = req.params.id;
+
+  if (!email || !id) {
+    return res.status(400).send(createHtmlMessage("שגיאה: אימייל או מזהה חסרים"));
+  }
+
+  try {
+    await serviceCustomer.confirmEmail(email, id);
+    res.send(createHtmlMessage("האימות הצליח! תודה שהצטרפת אלינו."));
+
+  } catch (error: any) {
+    console.error("שגיאה באימות:", error);
+
+    // אם מדובר בשגיאת דופליקציה (email כבר קיים)
+    if (error?.code === "23505") {
+      return res.status(400).send(createHtmlMessage("האימייל הזה כבר קיים במערכת."));
+    }
+
+    // כל שגיאה אחרת
+    res
+      .status(500)
+      .send(createHtmlMessage("אירעה שגיאה במהלך האימות. אנא נסה שוב מאוחר יותר."));
+  }
+};
+
+
+function createHtmlMessage(message: string) {
+  return `
+    <html dir="rtl">
+      <head>
+        <title>אימות מייל</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+            background-color: #f5f5f5;
+            color: #333;
+          }
+          .box {
+            background: white;
+            display: inline-block;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+          }
+        </style>
+      </head>
+      <body>
+        <div class="box">
+          <h1>${message}</h1>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+
+
 export const changeCustomerStatus = async (req: Request, res: Response) => {
   try {
     console.log("changeCustomerStatus called with params:", req.params);

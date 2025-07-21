@@ -25,6 +25,7 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "הודעת עזיבה",
   EXITED: "עזב",
   PENDING: "בהמתנה",
+  CREATED: "נוצר"
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
@@ -80,8 +81,96 @@ export const CustomersList = () => {
   }, [fetchCustomersByPage]);
 
   const handleSearch = (term: string) => {
-    searchCustomersInPage(term);
+    searchCustomersInPage(term)
+      .then(() => {
+
+      })
   };
+
+  const showCustomerDetailsAlert = (row: ValuesToTable) => {
+    const customer = customers.find(c => c.id == row.id)!
+    const customerDetailsHtml = `<img
+            src="${row.image}"
+            alt="Customer Image"
+            class="mt-5 w-32 h-32 rounded-full border-2 border-gray-300 mx-auto"
+            />
+            <div style="text-align: center; margin: 20px;">
+        <strong style="font-size: 24px;">${customer.name || ''}</strong> <br>
+    </div>
+     <div style="margin: 20px; text-align: right;">
+    <strong>טלפון:</strong> ${customer.phone || ''}<br>
+    <strong>אימייל:</strong> ${customer.email || ''}<br>
+    <strong>מספר תעודת זהות:</strong> ${customer.idNumber || ''}<br>
+    <strong>שם עסק:</strong> ${customer.businessName || ''}<br>
+    <strong>סוג עסק:</strong> ${customer.businessType || ''}<br>
+    <strong>סטטוס:</strong> ${statusLabels[customer.status as CustomerStatus] || customer.status || ''}<br>
+    <strong>סוג מקום עבודה נוכחי:</strong> ${workspaceTypeLabels[customer.currentWorkspaceType as WorkspaceType] || customer.currentWorkspaceType || ''}<br>
+    <strong>מספר מקומות עבודה:</strong> ${customer.workspaceCount || ''}<br>
+    <strong>תאריך חתימה על חוזה:</strong> ${formatDate(customer.contractSignDate!)}<br>
+    <strong>תאריך התחלה של חוזה:</strong> ${formatDate(customer.contractStartDate!)}<br>
+    <strong>תאריך התחלה של חיוב:</strong> ${formatDate(customer.billingStartDate!)}<br>
+    <strong>הערות:</strong> ${customer.notes || ''}<br>
+    <strong>שם חשבונית:</strong> ${customer.invoiceName || ''}<br>
+    <strong>סוג תשלום:</strong> ${PaymentMethodTypeLabels[customer.paymentMethodType as PaymentMethodType] || customer.paymentMethodType || ''}<br>
+    <strong>נוצר בתאריך:</strong> ${formatDate(customer.createdAt)}<br>
+    <strong>עודכן בתאריך:</strong> ${formatDate(customer.updatedAt)}<br>
+ <a href="contracts/${row.id}" class="text-blue-500 hover:underline ml-2">חוזה</a>
+    </div>`;
+
+    showAlertHTML(customerDetailsHtml); // לא מעביר אייקון
+
+
+  };
+
+
+  const getValuseToTable = (): ValuesToTable[] => {
+    return customers.map((customer) => ({
+      id: customer.id!,
+      name: customer.name,
+      phone: customer.phone,
+      email: customer.email ?? "",
+      businessName: customer.businessName,
+      businessType: customer.businessType,
+      status: customer.status,
+      image: "https://images.pexels.com/photos/2072162/pexels-photo-2072162.jpeg",  //לקחת את התמונה של הלקוח מהדרייב
+    }));
+  };
+
+  const columns: TableColumn<ValuesToTable>[] = [
+    {
+      header: "",
+      accessor: "image",
+      render: (value, row) => (
+        <div className="flex justify-center">
+          <img
+            src={value}
+            alt="Customer Image"
+            className="w-10 h-10 rounded-full object-cover transition duration-200 ease-in-out border-2 border-transparent hover:border-blue-500 cursor-pointer"
+            onClick={() => showCustomerDetailsAlert(row)} />
+        </div>),
+    },
+    { header: "שם", accessor: "name" },
+    { header: "פלאפון", accessor: "phone" },
+    { header: "מייל", accessor: "email" },
+    {
+      header: "סטטוס",
+      accessor: "status",
+      render: (value, row) => (
+        <div className="flex justify-between items-center">
+          {statusLabels[row.status as CustomerStatus] || row.status}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate(`updateStatus/${row.id}`)}
+          >
+            <Pencil size={10} />
+          </Button>
+        </div>
+      ),
+    },
+    { header: "שם העסק", accessor: "businessName" },
+    { header: "סוג עסק", accessor: "businessType" },
+  ];
 
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
     const confirmed = await ShowAlertWarn(

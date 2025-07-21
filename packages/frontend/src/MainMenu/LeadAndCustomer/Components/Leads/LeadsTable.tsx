@@ -31,7 +31,7 @@ export const LeadsTable = ({ leads, onDelete }: LeadsTableProps) => {
     name: lead.name,
     status: lead.status,
     phone: lead.phone,
-    email: lead.email,
+    email: lead.email || "",
   }));
 
   const columns: TableColumn<RowData>[] = [
