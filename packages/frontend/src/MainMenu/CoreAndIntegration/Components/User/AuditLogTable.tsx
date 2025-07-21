@@ -54,7 +54,7 @@ const AuditLogTable = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">יומן פעולות</h2>
+      <h2 className="text-xl font-bold mb-4">פעולות משתמשים</h2>
 
       {/* סינון */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
