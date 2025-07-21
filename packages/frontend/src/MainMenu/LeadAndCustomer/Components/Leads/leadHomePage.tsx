@@ -77,12 +77,12 @@ export const LeadsHomePage = () => {
       return;
     }
 
-    const filtered = allLeadsRef.current.filter(
-      (l) =>
-        l.name.toLowerCase().includes(term.toLowerCase()) ||
-        l.phone.includes(term) ||
-        l.email.toLowerCase().includes(term.toLowerCase())
-    );
+  const filtered = allLeadsRef.current.filter(
+    (l) =>
+      l.name.toLowerCase().includes(term.toLowerCase()) ||
+      l.phone.includes(term) ||
+      l.email?.toLowerCase().includes(term.toLowerCase())
+  );
 
     if (filtered.length > 0) {
       setIsSearching(true);
