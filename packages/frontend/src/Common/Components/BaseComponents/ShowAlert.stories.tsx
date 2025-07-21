@@ -1,29 +1,29 @@
-// מייבא טיפוסים חיוניים מ־storybook לתיאור מטה־נתונים וסיפורים (stories)
 import { Meta, StoryObj } from '@storybook/react-webpack5';
+import { showAlert } from './ShowAlert';
 
-// מייבא את הקומפוננטה שאנחנו רוצים להציג ב־Storybook
-import { ShowAlert } from './ShowAlert';
+type AlertArgs = {
+  title: string;
+  text: string;
+  icon: 'success' | 'error' | 'info' | 'warning';
+};
 
-// מגדיר את המטא־דאטה של הסיפור: כותרת להצגה בעץ הרכיבים, הרכיב עצמו, ותוויות
-const meta: Meta<typeof ShowAlert> = {
-  // מיקום הקומפוננטה במבנה התיקיות של Storybook
+const meta: Meta = {
   title: 'BaseComponents/ShowAlert',
-
-  // הקומפוננטה ש־Storybook הולך להציג ולתעד
-  component: ShowAlert,
-
-  // תגים עבור תיעוד אוטומטי – מאפשרים ל־Storybook להוסיף תיעוד באופן אוטומטי
   tags: ['autodocs'],
 };
 
-// מייצא את המטא־דאטה כברירת מחדל – חיוני ש־Storybook יזהה את הסיפור
 export default meta;
+type Story = StoryObj<AlertArgs>;
 
-// מגדיר טיפוס עבור סיפורים (story instances) המבוססים על המטא־דאטה
-type Story = StoryObj<typeof meta>;
-
-// מגדיר את הגרסה הבסיסית של הקומפוננטה – איך היא תוצג כברירת מחדל ב־Storybook
 export const Default: Story = {
-  // כאן ניתן להגדיר ערכי props ברירת מחדל, כרגע הקומפוננטה מוצגת עם ברירת המחדל הפנימית שלה
-  args: {},
+  render: (args) => (
+    <button onClick={() => showAlert(args.title, args.text, args.icon)}>
+      לחץ להצגת Alert
+    </button>
+  ),
+  args: {
+    title: 'שלום!',
+    text: 'זהו Alert',
+    icon: 'success',
+  },
 };
