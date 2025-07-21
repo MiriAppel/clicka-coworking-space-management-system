@@ -40,7 +40,7 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   [WorkspaceType.PRIVATE_ROOM]: "חדר פרטי",
   [WorkspaceType.DESK_IN_ROOM]: "שולחן בחדר",
   [WorkspaceType.OPEN_SPACE]: "אופן ספייס",
-  [WorkspaceType.KLIKAH_CARD]: "כרטיס קליקה",
+  [WorkspaceType.KLIKAH_CARD]: "כרטיס קליקה"
 };
 
 // סכימה לטופס (Zod)
