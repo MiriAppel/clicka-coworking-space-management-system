@@ -8,7 +8,6 @@ import { UUID } from 'crypto';
 
 // מחלקה שמכילה הצהרה ומימוש פונקציות לניהול החשבוניות
 export const InvoiceManagement: React.FC = () => {
-
   const {
     invoices,
     loading,
@@ -87,39 +86,7 @@ export const InvoiceManagement: React.FC = () => {
       Swal.fire('שגיאה', 'אירעה שגיאה בטעינת פריטי החשבונית', 'error');
     }
   };
-  // const handleGetAllInvoiceItems = async (invoiceId: UUID) => {
-  //     try {
-  //         const items = await getAllInvoiceItems(invoiceId);
-  //         if (Array.isArray(items)) {
-  //             setInvoiceItems(items);
-  //             // הצג את הפריטים בחלון מודאלי או בצורה אחרת
-  //             Swal.fire({
-  //                 title: 'פריטי החשבונית',
-  //                 html: `
-  //                     <div style="max-height: 300px; overflow-y: auto;">
-  //                         ${items.map((item: any) => `
-  //                             <div style="border: 1px solid #ddd; margin: 10px 0; padding: 10px;">
-  //                                 <p><strong>תיאור:</strong> ${item.description}</p>
-  //                                 <p><strong>כמות:</strong> ${item.quantity}</p>
-  //                                 <p><strong>מחיר יחידה:</strong> ₪${item.unitPrice}</p>
-  //                                 <p><strong>סוג:</strong> ${item.type}</p>
-  //                             </div>
-  //                         `).join('')}
-  //                     </div>
-  //                 `,
-  //                 width: 600,
-  //                 confirmButtonText: 'סגור'
-  //             });
-  //         } else {
-  //             console.error('הערך שהוחזר אינו מערך:', items);
-  //             Swal.fire('שגיאה', 'התקבל מבנה נתונים לא צפוי מהשרת', 'error');
-  //         }
-  //     } catch (error) {
-  //         console.error('שגיאה בקבלת פריטי החשבונית:', error);
-  //         Swal.fire('שגיאה', 'אירעה שגיאה בטעינת פריטי החשבונית', 'error');
-  //     }
-  // };
-  //////////////
+
   const columns: TableColumn<any>[] = [
     { header: 'מספר חשבונית', accessor: 'invoice_number' },
     { header: 'שם לקוח', accessor: 'customer_name' },
@@ -145,23 +112,23 @@ export const InvoiceManagement: React.FC = () => {
   ];
 
   const tableData = (invoices && Array.isArray(invoices) ? invoices : []).map((invoice: any) => {
-  const createdAt = invoice.created_at ? new Date(invoice.created_at).toLocaleDateString('he-IL') : '';
-  const updatedAt = invoice.updated_at ? new Date(invoice.updated_at).toLocaleDateString('he-IL') : '';
+    const createdAt = invoice.created_at ? new Date(invoice.created_at).toLocaleDateString('he-IL') : '';
+    const updatedAt = invoice.updated_at ? new Date(invoice.updated_at).toLocaleDateString('he-IL') : '';
 
-  return {
-    ...invoice,
-    issue_date: invoice.issue_date ? new Date(invoice.issue_date).toLocaleDateString('he-IL') : '',
-    due_date: invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('he-IL') : '',
-    subtotal: invoice.subtotal ? `₪${invoice.subtotal.toFixed(2)}` : '₪0.00',
-    tax_total: invoice.taxtotal ? `₪${invoice.taxtotal.toFixed(2)}` : '₪0.00',
-    status: invoice.status ? invoice.status.replace('_', ' ') : '',
-    payment_due_reminder_sent_at: invoice.payment_dueReminder_sentAt ?
-      new Date(invoice.payment_dueReminder_sentAt).toLocaleDateString('he-IL') : 'לא נשלחה',
-    
-    createdAt,
-    updatedAt
-  };
-});
+    return {
+      ...invoice,
+      issue_date: invoice.issue_date ? new Date(invoice.issue_date).toLocaleDateString('he-IL') : '',
+      due_date: invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('he-IL') : '',
+      subtotal: invoice.subtotal ? `₪${invoice.subtotal.toFixed(2)}` : '₪0.00',
+      tax_total: invoice.taxtotal ? `₪${invoice.taxtotal.toFixed(2)}` : '₪0.00',
+      status: invoice.status ? invoice.status.replace('_', ' ') : '',
+      payment_due_reminder_sent_at: invoice.payment_dueReminder_sentAt ?
+        new Date(invoice.payment_dueReminder_sentAt).toLocaleDateString('he-IL') : 'לא נשלחה',
+
+      createdAt,
+      updatedAt
+    };
+  });
 
   const resetForm = () => {
     setFormData({
@@ -183,6 +150,14 @@ export const InvoiceManagement: React.FC = () => {
   const handleEdit = async (invoice: any) => {
     try {
       const response: any = await getAllInvoiceItems(invoice.id);
+
+
+
+
+
+
+      console.log('Response from getAllInvoiceItems:++++++++++', response);
+      console.log('BillingItemType values:+++++++++++', BillingItemType);
       let invoiceItems = [];
       if (Array.isArray(response.invoiceItems)) {
         invoiceItems = response.invoiceItems;
@@ -234,15 +209,17 @@ export const InvoiceManagement: React.FC = () => {
         </div>
         <div>
   
-          <label>סוג:</label>
-          <select id="type-${index}">
-            <option value="${BillingItemType.WORKSPACE}" ${item.type === BillingItemType.WORKSPACE ? 'selected' : ''}>Workspace</option>
-            <option value="${BillingItemType.MEETING_ROOM}" ${item.type === BillingItemType.MEETING_ROOM ? 'selected' : ''}>Meeting Room</option>
-            <option value="${BillingItemType.LOUNGE}" ${item.type === BillingItemType.LOUNGE ? 'selected' : ''}>Lounge</option>
-            <option value="${BillingItemType.SERVICE}" ${item.type === BillingItemType.SERVICE ? 'selected' : ''}>Service</option>
-            <option value="${BillingItemType.DISCOUNT}" ${item.type === BillingItemType.DISCOUNT ? 'selected' : ''}>Discount</option>
-            <option value="${BillingItemType.OTHER}" ${item.type === BillingItemType.OTHER ? 'selected' : ''}>Other</option>
-          </select>
+         <div>
+  <label>סוג:</label>
+  <select id="type-${index}">
+    <option value="WORKSPACE" ${item.type === 'WORKSPACE' ? 'selected' : ''}>Workspace</option>
+    <option value="MEETING_ROOM" ${item.type === 'MEETING_ROOM' ? 'selected' : ''}>Meeting Room</option>
+    <option value="LOUNGE" ${item.type === 'LOUNGE' ? 'selected' : ''}>Lounge</option>
+    <option value="SERVICE" ${item.type === 'SERVICE' ? 'selected' : ''}>Service</option>
+    <option value="DISCOUNT" ${item.type === 'DISCOUNT' ? 'selected' : ''}>Discount</option>
+    <option value="OTHER" ${item.type === 'OTHER' ? 'selected' : ''}>Other</option>
+  </select>
+</div>
         </div>
       </div>
     `).join('');

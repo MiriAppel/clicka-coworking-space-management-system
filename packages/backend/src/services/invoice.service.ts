@@ -52,8 +52,6 @@ export async function serviceGetAllInvoices(): Promise<InvoiceModel[]> {
 }
 
 
-
-
 export async function serviceGetAllInvoiceItems(invoice_id: UUID): Promise<InvoiceItemModel[]> {
   const { data: invoices, error } = await supabase.from('invoice_item').select('*').eq('invoice_id', invoice_id);
   if (error)
