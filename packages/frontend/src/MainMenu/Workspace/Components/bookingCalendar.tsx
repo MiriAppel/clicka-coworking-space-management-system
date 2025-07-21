@@ -51,8 +51,10 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     fetchBookings,
     createBooking,
     updateBooking,
-    deleteBooking
-  } = useBookingCalendarStore();
+    deleteBooking,
+    syncWithGoogleCalendar,
+    fetchGoogleCalendarEvents
+} = useBookingCalendarStore();
 
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState<any>(null);
@@ -60,11 +62,26 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   const [formInitialData, setFormInitialData] = useState<Partial<FormFields>>({});
 
   useEffect(() => {
-    if (roomId) {
-      fetchBookings({ roomId });
-    }
-  }, [roomId, fetchBookings]);
-
+    const loadData = async () => {
+        if (roomId) {
+            try {
+                console.log('Loading data for room:', roomId);
+                
+                // טען הזמנות רגילות
+                await fetchBookings({ roomId });
+                
+                // טען אירועי Google Calendar
+                await fetchGoogleCalendarEvents(roomId);
+                
+                console.log('Data loaded successfully');
+            } catch (error) {
+                console.error('Error loading calendar data:', error);
+            }
+        }
+    };
+    
+    loadData();
+}, [roomId]); 
   const roomBookings = bookings.filter((booking: any) => booking.roomId === roomId);
 
   const events = roomBookings.map((booking: any) => ({

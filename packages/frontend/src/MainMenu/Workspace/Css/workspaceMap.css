@@ -48,11 +48,18 @@ h1 ::after{
    /* background-color:#fafafa ; */
    /* gap: 10px; */
 }
-.workspaceMap{
-    width: 75%;
+.workspaceMap {
+    position: relative;
+    flex: 1;
+    width: 100%;
     height: 100%;
-    /* background-color: #fafafa; */
-    /* gap:10px; */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
 }
 .workspaceMap.fullWidth {
     width: 100%;
@@ -65,8 +72,8 @@ h1 ::after{
 }
 
 .content.sidebarHidden .workspaceMap {
-    width: 100%;
-    height: calc(100vh - 100px); /* התאם לפי הצורך */
+    flex: 1;
+    height: 100%;/* התאם לפי הצורך */
 }
 
 .search.hidden {
@@ -77,8 +84,6 @@ h1 ::after{
     margin-bottom: 10px;
 }
 .zoom {
-
-
     position: absolute;
     bottom: 10px;
     left: 50%;
@@ -184,57 +189,45 @@ h1 ::after{
     text-align: center;
 }
 .svg-wrapper {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: fit-content;
-    height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+   padding: 5px;
+   box-sizing: border-box;
+}
+.mapContent {
+  width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 90% !important;
+    min-height: 90% !important;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    transform-origin: center center !important;/* שמור על יחס גובה-רוחב */
 }
 
 .spaces {
-    width: 100%;
+  width: 100%;
     height: 100%;
-    overflow: hidden;
     position: relative;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e0e0;
-    margin: 0 auto; /* מרכז בתוך הקונטיינר */
     display: flex;
+    justify-content: center;
+    align-items: center;
+     box-sizing: border-box;
 }
-/* תצוגה רגילה – כשהתפריט מוצג */
-.content:not(.sidebarHidden) .spaces {
-    justify-content: flex-start;
-    align-items: flex-start;
-     margin-right: 40px;
-}
+
+
 
 /* תצוגת מסך מלא – כשהתפריט מוסתר */
 .content.sidebarHidden .spaces {
     justify-content: center;
     align-items: center;
      margin-right: 0;
-}
-
-
-.mapContent {
-/* width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px; */
-   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-   /* padding: 20px;
-  border-radius: 1px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e0e0e0;
-  margin-right: 40px; */
-    display: block;
 }
 
 .space-rect {
@@ -321,7 +314,7 @@ h1 ::after{
     margin-right: 0; /* ביטול מרווח ימני */
     border-radius: 10px; /* תואם לעיצוב הכללי */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* שמירה על גבול */
-    padding: 8px; /* תואם לעיצוב הכללי */
+    padding: 0; /* תואם לעיצוב הכללי */
 }
 
 /* עיצוב לשם הלקוח */
@@ -389,20 +382,9 @@ h1 ::after{
     border-color: #0056b3 !important; */
     box-shadow: 0 2px 4px rgba(255, 136, 0, 0.2) !important;
 }
-.workspaceMap {
-    position: relative;
-}
-.zoom {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    pointer-events: none;
-}
-.zoom-controls {
-    pointer-events: auto;
-}
+
+
+
 .room-space {
     fill: var(--space-fill, #f8f9fa);
     stroke: #333;
@@ -466,4 +448,5 @@ h1 ::after{
 position: absolute;
 right: 30px;
 top: 90px;
-}}
+}
+}

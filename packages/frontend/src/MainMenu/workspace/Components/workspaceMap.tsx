@@ -27,7 +27,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-001",
+            id: "space-002",
             name: "כניסה ראשית",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -39,7 +39,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-003",
             name: "דלת כניסה ראשית",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -51,7 +51,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-004",
             name: "דלת כניסה",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -63,7 +63,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-005",
             name: "חדר open space",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.MAINTENANCE,
@@ -75,7 +75,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-006",
             name: "מטבח",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -87,7 +87,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-007",
             name: " 1יציאה מטבח",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -99,7 +99,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-008",
             name: " 2יציאה מטבח",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -111,7 +111,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-009",
             name: " 3יציאה מטבח",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -123,7 +123,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-010",
             name: "מעלית",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -135,7 +135,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-011",
             name: "כניסה נגישה",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -147,7 +147,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-012",
             name: "יציאה חצר",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -159,7 +159,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-013",
             name: "כניסה נגישה",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -171,7 +171,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-014",
             name: "קיר",
             type: "WALL" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -183,7 +183,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-015",
             name: "קיר",
             type: "WALL" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -195,7 +195,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-016",
             name: "כניסה open space",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -207,7 +207,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-017",
             name: "קיר",
             type: "WALL" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -219,7 +219,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-018",
             name: "יציאה לחצר 2",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -231,7 +231,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-019",
             name: "כניסה חדר ישיבות",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -243,7 +243,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-020",
             name: "משרד 3",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.OCCUPIED,
@@ -255,7 +255,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-021",
             name: "כניסה משרד 3",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -267,7 +267,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-022",
             name: "משרד 4",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -279,7 +279,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-023",
             name: "כניסה משרד 4",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -291,7 +291,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-024",
             name: "משרד 5",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.OCCUPIED,
@@ -304,7 +304,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-025",
             name: "כניסה משרד 5",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -316,7 +316,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-026",
             name: "phone booth",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -328,7 +328,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-027",
             name: "כניסה phone booth",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -340,7 +340,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-028",
             name: "שירותים",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -352,7 +352,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-029",
             name: "כניסה שירותים",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -364,7 +364,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-030",
             name: "משרד 2",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -376,7 +376,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-031",
             name: "כניסה משרד 2",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -388,7 +388,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-032",
             name: "משרד 1",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -400,7 +400,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-033",
             name: "כניסה משרד 1",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -412,7 +412,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-034",
             name: "משרד 6",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -424,7 +424,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-035",
             name: "כניסה משרד 6",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -436,7 +436,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-036",
             name: "משרד 7",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -448,7 +448,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-037",
             name: "כניסה משרד 7",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -460,7 +460,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-038",
             name: "ארון חשמל",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -472,7 +472,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-039",
             name: "קיר",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -484,7 +484,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-040",
             name: "עמדת הדפסה",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -496,7 +496,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-041",
             name: "משרד 8",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -508,7 +508,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-042",
             name: "כניסה משרד 8",
             type: "DOOR_PASS" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -520,7 +520,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-043",
             name: "משרד 9",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -532,7 +532,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-044",
             name: "ארון תקשורת",
             type: "PUBLIC_SPACE" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -544,7 +544,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-045",
             name: "קיר",
             type: "WALL" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -556,7 +556,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-046",
             name: "קיר",
             type: "WALL" as WorkspaceType,
             status: SpaceStatus.NONE,
@@ -568,7 +568,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-047",
             name: "עמדה 1",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -580,7 +580,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-048",
             name: "עמדה 2",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -592,7 +592,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-049",
             name: "עמדה 3",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -604,7 +604,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-050",
             name: "עמדה 4",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -616,7 +616,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-051",
             name: "עמדה 5",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -628,7 +628,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-052",
             name: "עמדה 6",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -640,7 +640,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-053",
             name: "עמדה 7",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -652,7 +652,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-054",
             name: "עמדה 8",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -664,7 +664,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-055",
             name: "עמדה 9",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -676,7 +676,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-056",
             name: "עמדה 10",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -688,7 +688,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-057",
             name: "עמדה 11",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -700,7 +700,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-058",
             name: "עמדה 12",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -712,7 +712,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-059",
             name: "עמדה 13",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -724,7 +724,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-060",
             name: "עמדה 14",
             type: "COMPUTER_STAND" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -748,7 +748,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-1",
             name: "עמדה 1 במשרד 3",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -760,7 +760,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-2",
             name: "עמדה 2 במשרד 3",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -772,7 +772,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-3",
             name: "עמדה 1 משרד 4",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -784,7 +784,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-4",
             name: "עמדה 1 במשרד 5",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -796,7 +796,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-5",
             name: "עמדה 1 משרד 8",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -808,7 +808,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-6",
             name: "עמדה 2 משרד 8",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -820,7 +820,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-7",
             name: "עמדה 1 משרד 9",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -832,7 +832,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-8",
             name: "עמדה 2 משרד 9",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -844,7 +844,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-9",
             name: "עמדה 3 משרד 9",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -856,7 +856,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-10",
             name: "עמדה 1 משרד 6",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -868,7 +868,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-11",
             name: "עמדה 1 משרד 2",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -880,7 +880,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-12",
             name: "עמדה 1 משרד 1",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -892,7 +892,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-13",
             name: "עמדה 1 משרד 7",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -904,7 +904,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-reception",
+            id: "space-reception-14",
             name: "עמדה 2 משרד 7",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
@@ -918,7 +918,7 @@ export const WorkspaceMap = () => {
     ];
     const rrr: Room[] = [
         {
-            id: "space-002",
+            id: "space-061",
             name: "לאונז'",
             type: "LOUNGE" as RoomType,
             status: RoomStatus.AVAILABLE,
@@ -935,7 +935,7 @@ export const WorkspaceMap = () => {
             updatedAt: "2024-01-01T08:00:00Z"
         },
         {
-            id: "space-002",
+            id: "space-062",
             name: "חדר ישיבות",
             type: "MEETING_ROOM" as RoomType,
             status: RoomStatus.AVAILABLE,
@@ -944,7 +944,7 @@ export const WorkspaceMap = () => {
             hourlyRate: 1,
             discountedHourlyRate: 1,
             capacity: 10,
-            workspaceMapId: "space-002",
+            workspaceMapId: "space-062",
             description: "חדר ישיבות מרווח עם מסך טלוויזיה",
             width: 450,
             height: 335,
@@ -962,8 +962,8 @@ export const WorkspaceMap = () => {
     const [activeStatusSearch, setActiveStatusSearch] = useState(false);
     const [activeTypeSearch, setActiveTypeSearch] = useState(false);
     const [displayDate, setDisplayDate] = useState(new Date());
-    const [scale, setScale] = useState(1);
-    const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+    const [scale, setScale] = useState(0.8);
+    const [containerSize, setContainerSize] = useState({ width: 800, height: 600 });
     const containerRef = useRef<HTMLDivElement>(null);
     const [mapDimensions,] = useState({ width: 2840, height: 1060 });
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -998,7 +998,7 @@ export const WorkspaceMap = () => {
 
     });
     const navigate = useNavigate()
-    const [zoom, setZoom] = useState(3);
+    const [zoom, setZoom] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -1021,6 +1021,21 @@ export const WorkspaceMap = () => {
         getAllWorkspace();
     }, [signal]);
     useEffect(() => {
+        const updateContainerSize = () => {
+            const container = document.querySelector('.svg-wrapper');
+            if (container) {
+                const rect = container.getBoundingClientRect();
+                setContainerSize({ width: rect.width, height: rect.height });
+                console.log('Updated container size:', rect.width, rect.height);
+            }
+        };
+
+        updateContainerSize();
+        window.addEventListener('resize', updateContainerSize);
+        return () => window.removeEventListener('resize', updateContainerSize);
+    }, []);
+
+    useEffect(() => {
         if (selectedStatus !== "" && selectedStatus !== "PLACEHOLDER") {
             setActiveStatusSearch(true);
         }
@@ -1035,29 +1050,39 @@ export const WorkspaceMap = () => {
     //קנה מידה של המפה
     // הוסף אחרי ה-useEffect הקיימים
     useEffect(() => {
+        console.log('calculateScale running...');
         const calculateScale = () => {
-            const container = document.querySelector('.spaces');
+            const container = document.querySelector('.svg-wrapper');
             if (container) {
                 const containerRect = container.getBoundingClientRect();
-                const scaleX = (containerRect.width - 20) / mapDimensions.width;
-                const scaleY = (containerRect.height - 20) / mapDimensions.height;
-                const newScale = Math.min(scaleX, scaleY, 1);
+                console.log('Container size:', containerRect.width, containerRect.height);
+                console.log('Map dimensions:', mapDimensions.width, mapDimensions.height); // הוסף את זה
+                const scaleX = (containerRect.width * 0.9) / mapDimensions.width;
+                const scaleY = (containerRect.height * 0.9) / mapDimensions.height;
+                const newScale = 0.8
+                console.log('Setting scale to:', newScale);
                 setScale(newScale);
+                setInitialScale(newScale);
             }
         };
+
+        // איפוס זום וגרירה בכל טעינה
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
+        setTimeout(calculateScale, 100);
         calculateScale();
         window.addEventListener('resize', calculateScale);
         return () => window.removeEventListener('resize', calculateScale);
     }, [mapDimensions]);
     const handleZoomIn = () => {
-        setZoom(prev => Math.min(prev * 1.2, 100));
+        setZoom(prev => Math.min(prev * 1.1, 5));
     };
     const handleZoomOut = () => {
-        setZoom(prev => Math.max(prev / 1.2, 3));
+        setZoom(prev => Math.max(prev / 1.1, 1));
     };
     const handleResetZoom = () => {
-        setZoom(3); // איפוס ל-300%
-        applyPan({ x: 0, y: 0 });
+        setZoom(1); // איפוס ל-300%
+        // applyPan({ x: 0, y: 0 });
     };
     const getZoomStep = () => {
         if (zoom < 10) return 0.1;
@@ -1066,24 +1091,48 @@ export const WorkspaceMap = () => {
         return 100;
     };
     const handleMouseDown = (e: React.MouseEvent) => {
-        if (zoom >= 3) {
+        if (zoom > 0.9) {
             e.preventDefault();
             setIsDragging(true);
             setDragStart({
-                x: e.clientX - pan.x,
-                y: e.clientY - pan.y
+                x: e.clientX,
+                y: e.clientY
             });
+            console.log('🖱️ Mouse down at:', e.clientX, e.clientY);
         }
     };
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (isDragging && zoom > 1) {
-            e.preventDefault();
-            applyPan({
-                x: e.clientX - dragStart.x,
-                y: e.clientY - dragStart.y
-            });
-        }
-    };
+const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+
+    const deltaX = e.clientX - dragStart.x;
+    const deltaY = e.clientY - dragStart.y;
+
+    const nextPanX = pan.x + deltaX;
+    const nextPanY = pan.y + deltaY;
+
+    const scaledWidth = mapDimensions.width * scale * zoom;
+    const scaledHeight = mapDimensions.height * scale * zoom;
+
+    const viewWidth = containerSize.width;
+    const viewHeight = containerSize.height;
+
+    const extraMargin = 0;
+
+    const minPanX = Math.min(0, viewWidth - scaledWidth) - extraMargin;
+    const maxPanX = 0 + extraMargin;
+
+    const minPanY = Math.min(0, viewHeight - scaledHeight) - extraMargin;
+    const maxPanY = 0 + extraMargin;
+
+    const clampedX = Math.max(minPanX, Math.min(maxPanX, nextPanX));
+    const clampedY = Math.max(minPanY, Math.min(maxPanY, nextPanY));
+
+    setPan({ x: clampedX, y: clampedY });
+    setDragStart({ x: e.clientX, y: e.clientY });
+};
+
+
+
     const handleMouseUp = () => {
         setIsDragging(false);
     };
@@ -1101,11 +1150,6 @@ export const WorkspaceMap = () => {
 
         const centerOffsetX = containerSize.width / (2 * scale * zoom);
         const centerOffsetY = containerSize.height / (2 * scale * zoom);
-
-        applyPan({
-            x: -(targetX - centerOffsetX) * scale * zoom,
-            y: -(targetY - centerOffsetY) * scale * zoom
-        });
     };
     const resetSearch = () => {
         setActiveStatusSearch(false);
@@ -1154,50 +1198,6 @@ export const WorkspaceMap = () => {
             return 'meeting';
         }
         return room.status;
-    };
-
-    const getPanBounds = () => {
-        const scaledWidth = mapDimensions.width * scale * zoom;
-        const scaledHeight = mapDimensions.height * scale * zoom;
-
-        return {
-            minX: containerSize.width - scaledWidth,
-            maxX: 0,
-            minY: containerSize.height - scaledHeight,
-            maxY: 0
-        };
-    };
-
-    const applyPan = (newPan: { x: number; y: number }) => {
-        const scaledWidth = mapDimensions.width * initialScale * zoom;
-        const scaledHeight = mapDimensions.height * initialScale * zoom;
-
-        let minX, maxX, minY, maxY;
-
-        if (scaledWidth <= containerSize.width) {
-            // אם המפה קטנה מהקונטיינר - מרכז אותה
-            const centerX = (containerSize.width - scaledWidth) / 2;
-            minX = maxX = centerX;
-        } else {
-            // אם המפה גדולה מהקונטיינר - אפשר גרירה בגבולות
-            maxX = 0; // הקצה השמאלי של המפה לא יעבור את השמאל של הקונטיינר
-            minX = containerSize.width - scaledWidth; // הקצה הימני של המפה לא יעבור את הימין של הקונטיינר
-        }
-
-        if (scaledHeight <= containerSize.height) {
-            // אם המפה קטנה מהקונטיינר - מרכז אותה
-            const centerY = (containerSize.height - scaledHeight) / 2;
-            minY = maxY = centerY;
-        } else {
-            // אם המפה גדולה מהקונטיינר - אפשר גרירה בגבולות
-            maxY = 0; // הקצה העליון של המפה לא יעבור את העליון של הקונטיינר
-            minY = containerSize.height - scaledHeight; // הקצה התחתון של המפה לא יעבור את התחתון של הקונטיינר
-        }
-
-        const clampedX = Math.max(Math.min(newPan.x, maxX), minX);
-        const clampedY = Math.max(Math.min(newPan.y, maxY), minY);
-
-        setPan({ x: clampedX, y: clampedY });
     };
 
     const getSpaceIcon = (space: Space) => {
@@ -1358,16 +1358,19 @@ export const WorkspaceMap = () => {
             </div>
 
             <div className={`workspaceMap ${!isSidebarOpen ? 'fullWidth' : ''}`}>
-                <div className="spaces" ref={containerRef} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} style={{ cursor: zoom >= 3 ? (isDragging ? 'grabbing' : 'grab') : 'default', position: 'relative' }}>
+                <div className="spaces" ref={containerRef} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} style={{ cursor: isDragging ? 'grabbing' : 'grab', position: 'relative' }}>
                     <div className="svg-wrapper">
 
                         <svg
                             className="mapContent"
                             style={{
-                                transform: `scale(${scale * zoom}) translate(${pan.x / (scale * zoom)}px, ${pan.y / (scale * zoom)}px)`,
-                                transformOrigin: '0 0',
-                                width: `100%`,
-                                height: `100%`,
+                                transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale * zoom})`,
+                                transformOrigin: 'center center',
+                                width: '100%',
+                                height: '100%',
+                                // maxWidth: mapDimensions.width,
+                                // maxHeight: mapDimensions.height,
+                                display: 'block'
                             }}
                             viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
                         >
@@ -1387,7 +1390,7 @@ export const WorkspaceMap = () => {
 
                                 const isWorkstation = w.type === 'COMPUTER_STAND' || w.type === 'DESK_IN_ROOM' || w.type === 'RECEPTION_DESK';
                                 return (
-                                    <g key={w.id}>
+                                    <g key={`workspace-${w.id}`}>
                                         {isWorkstation ? (
                                             // כל העמדות יעברו דרך הענף הזה
                                             <g
@@ -1561,7 +1564,7 @@ export const WorkspaceMap = () => {
 
 
                                 return (
-                                    <g key={r.id}>
+                                    <g key={`room-${r.id}`}>
                                         {r.width > 50 && r.height > 30 && (
                                             <g>
                                                 <rect
@@ -1570,8 +1573,6 @@ export const WorkspaceMap = () => {
                                                     width={r.width}
                                                     height={r.height}
                                                     className={`space-rect room-space ${getRoomSpaceClass(r)}`} // הוסף room-space
-
-                                                // שאר הקוד...
                                                 />
                                                 {getRoomSpaceIcon(r) && (
 
@@ -1613,12 +1614,12 @@ export const WorkspaceMap = () => {
                 </div>
                 <div className="zoom">
                     <div className="zoom-controls">
-                        <button className="zoom-btn" onClick={handleZoomOut} disabled={zoom <= 3}> - </button>
+                        <button className="zoom-btn" onClick={handleZoomOut} disabled={zoom <= 1}> - </button>
                         <div className="zoom-slider">
                             <input
                                 type="range"
-                                min="3"
-                                max="100"
+                                min="1"
+                                max="5"
                                 step={getZoomStep()}
                                 value={zoom}
                                 onChange={(e) => setZoom(Number(e.target.value))}

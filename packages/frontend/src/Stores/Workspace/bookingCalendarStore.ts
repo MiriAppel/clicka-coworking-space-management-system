@@ -4,7 +4,7 @@ import type { Booking } from "./../../../../shared-types";
 import type { ApiResponse } from "./../../../../shared-types";
 
 interface BookingCalendarState {
-    bookings: Booking[];
+    bookings: BookingWithGoogleFlag[];
     loading: boolean;
     error: string | null;
     fetchBookings: (params?: { roomId?: string }) => Promise<void>;
@@ -12,107 +12,249 @@ interface BookingCalendarState {
     updateBooking: (id: string, booking: Partial<Booking>) => Promise<void>;
     deleteBooking: (id: string) => Promise<void>;
     fetchBookingsByRoomId: (roomId: string) => Promise<void>;
+    // הוספת פונקציות Google Calendar
+    syncWithGoogleCalendar: (calendarId: string, booking: Booking) => Promise<void>;
+    fetchGoogleCalendarEvents: (calendarId: string) => Promise<void>;
+}
+interface BookingWithGoogleFlag extends Booking {
+    isGoogleEvent?: boolean;
 }
 
-const mockBookings: Booking[] = [
-    {
-        id: "1",
-        roomId: "101",
-        customerName: "דני",
-        startTime: "2025-07-20T10:00:00",
-        endTime: "2025-07-20T11:00:00",
-        status: "APPROVED"
-    } as Booking
-];
 
-export const useBookingCalendarStore = create<BookingCalendarState>((set) => ({
-    bookings: mockBookings,
+export const useBookingCalendarStore = create<BookingCalendarState>((set, get) => ({
+    bookings: [],
     loading: false,
     error: null,
 
     /**
-     * טוען את כל ההזמנות מהחנות (או מסנן לפי roomId אם נשלח).
-     * כרגע עובד על נתוני דמה בלבד.
-     * @param params אובייקט אופציונלי עם roomId לסינון
+     * טוען הזמנות מהשרת הקיים
      */
     fetchBookings: async (params) => {
         set({ loading: true, error: null });
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        set((state) => ({
-            bookings: params?.roomId
-                ? state.bookings.filter(b => b.roomId === params.roomId)
-                : state.bookings,
-            loading: false
-        }));
+        try {
+            // משתמש ב-API הקיים
+            const response = await axios.get('/api/book/getAllBooking', );
+            let bookings = response.data;
+            if (params?.roomId) {
+                bookings = bookings.filter((booking: any) => booking.roomId === params.roomId);
+            }
+                
+            
+            set({ 
+                bookings: response.data,
+                loading: false 
+            });
+        } catch (error: any) {
+            set({ 
+                error: error.response?.data?.message || 'שגיאה בטעינת הזמנות',
+                loading: false 
+            });
+        }
     },
 
     /**
-     * מוסיף הזמנה חדשה לחנות.
-     * כרגע מוסיף לנתוני הדמה בלבד.
-     * @param booking אובייקט הזמנה חדשה (חלקי)
+     * יוצר הזמנה חדשה ומסנכרן עם Google Calendar
      */
     createBooking: async (booking) => {
         set({ loading: true, error: null });
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        set((state) => ({
-            bookings: [
-                ...state.bookings,
-                {
-                    ...booking,
-                    id: Date.now().toString(),
-                    roomId: booking.roomId || "101",
-                    customerName: booking.customerName || "לקוח חדש",
-                    startTime: booking.startTime || new Date().toISOString(),
-                    endTime: booking.endTime || new Date().toISOString(),
-                    status: booking.status || "APPROVED"
-                } as Booking
-            ],
-            loading: false
-        }));
+        try {
+            // 1. יצירת הזמנה בשרת הקיים
+            const response = await axios.post('/api/book', booking);
+            const newBooking = response.data;
+
+            // 2. ניסיון לסנכרן עם Google Calendar (אם זה עובד)
+            try {
+                if (booking.roomId) {
+                    await get().syncWithGoogleCalendar(booking.roomId, newBooking);
+                }
+            } catch (syncError) {
+                console.warn('Google Calendar sync failed, but booking created:', syncError);
+                // לא עוצר את התהליך אם הסינכרון נכשל
+            }
+
+            // 3. עדכון State
+             await get().fetchBookings({ roomId: booking.roomId });
+            set({ loading: false });
+
+        } catch (error: any) {
+            set({ 
+                error: error.response?.data?.message || 'שגיאה ביצירת הזמנה',
+                loading: false 
+            });
+        }
     },
 
     /**
-     * מעדכן הזמנה קיימת לפי מזהה.
-     * כרגע מעדכן בנתוני הדמה בלבד.
-     * @param id מזהה ההזמנה לעדכון
-     * @param booking אובייקט עם שדות לעדכון
+     * מעדכן הזמנה קיימת
      */
     updateBooking: async (id, booking) => {
         set({ loading: true, error: null });
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        set((state) => ({
-            bookings: state.bookings.map(b =>
-                b.id === id ? { ...b, ...booking } as Booking : b
-            ),
-            loading: false
-        }));
+        try {
+            // משתמש ב-API הקיים
+            const response = await axios.put(`/api/book/updateBooking/${id}`, booking);
+            const updatedBooking = response.data;
+
+            // ניסיון לסנכרן עם Google Calendar
+            try {
+                if (updatedBooking.roomId) {
+                    await get().syncWithGoogleCalendar(updatedBooking.roomId, updatedBooking);
+                }
+            } catch (syncError) {
+                console.warn('Google Calendar sync failed:', syncError);
+            }
+
+           await get().fetchBookings({ roomId: updatedBooking.roomId });
+            set({ loading: false });
+
+        } catch (error: any) {
+            set({ 
+                error: error.response?.data?.message || 'שגיאה בעדכון הזמנה',
+                loading: false 
+            });
+        }
     },
 
     /**
-     * מוחק הזמנה לפי מזהה.
-     * כרגע מוחק מנתוני הדמה בלבד.
-     * @param id מזהה ההזמנה למחיקה
+     * מוחק הזמנה
      */
     deleteBooking: async (id) => {
         set({ loading: true, error: null });
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        set((state) => ({
-            bookings: state.bookings.filter(b => b.id !== id),
-            loading: false
-        }));
+        try {
+            const booking = get().bookings.find(b => b.id === id);
+            
+            // מחיקה מהשרת הקיים
+            await axios.delete(`/api/book/deleteBooking/${id}`);
+
+            // ניסיון למחוק מ-Google Calendar
+            try {
+                if (booking?.googleCalendarEventId) {
+                    await axios.delete(`/api/calendar-sync/delete/${booking.googleCalendarEventId}`);
+                }
+            } catch (syncError) {
+                console.warn('Google Calendar delete failed:', syncError);
+            }
+
+           if (booking?.roomId) {
+                await get().fetchBookings({ roomId: booking.roomId });
+            }
+            set({ loading: false });
+
+
+        } catch (error: any) {
+            set({ 
+                error: error.response?.data?.message || 'שגיאה במחיקת הזמנה',
+                loading: false 
+            });
+        }
     },
 
     /**
-     * טוען את כל ההזמנות של חדר מסוים לפי roomId.
-     * כרגע מחזיר נתוני דמה בלבד.
-     * @param roomId מזהה החדר
+     * טוען הזמנות לפי חדר - משתמש בפילטר קליינט-סייד
      */
     fetchBookingsByRoomId: async (roomId: string) => {
         set({ loading: true, error: null });
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        set(() => ({
-            bookings: mockBookings.filter(b => b.roomId === roomId),
-            loading: false
-        }));
+        try {
+            // טוען את כל ההזמנות ומסנן בצד הקליינט
+            const response = await axios.get('/api/book');
+            const allBookings = response.data;
+            
+            // סינון לפי roomId
+            const roomBookings = allBookings.filter((booking: Booking) => 
+                booking.roomId === roomId
+            );
+            
+            set({ 
+                bookings: roomBookings,
+                loading: false 
+            });
+        } catch (error: any) {
+            set({ 
+                error: error.response?.data?.message || 'שגיאה בטעינת הזמנות החדר',
+                loading: false 
+            });
+        }
+    },
+
+    /**
+     * מסנכרן הזמנה עם Google Calendar
+     */
+    syncWithGoogleCalendar: async (calendarId: string, booking: Booking) => {
+    try {
+        const token = localStorage.getItem('googleAccessToken') || 
+                     sessionStorage.getItem('googleAccessToken');
+        
+        if (!token) {
+            console.warn('No Google access token found');
+            return;
+        }
+
+        // ✅ תיקון: headers בפרמטר השלישי, data בפרמטר השני
+        await axios.post(
+            `/api/calendar-sync/add/${calendarId}`, 
+            { booking: booking }, // data
+            { 
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            } // config
+        );
+
+        console.log('Successfully synced with Google Calendar');
+
+    } catch (error: any) {
+        console.error('Google Calendar sync failed:', error);
+        throw error; // זרוק שגיאה כדי שהקריאה תדע שהסינכרון נכשל
+    }
+},
+
+
+    /**
+     * טוען אירועים מ-Google Calendar
+     */
+    fetchGoogleCalendarEvents: async (calendarId: string) => {
+        try {
+            const token = localStorage.getItem('googleAccessToken') || 
+                         sessionStorage.getItem('googleAccessToken');
+            
+            if (!token) {
+                console.warn('No Google access token found');
+                return;
+            }
+
+            // משתמש ב-API הקיים
+            const response = await axios.get(`/api/calendar-sync/all/${calendarId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            console.log('Google Calendar events loaded:', response.data);
+            
+              const googleEvents = response.data;
+            if (googleEvents && googleEvents.length > 0) {
+                const convertedEvents = googleEvents.map((event: any) => ({
+                    id: `google-${event.id}`,
+                    roomId: calendarId,
+                    customerName: event.summary || 'אירוע Google',
+                    externalUserEmail: event.attendees?.[0]?.email || '',
+                    startTime: event.start.dateTime,
+                    endTime: event.end.dateTime,
+                    notes: event.description || '',
+                    status: 'APPROVED',
+                    googleCalendarEventId: event.id,
+                    isGoogleEvent: true
+                }));
+
+                set((state) => ({
+                    bookings: [
+                        ...state.bookings.filter(b => !b.isGoogleEvent), 
+                        ...convertedEvents
+                    ]
+                }));
+            }
+
+        } catch (error: any) {
+            console.error('Failed to fetch Google Calendar events:', error);
+        }
     }
 }));
