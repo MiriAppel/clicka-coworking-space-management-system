@@ -107,3 +107,4 @@ export async function getListEmails(req: Request, res: Response, next: NextFunct
     next({ status: err.status || 500, message: err.message || 'Unexpected error' });
   }
 }
+

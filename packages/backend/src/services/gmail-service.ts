@@ -1,5 +1,9 @@
 import { google } from 'googleapis';
 import { SendEmail, SendEmailRequest } from 'shared-types/google';
+import { UserTokenService } from './userTokenService';
+import { EmailTemplateService } from './emailTemplate.service';
+import { customerService } from './customer.service';
+import { ID } from 'shared-types';
 
 function getAuth(token: string) {
   const client = new google.auth.OAuth2(
@@ -137,7 +141,6 @@ export async function sendEmail(userId: string, request: SendEmail, token: strin
   const res = await gmail.users.messages.send({ userId, requestBody: { raw } });
   return res.data;
 }
-
 export async function listEmails(
   userId: string,
   token: string,
@@ -146,9 +149,9 @@ export async function listEmails(
     q?: string;
     labelIds?: string[];
     pageToken?: string;
-  }
+  },
 ) {
-  const gmail = google.gmail({ version: 'v1', auth: getAuth(token) });
+  const gmail = google.gmail({ version: "v1", auth: getAuth(token) });
   let listRes;
   try {
     listRes = await gmail.users.messages.list({
@@ -159,9 +162,8 @@ export async function listEmails(
       pageToken: options?.pageToken,
     });
   } catch (error) {
-    return [{ error: 'Failed to fetch message list', details: error }];
+    return [{ error: "Failed to fetch message list", details: error }];
   }
-
   const messages = listRes.data?.messages;
   if (!messages || messages.length === 0) return [];
   const detailed = await Promise.all(
@@ -170,7 +172,7 @@ export async function listEmails(
         const full = await gmail.users.messages.get({
           userId,
           id: msg.id!,
-          format: 'metadata',
+          format: "metadata",
         });
         return {
           id: msg.id,
@@ -183,7 +185,40 @@ export async function listEmails(
           details: err instanceof Error ? err.message : err,
         };
       }
-    })
+    }),
   );
   return detailed;
 }
+
+export const sendEmailToConfrim = async (email: string | undefined, id: ID) => {
+  const userTokenService = new UserTokenService();
+  const emailService = new EmailTemplateService();
+  const customerservice = new customerService();
+  const token = await userTokenService.getSystemAccessToken();
+  const template = await emailService.getTemplateByName("אימות מייל");
+  const customer = await customerservice.getById(id);
+  if (!token)
+    throw console.log("the token worng" ,token);
+  if (!template) {
+    console.warn("email template not found", template);
+    return;
+  }
+  const renderedHtml = await emailService.renderTemplate(
+    template.bodyHtml,
+    {
+      "name": customer.name,
+      "link": `http://localhost:3001/api/customers/confirm-email/${id}/${email}`
+    },
+  );
+  await sendEmail(
+    "me",
+    {
+      to: [email ?? ""],
+      subject: template.subject,
+      body: renderedHtml,
+      isHtml: true,
+    },
+    token,
+  );
+};
+
