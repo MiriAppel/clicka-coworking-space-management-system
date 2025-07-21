@@ -24,6 +24,7 @@ import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAll
 import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 // import EmailConfirmationPage from './MainMenu/LeadAndCustomer/Components/Leads/EmailConfirmationPage';
+import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLogTable';
 
 import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
@@ -73,6 +74,8 @@ export const Routing = () => {
         <Route path="expense-form" element={<CreateExpenseForm />} />
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
+        <Route path="UserActions" element={< AuditLogTable />} />
+     
         <Route path="meetingRooms" element={<RoomReservations />} />  
         <Route path="emailTemplate" element={< EmailTemplateTable />} />
         <Route path="/pricing" element={<PricingHomePage />} />
