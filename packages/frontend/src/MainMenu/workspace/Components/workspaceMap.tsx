@@ -930,15 +930,15 @@ export const WorkspaceMap = () => {
             name: "לאונז'",
             type: "LOUNGE" as RoomType,
             status: RoomStatus.AVAILABLE,
-            // positionX: 0,
-            // positionY: 0,
+            positionX: 0,
+            positionY: 0,
             hourlyRate: 1,
             capacity: 10,
-            // workspaceMapId: "space-002",
+            workspaceMapId: "space-002",
             discountedHourlyRate: 1,
             description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-            // width: 2840,
-            // height: 1060,
+            width: 2840,
+            height: 1060,
             createdAt: "2024-01-01T08:00:00Z",
             updatedAt: "2024-01-01T08:00:00Z"
         },
@@ -947,15 +947,15 @@ export const WorkspaceMap = () => {
             name: "חדר ישיבות",
             type: "MEETING_ROOM" as RoomType,
             status: RoomStatus.AVAILABLE,
-            // positionX: 1420,
-            // positionY: 60,
+            positionX: 1420,
+            positionY: 60,
             hourlyRate: 1,
             discountedHourlyRate: 1,
             capacity: 10,
-            // workspaceMapId: "space-002",
+            workspaceMapId: "space-002",
             description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-            // width: 450,
-            // height: 335,
+            width: 450,
+            height: 335,
             createdAt: "2024-01-01T08:00:00Z",
             updatedAt: "2024-01-01T08:00:00Z"
         },
@@ -1446,7 +1446,7 @@ export const WorkspaceMap = () => {
                             const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
 
                             // הוסף את השורה הזו - זה השינוי העיקרי!
-                            // const isWorkstation = w.type === 'COMPUTER_STAND' || w.type === 'DESK_IN_ROOM';
+                            const isWorkstation = w.type === 'COMPUTER_STAND' || w.type === 'DESK_IN_ROOM';
 
                             return (
                                 <g key={w.id}>
@@ -1505,7 +1505,7 @@ export const WorkspaceMap = () => {
                                                 textAnchor="middle"
                                                 fontSize="8"
                                                 fill="#333"
-                                                style={{ pointerEvents: 'INACTIVE' }}
+                                                style={{ pointerEvents: 'none' }}
                                             >
                                                 {w.name}
                                             </text>
@@ -1537,7 +1537,6 @@ export const WorkspaceMap = () => {
                                                     type: w.type,
                                                     status: w.status,
                                                     workspaceMapId: w.workspaceMapId || "",
-                                                    // room: w.room || "",
                                                     currentCustomerId: w.currentCustomerId || "",
                                                     currentCustomerName: w.currentCustomerName || "",
                                                     positionX: w.positionX,
@@ -1575,7 +1574,7 @@ export const WorkspaceMap = () => {
                                                     fontSize="48"
                                                     fill="#333"
                                                     style={{
-                                                        pointerEvents: 'INACTIVE',
+                                                        pointerEvents: 'none',
                                                         fontWeight: 'bold',
                                                         fontFamily: 'Arial Unicode MS, Segoe UI Emoji, sans-serif'
                                                     }}
@@ -1591,7 +1590,7 @@ export const WorkspaceMap = () => {
                                                 fontSize={Math.min(w.width / 8, w.height / 4, 12)}
                                                 fill="white"
                                                 className="space-text"
-                                                style={{ pointerEvents: 'INACTIVE' }}
+                                                style={{ pointerEvents: 'none' }}
                                             >
                                                 {w.name}
                                             </text>
@@ -1604,7 +1603,7 @@ export const WorkspaceMap = () => {
                                                     dominantBaseline="middle"
                                                     fontSize={Math.min(w.width / 10, w.height / 5, 10)}
                                                     fill="#ffeb3b"
-                                                    style={{ pointerEvents: 'INACTIVE', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}
+                                                    style={{ pointerEvents: 'none', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}
                                                 >
                                                     👤 {w.currentCustomerName}
                                                 </text>

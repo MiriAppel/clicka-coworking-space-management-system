@@ -112,7 +112,7 @@ export interface Customer {
   id?: ID;
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   idNumber: string;
   businessName: string;
   businessType: string;
