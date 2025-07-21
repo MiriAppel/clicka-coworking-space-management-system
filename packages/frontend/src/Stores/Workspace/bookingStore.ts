@@ -78,11 +78,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     const googleAccessToken = localStorage.getItem('google_token'); // שיניתי כאן
     console.log("Google Access Token:", googleAccessToken);
     
-    // if (googleAccessToken) {
-    //   // אין צורך לשמור את הטוקן שוב
-    // } else {
-    //   console.log("token not found in localStorage\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-    // }
+  
     set({ loading: true, error: null });
     try {
       // const x= BookingModel 
