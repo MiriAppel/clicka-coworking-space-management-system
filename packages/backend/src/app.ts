@@ -3,12 +3,15 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
+
+
 import routerCustomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import routerPricing from './routes/pricing.route';
 import expenseRouter from './routes/expense.route';
 import routerPayment from './routes/payment.route';
+
 import interactionRouter from './routes/leadInteraction.route';
 import dotenv from 'dotenv';
 import routerAuth from './routes/auth';
@@ -26,6 +29,7 @@ import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import emailTemplateRouter from './routes/emailTemplate.route';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
+import invoiceRouter from './routes/invoice.route';
 import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
 import router from './routes';
@@ -33,11 +37,11 @@ import router from './routes';
 
 // import cookieParser from "cookie-parser";
 // const cookieParser = require("cookie-parser")
+// import cookieParser from "cookie-parser";
+// const cookieParser = require("cookie-parser")
 // Create Express app
 const app = express();
 dotenv.config();
-
-
 
 // Create Express app
 setupSwagger(app);
@@ -49,6 +53,7 @@ app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
   credentials: true, // Allow cookies to be sent with requests
 }));
+ 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -87,10 +92,10 @@ app.use('/api/contract', routerContract);
 app.use('/api/payment', routerPayment);
 // app.use('/api/leadInteraction', routerCstomer);
 app.use('/api/payment', routerPayment);
-
+app.use('/api/invoices', invoiceRouter);
 
 // Health check endpoint
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 // Error handling middleware
@@ -108,7 +113,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 // Placeholder for routes
 // TODO: Add routers for different resources
 // Error handling middleware
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.log(err);
   console.log(req);
   res.status(err.status || 500).json({
