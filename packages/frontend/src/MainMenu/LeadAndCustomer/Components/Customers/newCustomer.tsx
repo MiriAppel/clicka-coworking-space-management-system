@@ -4,6 +4,7 @@ import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerSto
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useNavigate } from "react-router-dom";
 import { CreateCustomerRequest, PaymentMethodType } from "shared-types";
+import { showAlertQuestion } from "../../../../Common/Components/BaseComponents/ShowAlertQuestion";
 
 export const NewCustomerPage: React.FC = () => {
     const navigate = useNavigate();
@@ -60,7 +61,19 @@ export const NewCustomerPage: React.FC = () => {
             showAlert("שגיאה ביצירת לקוח", latestError || "שגיאה בלתי צפויה", "error");
         } else {
             showAlert("", "הלקוח נוסף בהצלחה", "success");
-            navigate(-1);
+            const confirmed = await showAlertQuestion(`שלום ${data.name}, האם ברצונך לבחור חלל עכשיו?`);
+            if (confirmed) {
+                navigate('/workspace/assignmentForm', {
+                    state: {
+                        customerId: data.idNumber,
+                        customerName: data.name,
+                        workspaceType: data.currentWorkspaceType,
+                    }
+                });
+
+            } else {
+                navigate(-1); // חוזר אחורה
+            }
         }
 
     }

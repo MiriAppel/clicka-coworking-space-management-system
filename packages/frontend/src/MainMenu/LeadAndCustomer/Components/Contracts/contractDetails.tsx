@@ -14,6 +14,7 @@ const statusLabels: Record<ContractStatus, string> = {
   ACTIVE: "פעיל",
   EXPIRED: "פג תוקף",
   TERMINATED: "הסתיים",
+  RENEWED: "חודש"
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {

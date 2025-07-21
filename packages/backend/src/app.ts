@@ -34,6 +34,8 @@ import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
 import router from './routes';
 
+import './scripts/daily-contract-expiry'
+
 
 // import cookieParser from "cookie-parser";
 // const cookieParser = require("cookie-parser")

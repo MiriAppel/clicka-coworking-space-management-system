@@ -21,6 +21,7 @@ const statusLabels = {
   ACTIVE: "פעיל",
   EXPIRED: "פג תוקף",
   TERMINATED: "הסתיים",
+  RENEWED: "חודש"
 } satisfies Record<ContractStatus, string>;
 
 // תוויות סוג חלל עבודה

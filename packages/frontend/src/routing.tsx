@@ -63,6 +63,7 @@ export const Routing = () => {
         <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
+         <Route path="/workspace/assignmentForm" element={<AssignmentForm />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />        <Route path="payment" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
@@ -78,7 +79,7 @@ export const Routing = () => {
         <Route path="/pricing/meeting-room" element={<PricingSectionPage type="meeting-room" />} />
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
          <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
-          <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
       </Route>
     </Routes>
   );
