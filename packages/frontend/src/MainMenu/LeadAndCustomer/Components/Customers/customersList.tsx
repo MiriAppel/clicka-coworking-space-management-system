@@ -8,6 +8,7 @@ import debounce from "lodash/debounce";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
+import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
 
 import {
   CustomerStatus,
@@ -15,7 +16,6 @@ import {
   PaymentMethodType,
   WorkspaceType,
 } from "shared-types";
-import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
 
 interface ValuesToTable {
   id: string;
