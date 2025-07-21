@@ -6,7 +6,9 @@
   "scripts": {
     "start:backend": "yarn workspace clicka-backend dev",
     "start:frontend": "yarn workspace clicka-frontend start",
-    "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build"
+    "build": "yarn workspace shared-types build && yarn workspace clicka-frontend build",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "workspaces": [
     "packages/*"
@@ -55,6 +57,9 @@
     "zustand": "^5.0.6"
   },
   "devDependencies": {
+    "@storybook/addon-docs": "9.0.17",
+    "@storybook/addon-webpack5-compiler-swc": "3.0.0",
+    "@storybook/react-webpack5": "9.0.17",
     "@types/aria-query": "^5.0.4",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
@@ -108,7 +113,8 @@
     "@types/trusted-types": "^2.0.7",
     "@types/ws": "^8.18.1",
     "@types/yargs": "^17.0.33",
-    "@types/yargs-parser": "^21.0.3"
+    "@types/yargs-parser": "^21.0.3",
+    "storybook": "9.0.17"
   },
   "resolutions": {
     "@types/express": "^4.17.23",

@@ -94,7 +94,7 @@
     "@storybook/cli": "^9.0.16",
     "@storybook/preset-create-react-app": "9.0.16",
     "@storybook/react": "^9.0.16",
-    "@storybook/react-webpack5": "9.0.16",
+    "@storybook/react-webpack5": "^9.0.17",
     "@types/glob": "^9.0.0",
     "@types/lodash": "^4.17.20",
     "@types/mime": "^4.0.0",
