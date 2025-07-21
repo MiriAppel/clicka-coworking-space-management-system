@@ -1,4 +1,23 @@
-import { useNavigate } from "react-router-dom";
+// import React, { useEffect, useState } from "react";
+// import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
+// import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+// import axios from "axios";
+// import { Outlet, useNavigate } from "react-router-dom";
+// import { Link, NavLink } from "react-router-dom";
+// import { Lead, LeadSource, LeadStatus, Person } from "shared-types";
+// import { SearchLeads } from "./searchLead";
+// import { deleteLead } from "../../Service/LeadAndCustomersService";
+
+// interface ValuesToTable {
+//   id: string
+//   name: string; // שם המתעניין
+//   status: LeadStatus; // סטטוס המתעניין
+//   phone: string; // פלאפון
+//   email: string; // מייל
+// }
+// //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
+
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { SearchLeads } from "./SearchLeads";
 import { Lead } from "shared-types";

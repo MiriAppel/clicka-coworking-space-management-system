@@ -44,8 +44,9 @@ export const menus: Menu[] = [
     icon: <Map size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'מפה', path: '/workspaceMap' },
-      { label: 'הקצאות', path: '/workspaceAssign' },
-      { label: 'ישיבות', path: '/meetingRooms' }
+      { label: 'הקצאות', path: '/assignmentForm' },
+      { label: 'ישיבות', path: '/bookingCalendar' },
+      { label: 'ניהול', path: '/managementWorkspace' }
     ]
   },
   {
@@ -55,7 +56,9 @@ export const menus: Menu[] = [
     items: [
       { label: 'חשבוניות', path: '/billing' },
       { label: 'תשלומים', path: '/payments' },
-      { label: 'הוצאות', path: '/expenses' }
+      { label: 'הוצאות', path: '/expenses' },
+      { label: 'תמחור', path: '/pricing' } // הוספתי כאן
+
     ]
   },
   {
