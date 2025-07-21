@@ -7,6 +7,7 @@ import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/Aut
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 import { Button } from './Common/Components/BaseComponents/Button';
 import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
+import { VoiceCommand } from './VoiceAssistant';
 
 
 function App() {
@@ -36,7 +37,9 @@ function App() {
   
 
   return (
+    
     <AuthProvider>
+      <VoiceCommand/>
     <div className="App">
       
       <header className="App-header">
