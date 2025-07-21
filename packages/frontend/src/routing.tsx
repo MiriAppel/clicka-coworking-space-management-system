@@ -15,10 +15,9 @@ import MainLayout from './layout/MainLayout';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
 import { ExpenseDetails } from './MainMenu/Billing/Components/expenseManagementSystem/expenseDetails';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
-// import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
-import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
@@ -27,7 +26,7 @@ import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
-
+import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -70,7 +69,6 @@ export const Routing = () => {
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
         <Route path="expense-form" element={<CreateExpenseForm />} />
-
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
         <Route path="meetingRooms" element={<RoomReservations />} />  
@@ -80,6 +78,7 @@ export const Routing = () => {
         <Route path="/pricing/meeting-room" element={<PricingSectionPage type="meeting-room" />} />
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
          <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
+          <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
       </Route>
     </Routes>
   );
