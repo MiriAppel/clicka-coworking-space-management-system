@@ -2,11 +2,13 @@ import { validateEventInput } from '../utils/validateEventInput';
 import { Request, Response, NextFunction } from 'express';
 import * as calendarService from '../services/calendar-service';
 import { CalendarEventInput, DateISO } from 'shared-types';
+import { UserTokenService } from '../services/userTokenService';
 // import { CalendarEventInput } from 'shared-types/google'; 
 // import { DateISO } from 'shared-types/core'; 
 
 export async function postEvent(req: Request, res: Response, next: NextFunction) {
-  const token = extractToken(req);
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken();
   if (!token) return next({ status: 401, message: 'Missing token' });
   const { calendarId } = req.params;
   const event: CalendarEventInput = req.body;
@@ -22,7 +24,8 @@ export async function postEvent(req: Request, res: Response, next: NextFunction)
 }
 
 export async function getListEvents(req: Request, res: Response, next: NextFunction) {
-  const token = extractToken(req);
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   if (!token) return next({ status: 401, message: 'Missing token' });
   const { calendarId } = req.params;
   try {
@@ -35,7 +38,8 @@ export async function getListEvents(req: Request, res: Response, next: NextFunct
 }
 
 export async function deleteEvent(req: Request, res: Response, next: NextFunction) {
-  const token = extractToken(req);
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   if (!token) return next({ status: 401, message: 'Missing token' });
   const { calendarId, eventId } = req.params;
   try {
@@ -48,7 +52,8 @@ export async function deleteEvent(req: Request, res: Response, next: NextFunctio
 }
 
 export async function putEvent(req: Request, res: Response, next: NextFunction) {
-  const token = extractToken(req);
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   if (!token) return next({ status: 401, message: 'Missing token' });
   const { calendarId, eventId } = req.params;
   const updates: Partial<CalendarEventInput> = req.body;
@@ -69,10 +74,11 @@ export async function putEvent(req: Request, res: Response, next: NextFunction) 
 }
 
 export async function getFreeBusy(req: Request, res: Response, next: NextFunction) {
-  const token = extractToken(req);
+  const userTokenService = new UserTokenService();
+  const token = await userTokenService.getSystemAccessToken(); 
   if (!token) return next({ status: 401, message: 'Missing token' });
-  const { calendarId } = req.params; 
-  const { start, end }: { start: DateISO, end: DateISO } = req.body;  
+  const { calendarId } = req.params;
+  const { start, end }: { start: DateISO, end: DateISO } = req.body;
   if (!start || !end) {
     return res.status(400).json({ success: false, error: { code: 400, message: 'Missing start/end parameter.' } });
   }
@@ -85,7 +91,3 @@ export async function getFreeBusy(req: Request, res: Response, next: NextFunctio
   }
 }
 
-function extractToken(req: Request): string | null {
-  const auth = req.headers.authorization;
-  return auth?.startsWith('Bearer ') ? auth.split(' ')[1] : null;
-}

@@ -21,10 +21,11 @@ import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementW
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
-import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';
+import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
+import { SendEmail } from './MainMenu/CoreAndIntegration/Components/SendEmail/SendEmail';
 // import EmailConfirmationPage from './MainMenu/LeadAndCustomer/Components/Leads/EmailConfirmationPage';
-
+import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLogTable';
 import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
@@ -65,7 +66,8 @@ export const Routing = () => {
         {/* <Route path="/workspaceMap" element={<WorkspaceMap />} /> */}
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
-        <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />        <Route path="payment" element={<PaymentForm />} />
+        <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
+        <Route path="payment" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
@@ -73,14 +75,16 @@ export const Routing = () => {
         <Route path="expense-form" element={<CreateExpenseForm />} />
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
-        <Route path="meetingRooms" element={<RoomReservations />} />  
+        <Route path="meetingRooms" element={<RoomReservations />} />
+        <Route path="UserActions" element={< AuditLogTable />} />
         <Route path="emailTemplate" element={< EmailTemplateTable />} />
+        <Route path="sendEmails" element={< SendEmail />} />
         <Route path="/pricing" element={<PricingHomePage />} />
         <Route path="/pricing/workspace" element={<PricingSectionPage type="workspace" />} />
         <Route path="/pricing/meeting-room" element={<PricingSectionPage type="meeting-room" />} />
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
-         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
-          <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
+        <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
       </Route>
     </Routes>
   );

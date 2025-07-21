@@ -16,8 +16,8 @@ import interactionRouter from './routes/leadInteraction.route';
 import dotenv from 'dotenv';
 import routerAuth from './routes/auth';
 import { Request, Response } from 'express';
-
-import cookieParser from "cookie-parser";
+import cookieParser from 'cookie-parser';
+import bookRouter from './routes/booking.route';
 import workspaceRouter from './routes/workspace.route';
 import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
@@ -28,17 +28,13 @@ import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import emailTemplateRouter from './routes/emailTemplate.route';
-import router from './routes';
-import bookRouter from './routes/booking.route';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 import invoiceRouter from './routes/invoice.route';
 import translationRouter from './routes/translation.route';
-import routerMap from './routes/mapLayout.route';
-import routerLayout from './routes/mapLayout.route';
-import routerCalendarSync from './routes/googleCalendarBookingIntegration.route';
 import userRouter from './routes/user.route';
+import router from './routes';
+import auditLogRouter from './routes/auditLog.route';
 import { file } from 'googleapis/build/src/apis/file';
-import driveRouter from './routes/drive-route';
 
 // import cookieParser from "cookie-parser";
 // const cookieParser = require("cookie-parser")
@@ -64,9 +60,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use('/api/translate', translationRouter);
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
+app.use('/api/audit-logs', auditLogRouter);
+app.use('/api/translate', translationRouter);
 app.use('/api/customers', routerCustomer);
 app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
@@ -97,10 +94,6 @@ app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/payment', routerPayment);
 // app.use('/api/leadInteraction', routerCstomer);
-app.use('/api/layout',routerLayout);
-app.use('/api/calendar-sync',routerCalendarSync)
-app.use('/api',router)
-app.use('/api/book', bookRouter);
 app.use('/api/payment', routerPayment);
 app.use('/api/invoices', invoiceRouter);
 

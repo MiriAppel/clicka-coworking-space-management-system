@@ -20,10 +20,6 @@ export function validateUploadFile(req: Request) {
     throw { status: 422, message: 'File too large (max 10MB)' };
   }
 }
-
-/**
- * Validate fileId param
- */
 export function validateFileId(fileId: string) {
   if (!fileId) {
     throw { status: 400, message: 'Missing fileId' };
@@ -32,10 +28,6 @@ export function validateFileId(fileId: string) {
     throw { status: 422, message: 'Invalid fileId format' };
   }
 }
-
-/**
- * Validate permission object
- */
 export function validateSharePermissions(body: any) {
   if (!body?.role || !body?.type) {
     throw { status: 400, message: 'Missing required permission fields (role, type)' };
