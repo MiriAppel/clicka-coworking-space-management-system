@@ -209,7 +209,7 @@ export const InvoiceManagement: React.FC = () => {
         </div>
         <div>
   
-         <div>
+<div>
   <label>סוג:</label>
   <select id="type-${index}">
     <option value="WORKSPACE" ${item.type === 'WORKSPACE' ? 'selected' : ''}>Workspace</option>
@@ -220,6 +220,8 @@ export const InvoiceManagement: React.FC = () => {
     <option value="OTHER" ${item.type === 'OTHER' ? 'selected' : ''}>Other</option>
   </select>
 </div>
+
+
         </div>
       </div>
     `).join('');
