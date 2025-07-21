@@ -37,6 +37,7 @@ var CustomerStatus;
     CustomerStatus["NOTICE_GIVEN"] = "NOTICE_GIVEN";
     CustomerStatus["EXITED"] = "EXITED";
     CustomerStatus["PENDING"] = "PENDING";
+    CustomerStatus["CREATED"] = "CREATED";
 })(CustomerStatus || (exports.CustomerStatus = CustomerStatus = {}));
 // Exit reason enum
 var ExitReason;

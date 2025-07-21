@@ -1,15 +1,15 @@
 
 import { Router } from 'express';
 import {
-  createVendor,
+  createVendorController,
   deleteVendorController,
   getVendorByIdController,
-  getVendor
+  getVendorController
 } from '../controllers/vendor.controller';
 const vendorRouter = Router();
 
-vendorRouter.post("/", createVendor );
-vendorRouter.get("/", getVendor );
+vendorRouter.post("/", createVendorController );
+vendorRouter.get("/", getVendorController );
 vendorRouter.get("/:id", getVendorByIdController );
 vendorRouter.delete("/:id", deleteVendorController );
 

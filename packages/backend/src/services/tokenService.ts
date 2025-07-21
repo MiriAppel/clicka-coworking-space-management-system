@@ -35,17 +35,34 @@ export const clearAuthCookie = (res: Response): void => {
     });
 };
 // Function to get the current user ID from the session cookie
+
 export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string } | null => {
     const sessionToken = req.cookies.session;
     const sessionId = req.cookies.sessionId;
-    if (!sessionToken || !sessionId) return null;
+
+    // בדיקה בסיסית שה-cookies קיימים ולא ריקים
+    if (!sessionToken || !sessionId || sessionToken.trim() === '' || sessionId.trim() === '') {
+        console.warn('Missing or empty session cookies');
+        return null;
+    }
+
     try {
         const payload = verifyJwtToken(sessionToken);
-        const userId = payload.userId;
-        const isValidSession = userTokenService.validateSession(userId, sessionId);
-        if (!isValidSession) {
+
+        // בדיקה שה-payload מכיל את השדות הנדרשים
+        if (!payload || typeof payload.userId !== 'string' || typeof payload.email !== 'string' || typeof payload.googleId !== 'string') {
+            console.warn('Invalid token payload structure');
             return null;
         }
+
+        const userId = payload.userId;
+
+        const isValidSession = userTokenService.validateSession(userId, sessionId);
+        if (!isValidSession) {
+            console.warn('Invalid session for user');
+            return null;
+        }
+
         return {
             userId,
             email: payload.email,
@@ -55,8 +72,8 @@ export const getUserFromCookie = (req: Request): { userId: string; email: string
         console.error('Error verifying JWT token:', error);
         return null;
     }
-
 };
+
 
 export const refreshUserToken = async (sessionToken: string, sessionId: string): Promise<string> => {
     const payload = verifyJwtToken(sessionToken);

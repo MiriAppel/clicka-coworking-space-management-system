@@ -158,35 +158,35 @@ export const deleteInvoice = async (req: Request, res: Response): Promise<void> 
 };
 export const sendEmail = async (req: Request, res: Response) => {
   try {
-    console.log("changeCustomerStatus called with params:", req.params);
+    console.log("sendEmail called with params:", req.params);
     const userTokenService = new UserTokenService();
+
     const customerName = req.body.customerName;
     const amount = req.body.amount;
     const invoiceNumber = req.body.invoiceNumber;
+
     const token = await userTokenService.getSystemAccessToken();
-    console.log("changeCustomerStatus called with token:", token);
-    // הנחת שהמשתמש מחובר ויש לו מזהה
+    console.log("sendEmail called with token:", token);
+
     if (!token) {
       return res
         .status(401)
         .json({ error: "Unauthorized: missing access token" });
     }
+
     if (!customerName || !amount || !invoiceNumber) {
       return res.status(400).json({ error: "Missing required parameters" });
     }
-    // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
-    await sendStatusChangeEmails(
-      customerName,
-      amount,
-      invoiceNumber,
-      token
-    );
+
+    await sendStatusChangeEmails(customerName, amount, invoiceNumber, token);
+
     res
       .status(200)
       .json({ message: "Status change processed and emails sent." });
   } catch (error) {
-    console.error("Error in changeCustomerStatus:", error);
+    console.error("Error in sendEmail:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+// פונקציה לדוגמה למחיקת חשבונית (בהתבסס על הקוד שנתת)

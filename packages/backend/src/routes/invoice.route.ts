@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { Request, Response } from 'express';
-import { createInvoice, deleteInvoice, getAllInvoiceItems, getAllInvoices, getInvoiceById, sendEmail, updateInvoice } from '../controllers/invoice.controller';
-import { sendStatusChangeEmails } from '../services/invoice.service';
+import { createInvoice, deleteInvoice, getAllInvoiceItems,sendEmail, getAllInvoices, getInvoiceById, updateInvoice } from '../controllers/invoice.controller';
 import { sendInvoiceUpdateMail } from '../controllers/InvoiceUpdateMail';
 
 const invoiceRouter = Router();
+console.log('✅ invoice router loaded');
+
 // נתיב בדיקה
 invoiceRouter.get('/health', (req: Request, res: Response) => {
   res.json({
@@ -35,6 +36,10 @@ invoiceRouter.delete('/:id', deleteInvoice);
 invoiceRouter.post('/sendemail', sendEmail);
 //עידכון מייל
 invoiceRouter.post('/send-invoice-update-email', sendInvoiceUpdateMail);
+
+invoiceRouter.get('/health', (req, res) => {
+  res.json({ message: 'INVOICE ROUTER OK' });
+});
 
 
 export default invoiceRouter;

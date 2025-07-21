@@ -119,6 +119,47 @@ async exportOccupancyTrendToCSV(): Promise<string> {
     return 'Archived successfully';
   }
 
+  async getHistory(date: Date): Promise<any[] | null> {
+  const today = new Date();
+  const dateStr = date.toISOString().split('T')[0];
+  if (date < today) {
+    // 1. שליפת מזהים מהעבר
+    const { data: occupancyData, error: occupancyError } = await supabase
+      .from('occupancy_trend')
+      .select('workspaces')
+      .eq('date', dateStr)
+      .single();
+    if (occupancyError) {
+      console.error('Error fetching occupancy trend:', occupancyError);
+      return null;
+    }
+    const workspaceIds: string[] = occupancyData?.workspaces ?? [];
+    if (workspaceIds.length === 0) return [];
+    // 2. שליפת רשומות מלאות מהקצאות לפי מזהים
+    const { data: assignments, error: assignmentsError } = await supabase
+      .from('space_assignment')
+      .select('*')
+      .in('id', workspaceIds)
+      .eq('assigned_date', dateStr);
+    if (assignmentsError) {
+      console.error('Error fetching assignments by IDs:', assignmentsError);
+      return null;
+    }
+    return assignments ?? [];
+  } else {
+    // תאריך עתידי – שליפה ישירה לפי date
+    const { data, error } = await supabase
+      .from('space_assignment')
+      .select('*')
+      .eq('assigned_date', dateStr);
+    if (error) {
+      console.error('Error fetching future assignments:', error);
+      return null;
+    }
+    return data ?? [];
+  }
+}
+
   async calculateClientOccupancyTrend(customerId: string): Promise<{
     customerId: string;
     averageOccupancy: number;

@@ -15,8 +15,9 @@ export async function create(
             website: (request as any).website, // אם קיים ב-CreateVendorRequest, ודא שהטיפוס כולל זאת
             tax_id: request.taxId,
             payment_terms: PaymentTerms.COD,
-            preferred_payment_method: request.preferred_payment_method,
-            category: request.category,
+            preferred_payment_method: PaymentMethod.BANK_TRANSFER
+            ,
+            category: VendorCategory.Other,
             status: VendorStatus.Inactive, // סטטוס ברירת מחדל אם לא נשלח
             notes: request.notes,
             document_ids: request.document_ids || [],
@@ -32,7 +33,6 @@ export async function create(
             console.error('Error creating vendor:', error);
             throw new Error('Failed to create vendor');
         }
-
         return new VendorModel({
             id: data.id,
             name: data.name,
@@ -63,12 +63,10 @@ export async function getAllVendors(): Promise<Vendor[] | null> {
             .from('vendor')
             .select('*')
             .eq('active', true);
-
         if (error) {
             console.error('Error fetching vendors:', error);
             throw new Error('Failed to fetch vendors');
         }
-
         if (!data) return null;
         return data.map((vendor) => new VendorModel({
             id: vendor.id,
@@ -100,7 +98,6 @@ export async function getVendorById(id: string): Promise<Vendor | null> {
             .select('*')
             .eq('id', id)
             .single();
-
         if (error && error.code !== 'PGRST116') {
             console.error('Error fetching vendor by ID:', error);
             throw new Error('Failed to fetch vendor');
@@ -130,20 +127,30 @@ export async function getVendorById(id: string): Promise<Vendor | null> {
     }
 }
 export async function deleteVendor(id: ID): Promise<boolean> {
-    try {
-        const { error } = await supabase
-            .from('vendor')
-            .update({ active: false, updated_at: new Date().toISOString() })
-            .eq('id', id);
-
-        if (error) {
-            console.error('Error deleting vendor:', error);
-            throw new Error("Failed to delete vendor");
-        }
-
-        return true;
-    } catch (e) {
-        console.error('Exception in deleteLoungePricing:', e);
-        throw e;
+  try {
+    const { error } = await supabase
+      .from('vendor')
+      .update({ active: false, updated_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) {
+      console.error('Error deleting vendor:', error);
+      throw new Error("Failed to delete vendor");
     }
+    return true;
+  } catch (e) {
+    console.error('Exception in deleteLoungePricing:', e);
+    throw e;
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+

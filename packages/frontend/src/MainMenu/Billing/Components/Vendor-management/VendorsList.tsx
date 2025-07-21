@@ -22,7 +22,6 @@ async function fetchVendors(): Promise<Vendor[]> {
   if (!response.ok) throw new Error("שגיאה בשליפת ספקים");
   return response.json();
 }
-
 // קומפוננטת רשימת ספקים
 export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
   const navigate = useNavigate();
