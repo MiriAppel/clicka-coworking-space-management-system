@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Expense, Vendor } from 'shared-types';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { Table } from '../../../../Common/Components/BaseComponents/Table';
-import VendorDocuments from './VendorDocuments';
+//import VendorDocuments from './VendorDocuments';
 
 // טיפוס הפרופס - מערך ספקים ופונקציה לעדכון
 type VendorSummaryProps = {
@@ -87,7 +87,8 @@ const [expenses, setExpenses] = useState<Expense[]>([]);
         <div><strong>כתובת:</strong> {vendor.address}</div>
       </div>
 
-      <VendorDocuments />
+      {/* קומפוננטת מסמכים של הספק */}
+      {/* <VendorDocuments /> */}
 
       <div className="max-w-xl mx-auto mt-8 space-y-4">
         <h3 className="text-xl font-semibold">סיכום הוצאות</h3>

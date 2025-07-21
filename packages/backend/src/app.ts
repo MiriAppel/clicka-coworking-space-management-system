@@ -30,6 +30,7 @@ import vendorRouter from './routes/vendor.router';
 import emailTemplateRouter from './routes/emailTemplate.route';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 import invoiceRouter from './routes/invoice.route';
+import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
 import router from './routes';
 
@@ -46,7 +47,7 @@ dotenv.config();
 setupSwagger(app);
 
 // Apply middlewares
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
@@ -58,6 +59,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use('/api/translate', translationRouter);
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
 app.use('/api/customers', routerCustomer);
@@ -78,7 +80,6 @@ app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
-// app.use('/api/translate', translationRouter);
 app.use('/api/auth', routerAuth);
 app.use('/api', router);
 app.use('/api/expenses', expenseRouter);
@@ -89,7 +90,6 @@ app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/payment', routerPayment);
-// app.use('/api/translate', translationRouter);
 // app.use('/api/leadInteraction', routerCstomer);
 app.use('/api/payment', routerPayment);
 app.use('/api/invoices', invoiceRouter);
@@ -98,7 +98,6 @@ app.use('/api/invoices', invoiceRouter);
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-// app.use('/translations', translationRouter);
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
