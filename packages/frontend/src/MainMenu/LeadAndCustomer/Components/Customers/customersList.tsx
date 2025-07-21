@@ -2,22 +2,29 @@ import { useNavigate } from "react-router-dom";
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { ExportToExcel } from "../exportToExcel";
+import {
+  Table,
+  TableColumn,
+} from "../../../../Common/Components/BaseComponents/Table";
+import { Customer, CustomerStatus, DateISO, PaymentMethodType, WorkspaceType } from "shared-types";
 import { Stack, TextField } from "@mui/material";
 import debounce from "lodash/debounce";
+import { Pencil, Trash } from "lucide-react";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { showAlertHTML } from "../../../../Common/Components/BaseComponents/showAlertHTML";
 import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
-import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
 
-import {
-  CustomerStatus,
-  DateISO,
-  PaymentMethodType,
-  WorkspaceType,
-} from "shared-types";
 
 interface ValuesToTable {
   id: string;
+  name: string;
+  phone: string;
+  email: string;
+  status: CustomerStatus;
+  businessName: string;
+  businessType: string;
+  image: string;
 }
 
 const statusLabels: Record<CustomerStatus, string> = {
@@ -33,10 +40,10 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   DESK_IN_ROOM: 'שולחן בחדר',
   OPEN_SPACE: 'אופן ספייס',
   KLIKAH_CARD: 'כרטיס קליקה',
-  DOOR_PASS: 'דלת כניסה',
-  WALL: 'קיר',
-  COMPUTER_STAND: 'עמדת מחשב',
-  RECEPTION_DESK: 'דלפק קבלה',
+  [WorkspaceType.DOOR_PASS]: "",
+  [WorkspaceType.WALL]: "",
+  [WorkspaceType.COMPUTER_STAND]: "",
+  [WorkspaceType.RECEPTION_DESK]: ""
 };
 
 const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
@@ -45,15 +52,6 @@ const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
   CHECK: 'שיק',
   CASH: 'מזומן',
   OTHER: 'אחר',
-};
-
-const formatDate = (dateString: DateISO | undefined) => {
-  if (!dateString) return "לא זמין";
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear()).slice(-2);
-  return `${day}/${month}/${year}`;
 };
 
 export const CustomersList = () => {
@@ -67,6 +65,7 @@ export const CustomersList = () => {
     customers,
     deleteCustomer,
     loading,
+    error,
     currentPage,
     limit,
     searchCustomersByText,
@@ -77,9 +76,11 @@ export const CustomersList = () => {
   } = useCustomerStore();
 
   useEffect(() => {
-    fetchCustomersByPage();
+    fetchCustomersByPage()    
   }, [fetchCustomersByPage]);
 
+
+  // הפונקציה שמטפלת בשינוי החיפוש
   const handleSearch = (term: string) => {
     searchCustomersInPage(term)
       .then(() => {
@@ -173,18 +174,17 @@ export const CustomersList = () => {
   ];
 
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
-    const confirmed = await ShowAlertWarn(
-      "האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?",
-      "לא ניתן לשחזר את המידע לאחר מחיקה."
-    );
+    const confirmed = await ShowAlertWarn('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?', 'לא ניתן לשחזר את המידע לאחר מחיקה.');
 
     if (confirmed) {
+
       await deleteCustomer(val.id);
       showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
       const latestError = useCustomerStore.getState().error;
       if (latestError) {
-        const errorMessage = latestError || "שגיאה בלתי צפויה";
-        console.error("Error:", errorMessage);
+        // נניח שהשגיאה מכילה את ההודעה שהגדרת ב-store
+        const errorMessage = latestError || 'שגיאה בלתי צפויה';
+        console.error('Error:', errorMessage);
         showAlert("שגיאה במחיקת לקוח", errorMessage, "error");
       }
     }
@@ -200,114 +200,113 @@ export const CustomersList = () => {
   ).current;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
     const value = e.target.value;
+    console.log("value", value);
+
     setTerm(value);
     setSearchTerm(value);
     debouncedSearch(value);
-  };
+  }
 
-  const searchInApi = async (e: { key: string }) => {
+
+  const searchInApi = async(e: { key: string; }) => {
+    //איך ידעו שבלחיצה על אנטר זה מחפש בשרת?...
     if (
-      (e.key === "Enter" && searchTerm.trim()) ||
-      customers.length === 0
+      (e.key === "Enter" && searchTerm.trim())
+      || customers.length === 0 // אין תוצאות בדף הנוכחי
     ) {
-      await searchCustomersByText(searchTerm);
-    }
-  };
+      console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
 
-  const getCardData = () => {
-    return customers.map((c) => ({
-      id: c.id!,
-      name: c.name,
-      phone: c.phone,
-      email: c.email,
-      businessName: c.businessName,
-      businessType: c.businessType,
-      status: c.status,
-      idNumber: c.idNumber,
-      currentWorkspaceType: c.currentWorkspaceType,
-      workspaceCount: c.workspaceCount,
-      contractSignDate: c.contractSignDate,
-      contractStartDate: c.contractStartDate,
-      billingStartDate: c.billingStartDate,
-      notes: c.notes,
-      invoiceName: c.invoiceName,
-      paymentMethodType: c.paymentMethodType,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
-    }));
-  };
+      await searchCustomersByText(searchTerm)
+        // .then(() => {
+        //   console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
+        // }).catch((error) => {
+        //   console.error("שגיאה בחיפוש מהשרת:", error);
+        // });
+    }
+  }
 
   return (
-    <div className="p-6">
-      <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
-        לקוחות
-      </h2>
+    <>
 
-    <div className="flex items-center gap-4 mb-4">
-  <Button variant="primary" size="sm" onClick={() => navigate("new")} className="flex gap-1 items-center">
-    ➕ הוספת לקוח חדש
-  </Button>
-  <ExportToExcel data={customers} fileName="לקוחות" />
-</div>
+      <div className="p-6">
+        <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
+          לקוחות
+        </h2>
+        <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate("new")}
+          >
+          הוספת לקוח חדש
+          </Button><br />
+        <ExportToExcel data={customers} fileName="לקוחות" />
+        <br />
+        <br />
+        <Stack spacing={2} direction="row">
+          <TextField
+            label="חיפוש"
+            fullWidth
+            value={searchTerm}
+            onChange={handleChange}
+            onKeyDown={searchInApi}
+          />
+        </Stack>
+        <br />
 
-      <br />
-      <Stack spacing={2} direction="row">
-        <TextField
-          label="חיפוש"
-          fullWidth
-          value={searchTerm}
-          onChange={handleChange}
-          onKeyDown={searchInApi}
-        />
-      </Stack>
+        <div className="relative">
 
-      <div className="relative mt-6">
-        <div className="grid gap-4">
-          {getCardData().map((customer) => (
-            <ExpandableCustomerCard
-              key={customer.id}
-              {...customer}
-              onEdit={() => editCustomer({ id: customer.id })}
-              onDelete={() => deleteCurrentCustomer({ id: customer.id })}
-            />
-          ))}
+          <Table<ValuesToTable>
+            data={getValuseToTable()}
+            columns={columns}
+            onDelete={deleteCurrentCustomer}
+            onUpdate={editCustomer}
+          />
+          {loading && (
+            <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+              <div className="loader border-8 border-gray-300 border-t-8 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div> {/* גלגל טעינה */}
+            </div>
+          )}
         </div>
+        <div className="flex justify-center space-x-4 my-4">
+          <Button
+            variant={currentPage > 1 ? "secondary" : "accent"}
+            disabled={currentPage <= 1}
+            onClick={async () => {
+              if (currentPage > 1) {
+                await fetchPrevPage()
+              }
+            }}
+          >
+            <span>❮❮</span> הקודם
+          </Button>
+          <Button
+            variant={customers.length == limit ? "secondary" : "accent"}
+            disabled={customers.length < limit}
+            onClick={async () => {
+              if (customers.length == limit) {
+                await fetchNextPage()
+              }
+            }}
+          >
+            הבא <span>❯❯</span>
+          </Button>
+        </div>
+        <div ref={loaderRef} className="h-4"></div>
 
-        {loading && (
-          <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-            <div className="loader border-8 border-gray-300 border-t-8 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
-          </div>
-        )}
       </div>
 
-
-      <div className="flex justify-center space-x-4 my-4">
-        <Button
-          variant={currentPage > 1 ? "secondary" : "accent"}
-          disabled={currentPage <= 1}
-          onClick={async () => {
-            if (currentPage > 1) {
-              await fetchPrevPage();
-            }
-          }}
-        >
-          <span>❮❮</span> הקודם
-        </Button>
-        <Button
-          variant={customers.length === limit ? "secondary" : "accent"}
-          disabled={customers.length < limit}
-          onClick={async () => {
-            if (customers.length === limit) {
-              await fetchNextPage();
-            }
-          }}
-        >
-          הבא <span>❯❯</span>
-        </Button>
-      </div>
-
-      <div ref={loaderRef} className="h-4"></div>
-    </div>
+    </>
   );
+};
+const formatDate = (dateString: DateISO) => {
+  if (!dateString) return 'לא זמין'; // אם התאריך ריק, מחזירים 'לא זמין'
+
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0'); // יום
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // חודש (מתחילים מ-0)
+  const year = String(date.getFullYear()).slice(-2); // שנה (שני תווים אחרונים)
+
+  return `${day}/${month}/${year}`; // מחזירים בפורמט DD/MM/YY
 };

@@ -153,6 +153,7 @@ const statusColors: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "bg-yellow-100 text-yellow-800",
   EXITED: "bg-red-100 text-red-800",
   PENDING: "bg-gray-100 text-gray-800",
+  CREATED: "bg-black-100 text-yellow-800"
 };
 
 const statusLabels: Record<CustomerStatus, string> = {
@@ -160,6 +161,7 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "הודעת עזיבה",
   EXITED: "עזב",
   PENDING: "בהמתנה",
+  CREATED: "נוצר"
 };
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
   PRIVATE_ROOM: "חדר פרטי",
