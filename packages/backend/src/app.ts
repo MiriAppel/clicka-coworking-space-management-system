@@ -34,7 +34,7 @@ const app = express();
 dotenv.config();
 
 // Setup Swagger
-setupSwagger(app);
+// setupSwagger(app);
 
 // Apply middlewares - רק פעם אחת לכל middleware
 app.use(helmet());
