@@ -7,7 +7,7 @@ import { LeadsHomePage } from "./Leads/leadHomePage";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
-// import { CustomersList } from "./Customers/customersList"
+import { CustomersList } from "./Customers/customersList"
 import { LeadInteractions } from "./Interactions/leadIntersection";
 import { InteractionForm } from "./Interactions/interactionForm";
 // import { addInteraction } from "./Interactions/leadInteractionDetails";
@@ -25,7 +25,7 @@ export const LeadAndCustomerRouting = () => {
     return (
         <Routes>
             <Route path="/" element={<LeadAndCustomer />} />
-            {/* <Route path="customers" element={<CustomersList />} /> */}
+            <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
             <Route path="customers/new" element={<NewCustomerPage />} />
             {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
