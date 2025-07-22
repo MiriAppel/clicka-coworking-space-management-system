@@ -17,6 +17,7 @@ import { SelectField } from '../../../../Common/Components/BaseComponents/Select
 
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1';
 import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types';
+import { textAlign } from '@mui/system';
 
 // טיפוס כולל vendorId רק בצד הקליינט
 type ExtendedReportParameters = ReportParameters & {
@@ -266,7 +267,7 @@ export const FinancialReportsDashboard: React.FC = () => {
     return { data, columns };
   })();
 
-  return (
+  return (<>
     <Form label="טופס דוחות פיננסיים" schema={ReportFormSchema} onSubmit={onSubmit} methods={methods}>
 
       <div className="flex flex-col gap-4">
@@ -390,10 +391,11 @@ export const FinancialReportsDashboard: React.FC = () => {
   </div>
 )}
 
-
-        <Button type="submit" disabled={loading}>
+<div style={{textAlign: 'center'}}>
+        <Button type="submit"  disabled={loading} className="w-full">
           {loading ? 'טוען...' : 'צור דוח'}
         </Button>
+        </div>
         {formError && <p className="text-red-600 mt-2">{formError}</p>}
         <div>
           {/* הצגת הודעת טעינה רק כשיש טעינה */}
@@ -500,5 +502,6 @@ export const FinancialReportsDashboard: React.FC = () => {
         )}
       </div>
     </Form>
+    </>
   );
 };
