@@ -39,7 +39,7 @@ dotenv.config();
 // Apply middlewares - רק פעם אחת לכל middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'https://clicka-dgz.pages.dev',
   credentials: true,
 }));
 app.use(morgan('dev'));
