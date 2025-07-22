@@ -67,13 +67,7 @@ export const ExportButtons = ({
       </Button>
     </div>
   );
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/main
->>>>>>> origin/googleSyncByNechami
 };
 
 

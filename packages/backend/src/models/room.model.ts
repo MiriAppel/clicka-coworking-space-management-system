@@ -12,7 +12,7 @@ export class RoomModel implements Room{
   hourlyRate: number;
   discountedHourlyRate: number;
   googleCalendarId?: string;
-  // location: string;
+  location: string;
   equipment?: string[];
   positionX: number;
   positionY: number;
@@ -25,7 +25,7 @@ export class RoomModel implements Room{
   FreeHoursForKlikcaCard: number;
 
   nextMaintenanceDate?: DateISO;
-  workspaceMapId: string; // Assuming this is a reference to a WorkspaceMap
+  workspaceMapId: string; 
   createdAt: DateISO;
   updatedAt: DateISO;
 
@@ -54,11 +54,11 @@ export class RoomModel implements Room{
   width: number;
   height: number;
      nextMaintenanceDate?: DateISO;
-     workspaceMapId: ID; // Reference to a WorkspaceMap
+     workspaceMapId: ID; 
      createdAt?: DateISO;
      updatedAt?: DateISO;
    }) {
-    this.id = params.id ?? crypto.randomUUID(); // Generate a unique ID if not provided
+    this.id = params.id ?? crypto.randomUUID(); 
     this.name = params.name;  
     this.description = params.description;
     this.type = params.type;
@@ -68,14 +68,14 @@ export class RoomModel implements Room{
     this.hourlyRate = params.hourlyRate;  
     this.discountedHourlyRate = params.discountedHourlyRate;
     this.googleCalendarId = params.googleCalendarId;
-    // this.location = params.location;
+    this.location = params.location;
     this.equipment = params.equipment;
     this.MinimumBookingMinutes = params.MinimumBookingMinutes;
     this.MaximumBookingMinutes = params.MaximumBookingMinutes;
     this.RequiredApproval = params.RequiredApproval;
     this.FreeHoursForKlikcaCard = params.FreeHoursForKlikcaCard;
     this.nextMaintenanceDate = params.nextMaintenanceDate;
-    this.workspaceMapId = params.workspaceMapId; // Reference to a WorkspaceMap
+    this.workspaceMapId = params.workspaceMapId; 
     this.positionX = params.positionX;
     this.positionY = params.positionY;
     this.width = params.width;
@@ -95,7 +95,7 @@ toDatabaseFormat() {
       hourly_rate: this.hourlyRate,
       discounted_hourly_rate: this.discountedHourlyRate,
       google_calendar_id: this.googleCalendarId,
-      // location: this.location,
+      location: this.location,
       equipment: this.equipment,
 
       // BookingRules fields:
@@ -105,7 +105,7 @@ toDatabaseFormat() {
       free_hours_for_klikca_card: this.FreeHoursForKlikcaCard,
 
       next_maintenance_date: this.nextMaintenanceDate,
-      workspace_map_id:this.workspaceMapId, // Reference to a WorkspaceMap
+      workspace_map_id:this.workspaceMapId, 
        createdat: this.createdAt,
        updatedat: this.updatedAt
     };
@@ -133,7 +133,7 @@ toDatabaseFormat() {
             positionY: dbData.position_y,
             width: dbData.width,
             height: dbData.height,
-            workspaceMapId: dbData.workspace_map_id, // Reference to a WorkspaceMap
+            workspaceMapId: dbData.workspace_map_id, 
         });
     }
     static fromDatabaseFormatArray(dbDataArray: any[] ): RoomModel[] {
