@@ -39,7 +39,7 @@ dotenv.config();
 // Apply middlewares - רק פעם אחת לכל middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'https://clicka-dgz.pages.dev',
+  origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE,
   credentials: true,
 }));
 app.use(morgan('dev'));
