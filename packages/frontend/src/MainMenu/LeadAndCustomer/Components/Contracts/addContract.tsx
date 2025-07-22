@@ -4,10 +4,10 @@ import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { postNewContract } from "../../Service/LeadAndCustomersService";
-import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
+import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
 
 // enums
 export enum ContractStatus {
@@ -40,7 +40,7 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   [WorkspaceType.PRIVATE_ROOM]: "חדר פרטי",
   [WorkspaceType.DESK_IN_ROOM]: "שולחן בחדר",
   [WorkspaceType.OPEN_SPACE]: "אופן ספייס",
-  [WorkspaceType.KLIKAH_CARD]: "כרטיס קליקה",
+  [WorkspaceType.KLIKAH_CARD]: "כרטיס קליקה"
 };
 
 // סכימה לטופס (Zod)
@@ -63,18 +63,16 @@ type ContractFormData = z.infer<typeof contractSchema>;
 
 export const AddContract = () => {
   const [loading, setLoading] = useState(false);
+  const { handleCreateContract } = useContractStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (data: ContractFormData) => {
     setLoading(true);
-
     const now = new Date().toISOString();
-
     // פיצול התנאים המיוחדים למערך
     const specialConditions = data.specialConditions
       ? data.specialConditions.split(",").map((s) => s.trim())
       : [];
-
     const payload = {
       customer_id: data.customerId,
       status: data.status,
@@ -100,9 +98,8 @@ export const AddContract = () => {
         special_conditions: specialConditions,
       },
     };
-
     try {
-      await postNewContract(payload);
+      await handleCreateContract(payload);
       showAlert("הוספה", "החוזה נוסף בהצלחה", "success");
       navigate("/leadAndCustomer/contracts/");
       setLoading(false);

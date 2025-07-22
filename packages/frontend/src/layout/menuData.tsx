@@ -54,7 +54,7 @@ export const menus: Menu[] = [
     title: 'חשבוניות',
     icon: <FileText size={18} style={{ marginLeft: 8 }} />,
     items: [
-      { label: 'חשבוניות', path: '/billing' },
+      { label: 'חשבוניות', path: '/billing/invoiceManagement' },
       { label: 'תשלומים', path: '/payments' },
       { label: 'הוצאות', path: '/expenses' },
       { label: 'תמחור', path: '/pricing' } // הוספתי כאן
@@ -77,6 +77,7 @@ export const menus: Menu[] = [
     icon: <Settings size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'משתמשים', path: '/users' },
+      { label: 'פעולות משתמשים', path: '/UserActions' },
       { label: 'הרשאות', path: '/permissions' },
       { label: 'הגדרות', path: '/settings' },
       { label: 'אינטגרציות', path: '/integrations' }

@@ -5,11 +5,8 @@ import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 's
 import { Button } from '@mui/material';
 import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
 import { useNavigate } from 'react-router-dom';
-import { WorkSpaceType } from 'shared-types/occupancy';
 import MenuIcon from '@mui/icons-material/Menu';
-// import { AssignmentForm } from './assignmentForm';
-import WebSocketService from '../../../WebSocketService';
-import { randomBytes } from 'crypto';
+
 
 export const WorkspaceMap = () => {
 
@@ -31,7 +28,7 @@ export const WorkspaceMap = () => {
             id: "space-001",
             name: "כניסה ראשית",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 0,
             positionY: 960,
             width: 500,
@@ -43,7 +40,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "דלת כניסה ראשית",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 0,
             positionY: 1050,
             width: 100,
@@ -55,7 +52,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "דלת כניסה",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 500,
             positionY: 960,
             width: 10,
@@ -91,7 +88,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: " 1יציאה מטבח",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 900,
             positionY: 600,
             width: 10,
@@ -103,7 +100,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: " 2יציאה מטבח",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 900,
             positionY: 800,
             width: 10,
@@ -115,7 +112,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: " 3יציאה מטבח",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 1100,
             positionY: 890,
             width: 100,
@@ -140,7 +137,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה נגישה",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 900,
             positionY: 310,
             width: 150,
@@ -152,7 +149,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "יציאה חצר",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 780,
             positionY: 200,
             width: 120,
@@ -164,7 +161,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה נגישה",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 920,
             positionY: 460,
             width: 100,
@@ -176,7 +173,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "קיר",
             type: "WALL" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 100,
             positionY: 460,
             width: 1,
@@ -188,7 +185,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "קיר",
             type: "WALL" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 110,
             positionY: 460,
             width: 100,
@@ -200,7 +197,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה open space",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 770,
             positionY: 210,
             width: 10,
@@ -212,7 +209,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "קיר",
             type: "WALL" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 1050,
             positionY: 160,
             width: 370,
@@ -224,7 +221,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "יציאה לחצר 2",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 1320,
             positionY: 160,
             width: 100,
@@ -236,7 +233,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה חדר ישיבות",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 1750,
             positionY: 385,
             width: 100,
@@ -261,7 +258,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה משרד 3",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 2030,
             positionY: 290,
             width: 10,
@@ -285,7 +282,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה משרד 4",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 2040,
             positionY: 220,
             width: 100,
@@ -310,7 +307,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה משרד 5",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 2140,
             positionY: 240,
             width: 10,
@@ -334,7 +331,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה phone booth",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 1700,
             positionY: 480,
             width: 60,
@@ -358,7 +355,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה שירותים",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 1650,
             positionY: 950,
             width: 10,
@@ -383,7 +380,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה משרד 2",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 1770,
             positionY: 480,
             width: 100,
@@ -407,7 +404,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה משרד 1",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 1650,
             positionY: 700,
             width: 10,
@@ -431,7 +428,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה משרד 6",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 2010,
             positionY: 480,
             width: 100,
@@ -455,7 +452,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה משרד 7",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 2280,
             positionY: 680,
             width: 10,
@@ -516,7 +513,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "כניסה משרד 8",
             type: "DOOR_PASS" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 2430,
             positionY: 570,
             width: 10,
@@ -552,7 +549,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "קיר",
             type: "WALL" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 2280,
             positionY: 1060,
             width: 150,
@@ -564,7 +561,7 @@ export const WorkspaceMap = () => {
             id: "space-002",
             name: "קיר",
             type: "WALL" as WorkspaceType,
-            status: SpaceStatus.NONE,
+            status: SpaceStatus.INACTIVE,
             positionX: 500,
             positionY: 1060,
             width: 1150,
@@ -1259,7 +1256,7 @@ export const WorkspaceMap = () => {
             return 'kitchen';
         }
         if (name.includes('ארון') || name.includes('עמדת')) {
-            return 'NONE';
+            return 'INACTIVE';
         }
         return space.status;
     };
@@ -1345,13 +1342,17 @@ export const WorkspaceMap = () => {
         return null;
     };
     const renderComputerStand = (space: Space) => {
-        if (!(space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) return null;
+        // if (!(space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) return null;
 
         const centerX = space.positionX + space.width / 2;
         const centerY = space.positionY + space.height / 2;
 
         return (
-            <g style={{ pointerEvents: 'none' }}>
+            <g style={
+                { 
+                    // pointerEvents: 'INACTIVE'
+                 }
+                }>
                 {/* מסך */}
                 <rect
                     x={centerX - 15}
@@ -1394,7 +1395,7 @@ export const WorkspaceMap = () => {
     };
 
     const renderReceptionDesk = (space: Space) => {
-        if (space.type !== 'RECEPTION_DESK') return null;
+        // if (space.type !== 'RECEPTION_DESK') return null;
         const centerX = space.positionX + space.width / 2;
         const centerY = space.positionY + space.height / 2;
         return (
@@ -1434,7 +1435,7 @@ export const WorkspaceMap = () => {
                     padding: '8px 12px',
                     borderRadius: '4px',
                     fontSize: '12px',
-                    pointerEvents: 'none',
+                    // pointerEvents: 'INACTIVE',
                     zIndex: 1000
                 }}
             >
@@ -1580,7 +1581,7 @@ export const WorkspaceMap = () => {
                                                     visible: true,
                                                     x: rect.left + rect.width / 2,
                                                     y: rect.top - 10,
-                                                    content: ['door', 'wall', 'bathroom', 'kitchen', 'NONE'].includes(getSpaceClass(w))
+                                                    content: ['door', 'wall', 'bathroom', 'kitchen', 'INACTIVE'].includes(getSpaceClass(w))
                                                         ? w.name
                                                         : `${w.name} - ${w.status} ${w.currentCustomerName ? `${w.currentCustomerName}` : ""},`
                                                 });
@@ -1787,7 +1788,7 @@ export const WorkspaceMap = () => {
                     y={-pan.y / (scale * zoom)}
                     width={containerSize.width / (scale * zoom)}
                     height={containerSize.height / (scale * zoom)}
-                    fill="none"
+                    fill="INACTIVE"
                     stroke="red"
                     strokeWidth="2"
                 />

@@ -1,16 +1,19 @@
-import { Navigate, useLocation, useNavigate, useParams } from "react-router";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Contract, ContractStatus, FileReference, WorkspaceType } from "shared-types";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { fetchContractByCustomerId } from "../../Service/LeadAndCustomersService";
+import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
+import { Pencil, Trash } from "lucide-react";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
 
 const statusLabels: Record<ContractStatus, string> = {
-    DRAFT: "טיוטה",
-    PENDING_SIGNATURE: "ממתין לחתימה",
-    SIGNED: "חתום",
-    ACTIVE: "פעיל",
-    EXPIRED: "פג תוקף",
-    TERMINATED: "הסתיים",
+  DRAFT: "טיוטה",
+  PENDING_SIGNATURE: "ממתין לחתימה",
+  SIGNED: "חתום",
+  ACTIVE: "פעיל",
+  EXPIRED: "פג תוקף",
+  TERMINATED: "הסתיים",
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
@@ -25,99 +28,154 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
     BASE: "בסיס",
 };
 
-const formatDate = (iso?: string) => {
-  if (!iso) return "";
-  const d = new Date(iso);
-  const day = d.getDate().toString().padStart(2, "0");
-  const month = (d.getMonth() + 1).toString().padStart(2, "0");
-  const year = d.getFullYear();
-  return `${day}/${month}/${year}`;
-};
+const formatDate = (iso?: string) =>
+  iso ? new Date(iso).toISOString().split("T")[0].split("-").reverse().join("/") : "";
 
 export const ContractDetails = () => {
-    const { customerId } = useParams<{ customerId: string }>();
-    const [contract, setContract] = useState<Contract | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const location = useLocation();
-    const customerName = location.state?.customerName ?? "  לא ידוע";
-    const navigate = useNavigate();
+  const { customerId } = useParams<{ customerId: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const customerName = location.state?.customerName ?? "לא ידוע";
+  const { fetchContractsByCustomerId, loading, error } = useContractStore();
+  const [customerContracts, setCustomerContracts] = useState<Contract[]>([]);
+  const [openContractId, setOpenContractId] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!customerId) {
-            setError("לא נמצא מזהה לקוח.");
-            setLoading(false);
-            return;
-        }
+  useEffect(() => {
+    if (!customerId) return;
+    fetchContractsByCustomerId(customerId)
+      .then(() => {
+        const results = useContractStore.getState().contracts.filter(c => c.customerId === customerId);
+        setCustomerContracts(results);
+      })
+      .catch(() => setCustomerContracts([]));
+  }, [customerId, fetchContractsByCustomerId]);
 
-        fetchContractByCustomerId(customerId)
-            .then(setContract)
-            .catch(() => setError("שגיאה בשליפת פרטי החוזה."))
-            .finally(() => setLoading(false));
-    }, [customerId]);
+  const toggleContract = (id: string) => {
+    setOpenContractId(prev => (prev === id ? null : id));
+  };
 
-    if (loading) return <p className="text-center text-gray-600">טוען פרטי חוזה...</p>;
-    if (error) return <p className="text-red-600 text-center">{error}</p>;
-    if (!contract) return <p className="text-center">לא נמצאו פרטי חוזה להצגה.</p>;
 
-    return (
-        <div className="p-6 max-w-4xl mx-auto" dir="rtl">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-blue-700">פרטי חוזה</h2>
-                <Button variant="primary" size="sm" onClick={() => {navigate(`/leadAndCustomer/contracts/edit/${contract.id}`, { state: { customerName: customerName } });}}>ערוך</Button>
-            </div>
+  const updateContract = (id: string, customerName: string) => {
+    navigate(`/leadAndCustomer/contracts/edit/${id}`, {
+      state: { customerName },
+    })
+  };
 
-            {/* פרטי בסיס */}
-            <div className="bg-white rounded-lg shadow p-4 space-y-2">
-                {/* <div><strong>מזהה חוזה:</strong> {contract.id}</div>
-                <div><strong>מזהה לקוח:</strong> {contract.customerId}</div> */}
-                <div><strong>שם לקוח:</strong> {customerName}</div>
-                <div><strong>גרסה:</strong> {contract.version}</div>
-                <div><strong>סטטוס:</strong> {statusLabels[contract.status]}</div>
-                {contract.signDate && <div><strong>תאריך חתימה:</strong> {formatDate(contract.signDate)}</div>}
-                {contract.startDate && <div><strong>תאריך התחלה:</strong> {formatDate(contract.startDate)}</div>}
-                {contract.endDate && <div><strong>תאריך סיום:</strong> {formatDate(contract.endDate)}</div>}
-            </div>
+  const deleteContract = async (id: string) => {
+    const confirmed = await ShowAlertWarn(
+      "האם את בטוחה שברצונך למחוק חוזה זה?",
+      "הפעולה אינה ניתנת לביטול"
+    );
+    if (confirmed) {
+      await useContractStore
+        .getState()
+        .handleDeleteContract(id!)
+        .then(() => {
+          showAlert("נמחק", "החוזה נמחק בהצלחה", "success");
+          setCustomerContracts((prev) =>
+            prev.filter((c) => c.id !== id)
+          );
+        })
+        .catch(() => {
+          showAlert("שגיאה", "אירעה שגיאה במחיקת החוזה", "error");
+        });
+    }
+  };
 
-            {/* תנאים */}
-            <div className="bg-gray-50 rounded-lg shadow p-4 mt-6">
-                <h3 className="text-lg font-semibold mb-2">תנאי חוזה</h3>
-                <div className="grid grid-cols-2 gap-4">
+  if (loading) return <p className="text-center text-gray-600">טוען חוזים...</p>;
+  if (error) return <p className="text-red-600 text-center">{error}</p>;
+  if (customerContracts.length === 0) return <p className="text-center">לא נמצאו חוזים להצגה.</p>;
+
+  return (
+    <div className="p-6 max-w-5xl mx-auto" dir="rtl">
+      <h2 className="text-2xl font-bold text-blue-700 mb-6">חוזים של {customerName}</h2>
+
+      {customerContracts.map((contract, index) => {
+        const isOpen = contract.id === openContractId;
+        return (
+          <div key={contract.id} className="mb-6 border border-gray-200 rounded-xl shadow-md bg-white overflow-hidden transition">
+            <button
+              onClick={() => toggleContract(contract.id!)}
+              className="w-full text-right px-4 py-3 bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold flex items-center justify-between"
+            >
+              <span>חוזה #{index + 1} - {statusLabels[contract.status]}</span>
+              <span className="text-sm text-gray-600">({formatDate(contract.startDate)} - {formatDate(contract.endDate)})</span>
+            </button>
+
+            {isOpen && (
+              <div className="p-5 bg-gray-50 text-sm text-gray-800">
+                <div className="flex justify-end gap-2 mb-4">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="hover:ring hover:ring-blue-300 transition"
+                    onClick={() => updateContract(contract.id!, customerName)}
+                    title="עריכת חוזה"
+                  >
+                    <Pencil size={16} className="mr-1" />
+                    ערוך
+                  </Button>
+
+                  <Button
+                    variant="accent"
+                    size="sm"
+                    className="hover:ring hover:ring-red-300 transition"
+                    onClick={() => deleteContract(contract.id!)}
+                    title="מחיקת חוזה"
+                  >
+                    <Trash size={16} className="mr-1" />
+                    מחק
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6 mb-4">
+                  <div><strong>גרסה:</strong> {contract.version}</div>
+                  {contract.signDate && <div><strong>תאריך חתימה:</strong> {formatDate(contract.signDate)}</div>}
+                  <div><strong>תאריך התחלה:</strong> {formatDate(contract.startDate)}</div>
+                  <div><strong>תאריך סיום:</strong> {formatDate(contract.endDate)}</div>
+                  <div><strong>סטטוס:</strong> {statusLabels[contract.status]}</div>
+                </div>
+
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-700 mb-2">תנאי חוזה</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6">
                     <div><strong>סוג מקום עבודה:</strong> {contract.terms?.workspaceType !== undefined ? workspaceTypeLabels[contract.terms.workspaceType] : "—"}</div>
                     <div><strong>מספר עמדות:</strong> {contract.terms?.workspaceCount ?? "—"}</div>
                     <div><strong>תעריף חודשי:</strong> {contract.terms?.monthlyRate ?? "—"} ₪</div>
                     <div><strong>משך חודשים:</strong> {contract.terms?.duration ?? "—"}</div>
                     <div><strong>תנאי חידוש:</strong> {contract.terms?.renewalTerms ?? "—"}</div>
                     <div><strong>הודעת סיום:</strong> {contract.terms?.terminationNotice ?? "—"} ימים</div>
+                  </div>
                 </div>
-            </div>
 
-            {/* מסמכים */}
-            <div className="bg-white rounded-lg shadow p-4 mt-6">
-                <h3 className="text-lg font-semibold mb-2">מסמכים</h3>
-                {(contract.documents ?? []).length > 0 ? (
-                    <ul className="list-disc pr-5 space-y-1">
-                        {contract.documents.map((doc: FileReference) => (
-                            <li key={doc.id}>
-                                <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-                                    {doc.name}
-                                </a>{" "}
-                                – {Math.round(doc.size / 1024)} KB
-                            </li>
-                        ))}
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-700 mb-2">מסמכים</h4>
+                  {(contract.documents ?? []).length > 0 ? (
+                    <ul className="list-disc pr-5 space-y-1 text-blue-700">
+                      {contract.documents.map((doc: FileReference) => (
+                        <li key={doc.id}>
+                          <a href={doc.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">
+                            {doc.name}
+                          </a> – {Math.round(doc.size / 1024)} KB
+                        </li>
+                      ))}
                     </ul>
-                ) : (
+                  ) : (
                     <p className="text-gray-500">אין מסמכים.</p>
-                )}
-            </div>
+                  )}
+                </div>
 
-            {/* חתימות וזמנים */}
-            <div className="bg-gray-100 rounded-lg shadow p-4 mt-6 space-y-1">
-                {contract.signedBy && <p><strong>חתום על ידי:</strong> {contract.signedBy}</p>}
-                {contract.witnessedBy && <p><strong>עד/ה:</strong> {contract.witnessedBy}</p>}
-                <p><strong>נוצר בתאריך:</strong> {formatDate(contract.createdAt)}</p>
-                <p><strong>עודכן בתאריך:</strong> {formatDate(contract.updatedAt)}</p>
-            </div>
-        </div>
-    );
-};
+                <div className="text-gray-600 space-y-1 text-xs">
+                  {contract.signedBy && <p><strong>חתום על ידי:</strong> {contract.signedBy}</p>}
+                  {contract.witnessedBy && <p><strong>עד/ה:</strong> {contract.witnessedBy}</p>}
+                  <p><strong>נוצר:</strong> {formatDate(contract.createdAt)}</p>
+                  <p><strong>עודכן:</strong> {formatDate(contract.updatedAt)}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}

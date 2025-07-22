@@ -9,9 +9,9 @@ import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { Contract, ContractStatus, WorkspaceType } from "shared-types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import { fetchContractByContractId, patchContract } from "../../Service/LeadAndCustomersService";
 import { getContractFormData, mapRawContractToCamelCase } from "../../Hooks/useContractFormData";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
 
 // תוויות סטטוס
 const statusLabels = {
@@ -60,6 +60,7 @@ export const EditContract = () => {
   const { contractId } = useParams<{ contractId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const { fetchContractDetails, handleUpdateContract } = useContractStore();
   const customerName = (location.state as { customerName?: string })?.customerName ?? "לא ידוע";
 
   const [contract, setContract] = useState<Contract | null>(null);
@@ -73,7 +74,7 @@ export const EditContract = () => {
   // שליפה
   useEffect(() => {
     if (!contractId) return;
-    fetchContractByContractId(contractId)
+    fetchContractDetails(contractId)
       .then(raw => {
         const mapped = mapRawContractToCamelCase(raw);
         setContract(mapped);
@@ -111,7 +112,7 @@ export const EditContract = () => {
     };
 
     try {
-      await patchContract(contract.id, payload);
+      await handleUpdateContract(contract.id, payload);
       showAlert("עדכון", "החוזה עודכן בהצלחה", "success");
       navigate("/leadAndCustomer/contracts/");
       setLoading(false);

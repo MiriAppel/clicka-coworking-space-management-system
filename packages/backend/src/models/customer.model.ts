@@ -6,7 +6,7 @@ export class CustomerModel implements Customer {
   id?: UUID; //PK
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   idNumber: string; //identity card
   businessName: string;
   businessType: string;
@@ -53,7 +53,7 @@ export class CustomerModel implements Customer {
     this.id = id || undefined;
     this.name = name;
     this.phone = phone;
-    this.email = email;
+    this.email = email || undefined;
     this.idNumber = idNumber;
     this.businessName = businessName;
     this.businessType = businessType;
