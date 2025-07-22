@@ -2,12 +2,12 @@ import { AuditLog, AuditLogModel } from '../models/auditLog.model';
 import { ID } from '../../../shared-types';
 import { Request } from 'express';
 import { getUserFromCookie } from '../services/tokenService'; // או מהמיקום שבו הפונקציה נמצאת
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
+// import { createClient } from '@supabase/supabase-js';
+// import dotenv from 'dotenv';
 import { supabase } from '../db/supabaseClient';
 
 // טוען את משתני הסביבה מהקובץ .env
-dotenv.config();
+// dotenv.config();
 
 export class AuditLogService {
   
@@ -283,7 +283,7 @@ export class AuditLogService {
 
       let uniqueUsers = 0;
       if (!uniqueUsersError && uniqueUsersData) {
-        const uniqueEmails = new Set(uniqueUsersData.map(row => row.user_email));
+        const uniqueEmails = new Set(uniqueUsersData.map((row: { user_email: string }) => row.user_email));
         uniqueUsers = uniqueEmails.size;
       }
 
@@ -294,7 +294,7 @@ export class AuditLogService {
 
       let topActions: { action: string; count: number }[] = [];
       if (!actionsError && actionsData) {
-        const actionCounts = actionsData.reduce((acc: any, row) => {
+        const actionCounts = actionsData.reduce((acc: any, row: { action: string }) => {
           acc[row.action] = (acc[row.action] || 0) + 1;
           return acc;
         }, {});
