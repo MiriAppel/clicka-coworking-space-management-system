@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import '../Css/workspaceMap.css';
 import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 'shared-types';
@@ -13,18 +14,19 @@ import { randomBytes } from 'crypto';
 export const WorkspaceMap = () => {
 
     const www: Space[] = [
-        // {
-        //     id: "space-002",
-        //     name: "לאונז'",
-        //     type: "PUBLIC_SPACE" as WorkspaceType,
-        //     status: SpaceStatus.NONE,
-        //     positionX: 0,
-        //     positionY: 0,
-        //     width: 2840,
-        //     height: 1060,
-        //     createdAt: "2024-01-01T08:00:00Z",
-        //     updatedAt: "2024-01-01T08:00:00Z"
-        // },
+
+        {
+            id: "space-001",
+            name: "בסיס",
+            type: "BASE" as WorkspaceType,
+            status: SpaceStatus.NONE,
+            positionX: 0,
+            positionY: 0,
+            width: 2840,
+            height: 1060,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
         {
             id: "space-001",
             name: "כניסה ראשית",
@@ -34,8 +36,8 @@ export const WorkspaceMap = () => {
             positionY: 960,
             width: 500,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -46,8 +48,8 @@ export const WorkspaceMap = () => {
             positionY: 1050,
             width: 100,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -58,32 +60,32 @@ export const WorkspaceMap = () => {
             positionY: 960,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "חדר open space",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "OPEN_SPACE" as WorkspaceType,
             status: SpaceStatus.MAINTENANCE,
             positionX: 200,
             positionY: 200,
             width: 580,
             height: 260,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "מטבח",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "BASE" as WorkspaceType,
             status: SpaceStatus.NONE,
             positionX: 900,
             positionY: 460,
             width: 333,
             height: 442,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -94,8 +96,8 @@ export const WorkspaceMap = () => {
             positionY: 600,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -106,8 +108,8 @@ export const WorkspaceMap = () => {
             positionY: 800,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -118,21 +120,22 @@ export const WorkspaceMap = () => {
             positionY: 890,
             width: 100,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "מעלית",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "BASE" as WorkspaceType,
             status: SpaceStatus.NONE,
             positionX: 900,
             positionY: 160,
             width: 150,
             height: 150,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
+        ////////////////////////////////////////
         {
             id: "space-002",
             name: "כניסה נגישה",
@@ -142,8 +145,8 @@ export const WorkspaceMap = () => {
             positionY: 310,
             width: 150,
             height: 150,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -154,8 +157,8 @@ export const WorkspaceMap = () => {
             positionY: 200,
             width: 120,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -166,8 +169,8 @@ export const WorkspaceMap = () => {
             positionY: 460,
             width: 100,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -178,8 +181,8 @@ export const WorkspaceMap = () => {
             positionY: 460,
             width: 1,
             height: 500,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -190,8 +193,8 @@ export const WorkspaceMap = () => {
             positionY: 460,
             width: 100,
             height: 1,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -202,8 +205,8 @@ export const WorkspaceMap = () => {
             positionY: 210,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -214,8 +217,8 @@ export const WorkspaceMap = () => {
             positionY: 160,
             width: 370,
             height: 1,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -226,21 +229,9 @@ export const WorkspaceMap = () => {
             positionY: 160,
             width: 100,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
-        // {
-        //     id: "space-002",
-        //     name: "חדר ישיבות",
-        //     type: "PUBLIC_SPACE" as WorkspaceType,
-        //     status: SpaceStatus.AVAILABLE,
-        //     positionX: 1420,
-        //     positionY: 60,
-        //     width: 450,
-        //     height: 335,
-        //     createdAt: "2024-01-01T08:00:00Z",
-        //     updatedAt: "2024-01-01T08:00:00Z"
-        // },
         {
             id: "space-002",
             name: "כניסה חדר ישיבות",
@@ -250,21 +241,22 @@ export const WorkspaceMap = () => {
             positionY: 385,
             width: 100,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "משרד 3",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.OCCUPIED,
             positionX: 1870,
             positionY: 60,
             width: 170,
             height: 335,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
+        ///////////////////////////////////
         {
             id: "space-002",
             name: "כניסה משרד 3",
@@ -274,20 +266,20 @@ export const WorkspaceMap = () => {
             positionY: 290,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "משרד 4",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 2040,
             positionY: 60,
             width: 290,
             height: 170,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -298,21 +290,21 @@ export const WorkspaceMap = () => {
             positionY: 220,
             width: 100,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "משרד 5",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.OCCUPIED,
             positionX: 2140,
             positionY: 230,
             width: 290,
             height: 170,
             currentCustomerName: "יוסי כהן",
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -323,20 +315,20 @@ export const WorkspaceMap = () => {
             positionY: 240,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "phone booth",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "BASE" as WorkspaceType,
             status: SpaceStatus.NONE,
             positionX: 1650,
             positionY: 480,
             width: 120,
             height: 120,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -347,20 +339,20 @@ export const WorkspaceMap = () => {
             positionY: 480,
             width: 60,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "שירותים",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "BASE" as WorkspaceType,
             status: SpaceStatus.NONE,
             positionX: 1650,
             positionY: 662,
             width: 580,
             height: 400,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -371,21 +363,22 @@ export const WorkspaceMap = () => {
             positionY: 950,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "משרד 2",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 1770,
             positionY: 480,
             width: 235,
             height: 180,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
+        /////////////////////////////////////
         {
             id: "space-002",
             name: "כניסה משרד 2",
@@ -395,20 +388,20 @@ export const WorkspaceMap = () => {
             positionY: 480,
             width: 100,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "משרד 1",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 1650,
             positionY: 600,
             width: 150,
             height: 190,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -419,20 +412,20 @@ export const WorkspaceMap = () => {
             positionY: 700,
             width: 10,
             height: 80,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "משרד 6",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 2005,
             positionY: 480,
             width: 285,
             height: 189,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -443,20 +436,20 @@ export const WorkspaceMap = () => {
             positionY: 480,
             width: 100,
             height: 10,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "משרד 7",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 2005,
             positionY: 665,
             width: 285,
             height: 205,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -467,56 +460,57 @@ export const WorkspaceMap = () => {
             positionY: 680,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "ארון חשמל",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "BASE" as WorkspaceType,
             status: SpaceStatus.NONE,
             positionX: 2230,
             positionY: 875,
             width: 60,
             height: 190,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "קיר",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "WALL" as WorkspaceType,
             status: SpaceStatus.NONE,
             positionX: 2430,
             positionY: 400,
             width: 1,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "עמדת הדפסה",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "BASE" as WorkspaceType,
             status: SpaceStatus.NONE,
             positionX: 2430,
             positionY: 450,
             width: 60,
             height: 120,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
+        //////////////////////////
         {
             id: "space-002",
             name: "משרד 8",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 2430,
             positionY: 570,
             width: 312,
             height: 255,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -527,32 +521,32 @@ export const WorkspaceMap = () => {
             positionY: 570,
             width: 10,
             height: 100,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "משרד 9",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "PRIVATE_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 2430,
             positionY: 825,
             width: 310,
             height: 236,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
             name: "ארון תקשורת",
-            type: "PUBLIC_SPACE" as WorkspaceType,
+            type: "BASE" as WorkspaceType,
             status: SpaceStatus.NONE,
             positionX: 2740,
             positionY: 940,
             width: 40,
             height: 120,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -563,8 +557,8 @@ export const WorkspaceMap = () => {
             positionY: 1060,
             width: 150,
             height: 1,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -575,8 +569,8 @@ export const WorkspaceMap = () => {
             positionY: 1060,
             width: 1150,
             height: 1,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -587,8 +581,8 @@ export const WorkspaceMap = () => {
             positionY: 200,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -599,8 +593,8 @@ export const WorkspaceMap = () => {
             positionY: 260,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -611,8 +605,8 @@ export const WorkspaceMap = () => {
             positionY: 320,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -623,9 +617,10 @@ export const WorkspaceMap = () => {
             positionY: 200,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
+        ////////////////////////////
         {
             id: "space-002",
             name: "עמדה 5",
@@ -635,8 +630,8 @@ export const WorkspaceMap = () => {
             positionY: 260,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -647,8 +642,8 @@ export const WorkspaceMap = () => {
             positionY: 320,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -659,8 +654,8 @@ export const WorkspaceMap = () => {
             positionY: 540,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -671,8 +666,8 @@ export const WorkspaceMap = () => {
             positionY: 600,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -683,8 +678,8 @@ export const WorkspaceMap = () => {
             positionY: 660,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -695,8 +690,8 @@ export const WorkspaceMap = () => {
             positionY: 720,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -707,8 +702,8 @@ export const WorkspaceMap = () => {
             positionY: 540,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -719,8 +714,8 @@ export const WorkspaceMap = () => {
             positionY: 600,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -731,8 +726,8 @@ export const WorkspaceMap = () => {
             positionY: 660,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-002",
@@ -743,9 +738,10 @@ export const WorkspaceMap = () => {
             positionY: 720,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
+        ////////////////////////////
         {
             id: "space-reception",
             name: "עמדת קבלה",
@@ -755,32 +751,32 @@ export const WorkspaceMap = () => {
             positionY: 550,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
-            name: "עמדה 1 במשרד 3",
+            name: "עמדה 1 משרד 3",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 1890,
             positionY: 180,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
-            name: "עמדה 2 במשרד 3",
+            name: "עמדה 2 משרד 3",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 1890,
             positionY: 100,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -791,20 +787,20 @@ export const WorkspaceMap = () => {
             positionY: 120,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
-            name: "עמדה 1 במשרד 5",
+            name: "עמדה 1 משרד 5",
             type: "DESK_IN_ROOM" as WorkspaceType,
             status: SpaceStatus.AVAILABLE,
             positionX: 2340,
             positionY: 310,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -815,8 +811,8 @@ export const WorkspaceMap = () => {
             positionY: 750,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -827,8 +823,8 @@ export const WorkspaceMap = () => {
             positionY: 750,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -839,8 +835,8 @@ export const WorkspaceMap = () => {
             positionY: 985,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -851,8 +847,8 @@ export const WorkspaceMap = () => {
             positionY: 985,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -863,9 +859,10 @@ export const WorkspaceMap = () => {
             positionY: 880,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
+        /////////////////////////////
         {
             id: "space-reception",
             name: "עמדה 1 משרד 6",
@@ -875,8 +872,8 @@ export const WorkspaceMap = () => {
             positionY: 550,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -887,8 +884,8 @@ export const WorkspaceMap = () => {
             positionY: 550,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -899,8 +896,8 @@ export const WorkspaceMap = () => {
             positionY: 650,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -911,8 +908,8 @@ export const WorkspaceMap = () => {
             positionY: 800,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
         {
             id: "space-reception",
@@ -923,25 +920,135 @@ export const WorkspaceMap = () => {
             positionY: 800,
             width: 50,
             height: 50,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
         },
+                {
+            id: "space-reception",
+            name:  "עמדה 1 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 250,
+            positionY: 250,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+        {
+            id: "space-reception",
+            name:  "עמדה 2 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 350,
+            positionY: 250,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+                {
+            id: "space-reception",
+            name:  "עמדה 3 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 450,
+            positionY: 250,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+                {
+            id: "space-reception",
+            name:  "עמדה 4 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 550,
+            positionY: 250,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+                {
+            id: "space-reception",
+            name:  "עמדה 5 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 250,
+            positionY: 370,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+                        {
+            id: "space-reception",
+            name:  "עמדה 6 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 350,
+            positionY: 370,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+                        {
+            id: "space-reception",
+            name:  "עמדה 7 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 450,
+            positionY: 370,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+                        {
+            id: "space-reception",
+            name:  "עמדה 8 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 550,
+            positionY: 370,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+                        {
+            id: "space-reception",
+            name:  "עמדה 9 open-space סגור",
+            type: "COMPUTER_STAND" as WorkspaceType,
+            status: SpaceStatus.AVAILABLE,
+            positionX: 650,
+            positionY: 370,
+            width: 50,
+            height: 50,
+            createdAt: "16:00 21.07.2025",
+            updatedAt: "16:00 21.07.2025"
+        },
+
     ];
+
     const rrr: Room[] = [
         {
             id: "space-002",
             name: "לאונז'",
             type: "LOUNGE" as RoomType,
             status: RoomStatus.AVAILABLE,
-            positionX: 0,
-            positionY: 0,
+            positionX: 100,
+            positionY: 460,
             hourlyRate: 1,
             capacity: 10,
             workspaceMapId: "space-002",
             discountedHourlyRate: 1,
             description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-            width: 2840,
-            height: 1060,
+            width: 600,
+            height: 500,
             createdAt: "2024-01-01T08:00:00Z",
             updatedAt: "2024-01-01T08:00:00Z"
         },
@@ -965,7 +1072,7 @@ export const WorkspaceMap = () => {
 
 
     ]
-    const { workSpaces, getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getHistory } = useWorkSpaceStore();
+    const { workSpaces,rooms, getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getWorkspaceHistory} = useWorkSpaceStore();
     const uniqueStatus = Object.values(SpaceStatus);
     const uniqueType = Object.values(WorkspaceType);
     const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
@@ -1131,7 +1238,7 @@ export const WorkspaceMap = () => {
         else {
             // המרה לפורמט YYYY-MM-DD לפני השליחה
             const formattedDate = d.toISOString().split('T')[0];
-            getHistory(d);
+            getWorkspaceHistory(d);
         }
         // ?
         setDisplayDate(d);
@@ -1211,24 +1318,26 @@ export const WorkspaceMap = () => {
         setPan({ x: clampedX, y: clampedY });
     };
 
-    const getSpaceIcon = (space: Space) => {
-        const name = space.name.toLowerCase();
+   const getSpaceIcon = (space: Space) => {
+    const name = space.name.toLowerCase();
 
-        // אל תחזיר אייקון עבור עמדות - הן יקבלו אייקון מחשב
-        if (name.includes('עמדה') && (space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) {
-            return null; // ← שינוי כאן
-        }
+    // בדוק קודם אם זה עמדת קבלה
+    if (name.includes('קבלה')) return '📋';
 
-        if (name.includes('שירותים')) return '🚻';
-        if (name.includes('מטבח')) return '🍽️';
-        if (name.includes('מעלית')) return '🛗';
-        if (name.includes('ארון חשמל')) return '⚡';
-        if (name.includes('ארון תקשורת')) return '📡';
-        if (name.includes('עמדת הדפסה')) return '🖨️';
-        if (name.includes('קבלה')) return '📋';
-
+    // אל תחזיר אייקון עבור עמדות מחשב רגילות - הן יקבלו אייקון מחשב
+    if (name.includes('עמדה') && (space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) {
         return null;
-    };
+    }
+
+    if (name.includes('שירותים')) return '🚻';
+    if (name.includes('מטבח')) return '🍽️';
+    if (name.includes('מעלית')) return '🛗';
+    if (name.includes('ארון חשמל')) return '⚡';
+    if (name.includes('ארון תקשורת')) return '📡';
+    if (name.includes('עמדת הדפסה')) return '🖨️';
+
+    return null;
+};
     const getRoomSpaceIcon = (room: Room) => {
         const name = room.name.toLowerCase();
         if (name.includes('לאונז')) return '🛋️';
@@ -1384,69 +1493,14 @@ export const WorkspaceMap = () => {
                                 <path d="M0,10 L10,0" stroke="#6c757d" strokeWidth="1" />
                             </pattern>
                         </defs>
-                        {rrr.length > 0 && rrr.map((r) => {
-                            const hasActiveSearch = activeStatusSearch || activeTypeSearch;
-                            const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
-                            const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
-                            const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
-
-
-                            return (
-                                <g key={r.id}>
-                                    {r.width > 50 && r.height > 30 && (
-                                        <g>
-                                            <rect
-                                                x={r.positionX}
-                                                y={r.positionY}
-                                                width={r.width}
-                                                height={r.height}
-                                                className={`space-rect room-space ${getRoomSpaceClass(r)}`} // הוסף room-space
-                                            // שאר הקוד...
-                                            />
-                                            {getRoomSpaceIcon(r) && (
-
-                                                <text
-                                                    x={r.positionX + r.width / 2}
-                                                    y={r.positionY + r.height / 2 - 15}
-                                                    textAnchor="middle"
-                                                    dominantBaseline="middle"
-                                                    fontSize="48"
-                                                    fill="#333"
-                                                    style={{
-                                                        pointerEvents: 'none',
-                                                        fontWeight: 'bold',
-                                                        fontFamily: 'Arial Unicode MS, Segoe UI Emoji, sans-serif'
-                                                    }}
-                                                >
-                                                    {getRoomSpaceIcon(r)}
-                                                </text>
-                                            )}
-                                            <text
-                                                x={r.positionX + r.width / 2}
-                                                y={r.positionY + r.height / 2 + (getRoomSpaceIcon(r) ? 5 : 0)}
-                                                textAnchor="middle"
-                                                dominantBaseline="middle"
-                                                fontSize={Math.min(r.width / 8, r.height / 4, 12)}
-                                                fill="white"
-                                                className="space-text"
-                                                style={{ pointerEvents: 'none' }}
-                                            >
-                                                {r.name}
-                                            </text>
-                                        </g>
-                                    )}
-                                </g>
-                            );
-                        })}
-                        {www.length > 0 && www.map((w) => {
+                       
+                        {workSpaces.length > 0 && workSpaces.map((w) => {
                             const hasActiveSearch = activeStatusSearch || activeTypeSearch;
                             const matchesStatusSearch = !activeStatusSearch || w.status === selectedStatus;
                             const matchesTypeSearch = !activeTypeSearch || w.type === selectedType;
                             const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
 
-                            // הוסף את השורה הזו - זה השינוי העיקרי!
-                            const isWorkstation = w.type === 'COMPUTER_STAND' || w.type === 'DESK_IN_ROOM';
-
+                         const isWorkstation = w.type === 'COMPUTER_STAND' || w.type === 'DESK_IN_ROOM' || w.type === 'RECEPTION_DESK';
                             return (
                                 <g key={w.id}>
                                     {isWorkstation ? (
@@ -1469,7 +1523,6 @@ export const WorkspaceMap = () => {
                                                     type: w.type,
                                                     status: w.status,
                                                     workspaceMapId: w.workspaceMapId || "",
-                                                    // room: w.room || "",
                                                     currentCustomerId: w.currentCustomerId || "",
                                                     currentCustomerName: w.currentCustomerName || "",
                                                     positionX: w.positionX,
@@ -1498,6 +1551,7 @@ export const WorkspaceMap = () => {
                                                 opacity={0.3}
                                             />
                                             {renderComputerStand(w)}
+                                            {w.type === 'RECEPTION_DESK' && renderReceptionDesk(w)}
                                             <text
                                                 x={w.positionX + w.width / 2}
                                                 y={w.positionY + w.height + 15}
@@ -1536,7 +1590,6 @@ export const WorkspaceMap = () => {
                                                     type: w.type,
                                                     status: w.status,
                                                     workspaceMapId: w.workspaceMapId || "",
-                                                    // room: w.room || "",
                                                     currentCustomerId: w.currentCustomerId || "",
                                                     currentCustomerName: w.currentCustomerName || "",
                                                     positionX: w.positionX,
@@ -1608,6 +1661,63 @@ export const WorkspaceMap = () => {
                                                     👤 {w.currentCustomerName}
                                                 </text>
                                             )}
+                                        </g>
+                                    )}
+                                </g>
+                            );
+                        })}
+                         {rrr.length > 0 && rrr.map((r) => {
+                            const hasActiveSearch = activeStatusSearch || activeTypeSearch;
+                            const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
+                            const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
+                            const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
+
+
+                            return (
+                                <g key={r.id}>
+                                    {r.width > 50 && r.height > 30 && (
+                                        <g 
+                                        // onClick={()=>{if(r.status === "AVAILABLE")}}
+                                        >
+                                            <rect
+                                                x={r.positionX}
+                                                y={r.positionY}
+                                                width={r.width}
+                                                height={r.height}
+                                                className={`space-rect room-space ${getRoomSpaceClass(r)}`} // הוסף room-space
+                                                
+                                            // שאר הקוד...
+                                            />
+                                            {getRoomSpaceIcon(r) && (
+
+                                                <text
+                                                    x={r.positionX + r.width / 2}
+                                                    y={r.positionY + r.height / 2 - 15}
+                                                    textAnchor="middle"
+                                                    dominantBaseline="middle"
+                                                    fontSize="48"
+                                                    fill="#333"
+                                                    style={{
+                                                        pointerEvents: 'none',
+                                                        fontWeight: 'bold',
+                                                        fontFamily: 'Arial Unicode MS, Segoe UI Emoji, sans-serif'
+                                                    }}
+                                                >
+                                                    {getRoomSpaceIcon(r)}
+                                                </text>
+                                            )}
+                                            <text
+                                                x={r.positionX + r.width / 2}
+                                                y={r.positionY + r.height / 2 + (getRoomSpaceIcon(r) ? 5 : 0)}
+                                                textAnchor="middle"
+                                                dominantBaseline="middle"
+                                                fontSize={Math.min(r.width / 8, r.height / 4, 12)}
+                                                fill="white"
+                                                className="space-text"
+                                                style={{ pointerEvents: 'none' }}
+                                            >
+                                                {r.name}
+                                            </text>
                                         </g>
                                     )}
                                 </g>

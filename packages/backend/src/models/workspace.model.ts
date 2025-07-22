@@ -5,19 +5,15 @@ import { Space, SpaceStatus } from "shared-types/workspace";
 
 export class WorkspaceModel implements Space {
   id?: ID;
-  workspaceMapId?: ID; // אם יש צורך בשדה ייחודי נוסף
+  workspaceMapId?: ID;
   name: string;
   description?: string;
   type: WorkspaceType;
   status: SpaceStatus;
-  // room?: string;
-  // מידע על שוכר נוכחי (אם קיים)
   currentCustomerId?: ID;
   currentCustomerName?: string;
-  // מיקום סביבת העבודה במפה
   positionX: number;
   positionY: number;
-  // ממדי סביבת העבודה
   width: number;
   height: number;
   createdAt: string;
@@ -52,7 +48,6 @@ export class WorkspaceModel implements Space {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.description = params.description;
-    // this.room = params.room;
     this.currentCustomerId = params.currentCustomerId;
     this.currentCustomerName = params.currentCustomerName;
   }
@@ -70,7 +65,6 @@ export class WorkspaceModel implements Space {
       created_at: this.createdAt,
       updated_at: this.updatedAt,
       description: this.description,
-      // room: this.room,
       current_customer_id: this.currentCustomerId,
       current_customer_name: this.currentCustomerName,
     };
@@ -88,7 +82,6 @@ export class WorkspaceModel implements Space {
             createdAt: dbData.created_at,
             updatedAt: dbData.updated_at,
             description: dbData.description || undefined,
-            // room: dbData.room || undefined,
             currentCustomerId: dbData.current_customer_id || undefined,
             currentCustomerName: dbData.current_customer_name || undefined
         });
