@@ -5,10 +5,12 @@ import {
   serviceGetAllInvoiceItems,
   serviceGetInvoiceById,
   serviceUpdateInvoice,
-  serviceDeleteInvoice
+  serviceDeleteInvoice,
+  serviceCreateInvoiceItem
 } from "../services/invoice.service";
 import { BillingItem, ID } from "shared-types";
-import { InvoiceModel } from '../models/invoice.model';
+import { InvoiceModel, InvoiceItemModel } from '../models/invoice.model';
+
 import { UUID } from 'crypto';
 
 /**
@@ -32,6 +34,37 @@ export async function createInvoice(req: Request, res: Response): Promise<void> 
     });
   }
 }
+/**
+ * בקר ליצירת פריט חשבונית
+ */
+export const createInvoiceItem = async (req: Request, res: Response): Promise<void> => {
+  console.log('🔍 מתחילים ליצור פריט חשבונית עם הנתונים:', req.body);
+
+  try {
+    const invoiceItemData: Partial<InvoiceItemModel> = req.body;
+    
+    console.log('📦 נתוני פריט החשבונית המתקבלים:', invoiceItemData);
+
+    const newInvoiceItem = await serviceCreateInvoiceItem(invoiceItemData);
+
+    console.log('✅ פריט החשבונית נוצר בהצלחה:', newInvoiceItem);
+
+    res.status(201).json({
+      success: true,
+      message: 'פריט חשבונית נוצר בהצלחה',
+      data: newInvoiceItem
+    });
+  } catch (error) {
+    console.error('❌ שגיאה ביצירת פריט החשבונית:', error);
+    
+    res.status(500).json({
+      success: false,
+      message: 'שגיאה ביצירת פריט החשבונית',
+      error: error instanceof Error ? error.message : 'שגיאה לא ידועה'
+    });
+  }
+};
+
 
 
 

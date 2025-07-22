@@ -111,6 +111,21 @@ async  getworkspaceById(id:string) {
           
             return workspace;
 }
+async getWorkspacesByCustomerId(customerId: ID): Promise<WorkspaceModel[] | null> {
+    const { data, error } = await supabase
+        .from('workspace') // שם הטבלה שלך ב-Supabase
+        .select('*')
+        .eq('customer_id', customerId); // הנחתי שיש עמודה בשם customer_id
+
+    if (error) {
+        console.error('Error fetching workspaces for customer:', error);
+        return null;
+    }
+
+    const workspaces = WorkspaceModel.fromDatabaseFormatArray(data); // המרת הנתונים למודל
+    return workspaces;
+}
+
 //טיפול בכשלים באינטגרציה עם יומן גוגל
 //יש לבדוק אם ההרשאות תקינות ואם TOKEN בתוקפו 
 //וכן יש לבדוק אם הפגשיה נשמרת

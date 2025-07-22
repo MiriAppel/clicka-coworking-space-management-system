@@ -30,6 +30,7 @@ billingRouter.post('/calculate/:customerId', async (req: Request, res: Response)
       { startDate, endDate },
       dueDate
     );
+    
     console.log('Received body:', req.body);
     res.json(result);
   } catch (err: any) {

@@ -24,8 +24,8 @@ function getDueDate(endDate: string): string {
   return d.toISOString().slice(0, 10);
 }
 
-// תריץ כל 5 דקות
-cron.schedule('*/5 * * * *', async () => {
+// תריץ אוטומטית אחת לחודש בשעה 1 בלילה
+cron.schedule('0 1 1 * *', async () => {
   console.log('Cron job started: Fetching all customers...');
   try {
     const allCustomers: CustomerModel[] = await serviceCustomer.getAll();
@@ -54,7 +54,7 @@ cron.schedule('*/5 * * * *', async () => {
 
       try {
         const invoiceData = {
-          invoice_number: '', // אם יש מספר חשבונית, נכניס כאן
+          invoice_number: billingResult.invoice.invoice_number, 
           customer_id: billingResult.invoice.customer_id,
           customer_name: billingResult.invoice.customer_name,
           status: billingResult.invoice.status,
