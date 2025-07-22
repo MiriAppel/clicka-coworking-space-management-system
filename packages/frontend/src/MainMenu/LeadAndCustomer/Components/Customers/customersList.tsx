@@ -21,14 +21,6 @@ interface ValuesToTable {
   id: string;
 }
 
-const formatDate = (dateString: DateISO | undefined) => {
-  if (!dateString) return "לא זמין";
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = String(date.getFullYear()).slice(-2);
-  return `${day}/${month}/${year}`;
-};
 export interface CustomerCardProps {
   id: string;
   name: string;
@@ -73,7 +65,7 @@ export const CustomersList = () => {
     fetchPrevPage,
   } = useCustomerStore();
 
-  
+
 
   useEffect(() => {
     fetchCustomersByPage()
@@ -87,7 +79,7 @@ export const CustomersList = () => {
   };
 
 
- const deleteCurrentCustomer = async (val: ValuesToTable) => {
+  const deleteCurrentCustomer = async (val: ValuesToTable) => {
     const confirmed = await ShowAlertWarn('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?', 'לא ניתן לשחזר את המידע לאחר מחיקה.');
     if (confirmed) {
       await deleteCustomer(val.id);
@@ -147,7 +139,7 @@ export const CustomersList = () => {
       id: c.id!,
       name: c.name,
       phone: c.phone,
-      email: c.email,
+      email: c.email ?? "",
       businessName: c.businessName,
       businessType: c.businessType,
       status: c.status,
@@ -171,12 +163,12 @@ export const CustomersList = () => {
         לקוחות
       </h2>
 
-    <div className="flex items-center gap-4 mb-4">
-  <Button variant="primary" size="sm" onClick={() => navigate("new")} className="flex gap-1 items-center">
-    ➕ הוספת לקוח חדש
-  </Button>
-  <ExportToExcel data={customers} fileName="לקוחות" />
-</div>
+      <div className="flex items-center gap-4 mb-4">
+        <Button variant="primary" size="sm" onClick={() => navigate("new")} className="flex gap-1 items-center">
+          ➕ הוספת לקוח חדש
+        </Button>
+        <ExportToExcel data={customers} fileName="לקוחות" />
+      </div>
 
       <br />
       <Stack spacing={2} direction="row">
@@ -202,10 +194,10 @@ export const CustomersList = () => {
         </div>
 
         {loading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-            </div>
-          )}
+          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-center space-x-4 my-4">
@@ -237,3 +229,12 @@ export const CustomersList = () => {
     </div>
   );
 };
+
+// const formatDate = (dateString: DateISO | undefined) => {
+//   if (!dateString) return "לא זמין";
+//   const date = new Date(dateString);
+//   const day = String(date.getDate()).padStart(2, "0");
+//   const month = String(date.getMonth() + 1).padStart(2, "0");
+//   const year = String(date.getFullYear()).slice(-2);
+//   return `${day}/${month}/${year}`;
+// };

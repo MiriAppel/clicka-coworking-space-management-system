@@ -88,6 +88,7 @@ export const CustomerStatusChanged: React.FC = () => {
     recordExitNotice,
     fetchCustomerById,
     changeCustomerStatus,
+    loading,
     error,
   } = useCustomerStore();
 
@@ -188,7 +189,11 @@ export const CustomerStatusChanged: React.FC = () => {
   return (
     <div className="max-w-xl mx-auto mt-6">
       <h2 className="text-xl font-bold text-center text-blue-700 mb-4">שינוי סטטוס לקוח</h2>
-
+{loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+            </div>
+          )}
       <Form
         schema={schema}
         onSubmit={onSubmit}

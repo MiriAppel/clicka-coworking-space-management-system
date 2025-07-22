@@ -10,6 +10,8 @@ import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
 
+//ליצור תקופת לקוח ללקוח חדש!!!!! 
+
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
     { value: WorkspaceType.PRIVATE_ROOM, label: 'חדר פרטי' },
@@ -234,25 +236,6 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                 setCurrentStep(index);
         }
     };
-
-    // const handleOnSubmit = async (data: z.infer<typeof schema>) => {
-    //     // אם יש שגיאות בשלב הנוכחי, לא נמשיך
-    //     const fields = stepFieldNames[currentStep] as readonly (keyof z.infer<typeof schema>)[];
-    //     const valid = await methods.trigger(fields);
-    //     if (!valid) {
-    //         console.warn("יש שגיאות בשלב הנוכחי, לא ניתן להמשיך");
-    //         return;
-    //     }
-
-    //     // אם זה השלב האחרון, נשלח את הנתונים
-    //     if (currentStep === steps.length - 1) {
-    //         await onSubmit(data);
-    //         return;
-    //     }
-
-    //     // אחרת, נעבור לשלב הבא
-    //     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
-    // }
 
     useEffect(() => {
         stepFieldNames[currentStep].forEach((field) => {
