@@ -146,6 +146,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     if (description) formData.append('description', description);
     if (folderPath) formData.append('folderPath', folderPath);
 
+    const token = localStorage.getItem('accessToken') || '';
     try {
       const res = await axios.post(
         'http://localhost:3001/api/drive/upload',
@@ -155,6 +156,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           timeout: 120000,
           headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
           },
           onUploadProgress: (event) => {
             if (event.total) {

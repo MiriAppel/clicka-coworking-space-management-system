@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-// import { Button } from './Common/Components/BaseComponents/Button';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
@@ -9,9 +8,7 @@ import { Button } from './Common/Components/BaseComponents/Button';
 import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
 import LanguageSelector from './Common/Components/LanguageSelector';
 import { VoiceCommand } from './VoiceAssistant';
-
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
-import FileUploader from './Common/Components/BaseComponents/FileUploader';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -66,7 +63,6 @@ function App() {
           {/* אפשר להוסיף כאן ראוטים נוספים */}
         </Routes>
         <AuthenticationScreen />
-        <FileUploader folderPath="test/folder" />
 
       </div>
     </AuthProvider>
