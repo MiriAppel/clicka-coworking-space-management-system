@@ -23,8 +23,8 @@ export async function getRevenues(parameters: ReportParameters): Promise<Payment
 // עבור כל לקוח ברשימת ה-customerIds (אם קיימת)
   if (parameters.customerIds && parameters.customerIds.length > 0) {
     for (const customerId of parameters.customerIds) {
-      const customerPayments = await paymentService.getPaymentByDateAndCIds({dateFrom: parameters.dateRange.startDate, dateTo: parameters.dateRange.endDate, customerIds: [customerId]});
-      payments.push(...customerPayments);
+      // const customerPayments = await paymentService.getPaymentHistory(customerId);
+      // payments.push(...customerPayments);
     }
   } else {
     console.warn('getRevenues: No customerIds provided. Returning empty result.');
