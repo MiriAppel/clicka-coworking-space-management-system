@@ -20,7 +20,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 
 // בדיקה שמחירים אינם שליליים - פונקציה זו נשארת ללא שינוי
-function validatePrices(prices: number[]) {
+export function validatePrices(prices: number[]) {
   for (const price of prices) {
     if (price < 0) throw new Error("לא ניתן להזין מחירים שליליים");
   }
@@ -131,25 +131,20 @@ export async function createPricingTier(
     if (!request.workspaceType) {
       throw new Error("חובה לבחור סוג סביבת עבודה.");
     }
-
     validatePrices([
       request.year1Price,
       request.year2Price,
       request.year3Price,
       request.year4Price,
     ]);
-
     const effectiveDate = new Date(request.effectiveDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // תחילת היום הנוכחי (ללא שעה)
-
+    today.setHours(0, 0, 0, 0); 
     if (effectiveDate < today) {
       throw new Error("תאריך התחולה חייב להיות היום או בעתיד.");
     }
-
     // בדיקת התנגשות תאריכים מול מסד הנתונים עבור אותו סוג סביבת עבודה
     await checkEffectiveDateConflict(supabase, 'pricing_tiers', request.effectiveDate, { workspace_type: request.workspaceType });
-
     const newPricingTierModel = new PricingTierModel({
       workspaceType: request.workspaceType,
       year1Price: request.year1Price,
@@ -157,22 +152,19 @@ export async function createPricingTier(
       year3Price: request.year3Price,
       year4Price: request.year4Price,
       effectiveDate: request.effectiveDate,
-      active: true, // שכבת תמחור חדשה נוצרת תמיד כפעילה
+      active: true, 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
-
     const { data, error } = await supabase
       .from('pricing_tiers')
       .insert(newPricingTierModel.toDatabaseFormat())
       .select()
       .single();
-
     if (error) {
       console.error('שגיאה ביצירת שכבת תמחור:', error);
       throw new Error('הפעולה ליצירת שכבת תמחור נכשלה.');
     }
-
     return new PricingTierModel({
       id: data.id,
       workspaceType: data.workspace_type,
@@ -237,82 +229,6 @@ export async function checkEffectiveDateConflict(
   // אם conflictingItem הוא null, אין התנגשות, והפונקציה מסתיימת בהצלחה.
 }
 
-/*
-
-### הפונקציה `createPricingTier`
-
-תפקידה של פונקציה זו הוא **אך ורק ליצור רשומה חדשה**, והיא מופעלת על ידי `createPricingTierWithHistory`. היא לא מבצעת נטרול רשומות קודמות.
-
-```typescript
-export async function createPricingTier(
-  request: PricingTierCreateRequest,
-  createdBy: ID
-): Promise<PricingTier> {
-  try {
-    if (!request.workspaceType) {
-      throw new Error("חובה לבחור סוג סביבת עבודה.");
-    }
-
-    validatePrices([
-      request.year1Price,
-      request.year2Price,
-      request.year3Price,
-      request.year4Price,
-    ]);
-
-    const effectiveDate = new Date(request.effectiveDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // תחילת היום הנוכחי (ללא שעה)
-
-    if (effectiveDate < today) {
-      throw new Error("תאריך התחולה חייב להיות היום או בעתיד.");
-    }
-
-    // בדיקת התנגשות תאריכים מול מסד הנתונים עבור אותו סוג סביבת עבודה.
-    // בשלב זה, אנו מצפים שכל רשומה קודמת שעלולה להתנגש כבר נוטרלה על ידי createPricingTierWithHistory.
-    await checkEffectiveDateConflict(supabase, 'pricing_tiers', request.effectiveDate, { workspace_type: request.workspaceType });
-
-    const newPricingTierModel = new PricingTierModel({
-      workspaceType: request.workspaceType,
-      year1Price: request.year1Price,
-      year2Price: request.year2Price,
-      year3Price: request.year3Price,
-      year4Price: request.year4Price,
-      effectiveDate: request.effectiveDate,
-      active: true, // שכבת תמחור חדשה נוצרת תמיד כפעילה
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-
-    const { data, error } = await supabase
-      .from('pricing_tiers')
-      .insert(newPricingTierModel.toDatabaseFormat())
-      .select()
-      .single();
-
-    if (error) {
-      console.error('שגיאה ביצירת שכבת תמחור:', error);
-      throw new Error('הפעולה ליצירת שכבת תמחור נכשלה.');
-    }
-
-    return new PricingTierModel({
-      id: data.id,
-      workspaceType: data.workspace_type,
-      year1Price: data.year1_price,
-      year2Price: data.year2_price,
-      year3Price: data.year3_price,
-      year4Price: data.year4_price,
-      effectiveDate: data.effective_date,
-      active: data.active,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    });
-  } catch (e) {
-    console.error('חריגה בפונקציה createPricingTier:', e);
-    throw e;
-  }
-}
-*/
 export async function getPricingHistory(workspaceType: WorkspaceType): Promise<PricingTier[]> {
   try {
     const { data, error } = await supabase
@@ -1221,4 +1137,3 @@ export async function createOrUpdatePricingTier(
     throw e;
   }
 }
-
