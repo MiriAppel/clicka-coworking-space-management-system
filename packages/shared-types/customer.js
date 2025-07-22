@@ -1,8 +1,4 @@
-"use strict";
-// customer-types.d.ts
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExitReason = exports.CustomerStatus = exports.WorkspaceType = exports.ContractStatus = exports.TimelineEventType = void 0;
-var TimelineEventType;
+export var TimelineEventType;
 (function (TimelineEventType) {
     TimelineEventType["LEAD_CREATED"] = "LEAD_CREATED";
     TimelineEventType["INTERACTION"] = "INTERACTION";
@@ -12,8 +8,8 @@ var TimelineEventType;
     TimelineEventType["PAYMENT_RECEIVED"] = "PAYMENT_RECEIVED";
     TimelineEventType["STATUS_CHANGE"] = "STATUS_CHANGE";
     TimelineEventType["NOTE_ADDED"] = "NOTE_ADDED";
-})(TimelineEventType || (exports.TimelineEventType = TimelineEventType = {}));
-var ContractStatus;
+})(TimelineEventType || (TimelineEventType = {}));
+export var ContractStatus;
 (function (ContractStatus) {
     ContractStatus["DRAFT"] = "DRAFT";
     ContractStatus["PENDING_SIGNATURE"] = "PENDING_SIGNATURE";
@@ -21,26 +17,30 @@ var ContractStatus;
     ContractStatus["ACTIVE"] = "ACTIVE";
     ContractStatus["EXPIRED"] = "EXPIRED";
     ContractStatus["TERMINATED"] = "TERMINATED";
-})(ContractStatus || (exports.ContractStatus = ContractStatus = {}));
+})(ContractStatus || (ContractStatus = {}));
 // Workspace type enum
-var WorkspaceType;
+export var WorkspaceType;
 (function (WorkspaceType) {
     WorkspaceType["PRIVATE_ROOM"] = "PRIVATE_ROOM";
     WorkspaceType["DESK_IN_ROOM"] = "DESK_IN_ROOM";
     WorkspaceType["OPEN_SPACE"] = "OPEN_SPACE";
     WorkspaceType["KLIKAH_CARD"] = "KLIKAH_CARD";
-})(WorkspaceType || (exports.WorkspaceType = WorkspaceType = {}));
+    WorkspaceType["DOOR_PASS"] = "DOOR_PASS";
+    WorkspaceType["WALL"] = "WALL";
+    WorkspaceType["COMPUTER_STAND"] = "COMPUTER_STAND";
+    WorkspaceType["RECEPTION_DESK"] = "RECEPTION_DESK";
+})(WorkspaceType || (WorkspaceType = {}));
 // Customer status enum
-var CustomerStatus;
+export var CustomerStatus;
 (function (CustomerStatus) {
     CustomerStatus["ACTIVE"] = "ACTIVE";
     CustomerStatus["NOTICE_GIVEN"] = "NOTICE_GIVEN";
     CustomerStatus["EXITED"] = "EXITED";
     CustomerStatus["PENDING"] = "PENDING";
     CustomerStatus["CREATED"] = "CREATED";
-})(CustomerStatus || (exports.CustomerStatus = CustomerStatus = {}));
+})(CustomerStatus || (CustomerStatus = {}));
 // Exit reason enum
-var ExitReason;
+export var ExitReason;
 (function (ExitReason) {
     ExitReason["RELOCATION"] = "RELOCATION";
     ExitReason["BUSINESS_CLOSED"] = "BUSINESS_CLOSED";
@@ -49,7 +49,7 @@ var ExitReason;
     ExitReason["SPACE_NEEDS"] = "SPACE_NEEDS";
     ExitReason["DISSATISFACTION"] = "DISSATISFACTION";
     ExitReason["OTHER"] = "OTHER";
-})(ExitReason || (exports.ExitReason = ExitReason = {}));
+})(ExitReason || (ExitReason = {}));
 // export interface SavedSearch {
 //     id: ID;
 //     name: string;
