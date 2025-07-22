@@ -27,14 +27,16 @@ import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
-import emailTemplateRouter from './routes/emailTemplate.route';
-import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
+import router from './routes';
+import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
+import documentRouter from './routes/document.routes';
 import invoiceRouter from './routes/invoice.route';
+import paymentRoutes from './routes/payment.routes';
+import emailTemplateRouter from './routes/emailTemplate.route';
+import driveRoutes from './routes/drive-route';
 import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
-import router from './routes';
 import auditLogRouter from './routes/auditLog.route';
-import { file } from 'googleapis/build/src/apis/file';
 
 
 // import cookieParser from "cookie-parser";
@@ -47,6 +49,7 @@ dotenv.config();
 
 // Create Express app
 setupSwagger(app);
+app.use(cookieParser());
 
 // Apply middlewares
 // app.use(cookieParser());
@@ -92,7 +95,11 @@ app.use(urlencoded({ extended: true }));
 app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
-app.use('/api/payment', routerPayment);
+app.use('/api/payment', routerPayment);app.use('/api/document', documentRouter);
+app.use('/api/invoices', invoiceRouter);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/emailTemplate', emailTemplateRouter);
+app.use('/api/drive', driveRoutes);
 // app.use('/api/leadInteraction', routerCstomer);
 app.use('/api/payment', routerPayment);
 app.use('/api/invoices', invoiceRouter);

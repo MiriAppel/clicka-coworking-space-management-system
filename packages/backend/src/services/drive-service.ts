@@ -1,5 +1,7 @@
 import { google } from 'googleapis';
+import { FileReference } from 'shared-types';
 import { Readable } from 'stream';
+import { UserTokenService } from './userTokenService';
 
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();
@@ -50,7 +52,7 @@ export async function uploadFileToDrive(
     requestBody,
     media: {
       mimeType: file.mimetype,
-      body: Readable.from(file.buffer), 
+      body: Readable.from(file.buffer),
     },
   });
   return res.data;

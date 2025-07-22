@@ -1,13 +1,8 @@
 import { Router } from 'express';
 import { Request, Response } from 'express';
-import {
-  createInvoice,
-  getAllInvoiceItems,
-  getAllInvoices,
-  getInvoiceById,
-  updateInvoice,
-  deleteInvoice
-} from '../controllers/invoice.controller';
+import { createInvoice, deleteInvoice, getAllInvoiceItems,sendEmail, getAllInvoices, getInvoiceById, updateInvoice } from '../controllers/invoice.controller';
+import { sendInvoiceUpdateMail } from '../controllers/InvoiceUpdateMail';
+
 const invoiceRouter = Router();
 console.log('✅ invoice router loaded');
 
@@ -27,8 +22,6 @@ invoiceRouter.get('/health', (req: Request, res: Response) => {
     ]
   });
 });
-console.log('✅ invoice router loaded');
-
 // CREATE - יצירת חשבוניות
 invoiceRouter.post('/create', createInvoice);                    // יצירת חשבונית ידנית            // יצירת חשבוניות אוטומטיות
 // READ - קריאת חשבוניות
@@ -38,7 +31,11 @@ invoiceRouter.get('/:id', getInvoiceById);                       // חשבוני
 // UPDATE - עדכון חשבונית
 invoiceRouter.put('/:id', updateInvoice);                        // עדכון חשבונית (הסרתי 'update/')
 // DELETE - מחיקת חשבונית
-invoiceRouter.delete('/:id', deleteInvoice);                     // מחיקת חשבונית (הסרתי 'delete/')
+invoiceRouter.delete('/:id', deleteInvoice); 
+// שליחת מייל
+invoiceRouter.post('/sendemail', sendEmail);
+//עידכון מייל
+invoiceRouter.post('/send-invoice-update-email', sendInvoiceUpdateMail);
 
 invoiceRouter.get('/health', (req, res) => {
   res.json({ message: 'INVOICE ROUTER OK' });
