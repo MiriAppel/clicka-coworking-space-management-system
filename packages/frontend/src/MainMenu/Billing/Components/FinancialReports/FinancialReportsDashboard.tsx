@@ -84,6 +84,8 @@ const [loadingReport, setLoadingReport] = useState(false);
   const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]);
   const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
   const exportContentRef = useRef<HTMLDivElement>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+
 // תרגום שמות עמודות בטבלה בלבד — לא משפיע על הגרף
 const columnTranslations: Record<string, string> = {
   // RevenueReportData.breakdown
@@ -138,7 +140,7 @@ const columnTranslations: Record<string, string> = {
     async function fetchEntities() {
       try {
         const [customerRes, vendorRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/customers', { withCredentials: true }),
+          axios.get('http://localhost:3001/api/customers/by-page?page=1&limit=10000', { withCredentials: true }),
           axios.get('http://localhost:3001/vendor', { withCredentials: true }),
         ]);
         setCustomers(customerRes.data || []);
@@ -151,6 +153,14 @@ const columnTranslations: Record<string, string> = {
   }, []);
 
   const onSubmit = async (data: ExtendedReportParameters) => {
+      const { startDate, endDate } = data.dateRange || {};
+  const { groupBy } = data;
+
+ if (!startDate || !endDate || !groupBy) {
+    setFormError('יש למלא טווח תאריכים וקיבוץ לפי לפני יצירת הדוח');
+    return;
+  } 
+   setFormError(null); // איפוס הודעת שגיאה אם הכל תקין
       setLoadingReport(true); 
     const transformed = {
       ...data,
@@ -292,7 +302,7 @@ const columnTranslations: Record<string, string> = {
         {selectedType === ReportType.REVENUE && (
           <>
             <label>בחר לקוחות:</label>
-            <select {...methods.register('customerIds')} multiple className="w-full px-2 py-1 border rounded">
+            <select {...methods.register('customerIds')} className="w-full px-2 py-1 border rounded">
               {customers.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -327,6 +337,7 @@ const columnTranslations: Record<string, string> = {
         <Button type="submit" disabled={loading}>
           {loading ? 'טוען...' : 'צור דוח'}
         </Button>
+        {formError && <p className="text-red-600 mt-2">{formError}</p>}
     <div>
       {/* הצגת הודעת טעינה רק כשיש טעינה */}
  {loadingReport && (

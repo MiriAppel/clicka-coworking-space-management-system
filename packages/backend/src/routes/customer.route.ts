@@ -5,20 +5,19 @@ import * as contractController from '../controllers/contract.controller'
 const routerCustomer = express.Router();
 
 // (GET)
-// routerCustomer.get('/by-page', customerController.getCustomersByPage);
+routerCustomer.get('/by-page', customerController.getCustomersByPage);
 
 routerCustomer.get('/', customerController.getAllCustomers); 
 
-// routerCustomer.get('/page', customerController.getCustomersByPage); 
+routerCustomer.get('/page', customerController.getCustomersByPage);
 
 routerCustomer.get('/status/all', customerController.getAllCustomerStatus);
 
-routerCustomer.get('/notify/:id', customerController.getCustomersToNotify); 
+routerCustomer.get('/notify/:id', customerController.getCustomersToNotify);
 
-routerCustomer.get('/:id', customerController.getCustomerById); 
+routerCustomer.get('/id/:id', customerController.getCustomerById); 
 
-// routerCustomer.get("/search", customerController.searchCustomersByText);
-
+// routerCustomer.get('/filter', customerController.getCustomersByFilter);
 //(POST)
 routerCustomer.post('/:id/exit-notice', customerController.postExitNotice); 
 

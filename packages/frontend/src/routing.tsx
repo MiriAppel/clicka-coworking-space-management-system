@@ -10,7 +10,7 @@ import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/Vend
 import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import MainLayout from './layout/MainLayout';
-import { Billing } from './MainMenu/Billing/Components/Billing';
+import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import {RoomReservations} from './MainMenu/Workspace/Components/RoomReservations';import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 

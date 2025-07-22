@@ -53,9 +53,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(json());
 
 app.use(urlencoded({ extended: true }));
+app.use('/api/customers', routerCustomer);
+
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
-app.use('/api/customers', routerCustomer);
 app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
