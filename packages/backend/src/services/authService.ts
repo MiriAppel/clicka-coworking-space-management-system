@@ -131,6 +131,7 @@ export const exchangeCodeAndFetchUser = async (
       throw new Error("No access token received from Google");
     }
     console.log(tokens);
+    console.log('Tokens received from Google:', tokens);
     const userInfo = await getGoogleUserInfo(tokens.access_token);
     console.log(userInfo);
 
@@ -192,6 +193,7 @@ export const exchangeCodeAndFetchUser = async (
       token: jwtToken,
 
       sessionId: newSessionId,
+       googleAccessToken: tokens.access_token,
        //googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at,

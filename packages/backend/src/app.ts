@@ -23,7 +23,7 @@ import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
-import routerMap from './routes/WorkspaceMapRoute';
+import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
@@ -36,6 +36,7 @@ import emailTemplateRouter from './routes/emailTemplate.route';
 import driveRoutes from './routes/drive-route';
 import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
+import auditLogRouter from './routes/auditLog.route';
 
 
 // import cookieParser from "cookie-parser";
@@ -63,9 +64,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use('/api/translate', translationRouter);
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
+app.use('/api/audit-logs', auditLogRouter);
+app.use('/api/translate', translationRouter);
 app.use('/api/customers', routerCustomer);
 app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);

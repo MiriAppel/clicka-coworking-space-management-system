@@ -5,8 +5,7 @@ import {
   getFile,
   deleteFile,
   shareFile,
-  getFileMetadata,
-  uploadFile
+  getFileMetadata
 } from '../controllers/drive-controller';
 
 const upload = multer({
@@ -17,18 +16,16 @@ const upload = multer({
     cb(null, true);
   }
 });
-const driveRoutes = Router();
+const router = Router();
 
 // בלי as any - אמור לעבוד עכשיו!
-driveRoutes.get('/v3/files/:fileId/metadata', getFileMetadata);
-driveRoutes.get('/v3/files/:fileId', getFile);
-driveRoutes.post('/v3/files', upload.single('file'), postFile);
-driveRoutes.delete('/v3/files/:fileId', deleteFile);
-driveRoutes.post('/v3/files/:fileId/permissions', shareFile);
+router.get('/v3/files/:fileId/metadata', getFileMetadata);
+router.get('/v3/files/:fileId', getFile);
+router.post('/v3/files', upload.single('file'), postFile);
+router.delete('/v3/files/:fileId', deleteFile);
+router.post('/v3/files/:fileId/permissions', shareFile);
 
 // נתיב העלאה נוסף
-driveRoutes.post('/upload', upload.single('file'), postFile);
-// העלאת קובץ (עם קובץ multipart ושדה folderPath בגוף)
-driveRoutes.post('/v3/files', upload.single('file'), uploadFile);
+router.post('/upload', upload.single('file'), postFile);
 
-export default driveRoutes;
+export default router;
