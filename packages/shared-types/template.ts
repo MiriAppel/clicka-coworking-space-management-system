@@ -23,6 +23,7 @@ export interface DocumentTemplate {
   updatedAt: DateISO;
 }
 
+
 // בקשה ליצירת מסמך
 export interface GenerateDocumentRequest {
   templateId: ID;
@@ -31,6 +32,7 @@ export interface GenerateDocumentRequest {
   language?: 'hebrew' | 'english';
   deliveryMethod?: 'email' | 'download' | 'store';
 }
+
 
 // מסמך שנוצר
 export interface GeneratedDocument {

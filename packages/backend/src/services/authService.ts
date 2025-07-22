@@ -41,14 +41,16 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
   try {
     const tokens = await getTokens(code);
     if (!tokens.access_token) {
-      throw new Error('No access token received from Google');
+      throw new Error("No access token received from Google");
     }
+    console.log(tokens);
+    console.log('Tokens received from Google:', tokens);
     const userInfo = await getGoogleUserInfo(tokens.access_token);
     console.log(userInfo);
 
     //need to check if the user have permission to login
     if (!userInfo.id) {
-      throw new Error('Google ID is missing for the user');
+      throw new Error("Google ID is missing for the user");
     }
     let checkUser = await userService.loginByGoogleId(userInfo.id);
     if (checkUser == null) {
@@ -56,12 +58,14 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
       try {
         checkUser = await userService.getUserByEmail(userInfo.email);
         if (checkUser == null) {
-          console.log('user not found by email:', userInfo.email);
+          console.log("user not found by email:", userInfo.email);
 
-          throw new Error("User not found")
+          throw new Error("User not found");
         }
-        await userService.updateGoogleIdUser(checkUser.id ?? userInfo.id, userInfo.id);
-
+        await userService.updateGoogleIdUser(
+          checkUser.id ?? userInfo.id,
+          userInfo.id,
+        );
       } catch (error: any) {
         throw error;
       }
@@ -80,12 +84,17 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     }
     //---------------------------------------------------
     const newSessionId = randomUUID();
-    console.log('in exchange code and fetch user, newSessionId:', newSessionId);
+    console.log("in exchange code and fetch user, newSessionId:", newSessionId);
 
-    await saveUserTokens(checkUser.id ?? userInfo.id, tokens.refresh_token ?? '', tokens.access_token, newSessionId);
+    await saveUserTokens(
+      checkUser.id ?? userInfo.id,
+      tokens.refresh_token ?? "",
+      tokens.access_token,
+      newSessionId,
+    );
 
-    console.log('Access Token:', tokens.access_token);
-    console.log('Refresh Token:', tokens.refresh_token);
+    console.log("Access Token:", tokens.access_token);
+    console.log("Refresh Token:", tokens.refresh_token);
     const jwtToken = generateJwtToken({
       userId: checkUser.id ?? userInfo.id,
       email: user.email,
@@ -95,10 +104,12 @@ export const exchangeCodeAndFetchUser = async (code: string): Promise<LoginRespo
     return {
       user,
       token: jwtToken,
+
       sessionId: newSessionId,
-      //googleAccessToken: tokens.access_token,
+       googleAccessToken: tokens.access_token,
+       //googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
-      expiresAt: tokens.expires_at
+      expiresAt: tokens.expires_at,
     };
 
 

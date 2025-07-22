@@ -83,9 +83,9 @@ export const SearchCustomer = () => {
         return () => observer.disconnect();
     }, [hasMore]);
 
-    function isCustomer(person: Person): person is Customer {
-        return 'idNumber' in person && typeof person.idNumber === 'string';
-    }
+    // function isCustomer(person: Person): person is Customer {
+    //     return 'idNumber' in person && typeof person.idNumber === 'string';
+    // }
 
 
     const checkInputType = (input: string) => {

@@ -188,7 +188,7 @@ export class AuditLogService {
 
   // פונקציה עזר לקבלת פרטי המשתמש מהקוקי
   getUserInfoFromRequest(req: Request): { userId: string; email: string; googleId: string } | null {
-    return getUserFromCookie(req);
+    return  getUserFromCookie(req);
   }
 
   // פונקציה לספירת audit logs לפי משתמש
