@@ -27,7 +27,7 @@ import emailTemplateRouter from './routes/emailTemplate.route';
 import userRouter from './routes/user.route';
 import router from './routes';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
-import { setupSwagger } from './docs/swagger';
+// import { setupSwagger } from './docs/swagger';
 
 // Create Express app
 const app = express();
