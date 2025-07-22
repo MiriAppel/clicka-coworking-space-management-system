@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { Lead } from "shared-types";
+import { Lead, LeadStatus } from "shared-types";
 
 interface LeadsTableProps {
   leads: Lead[];
@@ -11,7 +11,7 @@ interface LeadsTableProps {
 interface RowData {
   id: string;
   name: string;
-  status: string;
+  status: LeadStatus;
   phone: string;
   email: string;
 }
@@ -31,7 +31,7 @@ export const LeadsTable = ({ leads, onDelete }: LeadsTableProps) => {
     name: lead.name,
     status: lead.status,
     phone: lead.phone,
-    email: lead.email,
+    email: lead.email || "",
   }));
 
   const columns: TableColumn<RowData>[] = [

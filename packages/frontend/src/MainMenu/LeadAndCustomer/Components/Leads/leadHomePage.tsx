@@ -1,11 +1,30 @@
-import { useNavigate } from "react-router-dom";
+// import React, { useEffect, useState } from "react";
+// import { Button, ButtonProps } from '../../../../Common/Components/BaseComponents/Button';
+// import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+// import axios from "axios";
+// import { Outlet, useNavigate } from "react-router-dom";
+// import { Link, NavLink } from "react-router-dom";
+// import { Lead, LeadSource, LeadStatus, Person } from "shared-types";
+// import { SearchLeads } from "./searchLead";
+// import { deleteLead } from "../../Service/LeadAndCustomersService";
+
+// interface ValuesToTable {
+//   id: string
+//   name: string; // שם המתעניין
+//   status: LeadStatus; // סטטוס המתעניין
+//   phone: string; // פלאפון
+//   email: string; // מייל
+// }
+// //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
+
+import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { SearchLeads } from "./SearchLeads";
 import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { deleteLead } from "../../Service/LeadAndCustomersService";
 import { LeadsTable } from "./LeadsTable"; // 💡 ודאי שהשמות תואמים
+import { deleteLead } from "../../Service/LeadAndCustomersService";
 
 export const LeadsHomePage = () => {
   const navigate = useNavigate();
@@ -58,12 +77,12 @@ export const LeadsHomePage = () => {
       return;
     }
 
-    const filtered = allLeadsRef.current.filter(
-      (l) =>
-        l.name.toLowerCase().includes(term.toLowerCase()) ||
-        l.phone.includes(term) ||
-        l.email.toLowerCase().includes(term.toLowerCase())
-    );
+  const filtered = allLeadsRef.current.filter(
+    (l) =>
+      l.name.toLowerCase().includes(term.toLowerCase()) ||
+      l.phone.includes(term) ||
+      l.email?.toLowerCase().includes(term.toLowerCase())
+  );
 
     if (filtered.length > 0) {
       setIsSearching(true);
@@ -94,7 +113,7 @@ export const LeadsHomePage = () => {
 
   const deleteCurrentLead = async (id: string) => {
     try {
-      await deleteLead(id);
+      // await deleteLead(id);
       setLeads((prev) => prev.filter((l) => l.id !== id));
       allLeadsRef.current = allLeadsRef.current.filter((l) => l.id !== id);
       alert("מתעניין נמחק בהצלחה");

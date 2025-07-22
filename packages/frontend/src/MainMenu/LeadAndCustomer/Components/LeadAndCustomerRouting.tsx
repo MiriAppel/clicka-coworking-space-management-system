@@ -1,11 +1,9 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { LeadAndCustomer } from "./leadAndCustomer";
 import { ContractManagement } from "./Contracts/contractManagement";
-import { AddContract } from "./Contracts/addContract";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
 import { LeadsHomePage } from "./Leads/leadHomePage";
-import { DetailsOfTheLead } from "./Leads/detailsOfTheLead";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
@@ -15,9 +13,9 @@ import { InteractionForm } from "./Interactions/interactionForm";
 // import { addInteraction } from "./Interactions/leadInteractionDetails";
 import { useLeadsStore } from "../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
-import { CustomerDetails } from "./Customers/customerDetails";
-
-import LeadSourcesPieChart from './Leads/LeadSourcesPieChart';
+import { NewCustomerPage } from "./Customers/newCustomer";
+import { EditContract } from "./Contracts/editContract";
+import { AddContract } from "./Contracts/addContract";
 
 export const LeadAndCustomerRouting = () => {
     const nav = useNavigate()
@@ -29,7 +27,8 @@ export const LeadAndCustomerRouting = () => {
             <Route path="/" element={<LeadAndCustomer />} />
             <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
-            <Route path="customers/:customerId" element={<CustomerDetails />} />
+            <Route path="customers/new" element={<NewCustomerPage />} />
+            {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
             <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
@@ -37,6 +36,11 @@ export const LeadAndCustomerRouting = () => {
             <Route path="contracts/:customerId" element={<ContractDetails />} />
             <Route path="contracts/new" element={<AddContract />} />
             <Route path="leads" element={<LeadInteractions />} />
+            <Route path="leads" element={<LeadInteractions />} />
+            <Route path="contracts/customer/:customerId" element={<ContractDetails />} />
+            <Route path="contracts/addContract" element={<AddContract/>} />
+            <Route path="contracts/edit/:contractId" element={<EditContract />} />
+            <Route path="leads" element={<LeadsHomePage />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />

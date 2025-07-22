@@ -4,7 +4,7 @@ export class CustomerModel implements Customer {
   id?: ID; //PK
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   idNumber: string; //identity card
   businessName: string;
   businessType: string;
@@ -17,8 +17,8 @@ export class CustomerModel implements Customer {
   notes?: string;
   invoiceName?: string;
   // contractDocuments?: FileReference[];
-  //paymentMethods: PaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
-  paymentMethodsType: PaymentMethodType;
+  paymentMethods?: CustomerPaymentMethod[];  // ללקוח יכולים להיות כמה אמצעי תשלום שונים – למשל שני כרטיסים. כל אמצעי תשלום שייך ללקוח אחד.
+  paymentMethodType: PaymentMethodType;
   periods?: CustomerPeriod[];
   // contracts: Contract[];  // One customer can have several contracts. 1:N
   createdAt: DateISO;
@@ -37,7 +37,8 @@ export class CustomerModel implements Customer {
     workspaceCount: number,
     createdAt: DateISO,
     updatedAt: DateISO,
-    paymentMethodsType: PaymentMethodType,
+    paymentMethods: CustomerPaymentMethod[],
+    paymentMethodType: PaymentMethodType,
     currentWorkspaceType?: WorkspaceType,
     contractSignDate?: string,
     contractStartDate?: string,
@@ -51,7 +52,7 @@ export class CustomerModel implements Customer {
     this.id = id || undefined;
     this.name = name;
     this.phone = phone;
-    this.email = email;
+    this.email = email || undefined;
     this.idNumber = idNumber;
     this.businessName = businessName;
     this.businessType = businessType;
@@ -65,7 +66,7 @@ export class CustomerModel implements Customer {
     this.invoiceName = invoiceName;
     // this.contractDocuments = contractDocuments;
     this.paymentMethods = paymentMethods;
-    this.paymentMethodsType = paymentMethodsType;
+    this.paymentMethodType = paymentMethodType;
     this.periods = periods;
     // this.contracts = contracts;
     this.createdAt = createdAt;
@@ -113,6 +114,7 @@ export class CustomerModel implements Customer {
       dbData.workspace_count,
       dbData.created_at,
       dbData.updated_at,
+      dbData.paymentMethods || [],
       dbData.payment_methods_type,
       dbData.current_workspace_type,
       dbData.contract_sign_date,
@@ -146,7 +148,7 @@ export class CustomerModel implements Customer {
     if (data.billingStartDate !== undefined) dbObj.billing_start_date = data.billingStartDate;
     if (data.notes !== undefined) dbObj.notes = data.notes;
     if (data.invoiceName !== undefined) dbObj.invoice_name = data.invoiceName;
-    if (data.paymentMethodsType !== undefined) dbObj.payment_methods_type = data.paymentMethodsType;
+    if (data.paymentMethodType !== undefined) dbObj.payment_methods_type = data.paymentMethodType;
     if (data.createdAt !== undefined) dbObj.created_at = data.createdAt;
     if (data.updatedAt !== undefined) dbObj.updated_at = data.updatedAt;
     // הוסיפי כאן שדות נוספים במידת הצורך

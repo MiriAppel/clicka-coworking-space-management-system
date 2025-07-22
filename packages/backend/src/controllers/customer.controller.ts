@@ -1,11 +1,21 @@
-import { Request, Response } from 'express';
-import { customerService } from '../services/customer.service';
-import { CreateCustomerRequest, ID, PaymentMethodType, ContractStatus } from 'shared-types';
-import { contractService } from '../services/contract.service';
+import { Request, Response } from "express";
+import { customerService } from "../services/customer.service";
+import {
+  CreateCustomerRequest,
+  ID,
+  StatusChangeRequest,
 
+} from "shared-types";
+import { contractService } from "../services/contract.service";
+import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.service";
+import { UserTokenService } from "../services/userTokenService";
+import { sendEmail } from "../services/gmail-service";
+import { EmailTemplateService } from "../services/emailTemplate.service";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
+const userTokenService = new UserTokenService();
+const emailService = new EmailTemplateService();
 
 
 export const getAllCustomers = async (req: Request, res: Response) => {
@@ -25,81 +35,89 @@ export const postCustomer = async (req: Request, res: Response) => {
 
         const newCustomer: CreateCustomerRequest = req.body
 
-        // console.log("in controller");
-        // console.log(newCustomer);  
+    // console.log("in controller");
+    // console.log(newCustomer);
+    const email = newCustomer.email;
 
-        const customer = await serviceCustomer.createCustomer(newCustomer);
-        console.log("in controller");
-        console.log(customer);
+    const customer = await serviceCustomer.createCustomer(newCustomer);
 
-        //כשהחוזה יהיה מוכן בסכמה להוסיף את זה
-        // const newContract: ContractModel = {
-        //     customerId: customer.id!, // FK.  כל חוזה שייך ללקוח אחד בלבד. אבל ללקוח יכולים להיות כמה חוזים לאורך זמן – למשל, הוא חתם שוב אחרי שנה, או שינה תנאים.
-        //     version: 1,
-        //     status: ContractStatus.DRAFT,
-        //     documents: newCustomer.contractDocuments || [],
-        //     createdAt: new Date().toISOString(),
-        //     updatedAt: new Date().toISOString(),
-        //     toDatabaseFormat() {
-        //         return {
-        //             customer_id: this.customerId,
-        //             version: this.version,
-        //             status: this.status,
-        //             sign_date: this.signDate,
-        //             start_date: this.startDate,
-        //             end_date: this.endDate,
-        //             terms: this.terms,
-        //             documents: this.documents,
-        //             signed_by: this.signedBy,
-        //             witnessed_by: this.witnessedBy,
-        //             created_at: this.createdAt,
-        //             updated_at: this.updatedAt
-        //         };
-        //     }
-        // }
+    const token = await userTokenService.getSystemAccessToken();
 
-        // const contract = await serviceContract.post(newContract)
+    const template = await emailService.getTemplateByName(
+          "אימות לקוח",
+    );
+    if (!template) {
+          console.warn("Team email template not found");
+          return;
+        }
+        // const renderedHtml = await emailService.renderTemplate(
+        //   template.bodyHtml,
+        //   {
+        //     "שם": customer.name,
+        //     "סטטוס": status,
+        //     "תאריך": formattedDate,
+        //     "סיבה": detailsForChangeStatus.reason || "ללא סיבה מצוינת",
+        //   },
+        // );
+    
 
-        // console.log("in controller");
-        // console.log(contract);
+    if (!email || !token)
+      res.status(401).json("its have a problam on email or token");
+    
+    
 
-        res.status(200).json(customer);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching customers', error });
-    }
+    // sendEmail( "me",
+    //       {
+    //         to: [email ?? ""],
+    //         subject: template.subject,
+    //         body: renderedHtml,
+    //         isHtml: true,
+    //       },
+    //       token,)
+    console.log("in controller");
+    console.log(customer);
+
+    res.status(200).json(customer);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching customers', error });
+  }
 }
 
 export const getCustomerById = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    try {
-        const customer = await serviceCustomer.getById(id);
-        if (customer) {
-            res.status(200).json(customer);
-        } else {
-            res.status(404).json({ message: 'Customer not found' });
-        }
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Error fetching customer', error });
-    }
-}
 
-export const getCustomersByFilter = async (req: Request, res: Response) => {
-    const filters = req.query;
-    try {
-        const customers = await serviceCustomer.getByFilters(filters);
+  const { id } = req.params;
+  console.log("in getCustomerById", id);
 
-        if (customers.length > 0) {
-            res.status(200).json(customers);
-        } else {
-            res.status(404).json({ message: 'No customers found' });
-        }
+  try {
+    const customer = await serviceCustomer.getById(id);
+    if (customer) {
+      res.status(200).json(customer);
+    } else {
+      res.status(404).json({ message: "Customer not found" });
     }
-    catch (error) {
-        res.status(500).json({ message: 'Error filtering customers', error });
-    }
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching customer", error });
+  }
+};
 
-}
+export const searchCustomersByText = async (req: Request, res: Response) => {
+  try {
+    const text = req.query.text as string;
+
+    // if (!text || text.trim() === "") {
+    //   return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
+    // }
+
+    console.log("מחפש לקוחות עם טקסט:", text);
+    const leads = await serviceCustomer.getCustomersByText(text);
+    // console.log("לקוחות שמצאתי:", leads);
+
+    return res.json(leads);
+  } catch (error) {
+    console.error("שגיאה בחיפוש לקוחות:", error);
+    return res.status(500).json({ error: "שגיאה בשרת." });
+  }
+};
 
 //Returns the possible client status modes
 export const getAllCustomerStatus = async (req: Request, res: Response) => {
@@ -189,20 +207,29 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
 
 // עדכון מלא/חלקי של לקוח
 export const patchCustomer = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const updateData = req.body; // נתוני העדכון החלקיים
+  const { id } = req.params;
+  const updateData = req.body; // נתוני העדכון החלקיים
+  console.log("Update data received in patchCustomer controller:", updateData);
 
-    try {
-        // await serviceCustomer.patch(updateData, id)
-        await serviceCustomer.updateCustomer(updateData, id)
-        res.status(200).json({ message: 'Customer updated successfully (PATCH)' });
-    }
-    catch (error) {
-        console.error('Error in patchCustomer controller:', error);
-        res.status(500).json({ message: 'Error patching customer', error });
-    }
+  try {
+    // await serviceCustomer.patch(updateData, id)
+    await serviceCustomer.updateCustomer(updateData, id);
+    res.status(200).json({ message: "Customer updated successfully (PATCH)" });
+  } catch (error) {
+    console.error("Error in patchCustomer controller:", error);
+    res.status(500).json({ message: "Error patching customer", error });
+  }
+};
+
+export const getCustomerPaymentMethods = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(id);
+    res.status(200).json(paymentMethods);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching customer payment methods", error });
+  }
 }
-
 
 // לשאול את שולמית לגבי זה
 
@@ -230,3 +257,99 @@ export const patchCustomer = async (req: Request, res: Response) => {
 //         res.status(500).json({ message: 'Error fetching status changes', error});
 //     }
 // }
+
+export const confirmEmail = async (req: Request, res: Response) => {
+  const email = req.params.email;
+  const id = req.params.id;
+
+  if (!email || !id) {
+    return res.status(400).send(createHtmlMessage("שגיאה: אימייל או מזהה חסרים"));
+  }
+
+  try {
+    await serviceCustomer.confirmEmail(email, id);
+    res.send(createHtmlMessage("האימות הצליח! תודה שהצטרפת אלינו."));
+
+  } catch (error: any) {
+    console.error("שגיאה באימות:", error);
+
+   
+
+    // כל שגיאה אחרת
+    res
+      .status(500)
+      .send(createHtmlMessage("\nאירעה שגיאה במהלך האימות." + error.details));
+  }
+};
+
+
+function createHtmlMessage(message: string) {
+  return `
+    <html dir="rtl">
+      <head>
+        <title>אימות מייל</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+            background-color: #f5f5f5;
+            color: #333;
+          }
+          .box {
+            background: white;
+            display: inline-block;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+          }
+        </style>
+      </head>
+      <body>
+        <div class="box">
+          <h1>${message}</h1>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+
+
+export const changeCustomerStatus = async (req: Request, res: Response) => {
+  try {
+    console.log("changeCustomerStatus called with params:", req.params);
+    const userTokenService = new UserTokenService();
+    const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
+    const statusChangeData : StatusChangeRequest = req.body; // פרטים לשינוי הסטטוס
+
+    const token = await userTokenService.getSystemAccessToken();
+    console.log("changeCustomerStatus called with token:", token);
+
+    // הנחת שהמשתמש מחובר ויש לו מזהה
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing access token" });
+    }
+
+    if (!id || !statusChangeData) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    // קוראים לפונקציה ששולחת מיילים ומשנה סטטוס
+    await serviceCustomer.sendStatusChangeEmails(
+      statusChangeData,
+      id,
+      token
+    );
+
+    res
+      .status(200)
+      .json({ message: "Status change processed and emails sent." });
+  } catch (error) {
+    console.error("Error in changeCustomerStatus:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+

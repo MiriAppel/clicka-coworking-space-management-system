@@ -7,11 +7,11 @@ import { Eclipse, Keyboard, Languages, X, Globe } from "lucide-react";
 export const Accesibility = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen && dialogRef.current) {
-      dialogRef.current.focus();
+    if (isOpen && Ref.current) {
+      Ref.current.focus();
     }
   }, [isOpen]);
 
@@ -59,10 +59,10 @@ export const Accesibility = () => {
 
      {isOpen && (
   <div
-    role="dialog"
-    ref={dialogRef}
+    role=""
+    ref={Ref}
     tabIndex={-1}
-    aria-labelledby="a11y-dialog-title"
+    aria-labelledby="a11y--title"
     className="fixed top-16 right-0 h-auto w-56 bg-white rounded-l-lg p-4 shadow-lg flex flex-col space-y-3 z-50"
     style={{
       fontFamily: theme.lang === "he" ? "Noto Sans Hebrew" : "Inter",
@@ -71,7 +71,7 @@ export const Accesibility = () => {
      // backgroundColor: theme.colors.background || 'white', 
     }}
   >
-    <h2 id="a11y-dialog-title" className="text-lg font-bold mb-3">
+    <h2 id="a11y--title" className="text-lg font-bold mb-3">
       Accesibility Options
     </h2>
 
