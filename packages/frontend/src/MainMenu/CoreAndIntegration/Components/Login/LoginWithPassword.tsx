@@ -4,10 +4,10 @@ import { InputField } from "../../../../Common/Components/BaseComponents/Input"
 import { Button } from "../../../../Common/Components/BaseComponents/Button"
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod"
-import axiosInstance from "../../../../Services/Axios";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import axiosInstance from "../../../../Service/Axios";
 const schema = z.object({
     email: z.string().min(1, "Email required").email("Invalid Email").nonempty("EMAIL"),
     password: z.string().min(1, "Password required").nonempty("PASSWORD"),

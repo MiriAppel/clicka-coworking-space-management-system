@@ -3,7 +3,6 @@ import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore
 import axios from "axios";
 import { axiosInstance } from "../../../../Service/Axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import GoogleOneTap from "./GoogleOneTap";
 
 interface AuthProviderProps {
   children: ReactNode;
