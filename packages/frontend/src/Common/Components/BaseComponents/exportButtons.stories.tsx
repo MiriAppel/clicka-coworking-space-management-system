@@ -2,7 +2,7 @@
 import { Meta, StoryObj } from '@storybook/react-webpack5';
 
 // מייבא את הקומפוננטה שאנחנו רוצים להציג ב־Storybook
-import { ExportButtons } from './exportButtons';
+import { ExportButtons } from './ExportButtons';
 
 // מגדיר את המטא־דאטה של הסיפור: כותרת להצגה בעץ הרכיבים, הרכיב עצמו, ותוויות
 const meta: Meta<typeof ExportButtons> = {
