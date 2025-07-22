@@ -169,7 +169,10 @@ export const handleLoginWithPassword = async (req: Request, res: Response) => {
       message: 'התחברת בהצלחה.'
     };
     res.status(200).json(response);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === 'Invalid password') {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
     console.error('Login failed:', error);
     res.status(401).json({ error: 'Login failed' });
   }

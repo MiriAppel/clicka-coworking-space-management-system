@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod"
 import axiosInstance from "../../../../Services/Axios";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
+import axios from "axios";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 const schema = z.object({
     email: z.string().min(1, "Email required").email("Invalid Email").nonempty("EMAIL"),
     password: z.string().min(1, "Password required").nonempty("PASSWORD"),
@@ -19,14 +21,20 @@ export const LoginWithPassword = () => {
     });
     const onSubmit = async (data: FormSchema) => {
         try {
-            console.log("🔐 sending: ", data);
+            console.log("sending: ", data);
 
             const response = await axiosInstance.post("/auth/loginWithPassword", JSON.stringify(data, null, 2));
-            console.log("✅ success", response.data);
+            console.log(" success", response.data);
             setUser(response.data.user);
             setSessionId(response.data.sessionId);
         } catch (error) {
-            console.error("❌ error logging in", error);
+            if (axios.isAxiosError(error) && error.response?.data.error === 'Invalid email or password') {
+                console.error("Invalid password", error.response?.data);
+                showAlert("Invalid email or password", "מייל או סיסמא לא נכונים", "error");
+            } else {
+                console.error("error logging in", error);
+            }
+
         }
     };
     return (

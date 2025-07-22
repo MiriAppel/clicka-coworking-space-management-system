@@ -122,7 +122,10 @@ export async function loginWithEmailAndPassword(email: string, password: string)
       throw new Error('Invalid password');
     }
     return user;
-  } catch (error) {
+  } catch (error:any) {
+    if(error.message === 'Invalid password') {
+      throw new Error('Invalid password');
+    }
     console.error('Error during login:', error);
     throw new Error('Login with password failed');
 
