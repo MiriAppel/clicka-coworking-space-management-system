@@ -1,7 +1,7 @@
+import { CustomerPeriodModel } from "../models/customerPeriod.model";
 import { baseService } from "./baseService";
-import { CustomerPeriod } from "shared-types";
 
-export class customerPeriodService extends baseService<CustomerPeriod> {
+export class customerPeriodService extends baseService<CustomerPeriodModel> {
     constructor() {
         super("customer_period"); // שם הטבלה ב-DB
     }

@@ -1,13 +1,12 @@
 import { create } from 'zustand';
 import { EmailTemplate } from 'shared-types';
-import { axiosInstance } from '../../Services/Axios';
+import axiosInstance from '../../Service/Axios';
 
 interface EmailTemplateState {
   emailTemplates: EmailTemplate[];
   currentEmailTemplate: EmailTemplate | null;
   loading: boolean;
   error: string | null;
-
   // Actions
   getEmailTemplates: () => Promise<void>;
   getEmailTemplateById: (id: string | undefined) => Promise<EmailTemplate | null>;
@@ -17,13 +16,11 @@ interface EmailTemplateState {
   previewEmailTemplate: (id: string, variables: Record<string, string>) => Promise<string | null>;
   clearError: () => void;
 }
-
 export const useEmailTemplateStore = create<EmailTemplateState>((set) => ({
   emailTemplates: [],
   currentEmailTemplate: null,
   loading: false,
   error: null,
-
   // פונקציה זו מחזירה את כל התבניות מייל מהשרת
   getEmailTemplates: async () => {
     set({ loading: true, error: null });
@@ -39,7 +36,6 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set) => ({
       throw error;
     }
   },
-
   // פונקציה זו מחזירה את התבנית מייל לפי ה-ID שלה
   getEmailTemplateById: async (id: string | undefined): Promise<EmailTemplate | null> => {
     if (!id) {
@@ -60,7 +56,6 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set) => ({
       throw error;
     }
   },
-
   // פונקציה זו יוצרת תבנית מייל חדשה
   createEmailTemplate: async (emailTemplate: EmailTemplate): Promise<EmailTemplate | null> => {
     set({ loading: true, error: null });
@@ -82,7 +77,6 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set) => ({
       throw error;
     }
   },
-
   // פונקציה זו מוחקת תבנית מייל לפי ה-ID שלה
   deleteEmailTemplate: async (id: string): Promise<EmailTemplate | null> => {
     set({ loading: true, error: null });
@@ -105,7 +99,6 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set) => ({
       throw error;
     }
   },
-
   // פונקציה זו מעדכנת תבנית מייל לפי ה-ID שלה
   updateEmailTemplate: async (id: string, newEmailTemplate: EmailTemplate): Promise<EmailTemplate | null> => {
     set({ loading: true, error: null });
@@ -130,7 +123,6 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set) => ({
       throw error;
     }
   },
-
   // פונקציה זו מציגה תצוגה מקדימה של תבנית המייל
   previewEmailTemplate: async (id: string, variables: Record<string, string>): Promise<string | null> => {
     set({ loading: true, error: null });
@@ -148,14 +140,25 @@ export const useEmailTemplateStore = create<EmailTemplateState>((set) => ({
       throw error;
     }
   },
-
   // פונקציה להגדרת תבנית המייל הנוכחית
   setCurrentEmailTemplate: (emailTemplate: EmailTemplate | null) => {
     set({ currentEmailTemplate: emailTemplate });
   },
-
   // פונקציה לניקוי שגיאות
   clearError: () => {
     set({ error: null });
   }
 }));
+
+
+
+
+
+
+
+
+
+
+
+
+

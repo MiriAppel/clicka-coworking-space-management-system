@@ -1,121 +1,141 @@
+// ייבוא רכיבים וספריות רלוונטיות
 import { useNavigate, Link } from "react-router-dom";
 import { Vendor } from "shared-types";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { Table } from "../../../../Common/Components/BaseComponents/Table";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { deleteVendor } from "../../../../Api/vendor-api";
+import { FaTrash, FaPen, FaEye } from "react-icons/fa";
+import VendorSummary from "./VendorSummary";
 
-// טיפוס הפרופס: vendors - מערך ספקים, setVendors - פונקציה לעדכון רשימת הספקים
+// טיפוס עבור פרופס שמקבל הקומפוננטה
 type VendorsListProps = {
   vendors: Vendor[];
   setVendors: React.Dispatch<React.SetStateAction<Vendor[]>>;
 };
 
-// פונקציה אסינכרונית לשליפת ספקים מה-API
+// פונקציה לשליפת רשימת ספקים מהשרת
 async function fetchVendors(): Promise<Vendor[]> {
-  // קריאת GET לכתובת ה-API לקבלת רשימת ספקים
   const response = await fetch("http://localhost:3001/vendor/", {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
-
-  // אם הבקשה נכשלה - זריקת שגיאה
-  if (!response.ok) {
-    throw new Error("Failed to fetch vendors");
-  }
-
-  // החזרת המידע כ-JSON
+  if (!response.ok) throw new Error("שגיאה בשליפת ספקים");
   return response.json();
 }
-
 // קומפוננטת רשימת ספקים
 export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
-  // יצירת ניווט בין עמודים
   const navigate = useNavigate();
+  const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
 
-  // טעינת רשימת ספקים כאשר הקומפוננטה נטענת
-  React.useEffect(() => {
+  // סטייט לחיפוש טקסט
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // טוען ספקים מהשרת בעת טעינת הקומפוננטה
+  useEffect(() => {
     fetchVendors()
-      .then(setVendors) // אם הצליח - עדכון הסטייט
+      .then(setVendors)
       .catch((error) => {
-        console.error("Error fetching vendors:", error);
-        setVendors([]); // במקרה של שגיאה - ניקוי הרשימה או טיפול מותאם
+        console.error("שגיאה בשליפת ספקים:", error);
+        setVendors([]);
       });
   }, [setVendors]);
 
+  // פונקציה למחיקת ספק
   const handleDelete = async (vendorId: string) => {
-  // שואל את המשתמש האם הוא בטוח שברצונו למחוק
-  if (window.confirm("האם למחוק?")) {
-    try {
-      // קורא לפונקציה שמוחקת את הספק מהשרת
-      const success = await deleteVendor(vendorId);
-      
-      // אם המחיקה הצליחה
-      if (success) {
-        // מעדכן את הסטייט ומסיר את הספק מהרשימה המקומית ב-UI
-        setVendors(vendors.filter((v) => v.id !== vendorId));
-        // מציג הודעת הצלחה למשתמש
-        alert("הספק נמחק בהצלחה");
+    if (window.confirm("האם למחוק את הספק?")) {
+      try {
+        const success = await deleteVendor(vendorId);
+        if (success) {
+          setVendors(vendors.filter((v) => v.id !== vendorId));
+          alert("הספק נמחק בהצלחה");
+        }
+      } catch (error) {
+        alert("שגיאה במחיקת ספק");
+        console.error("Error:", error);
       }
-    } catch (error) {
-      // במקרה של שגיאה במחיקה בשרת, מציג למשתמש הודעת שגיאה
-      alert("אירעה שגיאה במחיקת הספק");
-      // מדפיס את השגיאה בקונסול לעזרה בדיבוג
-      console.error("Error deleting vendor:", error);
     }
-  }
-};
+  };
 
+  // מסנן ספקים לפי שורת החיפוש
+  const filteredVendors = vendors.filter((vendor) =>
+    [vendor.name, vendor.phone, vendor.email, vendor.address, vendor.category]
+      .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
+  // תצוגת ממשק המשתמש
   return (
-    // מעטפת כללית עם ריווח פנימי
     <div className="p-4">
-
-      {/* שורה עליונה עם כותרת וכפתור הוספה */}
+      {/* כותרת עליונה וכפתור להוספת ספק */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">רשימת ספקים</h2>
-
-        {/* קישור לעמוד יצירת ספק חדש */}
         <Link to="/vendors/new">
-          <Button variant="primary" size="sm">
-            הוסף ספק חדש
-          </Button>
+          <Button variant="primary" size="sm">הוסף ספק חדש</Button>
         </Link>
       </div>
 
-      {/* טבלת הספקים */}
-      <Table
-        data={vendors} // העברת המידע לטבלה
-        columns={[ // הגדרת עמודות הטבלה
-          { header: "שם", accessor: "name" },
-          { header: "קטגוריה", accessor: "category" },
-          { header: "טלפון", accessor: "phone" },
-          { header: "אימייל", accessor: "email" },
-          { header: "כתובת", accessor: "address" },
-        ]}
-        dir="rtl" // הגדרת כיוון מימין לשמאל
+      {/* שדה חיפוש */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="חפש לפי שם, טלפון, מייל, כתובת או קטגוריה"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border px-3 py-2 rounded w-full max-w-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+      </div>
 
-        // בעת לחיצה על "עדכון" - ניווט לעמוד עריכה
-        onUpdate={(row) => navigate(`/vendors/${row.id}/edit`)}
+      {/* רשימת כרטיסי ספקים */}
+      <div className="flex flex-wrap gap-4">
+        {filteredVendors.length > 0 ? (
+          filteredVendors.map((vendor) => (
+            <div
+              key={vendor.id}
+              className={`p-4 border rounded-lg shadow-md bg-white transition-all duration-300 ${
+                selectedVendorId === vendor.id ? "w-full" : "w-64"
+              }`}
+            >
+              {/* פרטי הספק */}
+              <p className="font-semibold">שם: {vendor.name}</p>
+              <p className="font-semibold">קטגוריה: {vendor.category}</p>
+              <p className="font-semibold">טלפון: {vendor.phone}</p>
+              <p className="font-semibold">אימייל: {vendor.email}</p>
+              <p className="font-semibold">כתובת: {vendor.address}</p>
 
-        // בעת לחיצה על "מחיקה" - קריאה לפונקציית מחיקה
-        onDelete={(row) => handleDelete(row.id)}
+              {/* כפתורי פעולה: צפייה, עריכה, מחיקה */}
+              <div className="flex gap-2 mt-4 justify-center">
+                <button
+                  onClick={() => setSelectedVendorId(selectedVendorId === vendor.id ? null : vendor.id)}
+                  className="text-blue-500 hover:text-blue-700"
+                  title="צפייה"
+                >
+                  <FaEye />
+                </button>
+                <button
+                  onClick={() => navigate(`/vendors/${vendor.id}/edit`)}
+                  className="text-yellow-500 hover:text-yellow-700"
+                  title="עריכה"
+                >
+                  <FaPen />
+                </button>
+                <button
+                  onClick={() => handleDelete(vendor.id)}
+                  className="text-red-500 hover:text-red-700"
+                  title="מחיקה"
+                >
+                  <FaTrash />
+                </button>
+              </div>
 
-        // הוספת כפתור "לצפייה" בכל שורה
-        renderActions={(row) => (
-          <>
-            {console.log('צפייה על ספק:', row)}
-            <Link to={`/vendors/${row.id}`}>
-              <Button size="sm" className="text-blue-600 hover:underline">
-                לצפייה
-              </Button>
-            </Link>
-          </>
+              {/* תצוגה מורחבת של הספק במקרה של צפייה */}
+              {selectedVendorId === vendor.id && (
+                <VendorSummary vendor={vendor} />
+              )}
+            </div>
+          ))
+        ) : (
+          <p>לא נמצאו ספקים</p>
         )}
-      />
-
+      </div>
     </div>
   );
-} 
+}

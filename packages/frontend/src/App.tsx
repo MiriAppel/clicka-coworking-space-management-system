@@ -5,7 +5,13 @@ import { useNavigate, Routes, Route } from 'react-router-dom';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
+import { Button } from './Common/Components/BaseComponents/Button';
+import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
+import LanguageSelector from './Common/Components/LanguageSelector';
+import { VoiceCommand } from './VoiceAssistant';
+import FileUploader from './Common/Components/BaseComponents/FileUploader';
 
+import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -13,6 +19,11 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const lang = localStorage.getItem('language') || 'he';
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+  }, []);
   useEffect(() => {
     fetch('http://localhost:3001/api/health')
       .then((response) => {
@@ -32,8 +43,12 @@ function App() {
       });
   }, []);
 
+
   return (
+    
     <AuthProvider>
+
+      <VoiceCommand/>
     <div className="App">
       
       <header className="App-header">
@@ -43,14 +58,19 @@ function App() {
       </header>
 
       <div className='menu' style={{ backgroundColor: 'black' }}>
+      </div>
+     
+      <Accesibility></Accesibility>
+       <Routes>
+          <Route path="/pricing" element={<PricingConfigurationPage />} />
+          {/* אפשר להוסיף כאן ראוטים נוספים */}
+        </Routes>
+        <AuthenticationScreen />
+        
 
       </div>
-      <Accesibility></Accesibility>
-
-        <AuthenticationScreen />
-    </div>
     </AuthProvider>
-    
+
   );
 }
 

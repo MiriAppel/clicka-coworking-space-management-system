@@ -1,8 +1,7 @@
-
+import { UUID } from 'crypto';
 import type{ BillingItem, BillingItemType, DateISO, ID, Invoice } from 'shared-types';
 import { InvoiceStatus } from 'shared-types';
-import { generateId, invoicesMockDb } from './invoice.mock-db';
-export class InvoiceModel implements Invoice{
+export class InvoiceModel implements Invoice {
     id: ID;
     invoice_number: string;
     customer_id: ID;
@@ -10,71 +9,69 @@ export class InvoiceModel implements Invoice{
     status: InvoiceStatus;
     issue_date: DateISO;
     due_date: DateISO;
-    items: BillingItem[];
     subtotal: number;
+    items: BillingItem[];
     tax_total: number;
+    taxtotal: number;
     payment_due_reminder?: boolean | undefined;
     payment_dueReminder_sentAt?: any;
-    createdAt: DateISO;
-    updatedAt: DateISO;
+    createdAt: DateISO;  
+    updatedAt: DateISO; 
 
-constructor(
-    id: ID,
-    invoice_number: string,
-    customer_id: ID,
-    customer_name: string,
-    status: InvoiceStatus,
-    issue_date: DateISO,
-    due_date: DateISO,
-    items: BillingItem[],
-    subtotal: number,
-    tax_total: number,
-    payment_due_reminder?: boolean | undefined,
-    payment_dueReminder_sentAt?: any,
-    createdAt?: DateISO,
-    updatedAt?: DateISO
-) {
-this.id = id;
-this.invoice_number = invoice_number;
-this.customer_id = customer_id;
-this.customer_name = customer_name; 
-this.status = status;
-this.issue_date = issue_date;
-this.due_date = due_date;
-this.items = items;
-this.subtotal = subtotal;
-this.tax_total = tax_total;
-this.payment_due_reminder = payment_due_reminder;
-this.payment_dueReminder_sentAt = payment_dueReminder_sentAt;
-this.createdAt = createdAt ?? new Date().toISOString();
-this.updatedAt = updatedAt ?? new Date().toISOString();
-this.taxtotal = 0;
-}
-    taxtotal: number;
+    constructor(
+        id: ID,
+        invoice_number: string,
+        customer_id: ID,
+        customer_name: string,
+        status: InvoiceStatus,
+        issue_date: DateISO,
+        due_date: DateISO,
+        items: BillingItem[],
+        subtotal: number,
+        tax_total: number,
+        payment_due_reminder?: boolean | undefined,
+        payment_dueReminder_sentAt?: any,
+        createdAt?: DateISO, 
+        updatedAt?: DateISO   
+    ) {
+        this.id = id;
+        this.invoice_number = invoice_number;
+        this.customer_id = customer_id;
+        this.customer_name = customer_name;
+        this.status = status;
+        this.issue_date = issue_date;
+        this.due_date = due_date;
+        this.items = items;
+        this.subtotal = subtotal;
+        this.tax_total = tax_total;
+        this.payment_due_reminder = payment_due_reminder;
+        this.payment_dueReminder_sentAt = payment_dueReminder_sentAt;
+        this.createdAt = createdAt ?? new Date().toISOString();  
+        this.updatedAt = updatedAt ?? new Date().toISOString(); 
+        this.taxtotal = 0;
+    }
 
-toDatabaseFormat() {
-return {
-    id: this.id,
-    invoice_number: this.invoice_number,
-    customer_id: this.customer_id,
-    customer_name: this.customer_name,
-    status: this.status,
-    issue_date: this.issue_date,
-    due_date: this.due_date,
-    items: this.items.map(item => (item as InvoiceItemModel).toDatabaseFormat()),
-    subtotal: this.subtotal,
-    tax_total: this.tax_total,
-    payment_due_reminder: this.payment_due_reminder,
-    payment_dueReminder_sentAt: this.payment_dueReminder_sentAt,
-    createdAt: this.createdAt,
-    updatedAt: this.updatedAt
-
+    toDatabaseFormat() {
+        return {
+            invoice_number: this.invoice_number,
+            customer_id: this.customer_id,
+            customer_name: this.customer_name,
+            status: this.status,
+            issue_date: this.issue_date,
+            due_date: this.due_date,
+            subtotal: this.subtotal,
+            tax_total: this.tax_total,
+            payment_due_reminder: this.payment_due_reminder,
+            payment_dueReminder_sentAt: this.payment_dueReminder_sentAt,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt 
         }
     }
 }
+
 export class InvoiceItemModel implements BillingItem {
     id: ID;
-    invoice_id: ID;
+    invoice_id: UUID;
     type: BillingItemType;
     description: string;
     quantity: number;
@@ -86,10 +83,9 @@ export class InvoiceItemModel implements BillingItem {
     booking_id?: any;
     createdAt: DateISO;
     updatedAt: DateISO;
-
     constructor(
         id: ID,
-        invoice_id: ID,
+        invoice_id: UUID,
         type: BillingItemType,
         description: string,
         quantity: number,
@@ -136,65 +132,5 @@ export class InvoiceItemModel implements BillingItem {
 
         };
     }
-}
-//crud functions
-
-// יצירת חשבונית חדשה
-export async function createInvoice(invoiceData: Partial<InvoiceModel>): Promise<InvoiceModel> {
-    const id = generateId();
-    const invoice = new InvoiceModel(
-        id,
-        invoiceData.invoice_number ?? "",
-        invoiceData.customer_id ?? "",
-        invoiceData.customer_name ?? "",
-        invoiceData.status ?? InvoiceStatus.DRAFT,
-        invoiceData.issue_date ?? new Date().toISOString(),
-        invoiceData.due_date ?? new Date().toISOString(),
-        invoiceData.items ?? [],
-        invoiceData.subtotal ?? 0,
-        invoiceData.tax_total ?? 0,
-        invoiceData.payment_due_reminder,
-        invoiceData.payment_dueReminder_sentAt,
-        invoiceData.createdAt,
-        invoiceData.updatedAt
-    );
-    invoicesMockDb.push(invoice);
-    return invoice;
-}
-
-// שליפת חשבונית לפי מזהה
-export async function getInvoiceById(id: ID): Promise<InvoiceModel | null> {
-    const invoice = invoicesMockDb.find(inv => inv.id === id);
-    return invoice || null;
-}
-
-
-// שליפת כל החשבוניות
-export async function getAllInvoices(): Promise<InvoiceModel[]> {
-    return invoicesMockDb;
-}
-
-// עדכון חשבונית
-export async function updateInvoice(id: ID, updateData: Partial<InvoiceModel>): Promise<InvoiceModel | null> {
-    const index = invoicesMockDb.findIndex(inv => inv.id === id);
-    if (index === -1) {
-        return null;
-    }
-    invoicesMockDb[index] = {
-        ...invoicesMockDb[index],
-        ...updateData,
-        toDatabaseFormat: invoicesMockDb[index].toDatabaseFormat // שומר את הפונקציה המקורית
-    };
-    return invoicesMockDb[index];
-}
-
-// מחיקת חשבונית
-export async function deleteInvoice(id: ID): Promise<boolean> {
-    const index = invoicesMockDb.findIndex(inv => inv.id === id);
-    if (index === -1) {
-        return false;
-    }
-    invoicesMockDb.splice(index, 1);
-    return true;
 }
 

@@ -1,58 +1,97 @@
-import {create} from "zustand";
+import { create } from "zustand";
 import axios from "axios";
-import {Space} from "shared-types"
-
-interface WorkSpaceState {
-    workSpaces: Space[];
-    getAllSpaces: () => Promise<void>;
-    updateSpace: (workspace:Space) => Promise<void>;
-    addSpace: (workspace:Space) => Promise<void>;
-    deleteSpace: (workspace:Space) => Promise<void>;
-    getMapByOcoupancy: (date: Date) => Promise<void>;
+import { ID, Room, Space, SpaceStatus } from "shared-types";
+import { get } from "lodash";
+//הצהרות
+interface WorkspaceState {
+    rooms: Room[];
+    workspaces: Space[];
+    getAllWorkspace: () => Promise<Space[]>;
+    updateWorkspace: (workspace: Space) => Promise<void>;
+    createWorkspace: (workspace: Space) => Promise<void>;
+    deleteWorkspace: (workspace: Space) => Promise<void>;
+    getAllRooms: () => Promise<void>;
+    getHistory: (date: Date) => Promise<void>;
 }
+//מימוש הפונקציות
+export const useWorkspaceStore = create<WorkspaceState>((set) => ({
+    workspaces: [],
+    rooms: [],
+    getAllWorkspace: async (): Promise<Space[]> => {
 
-export const useWorkSpaceStore = create<WorkSpaceState>((set) => ({
-    workSpaces: [],
-    getAllSpaces: async () => {
+        console.log("📡 ***************************************************Fetching workspaces from API...");
+
+
+
         try {
-            const response = await axios.get('http://localhost:3001/api/workspace/get/getAll');
-            set({ workSpaces: response.data });
+            const response = await axios.get('http://localhost:3001/api/workspace/getAllWorkspace');
+            set({ workspaces: response.data });
+            return response.data;
         } catch (error) {
-            console.error('Error fetching work spaces:', error);
+            console.error('Error fetching workspaces:', error);
+            return [];
         }
     },
-    updateSpace: async (workspace) => {
+
+    updateWorkspace: async (workspace: Space) => {
         try {
-            const response = await axios.put('http://localhost:3001/api/workspace/update/updateSpace');
-            set({ workSpaces: response.data });
+            const response = await axios.put(`http://localhost:3001/api/workspace/updateWorkspace/${workspace.id}`, workspace);
+            set((state) => ({
+                workspaces: state.workspaces.map((w) => (w.id === workspace.id ? response.data : w)),
+            }));
         } catch (error) {
-            console.error('Error fetching work spaces:', error);
+            console.error('Error updating workspace:', error);
         }
     },
-    addSpace: async (workspace) => {
+
+
+    createWorkspace: async (workspace: Space) => {
         try {
-            const response = await axios.post('http://localhost:3001/api/workspace/update/updateSpace');
-            set({ workSpaces: response.data });
+            console.log("📡 Adding new workspace to API:", workspace);
+            const response = await axios.post('http://localhost:3001/api/workspace/createWorkspace', workspace);
+            set((state) => ({
+                workspaces: [...state.workspaces, response.data],
+            }));
+            console.log("Workspace added successfully:", response.data);
         } catch (error) {
-            console.error('Error fetching work spaces:', error);
+            console.error("Error adding workspace:", error);
         }
     },
-    deleteSpace: async (workspace) => {
+
+
+
+    deleteWorkspace: async (workspace: Space) => {
         try {
-            const response = await axios.delete('http://localhost:3001/api/workspace/delete/deleteSpace');
-            set({ workSpaces: response.data });
+            await axios.delete(`http://localhost:3001/api/workspace/deleteWorkspace/${workspace.id}`);
+            set((state) => ({
+                workspaces: state.workspaces.filter((w) => w.id !== workspace.id),
+            }));
         } catch (error) {
-            console.error('Error fetching work spaces:', error);
+            console.error('Error deleting workspace:', error);
         }
     },
-    getMapByOcoupancy: async (workspace) => {
+
+    //get all rooms
+    getAllRooms: async () => {
         try {
-            const response = await axios.delete('http://localhost:3001/api/workspace/delete/deleteSpace');
-            set({ workSpaces: response.data });
+            const response = await axios.get('api/rooms/getAllRooms');
+            set({ rooms: response.data });
+        } catch (error) {
+            console.error('Error fetching rooms:', error);
+        }
+    },
+
+    getHistory: async (date: Date) => {
+        try {
+            const formattedDate = date.toISOString().split('T')[0];
+            console.log('Sending date to API:', formattedDate);
+
+            const response = await axios.get(`api/occupancy/getHistory/${formattedDate}`);
+            set({ workspaces: response.data || [] });
+
         } catch (error) {
             console.error('Error fetching work spaces:', error);
+            set({ workspaces: [] });
         }
     },
 }));
-
-
