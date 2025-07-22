@@ -28,7 +28,7 @@ export class BookingController {
 
 
  async  updateBooking(req: Request, res: Response){
-   
+   console.log('Received request to update booking:', req.body);
       const bookingId = req.params.id;
             const updatedData = req.body;
             const updatedBooking = new BookingModel(updatedData);
@@ -68,6 +68,15 @@ res.status(500).json({massage:'err.massage'});
     }
     catch(err){
       res.status(500).json({massage:'err.massage'});
+    }
+}
+async  bookingApproval(req: Request, res: Response){
+    try{
+        const updateBooking=await this.bookingservice.bookingApproval(req.params.id);
+         res.json(updateBooking);
+    }
+    catch(err){
+       res.status(500).json({massage:'err.message'});
     }
 }
 }

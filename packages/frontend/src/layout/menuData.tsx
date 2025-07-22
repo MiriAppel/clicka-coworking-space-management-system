@@ -46,7 +46,8 @@ export const menus: Menu[] = [
       { label: 'מפה', path: '/workspaceMap' },
       { label: 'הקצאות', path: '/assignmentForm' },
       { label: 'ישיבות', path: '/bookingCalendar' },
-      { label: 'ניהול', path: '/managementWorkspace' }
+      { label: 'ניהול', path: '/managementWorkspace' },
+      { label: 'הזמנות', path: '/bookings' }
     ]
   },
   {

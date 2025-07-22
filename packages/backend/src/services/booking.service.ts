@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { BookingModel } from "../models/booking.model";
-import type { ID } from "shared-types";
 import dotenv from 'dotenv';
+import { customerService } from './customer.service';
+import { getMeetingRoomPricingHistory } from './pricing.service';
 dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
@@ -74,11 +75,33 @@ export class BookingService {
       console.error('Unexpected error:', err);
       return null;
     }
-  }
+  } 
+ static async calculateBookingCharges(id: string,customerId:string){
+   console.log('Received request to update booking:', customerId);
+    //בדיקה האם ללקוח כרטיס קליקה
+    const customerServic = new customerService() 
+    const customers =await customerServic.getAllCustomers();
+      console.log("😍😍😍"+customers);
+    const currentCustomerType = customers?.find(customer => customer.id === customerId)?.currentWorkspaceType
+   console.log("😍😍😍" + currentCustomerType );
+    const roomPricings =await getMeetingRoomPricingHistory();
+ const roomPricing = roomPricings.find(pricing => pricing.id === id);
+    if(currentCustomerType && currentCustomerType==="KLIKAH_CARD"){
+      roomPricing?.freeHoursKlikahCard 
+     }
+  
+    }
+    
    static async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
+    debugger;
   const formattedData = updatedData.toDatabaseFormat();
+  
   console.log(":rocket: Trying to update booking with ID:", id);
   console.log(":memo: Data being sent:", formattedData);
+  if(updatedData.customerId){ 
+     this.calculateBookingCharges(id,updatedData.customerId );
+    }
+
   const { data, error } = await supabase
     .from('booking')
     .update([formattedData])
@@ -150,7 +173,69 @@ export class BookingService {
              // logUserActivity(feature.id? feature.id:feature.description, 'User fetched by ID');
               // מחזיר את המשתמש שנמצא
               return booking;
+  } 
+     //אישור הזמנה 
+   async bookingApproval(id: string): Promise<BookingModel | null> {
+          const { data, error } = await supabase
+              .from('booking')
+              .update({'approved_by': "" ,'status': "APPROVED",'approved_at': new Date()})
+              .eq('id', id)
+              .select()
+              .single();  
+          if (error) {
+              console.error('Error updating booking:', error);
+              return null;
+          }
+          const booking =  BookingModel.fromDatabaseFormat(data); 
+             console.log('📦 Updating booking:', booking);
+          return booking; 
   }
-}
+// //תשימי לב שכאן עברתי על מערך של חדרי פגישות 
+//     let freeHoursLeft = 34;
+//         // אתחול שעות חינם שנותרו ללקוחות "קליקה כארד" (34 שעות).
+//         for (const booking of input.meetingRoomBookings) {
+//             // לולאה העוברת על כל הזמנות חדרי הישיבות.
+//             let hourlyRate = booking.pricing.hourlyRate;
+//             // אתחול התעריף השעתי לתעריף הרגיל של חדר הישיבות.
+//             let chargeableHours = booking.totalHours;
+//             // אתחול השעות לחיוב לסך השעות שהוזמנו.
+//             let discountApplied = 0;
+//             // אתחול סכום ההנחה שהופעלה.
+//             if (isKlikahCardHolder) {
+//                 // אם הלקוח הוא בעל "קליקה כארד".
+//                 let freeHoursForThisBooking = Math.min(freeHoursLeft, booking.totalHours);
+//                 // חישוב שעות חינם שיש להחיל על הזמנה זו (המינימום בין השעות החינם שנותרו לסך השעות בהזמנה).
+//                 freeHoursLeft -= freeHoursForThisBooking;
+//                 // הפחתת שעות החינם שהופעלו מסך השעות החינם שנותרו.
+//                 chargeableHours = booking.totalHours - freeHoursForThisBooking;
+//                 // חישוב השעות לחיוב לאחר הפחתת שעות החינם.
+//                 discountApplied = freeHoursForThisBooking * hourlyRate;
+//                 // חישוב סכום ההנחה שהופעלה.
+//                 console.log(`Free hours applied: ${freeHoursForThisBooking}, Remaining free hours: ${freeHoursLeft}`);
+//                 // הדפסת פרטי שעות החינם לקונסול.
+//             } else {
+//                 // אם הלקוח אינו בעל "קליקה כארד".
+//                 if (booking.totalHours >= 4) {
+//                     // אם סך השעות שהוזמנו הוא 4 ומעלה.
+//                     hourlyRate = booking.pricing.discountedHourlyRate;
+//                     // שימוש בתעריף השעתי המוזל.
+//                 }
+//             }
+//             const totalCharge = Math.round(chargeableHours * hourlyRate * 100) / 100;
+//             // חישוב הסכום הכולל לחיוב עבור הזמנת חדר ישיבות זו.
+//             console.log(`Booking ID: ${booking.bookingId}, Chargeable hours: ${chargeableHours}, Hourly rate: ${hourlyRate}, Total charge: ${totalCharge}`);
+//             // הדפסת פרטי החיוב עבור הזמנת חדר הישיבות לקונסול.
+//             meetingRoomCharges.push({
+//                 bookingId: booking.bookingId, // מזהה ההזמנה
+//                 roomId: booking.roomId, // מזהה החדר
+//                 totalHours: booking.totalHours, // סך השעות שהוזמנו
+//                 chargeableHours, // שעות לחיוב
+//                 hourlyRate, // תעריף שעתי
+//                 totalCharge, // סכום כולל לחיוב
+//                 discountApplied: discountApplied > 0 ? discountApplied : undefined, // סכום הנחה (אם הופעלה)
+//             });
+
+  }
+
 
 

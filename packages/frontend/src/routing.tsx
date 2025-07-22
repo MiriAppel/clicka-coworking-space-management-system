@@ -30,6 +30,8 @@ import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSys
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
+import { BookingTable } from './MainMenu/Workspace/Components/bookingTable';
+import { UpdateBooking } from './MainMenu/Workspace/Components/updateBooking';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -66,6 +68,8 @@ export const Routing = () => {
         <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
+        <Route path="bookings" element={<BookingTable />} />
+        <Route path="updateBooking" element={<UpdateBooking />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
         <Route path="payment" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
