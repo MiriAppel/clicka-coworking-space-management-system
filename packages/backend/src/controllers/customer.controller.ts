@@ -19,21 +19,19 @@ const emailService = new EmailTemplateService();
 
 
 export const getAllCustomers = async (req: Request, res: Response) => {
-    try {
-        // const customers = await serviceCustomer.getAll()
-        const customers = await serviceCustomer.getAllCustomers()
+  try {
+    // const customers = await serviceCustomer.getAll()
+    const customers = await serviceCustomer.getAllCustomers();
 
-        res.status(200).json(customers);
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Error fetching customers', error });
-    }
-}
+    res.status(200).json(customers);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching customers", error });
+  }
+};
 
 export const postCustomer = async (req: Request, res: Response) => {
-    try {
-
-        const newCustomer: CreateCustomerRequest = req.body
+  try {
+    const newCustomer: CreateCustomerRequest = req.body;
 
     // console.log("in controller");
     // console.log(newCustomer);
@@ -121,73 +119,77 @@ export const searchCustomersByText = async (req: Request, res: Response) => {
 
 //Returns the possible client status modes
 export const getAllCustomerStatus = async (req: Request, res: Response) => {
-    try {
-        const statuses = await serviceCustomer.getAllCustomerStatus();
-        res.status(200).json(statuses);
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Error fetching all statuses', error });
-    }
-}
+  try {
+    const statuses = await serviceCustomer.getAllCustomerStatus();
+    res.status(200).json(statuses);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching all statuses", error });
+  }
+};
 
 export const deleteCustomer = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    try {
-        const statuses = await serviceCustomer.delete(id);
-        res.status(200).json(statuses);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching all statuses', error });
-    }
-}
+  const { id } = req.params;
+  try {
+    const statuses = await serviceCustomer.delete(id);
+    res.status(200).json(statuses);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching all statuses", error });
+  }
+};
 
-// מקבל את כל הלקוחות שצריך לשלוח להם התראות 
+// מקבל את כל הלקוחות שצריך לשלוח להם התראות
 export const getCustomersToNotify = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    try {
-        const customers = await serviceCustomer.getCustomersToNotify(id);
-        res.status(200).json(customers);
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Error fetching customers to notify', error });
-    }
-}
+  const { id } = req.params;
+  try {
+    const customers = await serviceCustomer.getCustomersToNotify(id);
+    res.status(200).json(customers);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching customers to notify", error });
+  }
+};
 
 // יצירת הודעת עזיבה
 export const postExitNotice = async (req: Request, res: Response) => {
-    const exitNotice = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
-    const { id } = req.params;
+  const exitNotice = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
+  const { id } = req.params;
 
-    try {
-        await serviceCustomer.postExitNotice(exitNotice, id);
-        res.status(200).json({ message: 'Exit notice posted' });
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Error posting exit notice', error });
-    }
-}
+  try {
+    await serviceCustomer.postExitNotice(exitNotice, id);
+    res.status(200).json({ message: "Exit notice posted" });
+  } catch (error) {
+    res.status(500).json({ message: "Error posting exit notice", error });
+  }
+};
 
 // לקבל מספר לקוחות לפי גודל העמוד
 export const getCustomersByPage = async (req: Request, res: Response) => {
-
-  const filters = req.params; // הנח שהפרמטרים מגיעים מה-params של הבקשה
+  const filters = req.query;
   console.log("Filters received:", filters);
 
   try {
-    const pageNum = Math.max(1, Number(filters.page) || 1);
-    const limitNum = Math.max(1, Number(filters.limit) || 50);
+    // המרה עם בדיקה
+    const pageNum = Number(filters.page);
+    const limitNum = Math.max(1, Number(filters.limit) || 10);
+
+    // אם pageNum לא מספר תקין, תגדיר כברירת מחדל 1
+    const validPage = Number.isInteger(pageNum) && pageNum > 0 ? pageNum : 1;
+
     const filtersForService = {
-      page: pageNum,
+      page: String(validPage), // convert to string
       limit: limitNum,
     };
 
     console.log("Filters passed to service:", filtersForService);
 
-    const leads = await serviceCustomer.getCustomersByPage(filtersForService);
+    const customer =
+      await serviceCustomer.getCustomersByPage(filtersForService);
 
-    if (leads.length > 0) {
-      res.status(200).json(leads);
+    if (customer.length > 0) {
+      res.status(200).json(customer);
     } else {
-      res.status(404).json({ message: "No customers found" });
+      return res.status(200).json([]); // החזרת מערך ריק אם אין לקוחות
     }
   } catch (error: any) {
     console.error("❌ Error in getCustomersByPage controller:");
@@ -352,4 +354,3 @@ export const changeCustomerStatus = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-

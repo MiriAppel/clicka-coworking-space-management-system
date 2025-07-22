@@ -1,7 +1,8 @@
-import type { Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethodType, WorkspaceType } from "shared-types";
+import { UUID } from "node:crypto";
+import type { Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethod, PaymentMethodType, WorkspaceType } from "shared-types";
 
 export class CustomerModel implements Customer {
-  id?: ID; //PK
+  id?: UUID; //PK
   name: string;
   phone: string;
   email?: string;
@@ -25,11 +26,10 @@ export class CustomerModel implements Customer {
   updatedAt: DateISO;
 
   constructor(
-    id: string,
+    id: UUID,
     name: string,
     phone: string,
     email: string,
-    paymentMethods: CustomerPaymentMethod[],
     idNumber: string,
     businessName: string,
     businessType: string,
@@ -72,8 +72,6 @@ export class CustomerModel implements Customer {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
-  paymentMethods: CustomerPaymentMethod[];
-
 
   toDatabaseFormat() {
     return {
@@ -93,7 +91,7 @@ export class CustomerModel implements Customer {
       invoice_name: this.invoiceName,
       // contract_documents: this.contractDocuments,
       // paymentMethods: this.paymentMethods,
-      payment_methods_type: this.paymentMethodsType,
+      payment_methods_type: this.paymentMethodType,
       // periods: this.periods,
       // contracts: this.contracts,
       created_at: this.createdAt,
@@ -106,7 +104,6 @@ export class CustomerModel implements Customer {
       dbData.name,
       dbData.phone,
       dbData.email,
-      dbData.paymentMethods,
       dbData.id_number,
       dbData.business_name,
       dbData.business_type,
