@@ -76,7 +76,6 @@ export interface Invoice {
   // billingPeriodStart :DateISO
   // billingPeriodEnd :DateISO
   // templateId:ID 
-  //
   createdAt: DateISO;
   updatedAt: DateISO;
 }

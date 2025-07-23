@@ -6,7 +6,8 @@ import {
   getAllInvoices,
   getInvoiceById,
   updateInvoice,
-  deleteInvoice
+  deleteInvoice,
+  getCustomersCollection
 } from '../controllers/invoice.controller';
 const invoiceRouter = Router();
 console.log('✅ invoice router loaded');
@@ -30,15 +31,19 @@ invoiceRouter.get('/health', (req: Request, res: Response) => {
 console.log('✅ invoice router loaded');
 
 // CREATE - יצירת חשבוניות
-invoiceRouter.post('/create', createInvoice);                    // יצירת חשבונית ידנית            // יצירת חשבוניות אוטומטיות
+invoiceRouter.post('/create', createInvoice);  
+                  // יצירת חשבונית ידנית            // יצירת חשבוניות אוטומטיות
 // READ - קריאת חשבוניות
-invoiceRouter.get('/', getAllInvoices);                          // כל החשבוניות
+invoiceRouter.get('/', getAllInvoices);  // כל החשבוניות  
+invoiceRouter.get('/getCustomersCollection', getCustomersCollection); 
+
  invoiceRouter.get('/:invoice_id/items', getAllInvoiceItems);               // פרטי חשבונית
 invoiceRouter.get('/:id', getInvoiceById);                       // חשבונית ספציפית
 // UPDATE - עדכון חשבונית
 invoiceRouter.put('/:id', updateInvoice);                        // עדכון חשבונית (הסרתי 'update/')
 // DELETE - מחיקת חשבונית
 invoiceRouter.delete('/:id', deleteInvoice);                     // מחיקת חשבונית (הסרתי 'delete/')
+
 
 invoiceRouter.get('/health', (req, res) => {
   res.json({ message: 'INVOICE ROUTER OK' });

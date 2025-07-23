@@ -67,7 +67,7 @@ export const InvoiceManagement: React.FC = () => {
                   <p><strong>תיאור:</strong> ${item.description}</p>
                   <p><strong>כמות:</strong> ${item.quantity}</p>
                   <p><strong>מחיר יחידה:</strong> ₪${item.unit_price}</p>
-                  <p><strong>מחיר יחידה:</strong> ₪${item.total_price}</p>
+                  <p><strong>מחיר כולל:</strong> ₪${item.total_price}</p>
                   <p><strong>סוג:</strong> ${item.type}</p>
                 </div>
               `).join('')}
@@ -150,11 +150,6 @@ export const InvoiceManagement: React.FC = () => {
   const handleEdit = async (invoice: any) => {
     try {
       const response: any = await getAllInvoiceItems(invoice.id);
-
-
-
-
-
 
       console.log('Response from getAllInvoiceItems:++++++++++', response);
       console.log('BillingItemType values:+++++++++++', BillingItemType);

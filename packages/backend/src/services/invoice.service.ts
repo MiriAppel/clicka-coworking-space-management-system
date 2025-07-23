@@ -5,12 +5,8 @@ import { InvoiceItemModel, InvoiceModel } from "../models/invoice.model";
 
 import { UUID } from "crypto";
 // טוען את משתני הסביבה מקובץ .env
-
-
 dotenv.config();
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
-
-
 //crud functions
 // יצירת חשבונית חדשה 
 
@@ -146,4 +142,26 @@ export async function serviceDeleteInvoice(id: ID): Promise<boolean> {
     throw new Error(error.message);
   return true;
 
+}
+
+// קבלת כל פרטי הגבייה
+export async function serviceGetCustomersCollection() {
+  const { data, error } = await supabase
+  .from('customer')
+  .select(`
+    name,
+    email,
+    business_name,
+    customer_payment_method (
+      credit_card_holder_id_number,
+      credit_card_expiry,
+      credit_card_holder_phone,
+      credit_card_number
+    ),
+    invoice (
+      subtotal
+    )
+  `);
+  if (error) throw new Error(error.message);
+  return data;
 }

@@ -5,7 +5,9 @@ import {
   serviceGetAllInvoiceItems,
   serviceGetInvoiceById,
   serviceUpdateInvoice,
-  serviceDeleteInvoice
+  serviceDeleteInvoice,
+  serviceGetCustomersCollection
+  
 } from "../services/invoice.service";
 import { BillingItem, ID } from "shared-types";
 import { InvoiceModel } from '../models/invoice.model';
@@ -37,7 +39,6 @@ export async function createInvoice(req: Request, res: Response): Promise<void> 
 //  * בקר לקבלת כל החשבוניות
 //  */
 
-
 export const getAllInvoices = async (_req: Request, res: Response) => {
   try {
     const invoices = await serviceGetAllInvoices();
@@ -55,7 +56,6 @@ export const getAllInvoices = async (_req: Request, res: Response) => {
 //  * בקר לקבלת כל פרטי החשבוניות
 //  */
 
-
 export const getAllInvoiceItems = async (req: Request, res: Response) => {
   try {
     const invoiceId = req.params.invoice_id as UUID;
@@ -68,8 +68,6 @@ export const getAllInvoiceItems = async (req: Request, res: Response) => {
     res.status(500).json({ message: (error as Error).message });
   }
 };
-
-
 
 
 
@@ -117,10 +115,6 @@ export const updateInvoice = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-
-
-
-
 /**
  * בקר למחיקת חשבונית
  */
@@ -138,3 +132,19 @@ export const deleteInvoice = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ message: (error as Error).message });
   }
 };
+//בקר לקבלת פרטי הגבייה 
+
+export const getCustomersCollection = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const collectionDetails = await serviceGetCustomersCollection();
+    res.status(200).json({
+      message: "הפרטים של הגבייה נמצאו בהצלחה",
+      collectionDetails
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "אירעה שגיאה בעת שליפת פרטי הגבייה",
+      error: (error as Error).message
+    });
+  }
+}; 
