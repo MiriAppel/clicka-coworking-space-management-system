@@ -94,7 +94,7 @@ app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 app.use('/api/interaction', interactionRouter)
 app.use(urlencoded({ extended: true }));
-app.use('/api/customers', routerCustomer);
+// app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/payment', routerPayment);app.use('/api/document', documentRouter);
