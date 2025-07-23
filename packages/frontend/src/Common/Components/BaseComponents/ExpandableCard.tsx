@@ -64,14 +64,16 @@ const statusLabels: Record<CustomerStatus, string> = {
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
-  PRIVATE_ROOM: 'חדר פרטי',
-  DESK_IN_ROOM: 'שולחן בחדר',
-  OPEN_SPACE: 'אופן ספייס',
-  KLIKAH_CARD: 'כרטיס קליקה',
-  DOOR_PASS: 'דלת כניסה',
-  WALL: 'קיר',
-  COMPUTER_STAND: 'עמדת מחשב',
-  RECEPTION_DESK: 'דלפק קבלה',
+  PRIVATE_ROOM: "חדר פרטי",
+  DESK_IN_ROOM: "שולחן בחדר",
+  OPEN_SPACE: "אופן ספייס",
+  KLIKAH_CARD: "כרטיס קליקה",
+  DOOR_PASS: "דלת כניסה",
+  WALL: "קיר",
+  COMPUTER_STAND: "עמדת מחשב",
+  RECEPTION_DESK: "דלפק קבלה",
+  BASE:"בסיס"
+
 };
 
 const paymentMethodLabels: Record<PaymentMethodType, string> = {

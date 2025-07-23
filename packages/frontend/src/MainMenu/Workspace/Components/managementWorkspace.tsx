@@ -1,6 +1,6 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useWorkspaceStore } from "../../../Stores/Workspace/workspaceStore";
+import { useWorkSpaceStore } from "../../../Stores/Workspace/workspaceStore";
 import { Space, SpaceStatus, WorkspaceType } from "shared-types";
 import { Table as StyledTable, TableColumn } from "../../../Common/Components/BaseComponents/Table";
 import { Pencil, Trash } from "lucide-react";
@@ -8,9 +8,10 @@ import { Button } from "../../../Common/Components/BaseComponents/Button"; // ע
 
 
 import axios from "axios";
+import { s } from "@fullcalendar/core/internal-common";
 
 export const ManagementWorkspace = () => {
-  const { workspaces, getAllWorkspace, createWorkspace, updateWorkspace, deleteWorkspace } = useWorkspaceStore();
+  const { workSpaces, getAllWorkspace, createWorkspace, updateWorkspace, deleteWorkspace } = useWorkSpaceStore();
   const [open, setOpen] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [workspaceToDelete, setWorkspaceToDelete] = useState<Space | null>(null);
@@ -27,6 +28,7 @@ export const ManagementWorkspace = () => {
     width: 0,
     height: 0,
     workspaceMapId: '',
+    location: '',
     createdAt: '',
     updatedAt: '',
   });
@@ -49,6 +51,7 @@ export const ManagementWorkspace = () => {
       workspaceMapId: '',
       createdAt: '',
       updatedAt: '',
+      location: '',
       // currentCustomerId: 'עוד לא עודכן לקוח',
       // currentCustomerName: 'עוד לא עודכן לקוח',
     });
@@ -78,8 +81,9 @@ export const ManagementWorkspace = () => {
       };
 
       if (newSpace.id) {
-        await updateWorkspace(spaceWithDates);
-      } else {
+        await updateWorkspace(spaceWithDates, spaceWithDates.id || "");
+      }
+      else {
         const newSpaceData = {
           ...spaceWithDates,
           createdAt: formatDate(new Date()),
@@ -88,7 +92,7 @@ export const ManagementWorkspace = () => {
       }
 
       setOpen(false);
-      getAllWorkspace();
+      // getAllWorkspace();
     } catch (error) {
       console.error("Error saving new space:", error);
     }
@@ -117,8 +121,8 @@ export const ManagementWorkspace = () => {
   const confirmDelete = async () => {
     if (!workspaceToDelete) return;
     try {
-      await deleteWorkspace(workspaceToDelete);
-      getAllWorkspace();
+      await deleteWorkspace(workspaceToDelete.id || "");
+      // getAllWorkspace();
       setConfirmDeleteOpen(false);
       setWorkspaceToDelete(null);
     } catch (error) {
@@ -162,12 +166,12 @@ export const ManagementWorkspace = () => {
       </div>
 
       <h2>רשימת החללים:</h2>
-      {workspaces.length === 0 ? (
+      {workSpaces.length === 0 ? (
         <p>אין חללים להצגה.</p>
       ) : (
         <StyledTable<Space>
           columns={columns}
-          data={workspaces}
+          data={workSpaces}
           onUpdate={handleEdit}
           onDelete={handleDelete}
           className="shadow-lg"

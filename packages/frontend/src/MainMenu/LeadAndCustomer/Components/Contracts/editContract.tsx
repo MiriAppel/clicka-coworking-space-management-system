@@ -33,6 +33,7 @@ const workspaceTypeLabels = {
   WALL: "קיר",
   COMPUTER_STAND: "עמדת מחשב",
   RECEPTION_DESK: "דלפק קבלה",
+  BASE: "בסיס",
 } satisfies Record<WorkspaceType, string>;
 
 // סכימת אימות Zod
