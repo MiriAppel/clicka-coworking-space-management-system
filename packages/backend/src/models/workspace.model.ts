@@ -16,6 +16,7 @@ export class WorkspaceModel implements Space {
   positionY: number;
   width: number;
   height: number;
+  location: string;
   createdAt: string;
   updatedAt: string;
 
@@ -32,7 +33,7 @@ export class WorkspaceModel implements Space {
     createdAt: string;
     updatedAt: string;
     description?: string;
-    room?: string;
+    location: string;
     currentCustomerId?: string;
     currentCustomerName?: string;
   }) {
@@ -48,6 +49,7 @@ export class WorkspaceModel implements Space {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.description = params.description;
+    this.location = params.location;
     this.currentCustomerId = params.currentCustomerId;
     this.currentCustomerName = params.currentCustomerName;
   }
@@ -65,6 +67,7 @@ export class WorkspaceModel implements Space {
       created_at: this.createdAt,
       updated_at: this.updatedAt,
       description: this.description,
+      location: this.location,
       current_customer_id: this.currentCustomerId,
       current_customer_name: this.currentCustomerName,
     };
@@ -83,7 +86,8 @@ export class WorkspaceModel implements Space {
             updatedAt: dbData.updated_at,
             description: dbData.description || undefined,
             currentCustomerId: dbData.current_customer_id || undefined,
-            currentCustomerName: dbData.current_customer_name || undefined
+            currentCustomerName: dbData.current_customer_name || undefined,
+            location: dbData.location || undefined,
         });
     }
     }

@@ -1,6 +1,6 @@
 import {create} from "zustand";
 import axios from "axios";
-import {ID, Room, Space, SpaceStatus} from "shared-types"
+import {ID, Room, Space, SpaceStatus} from "shared-types";
 import { get } from "lodash";
 
 //הצהרות
@@ -51,7 +51,9 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
     updateWorkspace: async (workspace,id) => {
         try {
             const response = await axios.put(`api/workspace/updateWorkspace/${id}`,workspace);
-            set({ workSpaces: response.data });
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            //  set({ workSpaces: Array.isArray(response.data) ? response.data : [response.data] });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
         }
@@ -60,7 +62,9 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
     createWorkspace: async (workspace) => {
         try {
             const response = await axios.post('api/workspace/createWorkspace',workspace);
-            set({ workSpaces: response.data });
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            // set({ workSpaces: response.data });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
         }
@@ -69,7 +73,9 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
     deleteWorkspace: async (id) => {
         try {
             const response = await axios.delete(`api/workspace/deleteWorkspace/${id}`);
-            set({ workSpaces: response.data });
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            // set({ workSpaces: response.data });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
         }
