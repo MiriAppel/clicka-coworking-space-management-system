@@ -12,7 +12,8 @@ import expenseRouter from './routes/expense.route';
 import dotenv from 'dotenv';
 import routerAuth from './routes/auth';
 import { Request, Response } from 'express';
-import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
+import cookieParser from 'cookie-parser';
 import bookRouter from './routes/booking.route';
 import workspaceRouter from './routes/workspace.route';
 import featureRouter from './routes/roomFaeature.route';
@@ -32,10 +33,9 @@ import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 const app = express();
 dotenv.config();
 
-
-
 // Create Express app
 setupSwagger(app);
+app.use(cookieParser());
 
 // Apply middlewares
 app.use(helmet());

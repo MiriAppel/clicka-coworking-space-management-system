@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           return;
         }
         clearUser();
-        navigate("/auth");
+        // navigate("/auth");
       }
       catch (err: any) {
         if (axios.isAxiosError(err) && err.response?.status === 401) {
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
 
         clearUser();
-        navigate("/auth");
+        // navigate("/auth");
 
       } finally {
         setLoading(false);

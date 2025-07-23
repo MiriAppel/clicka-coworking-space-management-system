@@ -1,109 +1,95 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
-import { useNavigate, Routes, Route, Navigate } from 'react-router-dom';
+import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
-import { Button } from './Common/Components/BaseComponents/Button';
+import { ProtectedRoute } from './MainMenu/CoreAndIntegration/Components/Login/ProtectedRoute';
+import { Routing } from './routing';
 import { useAuthStore } from './Stores/CoreAndIntegration/useAuthStore';
-import {Routing} from './routing'; 
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  // const { user, isLoading } = useAuthStore();
-  const { user, isLoading, setUser } = useAuthStore();
-  const [apiLoading, setApiLoading] = useState(true); 
-  const [userLoading, setUserLoading] = useState(true);
+  const location = useLocation();
+  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-   
+    const lang = localStorage.getItem('language') || 'he';
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+  }, []);
+
+  useEffect(() => {
     fetch('http://localhost:3001/api/health')
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('API server not responding');
-        }
+        if (!response.ok) throw new Error('API server not responding');
         return response.json();
       })
       .then((data) => {
         setHealthStatus(data);
         setLoading(false);
-        // setApiLoading(false); 
       })
       .catch((err) => {
         console.error('Error fetching API health:', err);
         setError('Could not connect to API server. Make sure it is running.');
         setLoading(false);
-        setApiLoading(false);
       });
   }, []);
+
+  // useEffect(() => {
+  //   if (!isAuthenticated && location.pathname !== '/auth') {
+  //     navigate('/auth');
+  //   }
+  //   if (isAuthenticated && location.pathname === '/auth') {
+  //     navigate('/', { replace: true });
+  //   }
+  // }, [isAuthenticated, location.pathname, navigate]);
 useEffect(() => {
-  const storedUser = localStorage.getItem('user');
-  if (storedUser) {
-    setUser(JSON.parse(storedUser));
+  if (!isAuthenticated && location.pathname !== '/auth') {
+    navigate('/auth', { replace: true });
+  } else if (isAuthenticated && location.pathname === '/auth') {
+    navigate('/', { replace: true });
   }
-  setUserLoading(false);
-}, []);
+  // לא מוסיפים location.pathname לתלות כדי לא להפעיל את זה על כל שינוי נתיב
+}, [isAuthenticated, navigate]);
 
-// const storedSession = localStorage.getItem('sessionId');
-// if (storedSession) {
-//   setSessionId(storedSession);
-// }
-
-
-useEffect(() => {
-     if (!isLoading && !user) {
-    // navigate('/auth');
-  }
-}, [isLoading, user, navigate]);
-
- if (apiLoading || userLoading || isLoading) {
-  return <div>Loading...</div>;
-}
-
-
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <AuthProvider>
-      <div className="App">
-        <header className="App-header">
-          <h3>welcome to our world</h3>
-          <h1>Clicka</h1>
-          <h2>Co-working Space Management System</h2>
-        </header>
+      <Routes>
+        {/* Ruta pública para login */}
+        <Route path="/auth" element={<AuthenticationScreen />} />
 
-        <Button
-          onClick={() => navigate('/graph')}
-          className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
-        >
-          graph
-        </Button>
+        {/* Ruta protegida para toda la app */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <div className="App">
+                <header className="App-header">
+                  <h3>Welcome to our world</h3>
+                  <h1>Clicka</h1>
+                  <h2>Co-working Space Management System</h2>
+                </header>
 
-        <div className="menu" style={{ backgroundColor: 'black' }}></div>
+                <div className="menu" style={{ backgroundColor: 'black' }}></div>
 
-        <Accesibility />
+                <Accesibility />
 
-        <Routes>
-          {/* RUTA DE LOGIN */}
-          <Route
-            path="/auth"
-            element={user ? <Navigate to="/*" replace /> : <AuthenticationScreen />}
-          />
-
-          {/* RUTA PRINCIPAL */}
-          <Route
-            path="/*"
-            element={user ? <AuthenticationScreen /> : <Navigate to="/auth" replace />}
-          />
-        </Routes>
-        
-      </div>
+                {/* Aquí se cargan todas las rutas internas */}
+                <Routing />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </AuthProvider>
-    
   );
-  
 }
- 
+
 export default App;
