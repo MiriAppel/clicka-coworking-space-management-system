@@ -20,7 +20,7 @@ export async function create(
             category: VendorCategory.Other,
             status: VendorStatus.Inactive, // סטטוס ברירת מחדל אם לא נשלח
             notes: request.notes,
-            // document_ids: request.document_ids || [],
+            document_ids: request.documents || [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         });

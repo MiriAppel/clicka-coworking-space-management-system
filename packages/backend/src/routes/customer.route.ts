@@ -19,7 +19,7 @@ routerCustomer.get('/notify/:id', customerController.getCustomersToNotify);
 
 routerCustomer.get('/search', customerController.searchCustomersByText);
 
-routerCustomer.get('/id/:id', customerController.getCustomerById); 
+routerCustomer.get('/:id', customerController.getCustomerById); 
 
 routerCustomer.get('/:id/payment-methods', customerController.getCustomerPaymentMethods);
 
@@ -37,4 +37,3 @@ routerCustomer.patch('/:id', customerController.patchCustomer);
 routerCustomer.delete('/:id', customerController.deleteCustomer);
 
 export default routerCustomer;
-
