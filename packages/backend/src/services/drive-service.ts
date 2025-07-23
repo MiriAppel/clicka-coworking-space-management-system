@@ -52,7 +52,7 @@ export async function uploadFileToDrive(
     requestBody,
     media: {
       mimeType: file.mimetype,
-      body: Readable.from(file.buffer), 
+      body: Readable.from(file.buffer),
     },
   });
   return res.data;

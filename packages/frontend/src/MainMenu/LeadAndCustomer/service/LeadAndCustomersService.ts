@@ -1,5 +1,4 @@
 // src/api/leadCustomer.ts
-
 import {
   Lead,
   CreateLeadRequest,
@@ -7,10 +6,10 @@ import {
   UpdateCustomerRequest,
   CreateCustomerRequest,
   RecordExitNoticeRequest,
-  Contract,
   StatusChangeRequest,
 } from 'shared-types';
-import { axiosInstance } from '../../../Service/Axios';
+import { axiosInstance } from '../../../Services/Axios';
+
 
 // ---------- לידים ----------
 
@@ -152,58 +151,6 @@ export const recordExitNotice = async (id: string, data: RecordExitNoticeRequest
     return response.data;
   } catch (error) {
     console.error('Error recording exit notice:', error);
-    throw error;
-  }
-};
-
-// ---------- חוזים ----------
-
-export const getAllContracts = async (): Promise<Contract[]> => {
-  try {
-    const response = await axiosInstance.get<Contract[]>('/api/contract');
-    return response.data;
-  } catch (error) {
-    console.error("שגיאה בשליפת חוזים:", error);
-    throw error;
-  }
-};
-
-export const postNewContract = async (contractData: Partial<Contract>) => {
-  const response = await axiosInstance.post("/api/contract", contractData);
-  return response.data;
-};
-
-export const postContractDocuments = async (formData: FormData) => {
-  const response = await axiosInstance.post("/api/contract/documents", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return response.data;
-};
-
-export const fetchContractByCustomerId = async (customerId: string) => {
-  const response = await axiosInstance.get(`/api/contract/customer/${customerId}`);
-  return response.data;
-};
-
-export const fetchContractByContractId = async (contractId: string) => {
-  const response = await axiosInstance.get(`/api/contract/${contractId}`);
-  return response.data;
-};
-
-export const deleteContract = async (contractId: string) => {
-  try {
-    await axiosInstance.delete(`/api/contract/${contractId}`);
-  } catch (error) {
-    console.error("שגיאה במחיקת חוזה:", error);
-    throw error;
-  }
-};
-
-export const patchContract = async (contractId: string, data: Partial<Contract>): Promise<void> => {
-  try {
-    await axiosInstance.patch(`/api/contract/${contractId}`, data);
-  } catch (error) {
-    console.error('Error patching contract:', error);
     throw error;
   }
 };

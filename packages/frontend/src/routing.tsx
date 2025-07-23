@@ -72,7 +72,7 @@ export const Routing = () => {
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-        <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
         <Route path="expense-form" element={<CreateExpenseForm />} />
         {/* <Route path="billing/*" element={<Billing />} /> */}
         <Route path="users" element={< UserTable />} />

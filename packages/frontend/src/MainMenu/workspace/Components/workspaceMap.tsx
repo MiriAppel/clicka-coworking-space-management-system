@@ -1,10 +1,11 @@
-// import { useEffect, useRef, useState } from 'react';
-// import '../Css/workspaceMap.css';
-// import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 'shared-types';
-// import { Button } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import '../Css/workspaceMap.css';
+import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 'shared-types';
+import { Button } from '@mui/material';
 // import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
-// import { useNavigate } from 'react-router-dom';
-// import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from 'react-router-dom';
+import MenuIcon from '@mui/icons-material/Menu';
+import { useWorkspaceStore } from '../../../Stores/Workspace/workspaceStore';
 
 
 // export const WorkspaceMap = () => {
@@ -961,48 +962,48 @@
 //         },
 
 
-//     ]
-//     const { workSpaces, getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getHistory } = useWorkSpaceStore();
-//     const uniqueStatus = Object.values(SpaceStatus);
-//     const uniqueType = Object.values(WorkspaceType);
-//     const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
-//     const [selectedType, setSelectedType] = useState("PLACEHOLDER");
-//     const [activeStatusSearch, setActiveStatusSearch] = useState(false);
-//     const [activeTypeSearch, setActiveTypeSearch] = useState(false);
-//     const [displayDate, setDisplayDate] = useState(new Date());
-//     const [scale, setScale] = useState(1);
-//     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-//     const containerRef = useRef<HTMLDivElement>(null);
-//     const [mapDimensions,] = useState({ width: 2840, height: 1060 });
-//     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-//     const [tooltip, setTooltip] = useState<{
-//         visible: boolean;
-//         x: number;
-//         y: number;
-//         content: string;
-//     }>({
-//         visible: false,
-//         x: 0,
-//         y: 0,
-//         content: ''
-//     });
-//     const [details, setDetails] = useState({
-//         name: "",
-//         description: "",
-//         type: "",
-//         status: "",
-//         workspaceMapId: "",
-//         // room: "",
-//         currentCustomerId: "",
-//         currentCustomerName: "",
-//         positionX: 0,
-//         positionY: 0,
-//         width: 0,
-//         height: 0,
-//         createdAt: "",
-//         updatedAt: ""
-//     });
-//     const [roomDetails, setRoomDetails] = useState({
+    
+    const { getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getHistory } = useWorkspaceStore();
+    const uniqueStatus = Object.values(SpaceStatus);
+    const uniqueType = Object.values(WorkspaceType);
+    const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
+    const [selectedType, setSelectedType] = useState("PLACEHOLDER");
+    const [activeStatusSearch, setActiveStatusSearch] = useState(false);
+    const [activeTypeSearch, setActiveTypeSearch] = useState(false);
+    const [displayDate, setDisplayDate] = useState(new Date());
+    const [scale, setScale] = useState(1);
+    const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [mapDimensions,] = useState({ width: 2840, height: 1060 });
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [tooltip, setTooltip] = useState<{
+        visible: boolean;
+        x: number;
+        y: number;
+        content: string;
+    }>({
+        visible: false,
+        x: 0,
+        y: 0,
+        content: ''
+    });
+    const [details, setDetails] = useState({
+        name: "",
+        description: "",
+        type: "",
+        status: "",
+        workspaceMapId: "",
+        // room: "",
+        currentCustomerId: "",
+        currentCustomerName: "",
+        positionX: 0,
+        positionY: 0,
+        width: 0,
+        height: 0,
+        createdAt: "",
+        updatedAt: ""
+    });
+    const [roomDetails, setRoomDetails] = useState({
 
 //     });
 //     const navigate = useNavigate()

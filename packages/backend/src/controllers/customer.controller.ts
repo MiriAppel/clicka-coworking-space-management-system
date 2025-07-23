@@ -275,15 +275,12 @@ export const confirmEmail = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("שגיאה באימות:", error);
 
-    // אם מדובר בשגיאת דופליקציה (email כבר קיים)
-    if (error?.code === "23505") {
-      return res.status(400).send(createHtmlMessage("האימייל הזה כבר קיים במערכת."));
-    }
+   
 
     // כל שגיאה אחרת
     res
       .status(500)
-      .send(createHtmlMessage("אירעה שגיאה במהלך האימות. אנא נסה שוב מאוחר יותר."));
+      .send(createHtmlMessage("\nאירעה שגיאה במהלך האימות." + error.details));
   }
 };
 

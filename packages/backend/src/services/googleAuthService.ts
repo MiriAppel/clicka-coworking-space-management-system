@@ -42,12 +42,21 @@ export async function getTokens(code: string) {
     id_token: tokens.id_token,
     scope: tokens.scope,
     token_type: tokens.token_type,
-    expires_in: tokens.expiry_date ? Math.floor((tokens.expiry_date - Date.now()) / 1000) : 8 * 60 * 60, //  Default to 8 hours
-    expires_at: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+    expires_in: tokens.expiry_date ? Math.floor((tokens.expiry_date - Date.now()) / 1000)
+      : 8 * 60 * 60, //  Default to 8 hours
+    expires_at: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString()
+      : new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
   };
 }
+export async function getGoogleWithoutCode(idToken: string) {
+  const ticket = await oauth2Client.verifyIdToken({
+    idToken,
+    audience: CLIENT_ID,
+  });
 
-
+  return ticket.getPayload();
+}
+// function to get the user's Google profile information
 export async function getGoogleUserInfo(access_token: string) {
   const response = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
     headers: {
@@ -80,7 +89,7 @@ export async function refreshAccessToken(refreshToken: string) {
       access_token,
       expires_at: expiresAt,
     };
-  } catch (error : any) {
+  } catch (error: any) {
     console.error('error in getting new token from google: ', error.response?.data || error.message);
     throw new Error('RefreshTokenError');
   }
