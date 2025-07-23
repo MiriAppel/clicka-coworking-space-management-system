@@ -14,7 +14,7 @@ import {
   StatusChangeRequest,
   UpdateCustomerRequest,
 } from "shared-types";
-import { supabase } from "../db/supabaseClient";
+import { supabase } from '../db/supabaseClient'
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
 import { ContractModel } from "../models/contract.model";
 import { contractService } from '../services/contract.service';
@@ -663,9 +663,9 @@ const serviceCustomer = new customerService();
 
 //   const csvHeader = csvStringifier.getHeaderString();
 //   // const csvBody = csvStringifier.stringifyRecords(customerToExport);
-// const csvFull = csvHeader + csvBody;
+  // const csvFull = csvHeader + csvBody;
 
-// return Buffer.from(csvFull, "utf-8");
+  // return Buffer.from(csvFull, "utf-8");
 // };
 
 // לשאול את שולמית

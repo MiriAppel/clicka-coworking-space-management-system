@@ -7,9 +7,8 @@ import {
   getVendorController
 } from '../controllers/vendor.controller';
 const vendorRouter = Router();
-
+vendorRouter.get("/", getVendorController);
 vendorRouter.post("/", createVendorController );
-vendorRouter.get("/", getVendorController );
 vendorRouter.get("/:id", getVendorByIdController );
 vendorRouter.delete("/:id", deleteVendorController );
 
