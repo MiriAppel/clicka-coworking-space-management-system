@@ -25,7 +25,7 @@ function getDueDate(endDate: string): string {
 }
 
 // תריץ אוטומטית אחת לחודש בשעה 1 בלילה
-cron.schedule('0 1 1 * *', async () => {
+cron.schedule('0 1 23 * *', async () => {
   console.log('Cron job started: Fetching all customers...');
   try {
     const allCustomers: CustomerModel[] = await serviceCustomer.getAll();
