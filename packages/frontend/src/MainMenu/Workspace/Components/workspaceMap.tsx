@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import '../Css/workspaceMap.css';
 import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 'shared-types';
 import { Button } from '@mui/material';
-import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
+// import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useWorkspaceStore } from '../../../Stores/Workspace/workspaceStore';
 
 
 export const WorkspaceMap = () => {
@@ -962,7 +963,7 @@ export const WorkspaceMap = () => {
 
 
     ]
-    const { workSpaces, getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getHistory } = useWorkSpaceStore();
+    const { getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getHistory } = useWorkspaceStore();
     const uniqueStatus = Object.values(SpaceStatus);
     const uniqueType = Object.values(WorkspaceType);
     const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
