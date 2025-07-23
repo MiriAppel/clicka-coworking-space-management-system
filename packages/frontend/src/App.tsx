@@ -63,7 +63,6 @@ function App() {
           {/* אפשר להוסיף כאן ראוטים נוספים */}
         </Routes>
         <AuthenticationScreen />
-
       </div>
     </AuthProvider>
 
