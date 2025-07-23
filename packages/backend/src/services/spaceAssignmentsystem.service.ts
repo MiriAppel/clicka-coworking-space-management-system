@@ -233,6 +233,7 @@ async getHistory(date: Date): Promise<Space[] | null> {
       positionY: workspace?.position_y,
       width: workspace?.width,
       height: workspace?.height,
+      location: workspace?.location ?? '',
       createdAt: record.created_at ?? '',
       updatedAt: record.updated_at ?? '',
     }];

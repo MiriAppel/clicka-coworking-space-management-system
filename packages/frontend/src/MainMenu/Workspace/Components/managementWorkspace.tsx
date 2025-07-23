@@ -28,6 +28,7 @@ export const ManagementWorkspace = () => {
     width: 0,
     height: 0,
     workspaceMapId: '',
+    location: '',
     createdAt: '',
     updatedAt: '',
   });
@@ -50,6 +51,7 @@ export const ManagementWorkspace = () => {
       workspaceMapId: '',
       createdAt: '',
       updatedAt: '',
+      location: '',
       // currentCustomerId: 'עוד לא עודכן לקוח',
       // currentCustomerName: 'עוד לא עודכן לקוח',
     });
