@@ -115,5 +115,3 @@ getWorkspaceHistory: async (date: Date) => {
 
 
 }));
-
-

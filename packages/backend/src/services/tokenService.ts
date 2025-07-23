@@ -4,9 +4,10 @@ import { UserTokenService } from './userTokenService';
 import { generateJwtToken, verifyJwtToken } from './authService';
 import { decrypt } from './cryptoService';
 import { refreshAccessToken } from './googleAuthService';
+import { UserService } from './user.service';
 
 const userTokenService = new UserTokenService();
-export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, token: string, sessionId: string): void => {
+export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, token: string, sessionId?: string): void => {
     res.cookie('session', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -14,11 +15,21 @@ export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, 
         maxAge: 8 * 60 * 60 * 1000, // 8 שעות
     });
     console.log('setAuthCookie', sessionId);
-    res.cookie('sessionId', sessionId, {
+    if (sessionId) {
+        res.cookie('sessionId', sessionId, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 8 * 60 * 60 * 1000, // 8 שעות
+        });
+    }
+};
+export const setRefreshCookie = (res: Response, refreshToken: string): void => {
+    res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 8 * 60 * 60 * 1000, // 8 שעות
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ימים
     });
 };
 
@@ -29,6 +40,11 @@ export const clearAuthCookie = (res: Response): void => {
         sameSite: 'strict',
     });
     res.clearCookie('sessionId', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    });
+    res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -91,7 +107,8 @@ export const refreshUserToken = async (sessionToken: string, sessionId: string):
     const newJwt = generateJwtToken({
         userId,
         email: payload.email,
-        googleId: payload.googleId
+        googleId: payload.googleId,
+        role: payload.role
     });
     return newJwt;
 }
@@ -105,3 +122,6 @@ export const logoutUser = async (userId: string, res: Response): Promise<void> =
     await userTokenService.invalidateSession(userId);
     clearAuthCookie(res);
 };
+export const saveSessionId= async (userId: string, sessionId: string): Promise<void> => {
+    await userTokenService.saveSessionId(userId, sessionId);
+}

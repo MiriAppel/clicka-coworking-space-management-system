@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import '../Css/workspaceMap.css';
 import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 'shared-types';
 import { Button } from '@mui/material';
-import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
+// import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
 
 
 export const WorkspaceMap = () => {
