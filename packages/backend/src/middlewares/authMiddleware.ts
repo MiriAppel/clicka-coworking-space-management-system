@@ -26,8 +26,12 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
       return;
     }
     const userTokenService = new UserTokenService();
-    if (await userTokenService.checkIfExpiredAccessToken(payload.userId))
-      throw new Error('TokenExpiredError');
+        if (! await userTokenService.validateSession(payload.userId, sessionId)) {
+      res.status(409).json({ error: 'SessionConflict', message: 'User is already logged in on another device.' });
+      return
+    }
+    // if (await userTokenService.checkIfExpiredAccessToken(payload.userId))
+    //   throw new Error('TokenExpiredError');
 
     const user: User = result;
     (req as any).user = user;// Store the user object in the request object for further use;

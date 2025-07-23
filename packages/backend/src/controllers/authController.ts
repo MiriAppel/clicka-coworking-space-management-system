@@ -187,13 +187,27 @@ export const registerUser = async (req: Request, res: Response) => {
   const user = await userService.getUserByEmail(email);
   if (user) {
     if (user.password) {
-      throw new Error('User password already exists');
+      return res.status(400).json({ error: 'User password already exists' });
+      // throw new Error('User password already exists');
     }
     userService.updatePassword(user?.id!, hashedPassword);
   }
   else {
-    throw new Error('User not exists');
+    // throw new Error('User not exists');
+    return res.status(404).json({ error: 'User not exists' });
   }
-  return res.status(200).json(user);
+  const token = authService.generateJwtToken({ userId: user.id!, googleId: user.googleId, email: user.email, role: user.role });
+    const sessionId = randomUUID();
+    tokenService.setAuthCookie(res, token, sessionId);
+    const refreshToken = authService.generateJwtRefreshToken({ userId: user.id! });
+    tokenService.setRefreshCookie(res, refreshToken);
+    await tokenService.saveSessionId(user.id!, sessionId);
+    const response = {
+      user,
+      token,
+      sessionId,
+      message: 'נרשמת עם סיסמה בהצלחה .'
+    };
+  return res.status(200).json(response);
 }
 

@@ -19,7 +19,6 @@ import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
-import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
@@ -36,22 +35,6 @@ export const Routing = () => {
   // משתנה שמייצג האם הנתונים עוד בטעינה
   const [loading, setLoading] = useState(true);
   // useEffect - רץ פעם אחת לאחר טעינת הקומפוננטה
-  useEffect(() => {
-    const fetchVendors = async () => {
-      try {
-        // קריאה לפונקציה שמביאה את רשימת הספקים מהשרת (API)
-        const data = await getAllVendors();
-        setVendors(data); // שומר את הנתונים ב-state
-      } catch (err) {
-        console.error("שגיאה בשליפת ספקים:", err); // הדפסת שגיאה אם השליפה נכשלה
-      } finally {
-        setLoading(false); // מסמן שהטעינה הסתיימה (בין אם הצליחה או נכשלה)
-      }
-    };
-    fetchVendors(); // מפעיל את הפונקציה
-  }, []); // [] אומר שה־useEffect ירוץ רק בפעם הראשונה
-  // אם עדיין טוען – מציג הודעת טעינה למשתמש
-  if (loading) return <div>טוען נתונים...</div>;
   // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
   return (
     <Routes>
@@ -73,7 +56,7 @@ export const Routing = () => {
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
         <Route path="expense-form" element={<CreateExpenseForm />} />
-        <Route path="billing/*" element={<Billing />} />
+        {/* <Route path="billing/*" element={<Billing />} /> */}
         <Route path="users" element={< UserTable />} />
         <Route path="meetingRooms" element={<RoomReservations />} />
         <Route path="UserActions" element={< AuditLogTable />} />

@@ -8,6 +8,7 @@ import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore
 import axios from "axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import axiosInstance from "../../../../Service/Axios";
+import { s } from "@fullcalendar/core/internal-common";
 const schema = z.object({
     email: z.string().min(1, "Email required").email("Invalid Email").nonempty("EMAIL"),
     password: z.string().min(1, "Password required").nonempty("PASSWORD"),
@@ -37,6 +38,25 @@ export const LoginWithPassword = () => {
 
         }
     };
+    const register = async (data: FormSchema) => {
+        try {
+            const response = await axiosInstance.post("/auth/registerUserPassword", JSON.stringify(data, null, 2));
+            setUser(response.data.user);
+            setSessionId(response.data.sessionId);
+            console.log("Registration successful", response.data);
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.data.error === 'User password already exists') {
+                showAlert("User password already exists", "קיימת סיסמה למשתמש", "error");
+                return;
+            }
+            else if (axios.isAxiosError(error) && error.response?.data.error === 'User not exists') {
+                showAlert("User not exists", "משתמש לא קיים", "error");
+                return;
+            }
+            console.error("error logging in", error);
+            showAlert("error", "Error registering user", "error");
+        }
+    }
     return (
         <Form
             schema={schema}
@@ -51,6 +71,12 @@ export const LoginWithPassword = () => {
                 type="submit"
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                 התחבר
+            </Button>
+            <Button
+                type="button"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                onClick={() => register(methods.getValues() as FormSchema)}>
+                הרשם
             </Button>
         </Form>
     )
