@@ -6,10 +6,6 @@ export class RoomFeatureController {
     private roomFeatureService = new RoomFeatureService();
 
        async createRoomFeature(req: Request, res: Response)  {
-        console.log('🚨 BODY:', req.body);
-        console.log('🚨 HEADERS:', req.headers);
-        console.log('🚨 METHOD:', req.method, req.originalUrl);
-         console.log('Received request to create feature:', req.body);
         try {
             console.log('Received request to create feature:', req.body);
             const featureData = req.body;
@@ -76,4 +72,27 @@ res.status(500).json({massage:'err.massage'});
       res.status(500).json({massage:'err.massage'});
     }
 }
+// שליפת כל התכונות לחדר מסוים
+async getAllFeaturesByRoomId(req: Request, res: Response) {
+    try {
+      const id = req.params.id;
+      const features = await this.roomFeatureService.getAllFeaturesByRoomId(id);
+      res.json(features);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+  
+  // עדכון תכונות של חדר לפי roomId
+  async updateFeaturesByRoomId(req: Request, res: Response) {
+    try {
+      const roomId = req.params.id;
+      const updatedFeatures = req.body.features; 
+  
+      const result = await this.roomFeatureService.updateFeaturesByRoomId(roomId, updatedFeatures);
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  }
  }

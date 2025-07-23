@@ -5,7 +5,7 @@ import { Button } from "../../../Common/Components/BaseComponents/Button";
 import { SelectField } from "../../../Common/Components/BaseComponents/Select";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
 import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
-import {useFeatureStore} from "../../../Stores/Workspace/featureStore";
+import { useFeatureStore } from "../../../Stores/Workspace/featureStore";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../../../Service/supabaseClient";
 import "../Css/roomReservations.css";
@@ -126,7 +126,7 @@ const bookingSchema = z.object({
       message: "יש לבחור משך זמן של שעה שלמה לפחות (למשל: 1:00, 2:00 וכו')",
       path: ["endTime"],
     }
-  )  
+  )
   .refine((data) => {
     if (data.customerStatus === "customer") {
       return !!data.customerId;
@@ -160,13 +160,13 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     const [rooms, setRooms] = useState<Room[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
     const [allFeatures, setAllFeatures] = useState<{ id: string; name: string }[]>([]);
-    const { features, getAllFeatures } = useFeatureStore();
+    const { features, getAllFeatures, loading, error } = useFeatureStore();
 
     const calculateDurationInMinutes = (startISO: string, endISO: string): number => {
       const start = new Date(startISO);
       const end = new Date(endISO);
       const diffInMs = end.getTime() - start.getTime();
-      return (Math.floor(diffInMs / (1000 * 60)))/60;
+      return (Math.floor(diffInMs / (1000 * 60))) / 60;
     };
 
 
@@ -206,18 +206,18 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       }
     }, [status, customers, methods.watch("customerId")]);
 
-    useEffect(() => {
-      const fetchFeatures = async () => {
-        const { data, error } = await supabase.from("feature").select("*");
-        if (error) {
-          console.error("שגיאה בשליפת תכונות:", error);
-          return;
-        }
-        setAllFeatures(data || []);
-      };
+    // useEffect(() => {
+    //   const fetchFeatures = async () => {
+    //     const { data, error } = await supabase.from("feature").select("*");
+    //     if (error) {
+    //       console.error("שגיאה בשליפת תכונות:", error);
+    //       return;
+    //     }
+    //     setAllFeatures(data || []);
+    //   };
 
-      fetchFeatures();
-    }, []);
+    //   fetchFeatures();
+    // }, []);
 
 
     useEffect(() => {
@@ -256,12 +256,19 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       } else {
         setSelectedRoomFeatures([]);
       }
+      console.log(" selectedRoomId:", selectedRoomId);
     }, [selectedRoomId]);
-
     useEffect(() => {
-      getAllFeatures();
+      getAllFeatures().then(() => {
+        console.log("התכונות אחרי getAllFeatures:", features);
+      });
     }, []);
+    
+    // useEffect(() => {
+    //   getAllFeatures();
+    // }, []);
     const roomsWithFeatures = rooms.map(room => {
+      console.log("התכונות",features.length);
       const featureIds = room.features || [];
       const fullFeatures = allFeatures.filter(f => featureIds.includes(f.id));
       return {
@@ -363,7 +370,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         console.log(resultCalendar, "Booking created:");
 
         if (resultCalendar) {
-          alert("ההזמנה נוצרה בהצלחה");
           methods.reset();
           onSubmit?.();
         }
@@ -433,7 +439,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
               <div className="form-field">
                 <SelectField name="selectedRoomId" label="בחירת חדר" options={roomOptions} required />
               </div>
-              {selectedRoomFeatures.length > 0 && (
+              {/* {selectedRoomFeatures.length > 0 && (
                 <div className="form-field">
                   <label>תכונות החדר:</label>
                   <ul>
@@ -447,7 +453,20 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
                     })}
                   </ul>
                 </div>
+              )} */}
+              {(
+                <div className="form-field">
+                  <label>כל התכונות הקיימות:</label>
+                  <ul>
+                    {features.map((feature) => (
+                      <li key={feature.id}>
+                        {feature.description || "תכונה ללא תיאור"} - תוספת: {feature.additionalCost}₪
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
+
 
 
               <div className="form-field">

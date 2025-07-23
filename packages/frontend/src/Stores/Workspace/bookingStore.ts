@@ -55,17 +55,13 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   createBooking: async (booking: Booking) => {
     set({ loading: true, error: null });
-    
     try {
-      // מוודאים שה־payload נכון
       const response = await axiosInstance.post("/book", booking);
       const created = response.data;
-
       set(state => ({
         bookings: [...state.bookings, created],
         loading: false,
       }));
-
       return created;
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -175,7 +171,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
     set({ loading: true, error: null });
     try {
       const response = await axiosInstance.get('rooms/getAllRooms');
-      console.log("🎯 rooms from server:", response.data); // חשוב!
+      console.log("🎯 rooms from server:", response.data); 
       return response.data;
     } catch (error) {
       console.error('שגיאה בשליפת רשימת חדרים:', error);
