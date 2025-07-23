@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-
 import { UserRole } from "shared-types";
 import { verifyJwtToken } from '../services/authService';
 
@@ -7,7 +6,7 @@ import { verifyJwtToken } from '../services/authService';
 export const authorizeUser = (permission: UserRole[]) => {
     return (req: Request, res: Response, next: NextFunction): void => {
         try {
-            // שליפת הטוקן מהקוקי
+            // Retrieve the token from cookies
             const sessionToken = req.cookies.session;
 
             if (!sessionToken) {
@@ -16,15 +15,14 @@ export const authorizeUser = (permission: UserRole[]) => {
                 return;
             }
 
-            //אימות הטוקן
             const payload = verifyJwtToken(sessionToken);
 
-            // שליפת ה role מהטוקן
+            // Extract the role from the token
             const userRole = payload.role as UserRole;
             console.log('User role:', userRole);
-            
 
-            // בדיקה אם יש role בטוקן
+
+            // Check if the token contains a role
             if (!userRole) {
                 res.status(401).json({ error: 'Invalid token - missing role' });
                 return;
@@ -33,9 +31,9 @@ export const authorizeUser = (permission: UserRole[]) => {
             if (permission.includes(userRole)) {
                 console.log(permission);
 
-                next(); // אם יש הרשאה, המשך למסלול הבא
+                next();
             } else {
-                res.status(403).send('Forbidden'); // אם אין הרשאה, החזר שגיאת גישה
+                res.status(403).send('Forbidden');
             }
 
         } catch (error) {

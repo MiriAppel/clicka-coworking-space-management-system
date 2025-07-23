@@ -1,19 +1,15 @@
 import { AuditLog, AuditLogModel } from '../models/auditLog.model';
 import { ID } from '../../../shared-types';
 import { Request } from 'express';
-import { getUserFromCookie } from '../services/tokenService'; // או מהמיקום שבו הפונקציה נמצאת
-// import { createClient } from '@supabase/supabase-js';
-// import dotenv from 'dotenv';
+import { getUserFromCookie } from '../services/tokenService'; 
 import { supabase } from '../db/supabaseClient';
 
-// טוען את משתני הסביבה מהקובץ .env
-// dotenv.config();
 
 export class AuditLogService {
   
   async createAuditLog(req: Request, data: Omit<AuditLog, 'id' | 'userEmail'>): Promise<AuditLogModel | null> {
     try {
-      // חילוץ פרטי המשתמש מהקוקי
+      // Extract user details from the cookie
       const userInfo = getUserFromCookie(req);
       console.log('User info:', userInfo);
       
@@ -66,21 +62,13 @@ export class AuditLogService {
   private async saveToDatabase(auditLog: AuditLogModel): Promise<void> {
     try {
       const { data, error } = await supabase
-        .from('audit_logs') // שם הטבלה ב-Supabase
+        .from('audit_logs') 
         .insert([auditLog.toDatabaseFormat()]);
 
       if (error) {
         console.error('Error saving audit log to database:', error);
         throw error;
       }
-
-      console.log('📝 Audit Log saved successfully:', {
-        userEmail: auditLog.userEmail,
-        timestamp: auditLog.timestamp,
-        action: auditLog.action,
-        functionName: auditLog.functionName,
-        targetInfo: auditLog.targetInfo
-      });
       
     } catch (error) {
       console.error('Error saving audit log:', error);

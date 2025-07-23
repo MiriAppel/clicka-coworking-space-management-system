@@ -1,25 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
 import { UserModel } from '../models/user.model'; // נניח שהמודל User נמצא באותו תיק
 import { logUserActivity } from '../utils/logger';
 import dotenv from 'dotenv';
-import { LoginResponse, UserRole } from 'shared-types';
-import { Response } from 'express';
 import { supabase } from '../db/supabaseClient';
-import { generateJwtToken } from './authService';
-import { setAuthCookie } from './tokenService';
-//טוען את משתני הסביבה מהקובץ .env
-dotenv.config();
 
 export class UserService {
-
 
     async createUser(user: UserModel): Promise<UserModel | null> {
         try {
             if (await this.getUserByEmail(user.email)) {
                 throw new Error(`User with email ${user.email} already exists`);
             }
-            const { data, error } = await supabase
-                .from('users') // שם הטבלה ב-Supabase
+            const { data } = await supabase
+                .from('users')
                 .insert([user.toDatabaseFormat()])
                 .select()
                 .single();
@@ -29,11 +21,10 @@ export class UserService {
         }
         catch (error) {
             console.error('Error creating user:', error);
-            throw error; 
+            throw error;
         }
     }
 
-    // פונקציה לקבל את כל המשתמשים
     async getAllUsers(): Promise<UserModel[] | null> {
 
         const { data, error } = await supabase
@@ -44,10 +35,10 @@ export class UserService {
             console.error('Error fetching user:', error);
             return null;
         }
-        const createdUser = UserModel.fromDatabaseFormatArray(data) // המרה לסוג UserModel
-        // מחזיר את כל המשתמשים שנמצאו
-        return createdUser;
+        //convert the data to UserModel array
+        const createdUser = UserModel.fromDatabaseFormatArray(data)
 
+        return createdUser;
     }
 
     // פונקציה לקרוא משתמש לפי ID
@@ -192,5 +183,5 @@ export class UserService {
     }
 
 
-  
+
 }
