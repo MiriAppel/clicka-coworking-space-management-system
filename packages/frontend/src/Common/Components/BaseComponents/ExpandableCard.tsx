@@ -1,7 +1,4 @@
 
-
-
-////מעודכן כולל פרופיל
 import React, { useState } from "react";
 import {
   ChevronDown,
@@ -55,6 +52,7 @@ const statusColors: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "bg-yellow-100 text-yellow-800",
   EXITED: "bg-red-100 text-red-800",
   PENDING: "bg-gray-100 text-gray-800",
+  CREATED: "bg-blue-100 text-gray-800"
 };
 
 const statusLabels: Record<CustomerStatus, string> = {
@@ -62,18 +60,19 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "הודעת עזיבה",
   EXITED: "עזב",
   PENDING: "בהמתנה",
-};
-const workspaceTypeLabels: Record<WorkspaceType, string> = {
-  PRIVATE_ROOM: "חדר פרטי",
-  DESK_IN_ROOM: "שולחן בחדר",
-  OPEN_SPACE: "אופן ספייס",
-  KLIKAH_CARD: "כרטיס קליקה",
-  DOOR_PASS: "כרטיס כניסה",
-  WALL: "קיר",
-  COMPUTER_STAND: "עמדת מחשב",
-  RECEPTION_DESK: "דלפק קבלה"
+  CREATED: "נוצר"
 };
 
+const workspaceTypeLabels: Record<WorkspaceType, string> = {
+  PRIVATE_ROOM: 'חדר פרטי',
+  DESK_IN_ROOM: 'שולחן בחדר',
+  OPEN_SPACE: 'אופן ספייס',
+  KLIKAH_CARD: 'כרטיס קליקה',
+  DOOR_PASS: 'דלת כניסה',
+  WALL: 'קיר',
+  COMPUTER_STAND: 'עמדת מחשב',
+  RECEPTION_DESK: 'דלפק קבלה',
+};
 
 const paymentMethodLabels: Record<PaymentMethodType, string> = {
   CREDIT_CARD: "כרטיס אשראי",

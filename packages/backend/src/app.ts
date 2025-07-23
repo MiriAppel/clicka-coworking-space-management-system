@@ -16,23 +16,27 @@ import interactionRouter from './routes/leadInteraction.route';
 import dotenv from 'dotenv';
 import routerAuth from './routes/auth';
 import { Request, Response } from 'express';
-import cookieParser from "cookie-parser";
+import cookieParser from 'cookie-parser';
 import bookRouter from './routes/booking.route';
 import workspaceRouter from './routes/workspace.route';
 import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
-import routerMap from './routes/WorkspaceMapRoute';
+import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
-import emailTemplateRouter from './routes/emailTemplate.route';
-import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
+import router from './routes';
+import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
+import documentRouter from './routes/document.routes';
 import invoiceRouter from './routes/invoice.route';
+import paymentRoutes from './routes/payment.routes';
+import emailTemplateRouter from './routes/emailTemplate.route';
+import driveRoutes from './routes/drive-route';
 import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
-import router from './routes';
+import auditLogRouter from './routes/auditLog.route';
 
 
 // import cookieParser from "cookie-parser";
@@ -45,12 +49,13 @@ dotenv.config();
 
 // Create Express app
 setupSwagger(app);
+app.use(cookieParser());
 
 // Apply middlewares
 // app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
+  origin: [process.env.CORS_ORIGIN || 'http://localhost:3000' , 'https://57737495d7dc.ngrok-free.app'], // Adjust as needed
   credentials: true, // Allow cookies to be sent with requests
 }));
  
@@ -59,9 +64,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use('/api/translate', translationRouter);
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
+app.use('/api/audit-logs', auditLogRouter);
+app.use('/api/translate', translationRouter);
 app.use('/api/customers', routerCustomer);
 app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
@@ -89,7 +95,11 @@ app.use(urlencoded({ extended: true }));
 app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
-app.use('/api/payment', routerPayment);
+app.use('/api/payment', routerPayment);app.use('/api/document', documentRouter);
+app.use('/api/invoices', invoiceRouter);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/emailTemplate', emailTemplateRouter);
+app.use('/api/drive', driveRoutes);
 // app.use('/api/leadInteraction', routerCstomer);
 app.use('/api/payment', routerPayment);
 app.use('/api/invoices', invoiceRouter);
