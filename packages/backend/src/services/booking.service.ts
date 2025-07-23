@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { BookingModel } from "../models/booking.model";
 import dotenv from 'dotenv';
 import { customerService } from './customer.service';
-import { getMeetingRoomPricingHistory } from './pricing.service';
+import { getCurrentMeetingRoomPricing, getMeetingRoomPricingHistory } from './pricing.service';
 dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
@@ -76,32 +76,47 @@ export class BookingService {
       return null;
     }
   } 
- static async calculateBookingCharges(id: string,customerId:string){
+ static async calculateBookingCharges(id: string,customerId:string,totalHours:number) {
    console.log('Received request to update booking:', customerId);
     //בדיקה האם ללקוח כרטיס קליקה
     const customerServic = new customerService() 
     const customers =await customerServic.getAllCustomers();
       console.log("😍😍😍"+customers);
     const currentCustomerType = customers?.find(customer => customer.id === customerId)?.currentWorkspaceType
+    if(!currentCustomerType){
+      console.log("there is no customer type");
+    
+    }
    console.log("😍😍😍" + currentCustomerType );
-    const roomPricings =await getMeetingRoomPricingHistory();
- const roomPricing = roomPricings.find(pricing => pricing.id === id);
-    if(currentCustomerType && currentCustomerType==="KLIKAH_CARD"){
-      roomPricing?.freeHoursKlikahCard 
+    const roomPricing =await getCurrentMeetingRoomPricing();
+    if(!roomPricing){
+      console.log("there is no pricing");
+      return null;
+    }
+    const totalCharge :number;
+    const chargeableHours:number;
+    if(roomPricing && currentCustomerType==="KLIKAH_CARD"){
+      if(roomPricing.freeHoursKlikahCard > totalHours){
+       {chargeableHours = totalHours - roomPricing.freeHoursKlikahCard;
+        totalCharge =((chargeableHours  * (roomPricing.freeHoursKlikahCard) + (totalHours-chargeableHours) * (roomPricing.hourlyRate))) } 
      }
-  
+    else{
+       chargeableHours = 0
+        totalCharge = (totalHours  * (roomPricing.hourlyRate))
+    }      
+    }
+       chargeableHours = 0
+        totalCharge = 0
     }
     
-   static async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
-    debugger;
-  const formattedData = updatedData.toDatabaseFormat();
+   static async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> { 
+  if(updatedData.customerId){ 
+     this.calculateBookingCharges(id,updatedData.customerId,updatedData. );
+    }
+ const formattedData = updatedData.toDatabaseFormat();
   
   console.log(":rocket: Trying to update booking with ID:", id);
   console.log(":memo: Data being sent:", formattedData);
-  if(updatedData.customerId){ 
-     this.calculateBookingCharges(id,updatedData.customerId );
-    }
-
   const { data, error } = await supabase
     .from('booking')
     .update([formattedData])
@@ -119,6 +134,7 @@ export class BookingService {
   console.log(":white_check_mark: Successfully updated booking:", data);
   return BookingModel.fromDatabaseFormat(data);
 }
+
   //מחיקת פגישה
   async  deleteBooking(id:string) {
               const { error } = await supabase

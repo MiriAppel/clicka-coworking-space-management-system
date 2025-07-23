@@ -113,7 +113,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
   updateBooking: async (id: string, updated: Booking) => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.put(`/book/updateBooking/${id}`, updated);
+      const response = await axiosInstance.patch(`/book/updateBooking/${id}`, updated);
       const updatedBooking = response.data;
 
       set(state => ({

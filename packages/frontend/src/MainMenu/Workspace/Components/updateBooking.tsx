@@ -3,7 +3,7 @@ import { Form } from "../../../Common/Components/BaseComponents/Form";
 import { InputField } from "../../../Common/Components/BaseComponents/Input";
 import { SelectField } from "../../../Common/Components/BaseComponents/Select";
 import { Booking } from "shared-types";
-import { boolean, z } from "zod";
+import {  z } from "zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
@@ -23,7 +23,7 @@ const bookingUpdateSchema = z.object({
   externalUserName: z.string().optional(),
   externalUserEmail: z.string().email("אימייל לא תקין").optional().or(z.literal("")),
   externalUserPhone: z.string().optional(),
-  roomId: z.string().optional(),
+  roomId: z.string(),
   date: z.string().min(1, "תאריך נדרש"),
   startTime: z.string()
     .min(1, "שעת התחלה נדרשת")
@@ -31,7 +31,7 @@ const bookingUpdateSchema = z.object({
   endTime: z.string()
     .min(1, "שעת סיום נדרשת")
     .refine( isQuarter , {message:"ניתן לבחור רק רבעי שעות (00, 15, 30, 45 דקות)"}),
-  status: z.enum(["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"]).optional(),
+  status: z.enum(["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"]),
   notes: z.string().optional(),
 }).refine((data) => {
   if (data.startTime && data.endTime) {
@@ -75,7 +75,7 @@ export const UpdateBooking = () => {
     });
   }, []);
 useEffect(() => {
-    if (booking && customers.length > 0 && roomOptions.length > 0) {
+    if (booking  && roomOptions.length > 0) {
       setFormKey(prev => prev + 1); // 🎯 זה יאלץ רה-רנדר מלא
     }
   }, [booking, customers, roomOptions]);
@@ -95,16 +95,19 @@ const calculateHours = (date: string, startTime: string, endTime: string): numbe
 };
   // המרת נתוני טופס לאובייקט הזמנה
   const convertFormToBooking = (data: BookingUpdateData) => {
-      const totalHours = calculateHours(data.date, data.startTime, data.endTime);
+    const totalHours = calculateHours(data.date, data.startTime, data.endTime);
+    const roomName = roomOptions.find((room) => room.value === data.roomId)?.label || "";
+    console.log("👉 שם החדר:", roomName);
+    
     const base = {
       id: booking.id,
       roomId: data.roomId || booking.roomId,
-      roomName: booking.roomName ,
-      startTime:  `${data.date}T${data.startTime}`,
-      endTime:`${data.date}T${data.endTime}`,
-      totalHours: totalHours,
+      roomName: roomName || booking.roomName ,
+      startTime:  `${data.date || getDateFromISO(booking.endTime)}T${data.startTime}`|| booking.startTime,
+      endTime:`${data.date}T${data.endTime}`||booking.endTime,
+      totalHours: totalHours || booking.totalHours,
       status: data.status || booking.status,
-      notes: data.notes,
+      notes: data.notes || booking.notes,
       updatedAt: new Date().toISOString(),
     };
 
@@ -130,7 +133,7 @@ const calculateHours = (date: string, startTime: string, endTime: string): numbe
   };
 
   const handleSubmit = async (data: BookingUpdateData) => {
-    
+    console.log("👉 נתוני הטופס בפועל:", data.customerName);
     try {
       const bookingPayload = convertFormToBooking(data) as Booking;
       console.log("🚀 לפני שליחת הטופס: לשרת", bookingPayload);
@@ -150,6 +153,9 @@ const calculateHours = (date: string, startTime: string, endTime: string): numbe
   if (!booking) {
     return <div>לא נמצאה הזמנה לעריכה</div>;
   }
+  const handleCancel = () => {
+    navigate("/bookings");
+  };
 const getDateFromISO = (isoString: string): string => {
   if (!isoString) return '';
   return isoString.split('T')[0];
@@ -237,7 +243,7 @@ const getDateFromISO = (isoString: string): string => {
                   label="חדר"
                   name="roomId"
                   options={roomOptions}
-                  defaultValue={booking.roomName || ''}
+                  defaultValue={booking.roomId || ''}
                   className="w-full border rounded px-3 py-2"
                 />
               </div>
@@ -246,7 +252,7 @@ const getDateFromISO = (isoString: string): string => {
                   label="שעת התחלה"
                   name="startTime"
                   type="time"
-                  defaultValue={booking.startTime ?getTimeFromISO(booking.startTime): ""}
+                  defaultValue={getTimeFromISO(booking.startTime)}
                   className="w-full border rounded px-3 py-2"
                 />
               </div>
@@ -255,7 +261,7 @@ const getDateFromISO = (isoString: string): string => {
                   label="שעת סיום"
                   name="endTime"
                   type="time"
-                  defaultValue={booking.endTime ? getTimeFromISO(booking.endTime) : ""}
+                  defaultValue={getTimeFromISO(booking.endTime) }
                   className="w-full border rounded px-3 py-2"
                 />
               </div>
@@ -264,7 +270,7 @@ const getDateFromISO = (isoString: string): string => {
                   label="תאריך"
                   name="date"
                   type="date"
-                  defaultValue={booking.endTime ? getDateFromISO(booking.endTime): ""}
+                  defaultValue={ getDateFromISO(booking.endTime)}
                   className="w-full border rounded px-3 py-2"
                 />
               </div>
@@ -281,10 +287,12 @@ const getDateFromISO = (isoString: string): string => {
               <Button
                 type="button"
                 className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                onClick={handleCancel}
               > בטל</Button>
               <Button
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >שמור</Button>
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" 
+                >שמור</Button>
             </div>
         </Form>
       </div>
