@@ -129,7 +129,7 @@ export const LeadInteractions = () => {
     if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
-  console.log("Sorted Leads:", sortedLeads); // לוג של הלידים הממוינים
+  // console.log("Sorted Leads:", sortedLeads); // לוג של הלידים הממוינים
 
   return (
     <div className="p-6">
@@ -140,7 +140,7 @@ export const LeadInteractions = () => {
         <div className="relative flex flex-col items-start">
           <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
           <Button
-            onClick={() => navigate("")}
+            onClick={() => navigate("newLead")}
             variant="primary"
             size="sm"
           >

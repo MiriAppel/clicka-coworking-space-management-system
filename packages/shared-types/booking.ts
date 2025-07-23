@@ -48,6 +48,12 @@ export interface Room {
   googleCalendarId?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
+    positionX: number;
+  positionY: number;
+  workspaceMapId: ID; // Assuming this is a reference to a WorkspaceMap
+  // ממדי סביבת העבודה
+  width: number;
+  height: number;
 }
 export interface BookingRules {
   MinimumBookingMinutes: number;
@@ -63,16 +69,16 @@ export interface Booking {
   id?: ID;
   roomId: ID;
   roomName: string;
-  customerId?: ID;
-  customerName?: string;
-  externalUserName?: string;
-  externalUserEmail?: string;
-  externalUserPhone?: string;
+  customerId?: ID|null;
+  customerName?: string|null;
+  externalUserName?: string|null;
+  externalUserEmail?: string|null;
+  externalUserPhone?: string|null;
   startTime: DateISO;
   endTime: DateISO;
   status: BookingStatus;
   notes?: string;
-  googleCalendarEventId?: string;
+  googleCalendarEventId?: string | null;
   totalHours: number;
   chargeableHours: number; // After free hours deduction
   totalCharge: number; // Amount to be charged

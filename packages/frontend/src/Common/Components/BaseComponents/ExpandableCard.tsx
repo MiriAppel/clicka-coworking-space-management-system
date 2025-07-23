@@ -62,14 +62,18 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "הודעת עזיבה",
   EXITED: "עזב",
   PENDING: "בהמתנה",
-  CREATED: "נוצר",
+  CREATED: "נוצר"
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
-  PRIVATE_ROOM: "חדר פרטי",
-  DESK_IN_ROOM: "שולחן בחדר",
-  OPEN_SPACE: "אופן ספייס",
-  KLIKAH_CARD: "כרטיס קליקה",
+  PRIVATE_ROOM: 'חדר פרטי',
+  DESK_IN_ROOM: 'שולחן בחדר',
+  OPEN_SPACE: 'אופן ספייס',
+  KLIKAH_CARD: 'כרטיס קליקה',
+  DOOR_PASS: 'דלת כניסה',
+  WALL: 'קיר',
+  COMPUTER_STAND: 'עמדת מחשב',
+  RECEPTION_DESK: 'דלפק קבלה',
 };
 
 const paymentMethodLabels: Record<PaymentMethodType, string> = {

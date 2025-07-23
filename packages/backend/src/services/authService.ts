@@ -7,54 +7,57 @@ import { UserService } from "./user.service";
 import { sendEmail } from "./gmail-service";
 import { EmailTemplateService } from "./emailTemplate.service";
 import { link } from "fs";
+import { token } from "morgan";
+import { customerService } from "./customer.service";
 
-export const sendVerificationEmail = async (
-  link: string,
-  email: string,
-  id: ID,
-  token: any,
-): Promise<void> => {
-  const emailService = new EmailTemplateService();
+const customerO = new customerService()
+// export const sendVerificationEmail = async (
+//   link: string,
+//   email: string,
+//   id: ID,
+//   token: any,
+// ): Promise<void> => {
+//   const emailService = new EmailTemplateService();
 
-  const emailPromises: Promise<any>[] = [];
+//   const emailPromises: Promise<any>[] = [];
 
-  function encodeSubject(subject: string): string {
-    return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
-  }
+//   function encodeSubject(subject: string): string {
+//     return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+//   }
 
-  const sendEmailToCustomer = async () => {
-    try {
-      const template = await emailService.getTemplateByName(
-        "אימות מייל",
-      );
+//   const sendEmailToCustomer = async () => {
+//     try {
+//       const template = await emailService.getTemplateByName(
+//         "אימות מייל",
+//       );
 
-      if (!template) {
-        console.warn("email template not found");
-        return;
-      }
-      const renderedHtml = await emailService.renderTemplate(
-        template.bodyHtml,
-        {
-          "link": link,
-        },
-      );
+//       if (!template) {
+//         console.warn("email template not found");
+//         return;
+//       }
+//       const renderedHtml = await emailService.renderTemplate(
+//         template.bodyHtml,
+//         {
+//           "link": link,
+//         },
+//       );
 
-      await sendEmail(
-        "me",
-        {
-          to: [email],
-          subject: encodeSubject("אימות מייל"),
-          body: renderedHtml,
-          isHtml: true,
-        },
-        token,
-      );
-    } catch (error) {
-      console.error("Error sending email:", error);
-    }
-  };
-  await sendEmailToCustomer();
-};
+//       await sendEmail(
+//         "me",
+//         {
+//           to: [email],
+//           subject: encodeSubject("אימות מייל"),
+//           body: renderedHtml,
+//           isHtml: true,
+//         },
+//         token,
+//       );
+//     } catch (error) {
+//       console.error("Error sending email:", error);
+//     }
+//   };
+//   await sendEmailToCustomer();
+// };
 
 export const generateJwtToken = (
   payload: { userId: string; email: string; googleId: string },
@@ -78,6 +81,47 @@ export const verifyJwtToken = (token: string) => {
   };
 };
 
+// export const sendEmailsToConfirm = async (id: ID, token: string) => {
+//   try {
+//     const emailService = new EmailTemplateService()
+//     const customer = await customerO.getById(id);
+
+//     if (!customer?.email) {
+//       console.warn("Customer email not found");
+//       return;
+//     }
+
+//     const template = await emailService.getTemplateByName("אימות מייל");
+//     if (!template) {
+//       console.warn("Email template not found");
+//       return;
+//     }
+
+//     const confirmationUrl = `https://localhost:3001/api/auth/confirm-email?token=${token}`;
+
+//     const renderedHtml = await emailService.renderTemplate(template.bodyHtml, {
+//       "שם": customer.name,
+//       "קישור_אימות": confirmationUrl,
+//     });
+
+//     const response = await sendEmail(
+//       "no-reply@yourdomain.com", // כתובת השולח
+//       {
+//         to: [customer.email], // לשלוח למייל של הלקוח
+//         subject: template.subject,
+//         body: renderedHtml,
+//         isHtml: true,
+//       },
+//       token // אם צריך טוקן לשליחת מייל
+//     );
+
+//     console.log("Email sent successfully:", response);
+//   } catch (err) {
+//     console.error("Error sending confirmation email:", err);
+//   }
+// };
+
+
 export const exchangeCodeAndFetchUser = async (
   code: string,
 ): Promise<LoginResponse> => {
@@ -86,6 +130,8 @@ export const exchangeCodeAndFetchUser = async (
     if (!tokens.access_token) {
       throw new Error("No access token received from Google");
     }
+    console.log(tokens);
+    console.log('Tokens received from Google:', tokens);
     const userInfo = await getGoogleUserInfo(tokens.access_token);
     console.log(userInfo);
 
@@ -147,6 +193,7 @@ export const exchangeCodeAndFetchUser = async (
       token: jwtToken,
 
       sessionId: newSessionId,
+       googleAccessToken: tokens.access_token,
        //googleAccessToken: tokens.access_token,
       // refreshToken: tokens.refresh_token!, // Optional, if you want to store it
       expiresAt: tokens.expires_at,
@@ -156,3 +203,5 @@ export const exchangeCodeAndFetchUser = async (
     throw error;
   }
 };
+
+

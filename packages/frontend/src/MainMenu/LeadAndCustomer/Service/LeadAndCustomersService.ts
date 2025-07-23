@@ -1,5 +1,4 @@
 // src/api/leadCustomer.ts
-
 import {
   Lead,
   CreateLeadRequest,
@@ -11,6 +10,7 @@ import {
   StatusChangeRequest,
 } from 'shared-types';
 import { axiosInstance } from '../../../Service/Axios';
+
 
 // ---------- לידים ----------
 

@@ -12,7 +12,7 @@ export const getAllLeads = async (req: Request, res: Response) => {
     console.log("enter");
 
     const leads = await serviceLead.getAllLeads();
-    console.log(leads);
+    // console.log(leads);
     console.log("controller get");
 
     res.status(200).json(leads);
@@ -39,13 +39,13 @@ export const getLeadById = async (req: Request, res: Response) => {
 
 export const createLead = async (req: Request, res: Response) => {
   console.log("controller");
-  console.log("body", req.body);
+  // console.log("body", req.body);
 
   try {
     const leadData: LeadModel = req.body;
     console.log(leadData);
 
-    const newLead = await serviceLead.post(leadData);
+    const newLead = await serviceLead.createLead(leadData);
 
     res.status(201).json(newLead);
   } catch (error: any) {

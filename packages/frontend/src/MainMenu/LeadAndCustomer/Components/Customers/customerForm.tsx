@@ -18,6 +18,10 @@ const workspaceTypeOptions = [
     { value: WorkspaceType.DESK_IN_ROOM, label: 'שולחן בחדר' },
     { value: WorkspaceType.OPEN_SPACE, label: 'אופן ספייס' },
     { value: WorkspaceType.KLIKAH_CARD, label: 'כרטיס קליקה' },
+    { value: WorkspaceType.DOOR_PASS, label: 'דלת כניסה' },
+    { value: WorkspaceType.WALL, label: 'קיר' },
+    { value: WorkspaceType.COMPUTER_STAND, label: 'עמדת מחשב' },
+    { value: WorkspaceType.RECEPTION_DESK, label: 'דלפק קבלה' },
 ];
 
 const PaymentMethodTypeOptions = [

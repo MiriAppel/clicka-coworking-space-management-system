@@ -1,10 +1,11 @@
 import { baseService } from "./baseService";
 import { LeadModel } from "../models/lead.model";
 import Papa, { parse } from "papaparse";
-import { ID, LeadSource, UpdateLeadRequest } from "shared-types";
+import { ID, LeadSource, LeadStatus, UpdateLeadRequest } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 
 export class leadService extends baseService<LeadModel> {
+
   constructor() {
     super("leads");
   }
@@ -31,6 +32,48 @@ export class leadService extends baseService<LeadModel> {
     }
     return [data.source] as LeadSource[]; // הנחה שהשדה נקרא 'source'
   };
+
+  createLead = async (newLead: LeadModel) => {
+
+    const leadData: LeadModel = {
+      name: newLead.name,
+      email: newLead.email,
+      phone: newLead.phone,
+      idNumber: newLead.idNumber,
+      businessType: newLead.businessType,
+      status: LeadStatus.NEW,
+      notes: newLead.notes,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      interestedIn: newLead.interestedIn,
+      source: newLead.source,
+      interactions: [], // כל אינטראקציה שייכת לליד אחד, אבל ליד יכול להכיל הרבה אינטראקציות (שיחות, תזכורות, ביקורים וכו׳).
+      contactDate: newLead.contactDate,
+      followUpDate: newLead.followUpDate,
+      toDatabaseFormat() {
+        return {
+          id_number: this.idNumber,
+          name: this.name,
+          phone: this.phone,
+          email: this.email,
+          business_type: this.businessType,
+          interested_in: this.interestedIn,
+          source: this.source,
+          status: this.status,
+          contact_date: this.contactDate,
+          follow_up_date: this.followUpDate,
+          notes: this.notes,
+          created_at: this.createdAt,
+          updated_at: this.updatedAt,
+        }
+      }
+    };
+    console.log("in servise");
+
+    console.log(leadData);
+
+    const lead = await this.post(leadData);
+  }
 
   addLeadFromCSV = async (csvData: string): Promise<void> => {
     // const parsedData = parse(csvData, { header: true }).data as UpdateLeadRequestModel[];
@@ -124,7 +167,8 @@ export class leadService extends baseService<LeadModel> {
       );
     }
 
-    const leads =  data || [];
+    const leads = data || [];
+
     return LeadModel.fromDatabaseFormatArray(leads)
   };
 
@@ -171,28 +215,28 @@ export class leadService extends baseService<LeadModel> {
   };
 
   getLeadsByText = async (text: string): Promise<LeadModel[]> => {
-  const searchFields = ["name", "status", "phone", "email", "city"]; // כל השדות שאת רוצה לבדוק בהם
+    const searchFields = ["name", "status", "phone", "email", "city"]; // כל השדות שאת רוצה לבדוק בהם
 
-  const filters = searchFields
-    .map((field) => `${field}.ilike.%${text}%`)
-    .join(",");
+    const filters = searchFields
+      .map((field) => `${field}.ilike.%${text}%`)
+      .join(",");
 
-  const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .or(filters);
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .or(filters);
 
-  if (error) {
-    console.error("שגיאה:", error);
-    return [];
-  }
+    if (error) {
+      console.error("שגיאה:", error);
+      return [];
+    }
 
-  return data as LeadModel[];
-};
+    return data as LeadModel[];
+  };
 
-  
-      
-  
+
+
+
 }
 
 
