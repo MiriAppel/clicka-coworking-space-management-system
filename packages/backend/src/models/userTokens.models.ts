@@ -41,16 +41,18 @@ export class UserTokens {
   toDatabaseFormat() {
     return {
       id: this.id,
-      userId: this.userId,
-      accessToken: this.accessToken,
-      accessTokenExpiry: this.accessTokenExpiry,
-      refreshToken: this.refreshToken,
-      activeSessionId: this.activeSessionId,
-      sessionCreatedAt: this.sessionCreatedAt,
-      lastActivityAt: this.lastActivityAt,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
+      user_id: this.userId,
+      access_token: this.accessToken,
+      access_token_expiry: this.accessTokenExpiry,
+      refresh_token: this.refreshToken,
+      active_session_id: this.activeSessionId,
+      session_created_at: this.sessionCreatedAt,
+      last_activity_at: this.lastActivityAt,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt
     };
   }
+
+  
 }
 

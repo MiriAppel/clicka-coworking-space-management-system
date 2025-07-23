@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ChartDisplay, ChartData } from '../Components/BaseComponents/Graph';
-import { ExportButtons } from '../Components/BaseComponents/exportButtons';
+import { ExportButtons } from './BaseComponents/ExportButtons';
 import { Button } from '../Components/BaseComponents/Button';
 // import {formatNumberIL } 
 
@@ -121,52 +121,6 @@ export const ReportPage = () => {
       <h1 className="text-2xl font-bold mb-4">
         {isDrillDown ? `Details of "${selectedLabel}"` : 'General Report'}
       </h1>
-
-      {/* ⬇️ Select to change the graph type */}
-      <div className="mb-4">
-        {/* מאפשר לבחור בין שלושה סוגים של גרפים */}
-        <label htmlFor="chartType" className="mr-2 font-semibold">Chart Type:</label>
-        <select
-          id="chartType"
-          value={chartType}
-          onChange={(e) => setChartType(e.target.value as 'bar' | 'line' | 'pie')}
-          className="border p-1 rounded"
-        >
-          <option value="bar">Bar</option>
-          <option value="line">Line</option>
-          <option value="pie">Pie</option>
-        </select>
-      </div>
-      <div className="mb-4">
-        <label htmlFor="groupBy" className="mr-2 font-semibold">Group by:</label>
-        <select
-          id="groupBy"
-          value={groupBy}
-          onChange={(e) => setGroupBy(e.target.value as 'month' | 'quarter' | 'year')}
-          className="border p-1 rounded"
-        >
-          <option value="month">Month</option>
-          <option value="quarter">Quarter</option>
-          <option value="year">Year</option>
-        </select>
-      </div>
-      <div className="mb-5">
-        <label className="mr-2 font-semibold">Start Date:</label>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="border p-1 rounded mr-4"
-        />
-
-        <label className="mr-2 font-semibold">End Date:</label>
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="border p-1 rounded"
-        />
-      </div>
 
       {/* Export Buttons */}
       <ExportButtons

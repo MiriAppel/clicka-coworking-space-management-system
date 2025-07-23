@@ -10,7 +10,7 @@ import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
-import { createCustomer, deleteLead } from "../../Service/LeadAndCustomersService"
+import { createCustomer, deleteLead } from "../../../../Services/LeadAndCustomersService";
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
@@ -221,7 +221,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
                 console.error("Error create customer:", error);
             });
 
-            //מחיקת המתעניין
+        //מחיקת המתעניין
         try {
             await deleteLead(lead.id!);
         } catch (error) {
@@ -247,9 +247,11 @@ export const InterestedCustomerRegistration: React.FC = () => {
                 >
                     <div
                         key={currentStep}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4 col-span-2"
+                        className="col-span-2"
                     >
-                        {steps[currentStep].content}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {steps[currentStep].content}
+                        </div>
 
                         <div className="col-span-2 flex justify-between">
                             {/* צד ימין: כפתור הקודם או ריק */}

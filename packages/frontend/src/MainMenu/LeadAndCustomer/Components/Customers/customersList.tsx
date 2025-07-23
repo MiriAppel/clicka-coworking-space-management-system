@@ -159,7 +159,7 @@ import {
   TableColumn,
 } from "../../../../Common/Components/BaseComponents/Table";
 import { Customer, CustomerStatus } from "shared-types";
-import { deleteCustomer } from "../../Service/LeadAndCustomersService";
+import { deleteCustomer } from "../../../../Services/LeadAndCustomersService";
 import { Stack, TextField } from "@mui/material";
 import axios from "axios";
 import debounce from "lodash/debounce";

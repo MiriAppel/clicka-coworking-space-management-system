@@ -68,7 +68,7 @@ export const Accesibility = () => {
       fontFamily: theme.lang === "he" ? "Noto Sans Hebrew" : "Inter",
       direction: theme.direction,
       color: theme.colors.text,
-      backgroundColor: theme.colors.background || 'white', 
+     // backgroundColor: theme.colors.background || 'white', 
     }}
   >
     <h2 id="a11y-dialog-title" className="text-lg font-bold mb-3">

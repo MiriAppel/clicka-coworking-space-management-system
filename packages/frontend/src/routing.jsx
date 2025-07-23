@@ -5,6 +5,7 @@ import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting'
 import App from './App';
 import { ReportPage } from './Common/Components/ReportPage';
+import {AuthenticationScreen} from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen'
 
 export const routing = () => {
   return (
@@ -14,6 +15,8 @@ export const routing = () => {
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="/graph" element={<ReportPage />} />
+        {/* <Route path="/auth" element={<AuthenticationScreen />} /> */}
+        
         {/* <Route path="/billing" element={<Billing />} /> */}
       </Route>
     </Routes>

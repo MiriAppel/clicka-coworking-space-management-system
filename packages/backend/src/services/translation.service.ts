@@ -2,13 +2,13 @@ import { createClient } from '@supabase/supabase-js';
 import { Translation } from 'shared-types';
 import { translateText } from '../utils/translate';
 import { supportedLanguages } from 'shared-types';
-import dotenv from 'dotenv';
 import { TranslationModel } from '../models/TranslationRecord';
-import { supabase } from '../db/supabaseClient';
-
-dotenv.config();
 
 
+// יצירת לקוח Supabase
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseAnonKey = process.env.SUPABASE_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // בדיקת תקינות שפה
 function isLanguage(value: string): value is string {

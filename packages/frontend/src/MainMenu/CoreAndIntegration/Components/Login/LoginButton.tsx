@@ -1,24 +1,20 @@
 import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
-import { googleAuthConfig } from '../../Config/googleAuth';
 import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
+import { axiosInstance } from '../../../../Services/Axios';
+import { googleAuthConfig } from '../../../../Config/googleAuth';
+import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
 
-const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3001',
-    withCredentials: true, // Ensure cookies are sent with requests
-});
 export const LoginWithGoogle = () => {
-    // const setUser = useAuthStore((state) => state.setUser);
-    const {setUser, setSessionId}=useAuthStore();
+    const { setUser, setSessionId } = useAuthStore();
     const login = useGoogleLogin({
         flow: 'auth-code',
-        onSuccess: async (codeResponse) => {
+        onSuccess: async (codeResponse: { code: any; }) => {
             try {
                 console.log('Code received from Google:', codeResponse);
-
                 const response = await axiosInstance.post<LoginResponse>(
-                    '/api/auth/google',
+                    '/auth/google',
                     { code: codeResponse.code },
                     {
                         headers: {
@@ -26,21 +22,36 @@ export const LoginWithGoogle = () => {
                         },
                     }
                 );
-
                 console.log('Server response:', response.data);
                 setUser(response.data.user);
                 setSessionId(response.data.sessionId!)
                 // Optionally, you can handle the token and expiration here
-            } catch (error) {
+            } catch (error: any) {
+                if (axios.isAxiosError(error) && error.response?.status === 401) {
+                    showAlert("", "המשתמש לא מורשה לגשת למשאב זה", "error");
+                    //no puede entrar a clika y hacer redirect a login 
+                    return;
+                }
+                if (axios.isAxiosError(error)) {
+                    showAlert("", error.message, "error");
+                }
                 console.error('Error sending code to server:', error);
             }
         },
-        onError: (error) => console.error('Login Failed:', error),
+        onError: (error: any) => console.error('Login Failed:', error),
         scope: googleAuthConfig.scopes.join(' '),
         redirect_uri: googleAuthConfig.redirectUri,
-    });
+        extraQueryParams: {
+            prompt: 'consent',
+            access_type: 'offline',
+             include_granted_scopes: 'false',
+        }
+        //no puede entrar a clika y hacer redirect a login 
+    } as any);
 
     return (
-        <button onClick= {() => login()}> Google התחבר עם </button>
+        <button onClick={() => login()}> Google התחבר עם </button>
     );
 };
+
+
