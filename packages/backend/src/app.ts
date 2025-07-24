@@ -47,7 +47,7 @@ const app = express();
 dotenv.config();
 
 // Create Express app
-setupSwagger(app);
+// setupSwagger(app);
 app.use(cookieParser());
 
 // Apply middlewares
@@ -64,13 +64,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use('/api/customers', routerCustomer);
-
+app.use('/api/translate', translationRouter);
+app.use('/api/auth', routerAuth);
 app.use(globalAuditMiddleware);
+app.use('/api/customers', routerCustomer);
 app.use('/api/users', userRouter); // User routes
 app.use('/api/audit-logs', auditLogRouter);
-app.use('/api/translate', translationRouter);
-app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/pricing', routerPricing);
@@ -91,23 +90,19 @@ app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
-app.use('/api/auth', routerAuth);
 app.use('/api', router);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
-app.use('/api/interaction', interactionRouter)
 app.use(urlencoded({ extended: true }));
 // app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
-app.use('/api/payment', routerPayment);app.use('/api/document', documentRouter);
+app.use('/api/document', documentRouter);
 app.use('/api/invoices', invoiceRouter);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/emailTemplate', emailTemplateRouter);
 app.use('/api/drive', driveRoutes);
 // app.use('/api/leadInteraction', routerCstomer);
-app.use('/api/payment', routerPayment);
-app.use('/api/invoices', invoiceRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
