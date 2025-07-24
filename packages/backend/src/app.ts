@@ -54,7 +54,7 @@ app.use(cookieParser());
 // app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
-  origin: [process.env.CORS_ORIGIN || 'http://localhost:3000' , 'https://57737495d7dc.ngrok-free.app'], // Adjust as needed
+  origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE, // Adjust as needed
   credentials: true, // Allow cookies to be sent with requests
 }));
  
