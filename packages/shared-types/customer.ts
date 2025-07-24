@@ -87,7 +87,7 @@ export interface Contract {
   startDate?: DateISO;
   endDate?: DateISO;
   terms?: ContractTerms;
-  documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
+  documents: ID[]; // מזהי מסמכים ששמורים בטבלת document 
   signedBy?: string;
   witnessedBy?: string;
   createdAt: DateISO;

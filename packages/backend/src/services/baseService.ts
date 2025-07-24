@@ -30,7 +30,7 @@ export class baseService<T> {
 
     const { data, error } = await supabase
       .from(this.tableName)
-      .select("*, lead_interaction(*)");
+      .select("*");
 
     console.log(data);
 

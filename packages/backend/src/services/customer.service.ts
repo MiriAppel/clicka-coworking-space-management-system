@@ -33,7 +33,10 @@ export class customerService extends baseService<CustomerModel> {
   }
 
   getAllCustomers = async (): Promise<CustomerModel[] | null> => {
+    console.log('getAllCustomers called');
     const customers = await this.getAll();
+    console.log('Raw customers from getAll():', customers);
+    console.log('Number of customers:', customers?.length || 0);
 
     const customersWithPayments = await Promise.all(
       customers.map(async (customer) => {
@@ -45,7 +48,10 @@ export class customerService extends baseService<CustomerModel> {
       })
     );
 
-    return CustomerModel.fromDatabaseFormatArray(customersWithPayments); // המרה לסוג UserModel
+    const result = CustomerModel.fromDatabaseFormatArray(customersWithPayments);
+    console.log('Final result:', result);
+    console.log('Final result length:', result?.length || 0);
+    return result;
   };
   //מחזיר את כל הסטטוסים של הלקוח
   getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
@@ -132,7 +138,7 @@ export class customerService extends baseService<CustomerModel> {
         renewalTerms: "",
         terminationNotice: 0
       },
-      documents: newCustomer.contractDocuments || [],
+      documents: [], // מערך ריק של מזהי מסמכים
       //   signedBy?: string;
       //   witnessedBy?: string;
       createdAt: new Date().toISOString(),

@@ -249,34 +249,71 @@ const tokenService = new UserTokenService();
 
 export async function uploadFileAndReturnReference(
   file: Express.Multer.File,
-  folderPath: string
+  folderPath: string,
+  userToken?: string | null
 ): Promise<DocumentModel> {
-const token= await tokenService.getSystemAccessToken();
-if (!token) {
-  throw new Error('Missing system token');
-}
-if (!process.env.SYSTEM_EMAIL) {
-    throw new Error('SYSTEM_EMAIL env var is missing');
-}
-  const folderId = await getOrCreateFolderByPath(folderPath, token??'');
-  const uploaded = await uploadFileToDrive(file, token??'', folderId);
-  const metadata = await getFileMetadataFromDrive(uploaded.id!, token??'');
+  try {
+    console.log('uploadFileAndReturnReference called with:', {
+      fileName: file.originalname,
+      folderPath,
+      hasUserToken: !!userToken
+    });
 
-  const fileUrl = `https://drive.google.com/drive/u/0/folders/${folderId}`;
+    let token = userToken;
+    if (!token) {
+      console.log('No user token, getting system token...');
+      try {
+        token = await tokenService.getSystemAccessToken();
+        console.log('System token retrieved:', token ? 'Success' : 'Failed');
+      } catch (error: any) {
+        console.error('Error getting system token:', error.message);
+      }
+    }
+    if (!token) {
+      console.error('No token available - system email:', process.env.SYSTEM_EMAIL);
+      throw new Error('Missing access token - please ensure system user is configured');
+    }
+    console.log('Token obtained successfully');
+    
+    console.log('Getting or creating folder...');
+    const folderId = await getOrCreateFolderByPath(folderPath, token);
+    console.log('Folder ID obtained:', folderId);
+    
+    console.log('Uploading file to Drive...');
+    const uploaded = await uploadFileToDrive(file, token, folderId);
+    console.log('File uploaded to Drive:', uploaded);
+    
+    console.log('Sharing file...');
+    await shareDriveFile(uploaded.id!, {
+      role: 'reader',
+      type: 'anyone'
+    }, token);
+    console.log('File shared successfully');
+    
+    console.log('Getting file metadata...');
+    const metadata = await getFileMetadataFromDrive(uploaded.id!, token);
+    console.log('Metadata retrieved:', metadata);
 
-  const document = new DocumentModel( {
-    id: uploaded.id!,
-    name: metadata.name!,
-    path: folderPath,
-    mimeType: metadata.mimeType!,
-    size: Number(metadata.size),
-    url: fileUrl,
-    googleDriveId: uploaded.id!,
-    created_at: metadata.createdTime!,
-    updated_at: metadata.modifiedTime!,
-  });
-console.log('File uploaded and reference created:', document);
-// saveDocument(document);
-  return document;
+    const fileUrl = `https://drive.google.com/file/d/${uploaded.id}/view?usp=sharing`;
+
+    const document = new DocumentModel({
+      id: crypto.randomUUID(),
+      name: metadata.name!,
+      path: folderPath,
+      mimeType: metadata.mimeType!,
+      size: Number(metadata.size) || 0,
+      url: fileUrl,
+      googleDriveId: uploaded.id!,
+      created_at: metadata.createdTime!,
+      updated_at: metadata.modifiedTime!,
+    });
+    
+    console.log('Document model created successfully:', document);
+    return document;
+  } catch (error: any) {
+    console.error('Error in uploadFileAndReturnReference:', error.message);
+    console.error('Error stack:', error.stack);
+    throw error;
+  }
 }
 

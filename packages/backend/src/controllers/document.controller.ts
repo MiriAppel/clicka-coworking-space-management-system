@@ -70,17 +70,36 @@ export const getDocumentByIdController = async (req: Request, res: Response) => 
 
 export async function saveDocuments(req: Request, res: Response) {
   try {
-    const file = req.body.file;
+    console.log('saveDocuments called with:', {
+      file: req.file ? { name: req.file.originalname, size: req.file.size } : null,
+      body: req.body,
+      user: (req as any).user ? { id: (req as any).user.id, email: (req as any).user.email } : null
+    });
+    
+    const file = req.file;
     const folderPath = req.body.folderPath;
-    if (!file || !file.name || !file.url||!folderPath) {
+    const user = (req as any).user;
+    
+    if (!file || !folderPath) {
+      console.error('Missing file or folderPath:', { file: !!file, folderPath });
       return res.status(400).json({ message: 'פרטי הקובץ חסרים או שגויים' });
     }
 
-    const savedDocument = await saveDocument(folderPath, file);
+    const savedDocument = await saveDocument(folderPath, file, user?.id);
+    console.log('Document saved successfully:', savedDocument);
 
-    res.status(201).json(savedDocument);
+    res.status(201).json({
+      success: true,
+      document: savedDocument,
+      message: 'הקובץ נשמר בהצלחה'
+    });
   } catch (error: any) {
-    console.error(' שגיאה בשמירת המסמך:', error);
-
+    console.error('שגיאה בשמירת המסמך:', error);
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 }

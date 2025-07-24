@@ -9,7 +9,7 @@ documentRouter.post('/', upload.single('file'), uploadDocument);
 documentRouter.get('/vendor/:vendorId', getVendorDocuments);
 documentRouter.delete('/:documentId', deleteDocuments);
 documentRouter.get('/id/:documentId', getDocumentByIdController);
-documentRouter.post('/save', saveDocuments );
+documentRouter.post('/save', upload.single('file'), saveDocuments);
 
 
 export default documentRouter;

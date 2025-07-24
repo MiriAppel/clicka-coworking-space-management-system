@@ -184,14 +184,41 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     //     body: JSON.stringify({ fileReference: fileRef }),
     //   });
       console.log('📥 Response data:', res.data);
-      const fileUrl = `https://drive.google.com/file/d/${res.data.id}/view`;
+      console.log('📥 Document data:', res.data.document);
+      console.log('📥 Google Drive ID:', res.data.document?.googleDriveId);
+      console.log('📥 File URL:', res.data.document?.url);
+      const googleDriveId = res.data.document?.url;
+      const fileUrl = res.data.document?.url || (googleDriveId ? `https://drive.google.com/uc?id=${googleDriveId}&export=download` : null);
+      
       console.log('🔗 קישור לקובץ בדרייב:', fileUrl);
+      
+      if (!fileUrl) {
+        console.error('❌ No valid file URL found in response');
+        throw new Error('לא ניתן ליצור קישור לקובץ');
+      }
       setFiles(prev =>
         prev.map(f =>
           f.id === fileItem.id ? { ...f, status: 'success', progress: 100, fileUrl: fileUrl } : f
         )
       );
-      if (onFilesUploaded) onFilesUploaded([{ ...fileItem, status: 'success', progress: 100, fileUrl: fileUrl }]);
+      const uploadedFile = { 
+        ...fileItem,
+        status: 'success' as const,
+        progress: 100,
+        fileUrl: fileUrl,
+        id: res.data.document.id,
+        name: res.data.document.name,
+        path: res.data.document.path,
+        mimeType: res.data.document.mimeType,
+        size: res.data.document.size,
+        url: res.data.document.url,
+        googleDriveId: res.data.document.googleDriveId,
+        created_at: res.data.document.created_at,
+        updated_at: res.data.document.updated_at
+      };
+      
+      console.log('Calling onFilesUploaded with:', uploadedFile);
+      if (onFilesUploaded) onFilesUploaded([uploadedFile]);
       console.log(`✅ Upload successful for "${fileItem.file.name}"`);
     } catch (error: any) {
       console.error(`❌ Upload failed for "${fileItem.file.name}"`, error);

@@ -1,0 +1,14 @@
+[
+  {
+    "id": "customer-1",
+    "name": "לקוח ראשון",
+    "email": "customer1@example.com",
+    "phone": "050-1234567"
+  },
+  {
+    "id": "customer-2", 
+    "name": "לקוח שני",
+    "email": "customer2@example.com",
+    "phone": "050-7654321"
+  }
+]

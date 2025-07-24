@@ -80,7 +80,8 @@ export const menus: Menu[] = [
       { label: 'פעולות משתמשים', path: '/UserActions' },
       { label: 'הרשאות', path: '/permissions' },
       { label: 'הגדרות', path: '/settings' },
-      { label: 'אינטגרציות', path: '/integrations' }
+      { label: 'אינטגרציות', path: '/integrations' },
+      { label: 'העלאת מסמכים', path: '/documentUpload' }
     ]
   },
   {

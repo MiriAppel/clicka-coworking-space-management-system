@@ -31,6 +31,7 @@ import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePa
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
 import ClientSearchAndSelect from './MainMenu/LeadAndCustomer/Components/upload';
+import DocumentUpload from './MainMenu/CoreAndIntegration/Components/DocumentUpload';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -85,6 +86,7 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/documentUpload" element={< DocumentUpload />} />
       </Route>
     </Routes>
   );

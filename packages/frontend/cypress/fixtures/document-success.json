@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "document": {
+    "id": "doc-123",
+    "name": "test.pdf",
+    "path": "לקוח ראשון/חוזים",
+    "mimeType": "application/pdf",
+    "size": 12345,
+    "url": "https://drive.google.com/file/d/test-id/view",
+    "googleDriveId": "test-drive-id",
+    "created_at": "2025-01-01T00:00:00Z",
+    "updated_at": "2025-01-01T00:00:00Z"
+  },
+  "message": "הקובץ נשמר בהצלחה"
+}
