@@ -8,7 +8,7 @@ export class RoomModel implements Room{
   type: RoomType;
   status: RoomStatus;
   capacity: number;
-  features?: RoomFeature[];
+  features?: ID[];
   hourlyRate: number;
   discountedHourlyRate: number;
   googleCalendarId?: string;
@@ -18,7 +18,6 @@ export class RoomModel implements Room{
   positionY: number;
   width: number;
   height: number;
-  // BookingRules fields INLINED:
   MinimumBookingMinutes: number;
   MaximumBookingMinutes: number;
   RequiredApproval: boolean;
@@ -36,7 +35,7 @@ export class RoomModel implements Room{
      type: RoomType;
      status: RoomStatus;
      capacity: number;
-     features: RoomFeature[];
+     features: ID[];
      hourlyRate: number;
      discountedHourlyRate: number;
      googleCalendarId?: string;

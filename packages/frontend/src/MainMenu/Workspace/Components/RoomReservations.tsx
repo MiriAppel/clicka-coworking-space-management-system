@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import { useForm, FormProvider, useWatch } from "react-hook-form";
+//יבוא מהעיצובים הכללים 
 import { InputField } from "../../../Common/Components/BaseComponents/Input";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
 import { SelectField } from "../../../Common/Components/BaseComponents/Select";
+//יבוא מהקבצי STORE
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
 import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
 import { useFeatureStore } from "../../../Stores/Workspace/featureStore";
@@ -10,6 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../../../Service/supabaseClient";
 import "../Css/roomReservations.css";
 import { log } from "console";
+//יבוא מהספריה של ZOD ולולידציה
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -26,6 +29,7 @@ type Room = {
   id: string;
   name: string;
   features?: string[];
+  featureNames?: string[];
 };
 
 export type FormFields = {
@@ -85,7 +89,7 @@ const isFullHourDifference = (startTime: string, endTime: string) => {
   const diffInMinutes = (end.getTime() - start.getTime()) / 1000 / 60;
   return diffInMinutes >= 60 && diffInMinutes % 60 === 0;
 };
-
+//הולידציות
 const bookingSchema = z.object({
   customerStatus: z.enum(["external", "customer"]),
   customerId: z.string().optional(),
@@ -161,15 +165,13 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
     const [allFeatures, setAllFeatures] = useState<{ id: string; name: string }[]>([]);
     const { features, getAllFeatures, loading, error } = useFeatureStore();
-
+//חישוב כמות השעות שהמשתמש בחר את החדר
     const calculateDurationInMinutes = (startISO: string, endISO: string): number => {
       const start = new Date(startISO);
       const end = new Date(endISO);
       const diffInMs = end.getTime() - start.getTime();
       return (Math.floor(diffInMs / (1000 * 60))) / 60;
     };
-
-
 
     useImperativeHandle(ref, () => ({
       fillFormWithExternalData: (data: Partial<FormFields>) => {
@@ -178,14 +180,16 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         });
       },
     }));
+    //הבאת כל החדרים
     useEffect(() => {
       getAllRooms().then((data) => {
         setRooms(data);
       });
     }, []);
+    //הבאת כל הלקוחות
     useEffect(() => {
       fetchCustomers();
-
+//שליפת התכונות לפי חדרים
       getAllRooms().then((rooms: Room[]) => {
         setRoomOptions(
           rooms.map((room) => ({
@@ -195,29 +199,15 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         );
       });
     }, []);
+    const customerId = useWatch({ control: methods.control, name: "customerId" });
     useEffect(() => {
-      if (status === "customer" && methods.getValues("customerId")) {
-        const customer = customers.find((c) => c.id === methods.getValues("customerId"));
-        console.log("נמצא לקוח?", customer);
+      if (status === "customer" && customerId) {
+        const customer = customers.find((c) => c.id === customerId);
         if (customer) {
           methods.setValue("name", customer.name);
-          console.log("שם מתוך useEffect:", customer.name);
         }
       }
-    }, [status, customers, methods.watch("customerId")]);
-
-    // useEffect(() => {
-    //   const fetchFeatures = async () => {
-    //     const { data, error } = await supabase.from("feature").select("*");
-    //     if (error) {
-    //       console.error("שגיאה בשליפת תכונות:", error);
-    //       return;
-    //     }
-    //     setAllFeatures(data || []);
-    //   };
-
-    //   fetchFeatures();
-    // }, []);
+    }, [status, customerId, customers]);
 
 
     useEffect(() => {
@@ -227,7 +217,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           if (customer) {
             methods.setValue("customerId", customer.id);
             methods.setValue("name", customer.name);
-            // console.log("שם הלקוח:", customer.name);
             methods.setValue("email", customer.email);
             methods.setValue("phone", customer.phone);
           }
@@ -235,7 +224,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       };
       fetch();
     }, [status, phoneOrEmail]);
-    //אפשרי לקבל את הבחירת חדר מבחוץ
     useEffect(() => {
       if (initialData?.selectedRoomId) {
         methods.setValue("selectedRoomId", initialData.selectedRoomId);
@@ -263,12 +251,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         console.log("התכונות אחרי getAllFeatures:", features);
       });
     }, []);
-    
-    // useEffect(() => {
-    //   getAllFeatures();
-    // }, []);
     const roomsWithFeatures = rooms.map(room => {
-      console.log("התכונות",features.length);
       const featureIds = room.features || [];
       const fullFeatures = allFeatures.filter(f => featureIds.includes(f.id));
       return {
@@ -276,9 +259,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         features: fullFeatures,
       };
     });
-
-
-
 
     useEffect(() => {
       if (selectedRoomId && rooms.length > 0) {
@@ -298,6 +278,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       const roomName = selectedRoom?.label ?? "Unknown";
 
       const totalMinutes = calculateDurationInMinutes(startTime, endTime);
+      //האוביקט המלא של הבוקינג
       const base = {
         id: uuidv4(),
         roomId: data.selectedRoomId,
@@ -321,19 +302,15 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-
+//אם הסטטוס הוא לקוח קיים לשלוף את נתונין
       if (data.customerStatus === "customer") {
-        console.log("customerId", data.customerId);
-        console.log("customerName", data.name);
-        console.log("customerPhone", data.phone);
         return {
           ...base,
           customerId: data.customerId ?? "",
           customerName: name,
-
         };
       }
-
+//אחרת להחזירר את פרטי הלקוח החיצוני
       return {
         ...base,
         externalUserName: data.name ?? "",
@@ -346,7 +323,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     }, [methods.formState.errors]);
 
     const handleSubmit = async (data: FormFields) => {
-
+//שלא ישאר שדות ריקים
       try {
         if (data.customerStatus === "customer") {
           if (!data.customerId) {
@@ -359,16 +336,11 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
             return;
           }
         }
-
-
+        //להכניס את נתוני הטופס ולהמירם לסוג של הדטה
         const bookingPayload = convertFormToBooking(data);
-        console.log(bookingPayload, "Booking payload before masad");
         const result = await createBooking(bookingPayload);
-        console.log("Booking payload: before calendar", bookingPayload);
-
         const resultCalendar = await createBookingInCalendar(bookingPayload, "primary");
-        console.log(resultCalendar, "Booking created:");
-
+//הוספת ההזמנה גם לגוגל קלנדר
         if (resultCalendar) {
           methods.reset();
           onSubmit?.();
@@ -378,7 +350,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         alert("שגיאה ביצירת ההזמנה");
       }
     };
-
+//הטופס הזמנת חדרים
     return (
       <div className="form-page">
         <div className="form-wrapper">
@@ -439,36 +411,18 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
               <div className="form-field">
                 <SelectField name="selectedRoomId" label="בחירת חדר" options={roomOptions} required />
               </div>
-              {/* {selectedRoomFeatures.length > 0 && (
+              {selectedRoomId && (
                 <div className="form-field">
                   <label>תכונות החדר:</label>
                   <ul>
-                    {selectedRoomFeatures.map((featureId, index) => {
-                      const feature = allFeatures.find(f => f.id === featureId);
-                      return (
-                        <li key={index}>
-                          {feature?.name || "לא ידוע"}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              )} */}
-              {(
-                <div className="form-field">
-                  <label>כל התכונות הקיימות:</label>
-                  <ul>
-                    {features.map((feature) => (
-                      <li key={feature.id}>
-                        {feature.description || "תכונה ללא תיאור"} - תוספת: {feature.additionalCost}₪
-                      </li>
-                    ))}
+                    {(rooms.find(r => r.id === selectedRoomId)?.features || [])
+                      .map(fid => features.find(f => f.id === fid)?.description || "תכונה לא ידועה")
+                      .map((name, index) => (
+                        <li key={index}>{name}</li>
+                      ))}
                   </ul>
                 </div>
               )}
-
-
-
               <div className="form-field">
                 <InputField name="startDate" label="תאריך התחלה" type="date" required />
               </div>

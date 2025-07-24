@@ -9,6 +9,4 @@ featureRouter.get("/getFeatureById/:id", featureController.getFeatureById.bind(f
 featureRouter.post("/createFeature", featureController.createRoomFeature.bind(featureController));
 featureRouter.put("/updateFeature/:id", featureController.updateFeature.bind(featureController));
 featureRouter.delete("/deleteFeature/:id", featureController.deleteFeature.bind(featureController));
-featureRouter.get("/:id/features", featureController.getAllFeaturesByRoomId.bind(featureController));
-featureRouter.put("/:id/updatefeatures", featureController.updateFeaturesByRoomId.bind(featureController));
 export default featureRouter;

@@ -113,44 +113,5 @@ async  getFeatureById(id: string): Promise<RoomFeatureModel | null>
 
 
 }
-// שליפת תכונות של חדר
-async getAllFeaturesByRoomId(roomId: string) {
-  const { data: roomData, error: roomError } = await supabase
-    .from('room_feature')
-    .select('features')
-    .eq('id', roomId)
-    .single();
 
-  if (roomError || !roomData) {
-    throw new Error('Room not found');
-  }
-
-  const featureIds: string[] = roomData.features;
-
-  if (!featureIds || featureIds.length === 0) return [];
-
-  const { data: featuresData, error: featuresError } = await supabase
-    .from('room_feature')
-    .select('*')
-    .in('id', featureIds);
-
-  if (featuresError) throw new Error('Failed to fetch features');
-
-  return featuresData;
-}
-
-
-// עדכון תכונות של חדר
-async updateFeaturesByRoomId(id: string, featureIds: string[]) {
-  const { data, error } = await supabase
-    .from('room_feature')
-    .update({ features: featureIds })
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) throw new Error('Failed to update room features');
-
-  return RoomFeatureModel.fromDatabaseFormat(data); 
-}
 }
