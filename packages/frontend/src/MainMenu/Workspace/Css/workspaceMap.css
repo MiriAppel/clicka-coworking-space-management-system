@@ -401,6 +401,7 @@ box-sizing: border-box;
 }
 .clearSearchBtn,.backBtn {
  margin-top: 20px;
+ margin-top: 20px;
   background-color: #007BFF !important;
   color: white !important;
   border-color: #6c757d !important;

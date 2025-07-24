@@ -2,7 +2,8 @@
 export enum AssignmentStatus {
   ACTIVE = 'ACTIVE',
   ENDED = 'ENDED',
-  SUSPENDED = 'SUSPENDED'
+  SUSPENDED = 'SUSPENDED',
+  INACTIVE = 'INACTIVE',
 }
 
 // Space model
