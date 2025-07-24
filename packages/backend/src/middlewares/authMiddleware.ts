@@ -75,10 +75,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
           // Save the new token in a cookie
           setAuthCookie(res, newAccessToken);
-          console.log(
-            'New access token generated and set in cookie for user:',
-            userData.email
-          );
+          console.log('New access token generated and set in cookie for user:', {
+            userId: userData.id,
+            email: userData.email ? '[REDACTED]' : 'undefined'
+          });
           
           return next();
         }

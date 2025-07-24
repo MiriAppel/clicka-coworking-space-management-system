@@ -110,7 +110,11 @@ app.get('/api/health', (req, res) => {
 });
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.log(err);
+  console.error('Error occurred:', {
+    message: err.message || 'Unknown error',
+    status: err.status || 500,
+    code: err.code || 'INTERNAL_SERVER_ERROR'
+  });
   res.status(err.status || 500).json({
     success: false,
     error: {
@@ -124,7 +128,11 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 // TODO: Add routers for different resources
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log(err);
+  console.error('Error occurred:', {
+    message: err.message || 'Unknown error',
+    status: err.status || 500,
+    code: err.code || 'INTERNAL_SERVER_ERROR'
+  });
   console.log(req);
   res.status(err.status || 500).json({
     success: false,
