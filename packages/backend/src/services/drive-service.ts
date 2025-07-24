@@ -1,7 +1,8 @@
 import { google } from 'googleapis';
-import { FileReference } from 'shared-types';
 import { Readable } from 'stream';
 import { UserTokenService } from './userTokenService';
+import { DocumentModel } from '../models/document.model';
+import { saveDocument } from './document.service';
 
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();
@@ -244,14 +245,12 @@ export async function getOrCreateFolderByPath(
   return await uploadFileToDrive(file, token, folderId);
 }
 
-// יצירת מופע של שירות לניהול טוקנים לצורך גישה למערכת (Google Drive וכד')
 const tokenService = new UserTokenService();
-//פונקציה שמחזירה אובייקט FileReference
+
 export async function uploadFileAndReturnReference(
   file: Express.Multer.File,
   folderPath: string
-): Promise<FileReference> {
-//קבלת הטוקן מפונקציה
+): Promise<DocumentModel> {
 const token= await tokenService.getSystemAccessToken();
 if (!token) {
   throw new Error('Missing system token');
@@ -259,26 +258,25 @@ if (!token) {
 if (!process.env.SYSTEM_EMAIL) {
     throw new Error('SYSTEM_EMAIL env var is missing');
 }
-  // 1. קבלת או יצירת התיקייה לפי הנתיב
   const folderId = await getOrCreateFolderByPath(folderPath, token??'');
-  // 2. העלאת הקובץ ל־Drive
   const uploaded = await uploadFileToDrive(file, token??'', folderId);
-  // 3. שליפת המטא-דאטה של הקובץ
   const metadata = await getFileMetadataFromDrive(uploaded.id!, token??'');
-  // 4. יצירת קישור ניווט נוח (לקובץ בתוך התיקייה)
+
   const fileUrl = `https://drive.google.com/drive/u/0/folders/${folderId}`;
-  // 5. בניית אובייקט מסוג FileReference
-  const fileRef: FileReference = {
+
+  const document = new DocumentModel( {
     id: uploaded.id!,
     name: metadata.name!,
     path: folderPath,
     mimeType: metadata.mimeType!,
     size: Number(metadata.size),
     url: fileUrl,
-    googleDriveId: uploaded.id ?? undefined,
-    createdAt: metadata.createdTime!,
-    updatedAt: metadata.modifiedTime!,
-  };
-console.log('File uploaded and reference created:', fileRef);
-  return fileRef;
+    googleDriveId: uploaded.id!,
+    created_at: metadata.createdTime!,
+    updated_at: metadata.modifiedTime!,
+  });
+console.log('File uploaded and reference created:', document);
+// saveDocument(document);
+  return document;
 }
+

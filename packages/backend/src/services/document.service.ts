@@ -1,5 +1,7 @@
 import { supabase } from '../db/supabaseClient';
 import { DocumentModel } from '../models/document.model';
+import { v4 as uuidv4 } from 'uuid';
+import { uploadFileAndReturnReference } from './drive-service';
 
 // יצירת מסמך ושמירתו בטבלת vendor (שדה document_ids)
 // 1. הוספה לטבלת documents
@@ -120,3 +122,28 @@ export const getDocumentById = async (documentId: string) => {
 
   return data[0];  // מחזיר את המסמך היחיד
 };
+
+export async function saveDocument(  folderPath: string,file: any) {
+  const uploaded = await uploadFileAndReturnReference(file, folderPath);
+  const document = new DocumentModel({
+    id: uuidv4(),
+    name: uploaded.name,
+    path: folderPath ||" לקוחות", 
+    mimeType: uploaded.mimeType || "application/octet-stream", 
+    size: uploaded.size || 0,
+    url: uploaded.url,
+    googleDriveId: uploaded.googleDriveId || "",
+    created_at: uploaded.created_at || new Date().toISOString(),
+    updated_at: uploaded.updated_at || new Date().toISOString(),
+  });
+  const { data: insertedDoc, error: insertError } = await supabase
+    .from('document')
+    .insert(document.toDatabaseFormat())
+    .select()
+    .single();
+  if (insertError || !insertedDoc) {
+    console.error('שגיאה בשמירת המסמך:', insertError);
+    throw new Error('שמירת המסמך נכשלה');
+  }
+  return DocumentModel.fromDatabaseFormat(insertedDoc);
+}

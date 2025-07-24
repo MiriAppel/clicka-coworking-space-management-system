@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import FileUploader ,{ FileItem } from "../../../Common/Components/BaseComponents/FileUploader";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
 import { Customer } from "shared-types";
-import axios from "axios";
 
-const BASE_URL = "http://localhost:3001";
+const BASE_API_URL = `${process.env.REACT_APP_API_URL}`;
 
 interface FileUploaderProps {
   onFilesUploaded?: (files: FileItem[]) => void;
@@ -24,8 +23,10 @@ export const FolderPathGenerator: React.FC<FileUploaderProps> = ({ email, docume
   return null; // לא מציג כלום, רק מחשב נתיב
 };
 
+
+
 export default function ClientSearchAndSelect() {
-  const [tz, setTz] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [fileCategory, setFileCategory] = useState("חשבוניות");
@@ -35,10 +36,13 @@ export default function ClientSearchAndSelect() {
   const searchClient = async () => {
     setLoading(true);
     setCustomer(null);
-    setNotFound(false);
+    setNotFound(false)
     try {
-      const res = await axios.get(`${BASE_URL}/customer/search/${tz}`);
-      const data: Customer = res.data
+        const response = await fetch(`${BASE_API_URL}/customers/${searchTerm}`);
+        if (!response.ok) {
+            throw new Error("Failed to search customers");
+        }
+        const data: Customer = await response.json();
       setCustomer(data);
     } catch {
       setNotFound(true);
@@ -56,8 +60,8 @@ export default function ClientSearchAndSelect() {
         <label className="block text-sm font-medium mb-1">מספר זהות</label>
         <input
           type="text"
-          value={tz}
-          onChange={(e) => setTz(e.target.value)}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="border rounded w-full px-3 py-2"
           placeholder="הכנס תעודת זהות"
         />
@@ -100,7 +104,6 @@ export default function ClientSearchAndSelect() {
 
       {/* העלאת קבצים */}
       {customer && folderPath && (
-        <div className="mt-6">
           <FileUploader
             folderPath={folderPath}
             onFilesUploaded={(files) => {
@@ -108,8 +111,11 @@ export default function ClientSearchAndSelect() {
               // אפשר להוסיף לוגיקת הצלחה
             }}
           />
-        </div>
+
+          
       )}
+    
     </div>
+    
   );
 }

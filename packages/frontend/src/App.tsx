@@ -11,6 +11,7 @@ import { VoiceCommand } from './VoiceAssistant';
 import FileUploader from './Common/Components/BaseComponents/FileUploader';
 
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
+import ClientSearchAndSelect from './MainMenu/LeadAndCustomer/Components/upload';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -65,6 +66,7 @@ function App() {
           {/* אפשר להוסיף כאן ראוטים נוספים */}
         </Routes>
         <AuthenticationScreen />
+<FileUploader folderPath='לקוחות'  />
       </div>
     </AuthProvider>
 

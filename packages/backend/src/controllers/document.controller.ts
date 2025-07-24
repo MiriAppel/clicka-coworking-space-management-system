@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { createDocument, deleteDocument, getDocumentById, getVendorDocument } from '../services/document.service';
+import { createDocument, deleteDocument, getDocumentById, getVendorDocument, saveDocument } from '../services/document.service';
+import { DocumentModel } from '../models/document.model';
 
 export const uploadDocument = async (req: Request, res: Response) => {
   try {
@@ -66,3 +67,20 @@ export const getDocumentByIdController = async (req: Request, res: Response) => 
     res.status(500).json({ error: error.message });
   }
 };
+
+export async function saveDocuments(req: Request, res: Response) {
+  try {
+    const file = req.body.file;
+    const folderPath = req.body.folderPath;
+    if (!file || !file.name || !file.url||!folderPath) {
+      return res.status(400).json({ message: 'פרטי הקובץ חסרים או שגויים' });
+    }
+
+    const savedDocument = await saveDocument(folderPath, file);
+
+    res.status(201).json(savedDocument);
+  } catch (error: any) {
+    console.error(' שגיאה בשמירת המסמך:', error);
+
+  }
+}

@@ -9,6 +9,8 @@ import type {
 import { ContractModel } from "../models/contract.model";
 import { baseService } from "./baseService";
 import { supabase } from "../db/supabaseClient";
+import { uploadFileAndReturnReference } from "./drive-service";
+import { DocumentModel } from "../models/document.model";
 
 export class contractService extends baseService<ContractModel> {
   constructor() {
@@ -191,4 +193,6 @@ export class contractService extends baseService<ContractModel> {
     );
     await this.patch({ documents: updatedDocs }, contractId);
   };
+
+
 }

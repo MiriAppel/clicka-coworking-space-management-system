@@ -134,10 +134,29 @@ export async function shareFile(req: Request, res: Response, next: NextFunction)
   }
 }
 
+// export async function uploadFile(req: Request, res: Response, next: NextFunction) {
+//   const token =  req.cookies.session;
+//   const file = req.file; // multer middleware אמור להעלות את הקובץ לפה
+//   const folderPath = req.body.folderPath;
+
+//   if (!token) return next({ status: 401, message: 'Missing token' });
+//   if (!file) return next({ status: 400, message: 'Missing file' });
+//   if (!folderPath) return next({ status: 400, message: 'Missing folder path' });
+
+//   try {
+//     const fileRef = await uploadFileAndReturnReference(file, folderPath);
+//     res.status(201).json(fileRef);
+//   } catch (err: any) {
+//     if (!err.status) err.status = 500;
+//     next(err);
+//   }
+// }
+
 export async function uploadFile(req: Request, res: Response, next: NextFunction) {
-  const token =  req.cookies.session;
+  const token = req.cookies.session;
   const file = req.file; // multer middleware אמור להעלות את הקובץ לפה
   const folderPath = req.body.folderPath;
+  const contractId = req.body.contractId; // אופציונלי
 
   if (!token) return next({ status: 401, message: 'Missing token' });
   if (!file) return next({ status: 400, message: 'Missing file' });

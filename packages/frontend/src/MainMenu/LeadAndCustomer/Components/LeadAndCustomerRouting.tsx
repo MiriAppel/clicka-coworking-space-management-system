@@ -16,6 +16,7 @@ import { Lead } from "shared-types";
 import { NewCustomerPage } from "./Customers/newCustomer";
 import { EditContract } from "./Contracts/editContract";
 import { AddContract } from "./Contracts/addContract";
+import ClientSearchAndSelect from "./upload";
 
 export const LeadAndCustomerRouting = () => {
     const nav = useNavigate()
@@ -42,7 +43,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="contracts/edit/:contractId" element={<EditContract />} />
             <Route path="leads" element={<LeadsHomePage />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
-            
+            <Route path="customer/upload" element={<ClientSearchAndSelect />} />
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
             <Route path="leads/intersections/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />

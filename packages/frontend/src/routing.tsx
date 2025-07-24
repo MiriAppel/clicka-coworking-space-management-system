@@ -65,7 +65,6 @@ export const Routing = () => {
         <Route path="expenses/expense-form" element={<CreateExpenseForm />} />
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
         {/* <Route path="/workspaceMap" element={<WorkspaceMap />} /> */}
-        <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
         <Route path="payment" element={<PaymentForm />} />
@@ -86,7 +85,6 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
-        <Route path="customer/upload" element={<ClientSearchAndSelect />} />
       </Route>
     </Routes>
   );

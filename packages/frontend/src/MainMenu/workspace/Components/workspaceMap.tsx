@@ -961,8 +961,6 @@ import { useWorkspaceStore } from '../../../Stores/Workspace/workspaceStore';
 //             updatedAt: "2024-01-01T08:00:00Z"
 //         },
 
-
-    
     const { getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getHistory } = useWorkspaceStore();
     const uniqueStatus = Object.values(SpaceStatus);
     const uniqueType = Object.values(WorkspaceType);
@@ -1005,7 +1003,8 @@ import { useWorkspaceStore } from '../../../Stores/Workspace/workspaceStore';
     });
     const [roomDetails, setRoomDetails] = useState({
 
-//     });
+
+    });
 //     const navigate = useNavigate()
 //     const [zoom, setZoom] = useState(3);
 //     const [pan, setPan] = useState({ x: 0, y: 0 });
