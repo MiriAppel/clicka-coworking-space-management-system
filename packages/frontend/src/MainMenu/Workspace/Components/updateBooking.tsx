@@ -52,7 +52,7 @@ const bookingUpdateSchema = z.object({
 
 
 export const UpdateBooking = () => { 
-  const [formKey, setFormKey] = useState(0);
+  // const [formKey, setFormKey] = useState(0);
   const location = useLocation();
   const booking = location.state?.booking;
   const navigate = useNavigate();
@@ -74,11 +74,11 @@ export const UpdateBooking = () => {
       );
     });
   }, []);
-useEffect(() => {
-    if (booking  && roomOptions.length > 0) {
-      setFormKey(prev => prev + 1); // 🎯 זה יאלץ רה-רנדר מלא
-    }
-  }, [booking, customers, roomOptions]);
+// useEffect(() => {
+//     if (booking  && roomOptions.length > 0) {
+//       setFormKey(prev => prev + 1); // 🎯 זה יאלץ רה-רנדר מלא
+//     }
+//   }, [booking, roomOptions]);
 
 // חילוץ שעה בפורמט HH:MM
 const getTimeFromISO = (isoString: string): string => {
@@ -167,7 +167,7 @@ const getDateFromISO = (isoString: string): string => {
         <Form<BookingUpdateData>
           schema={bookingUpdateSchema}
           onSubmit={handleSubmit}
-          key={formKey}
+          // key={formKey}
           label="עדכון פרטי הזמנה">
               {/* בחירת סוג לקוח */}
               <div className="mb-4">

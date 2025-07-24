@@ -32,6 +32,8 @@ import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSec
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
 import { BookingTable } from './MainMenu/Workspace/Components/bookingTable';
 import { UpdateBooking } from './MainMenu/Workspace/Components/updateBooking';
+import { Report } from './MainMenu/Workspace/Components/report';
+import { AssigmentTable } from './MainMenu/Workspace/Components/assigenmentTable';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -67,7 +69,7 @@ export const Routing = () => {
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
         <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-        <Route path="assignmentForm" element={<AssignmentForm />} />
+        <Route path="assignmentForm" element={<AssigmentTable/>} />
         <Route path="bookings" element={<BookingTable />} />
         <Route path="updateBooking" element={<UpdateBooking />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
@@ -89,6 +91,8 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/occupancyReports" element={<Report  />} />
+     
       </Route>
     </Routes>
   );

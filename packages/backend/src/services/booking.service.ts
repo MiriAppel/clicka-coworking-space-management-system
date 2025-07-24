@@ -76,16 +76,20 @@ export class BookingService {
       return null;
     }
   } 
+  //פונקציה לחישוב סכום חיובים עבור הזמנת חדר ישיבות
+  //אם הלקוח הוא חיצוני תשלום רגיל
+  //אם  הלקוח הוא קיים:
+  //1.אם מוקצה לו כרגע חלל - זה בחינם 
+  //2.אם יש לו כרטיס קליקה הוא מקבל מחיר מסובסד
  static async calculateBookingCharges(id: string,customerId:string,totalHours:number) {
    console.log('Received request to update booking:', customerId);
     //בדיקה האם ללקוח כרטיס קליקה
     const customerServic = new customerService() 
     const customers =await customerServic.getAllCustomers();
-      console.log("😍😍😍"+customers);
+    console.log("😍😍😍"+customers);
     const currentCustomerType = customers?.find(customer => customer.id === customerId)?.currentWorkspaceType
     if(!currentCustomerType){
       console.log("there is no customer type");
-    
     }
    console.log("😍😍😍" + currentCustomerType );
     const roomPricing =await getCurrentMeetingRoomPricing();
@@ -93,8 +97,8 @@ export class BookingService {
       console.log("there is no pricing");
       return null;
     }
-    const totalCharge :number;
-    const chargeableHours:number;
+  let totalCharge: number = 0;
+  let chargeableHours: number = 0;
     if(roomPricing && currentCustomerType==="KLIKAH_CARD"){
       if(roomPricing.freeHoursKlikahCard > totalHours){
        {chargeableHours = totalHours - roomPricing.freeHoursKlikahCard;
@@ -105,16 +109,19 @@ export class BookingService {
         totalCharge = (totalHours  * (roomPricing.hourlyRate))
     }      
     }
-       chargeableHours = 0
-        totalCharge = 0
+     return  {chargeableHours,
+              totalCharge }
     }
-    
-   static async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> { 
-  if(updatedData.customerId){ 
-     this.calculateBookingCharges(id,updatedData.customerId,updatedData. );
-    }
- const formattedData = updatedData.toDatabaseFormat();
-  
+    static async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
+      //כאו יש להוסיף קריאה לעדכון של GOOGLECALENDER
+   if(updatedData.customerId){ 
+    const result = await this.calculateBookingCharges(id,updatedData.customerId,updatedData.totalHours);
+   if (result) {
+    const { chargeableHours, totalCharge } = result; 
+    console.log("שעות לחיוב:", chargeableHours);
+    console.log("סכום לחיוב:", totalCharge);
+   }}
+  const formattedData = updatedData.toDatabaseFormat();
   console.log(":rocket: Trying to update booking with ID:", id);
   console.log(":memo: Data being sent:", formattedData);
   const { data, error } = await supabase
@@ -133,9 +140,9 @@ export class BookingService {
   }
   console.log(":white_check_mark: Successfully updated booking:", data);
   return BookingModel.fromDatabaseFormat(data);
-}
 
-  //מחיקת פגישה
+   }
+ //מחיקת פגישה
   async  deleteBooking(id:string) {
               const { error } = await supabase
               .from('booking')

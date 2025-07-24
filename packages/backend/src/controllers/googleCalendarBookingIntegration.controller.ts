@@ -1,68 +1,86 @@
 import { NextFunction, Request, Response } from 'express';
 import * as CalendarService from '../services/googleCalendarBookingIntegration.service ';
+import * as calendarUpdate from '../services/calendar-service'
 import { CalendarSync } from 'shared-types/calendarSync';
-import type { CalendarEventInput, ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
+import type { CalendarEventInput, ID, StatusChangeRequest, UpdateGoogleCalendarEventRequest } from 'shared-types';
 import { CalendarSyncModel } from '../models/calendarSync.model';
 import { validateEventInput } from '../utils/validateEventInput';
 import { BookingModel } from '../models/booking.model';
+import { BookingService } from '../services/booking.service';
+import { UserTokenService } from '../services/userTokenService';
 
-export const getGoogleCalendarEvents = async (req: Request, res: Response) => {
-    try {
-        const calendarId: string = req.params.calendarId;
-        const token: string = req.params.token;
-        const events = await CalendarService.getGoogleCalendarEvents(calendarId, token);
-        res.status(200).json(events);
-    } catch (error) {
-        console.error('Error fetching Google Calendar events:', error);
-        res.status(500).json({ message: 'Failed to fetch Google Calendar events', error: error });
-    }
-}
+const userTokenService = new UserTokenService();
+export const getGoogleCalendarEvents = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = await userTokenService.getSystemAccessToken();
+    if (!token) return next({ status: 401, message: 'Missing system token' });
+
+    const calendarId: string = req.params.calendarId;
+    const events = await CalendarService.getGoogleCalendarEvents(calendarId, token);
+    res.status(200).json(events);
+  } catch (error) {
+    console.error('Error fetching Google Calendar events:', error);
+    res.status(500).json({ message: 'Failed to fetch Google Calendar events', error });
+  }
+};
 
 // זו הפונקציה העדכנית-----------------------------
 export const createCalendarEvent = async (req: Request, res: Response, next: NextFunction) => {
-       console.log(req.body, "req ");
-        console.log("find the token in body ",req.body.headers.Authorization, "find the token in body ");
-    const token = extractToken(req.body);
-    console.log("Token in createCalendarEvent:", token);
-    
-      if (!token) return next({ status: 401, message: 'Missing token' });
-      const { calendarId } = req.params;
-      console.log("Booking in createCalendarEvent:", req.body.body.booking);
-      const  booking = req.body.body.booking;
-      console.log("Booking in createCalendarEvent:", booking);
-      try {
-        // validateEventInput(event); // ← כאן תופסת שגיאות לפני כל שליחה
-        const createdEvent = await CalendarService.createCalendarEvent(calendarId, booking,token);
-        res.status(201).json(createdEvent);
-      } catch (err: any) {
-        if (!err.status) err.status = 500;
-        next(err);
-      }
- 
-}
+  try {
+    const token = await userTokenService.getSystemAccessToken();
+    if (!token) return next({ status: 401, message: 'Missing system token' });
+        const updateDetails: UpdateGoogleCalendarEventRequest = req.body;
+        let updateItem : BookingModel | null = await BookingService.getBookingByEventId(updateDetails.eventId)
+        if(updateItem == null){
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+    const { calendarId } = req.params;
+    const booking = req.body.booking || req.body.body?.booking;
+
+    if (!booking) {
+      return res.status(400).json({ message: 'Missing booking data' });
+    }
+    const result = await calendarUpdate.updateEvent(updateDetails.calendarId, updateDetails.eventId,
+            updateItem, token)
+            if(result){
+        await CalendarService.updateEnevtOnChangeBooking(updateDetails.calendarId, updateDetails.eventId,
+            updateItem, token);
+        res.status(200).json({ message: 'Event updated successfully' });
+            }
+            else{
+                return res.status(404).json({ message: 'booking has conflict!' });
+            }
+
+    const createdEvent = await CalendarService.createCalendarEvent(calendarId, booking, token);
+    res.status(201).json(createdEvent);
+  } catch (err: any) {
+    next({ status: err.status || 500, message: err.message || 'Failed to create calendar event' });
+  }
+};
 
 
-export async function getAllCalendarSync(req: Request, res: Response, next: NextFunction) {
-    const token = extractToken(req);
-      if (!token) return next({ status: 401, message: 'Missing token' });
-        const calendarId: string = req.params.calendarId;
-    try {
-        const result = await CalendarService.getGoogleCalendarEvents(calendarId, token);
-        res.json(result)
-    } catch (error) {
-        res.status(500).json({ error: (error as Error).message })
-    }
-}
-export async function getCalendarSyncById(req: Request, res: Response) {
-    const syncId: string = req.params.id;
-    const result = await CalendarService.getCalendarSyncById(syncId);
-    if (result) {
-        res.status(200).json(result);
-    }
-    else {
-        res.status(404).json({ error: 'Calendar sync not found' });
-    }
-}
+
+export const getAllCalendarSync = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = await userTokenService.getSystemAccessToken();
+    if (!token) return next({ status: 401, message: 'Missing system token' });
+
+    const calendarId: string = req.params.calendarId;
+    const result = await CalendarService.getGoogleCalendarEvents(calendarId, token);
+    res.json(result);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+export const getCalendarSyncById = async (req: Request, res: Response) => {
+  const syncId: string = req.params.id;
+  const result = await CalendarService.getCalendarSyncById(syncId);
+  if (result) {
+    res.status(200).json(result);
+  } else {
+    res.status(404).json({ error: 'Calendar sync not found' });
+  }
+};
 // export const createCalendarEvent = async (req: Request, res: Response) => {
 //     try {
 //         const { calendarId, event, token, booking } = req.body;
@@ -96,13 +114,30 @@ export const deleteCalendarSyncByEventId = async (req: Request, res: Response) =
 }
 export const updateEventOnChangeBooking = async (req: Request, res: Response) => {
     try {
+        let token = await userTokenService.getSystemAccessToken();
+        if(token == null){
+            return res.status(404).json({ message: 'Token not found' });
+        }
         const updateDetails: UpdateGoogleCalendarEventRequest = req.body;
-        await CalendarService.updateEnevtOnChangeBooking(updateDetails);
+        let updateItem : BookingModel | null = await BookingService.getBookingByEventId(updateDetails.eventId)
+        if(updateItem == null){
+            return res.status(404).json({ message: 'Booking not found' });
+        }
+        const result = await calendarUpdate.updateEvent(updateDetails.calendarId, updateDetails.eventId,
+            updateItem, token)
+            if(result){
+        await CalendarService.updateEnevtOnChangeBooking(updateDetails.calendarId, updateDetails.eventId,
+            updateItem, token);
         res.status(200).json({ message: 'Event updated successfully' });
+            }
+            else{
+                return res.status(404).json({ message: 'booking has conflict!' });
+            }
     } catch (error) {
         console.error('Error updating event on change booking:', error);
         res.status(500).json({ message: 'Failed to update event on change booking', error: error });
     }
+
 }
 
 
@@ -165,8 +200,3 @@ function extractToken(req: Request): string | null {
 //   return "";
 // //   return auth?.startsWith('Bearer ') ? auth.split(' ')[1] : null;
 // }
-
-
-
-
-

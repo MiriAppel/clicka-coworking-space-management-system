@@ -139,7 +139,7 @@ const validBookings = bookings.filter(booking =>
     {isLoading && <h1>טוען...</h1>}
    
    {!isLoading && <>
-<Button onClick={()=>navigate('/createBooking')}>להוספת הזמנה חדשה</Button>
+<Button onClick={()=>navigate('/meetingRooms')}>להוספת הזמנה חדשה</Button>
     <Table<Booking>
         columns={columns}
         data={validBookings}

@@ -1,4 +1,4 @@
-import { SpaceAssignmentModel } from "../models/spaceAssingment.model";
+import { SpaceAssignmentModel } from "../models/spaceAssignment.model";
 import { SpaceAssignmentService } from "../services/spaceAssignmentsystem.service";
 import { Request, Response } from "express";
 
@@ -115,6 +115,18 @@ export class SpaceAssignmentController {
                 error: "Failed to check conflicts", 
                 details: errorMessage 
             });
+        }
+    }
+    
+async getOccupancyReport(req: Request, res: Response) {
+        try {
+            const { type, startDate, endDate } = req.params;
+            console.log('Received request for occupancy report:', { type, startDate, endDate });
+            const report = await this.spaceAssignmentService.getOccupancyReport(type, startDate, endDate);
+            res.json(report);
+        } catch (err) {
+            console.error('Error fetching occupancy report:', err);
+            res.status(500).json({ message: 'Error fetching occupancy report' });
         }
     }
 

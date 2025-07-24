@@ -111,6 +111,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
 ,
 
   updateBooking: async (id: string, updated: Booking) => {
+    alert("ברוך ה")
     set({ loading: true, error: null });
     try {
       const response = await axiosInstance.patch(`/book/updateBooking/${id}`, updated);
