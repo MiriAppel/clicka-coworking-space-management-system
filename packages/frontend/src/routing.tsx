@@ -30,6 +30,7 @@ import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSys
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
+import { Collection } from './MainMenu/Billing/Components/invoice-generation-engine/collection';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -85,6 +86,7 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/billing/collection" element={< Collection />} />
       </Route>
     </Routes>
   );

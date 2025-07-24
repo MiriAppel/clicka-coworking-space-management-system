@@ -9,9 +9,26 @@ import {
 } from 'shared-types';
 import { InvoiceStatus } from 'shared-types';
 import { UUID } from 'crypto';
+
+type CustomerCollection = {
+  name: string;
+  email: string;
+  business_name: string;
+  customer_payment_method: {
+    credit_card_holder_id_number: string;
+    credit_card_expiry: string;
+    credit_card_holder_phone: string;
+    credit_card_number: string;
+  }[];
+  invoice: {
+    subtotal: number;
+    issue_date: string;
+  }[];
+};
 interface InvoiceState {
   //  STATE 
   invoices: Invoice[];
+  collection: CustomerCollection[];
   loading: boolean;
   error: string | null;
 
@@ -19,6 +36,7 @@ interface InvoiceState {
   fetchInvoices: () => Promise<void>;
   getAllInvoices: () => Promise<void>;
   getAllInvoiceItems: (invoiceId: UUID) => Promise<void>;
+  getCustomersCollection: () => Promise<void>;
   createInvoice: (invoice: CreateInvoiceRequest) => Promise<Invoice>;
   updateInvoice: (invoiceNumber: string, updates: Partial<Invoice>) => Promise<Invoice>; // שינוי מ-id ל-invoiceNumber
   deleteInvoice: (invoiceNumber: string) => Promise<void>; // שינוי מ-id ל-invoiceNumber
@@ -37,6 +55,7 @@ interface InvoiceState {
   clearError: () => void;
 }
 
+
 export const useInvoiceStore = create<InvoiceState>()(
   devtools(
     persist(
@@ -46,7 +65,6 @@ export const useInvoiceStore = create<InvoiceState>()(
         loading: false,
         error: null,
         // שליפת כל החשבוניות מהשרת
-
         fetchInvoices: async () => {
           set({ loading: true, error: null });
           set({
@@ -94,7 +112,32 @@ export const useInvoiceStore = create<InvoiceState>()(
             throw error;
           }
         },
+        collection: [],
+        getCustomersCollection: async () => {
+          set({ loading: true, error: null });
+          try {
+            const response = await axios.get('http://localhost:3001/api/invoices/getCustomersCollection');
+            const collectionData = Array.isArray(response.data.collectionDetails) ? response.data.collectionDetails : [];
+            set({ collection: collectionData, loading: false });
 
+            const processedCollection = collectionData.map((item: any) => {
+              return {
+                ...item,
+                items: item.items || item.invoice_item || []
+              };
+            });
+            set({ collection: processedCollection, loading: false });
+          } catch (error) {
+            console.error('שגיאה בשליפת פרטי גבייה:', error);
+            set({
+              error: 'Error fetching collection details',
+              loading: false,
+              collection: []
+            });
+            throw error;
+          }
+        }
+        ,
         // יצירת חשבונית חדשה
         createInvoice: async (newInvoice) => {
           set({ loading: true, error: null });

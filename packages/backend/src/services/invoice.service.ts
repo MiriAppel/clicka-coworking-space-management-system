@@ -159,7 +159,8 @@ export async function serviceGetCustomersCollection() {
       credit_card_number
     ),
     invoice (
-      subtotal
+      subtotal,
+      issue_date
     )
   `);
   if (error) throw new Error(error.message);
