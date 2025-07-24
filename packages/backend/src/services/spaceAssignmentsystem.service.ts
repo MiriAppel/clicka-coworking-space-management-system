@@ -3,7 +3,6 @@ import { RoomModel } from "../models/room.model";
 import { SpaceStatus, type DateRangeFilter, type ID, type OccupancyReportResponse, type Space } from "shared-types";
 import dotenv from 'dotenv';
 import { SpaceAssignmentModel } from '../models/spaceAssignment.model';
-import { SpaceAssignmentModel } from '../models/spaceAssignment.model';
 dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
@@ -164,4 +163,38 @@ export class SpaceAssignmentService {
       throw error;
     }
   }
+async getHistory(date: Date): Promise<SpaceAssignmentModel[]> {
+  try {
+    const { data, error } = await supabase
+      .from('space_assignment')
+      .select('*')
+      .lte('assigned_date', date.toISOString()) 
+      .or(`unassigned_date.is.null,unassigned_date.gte.${date.toISOString()}`); // שעדיין בתוקף
+
+    if (error) {
+      console.error('Supabase error in getHistory:', error.message);
+      throw new Error('Failed to fetch history');
+    }
+
+    const allAssignments = data.map((item: any) => SpaceAssignmentModel.fromDatabaseFormat(item));
+
+   
+    const weekday = date.getDay(); 
+
+    const filtered = allAssignments.filter(assign => {
+      if (!assign.daysOfWeek || assign.daysOfWeek.length === 0) {
+        return true; 
+      }
+      return assign.daysOfWeek.includes(weekday);
+    });
+
+    return filtered;
+
+  } catch (err) {
+    console.error('Error in getHistory:', err);
+    throw err;
+  }
 }
+
+}
+
