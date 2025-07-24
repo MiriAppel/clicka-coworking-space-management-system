@@ -6,17 +6,9 @@ import { WorkspaceType } from 'shared-types';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 
-interface Customer {
-  id: string | number;
-  name: string;
-  email?: string;
-  phone?: string;
-}
-
 interface Assignment {
   id: string | number;
   workspaceId: string | number;
-  customerId: string | number;
   assignedDate: string;
   unassignedDate?: string;
   notes?: string;
@@ -35,7 +27,6 @@ interface AssignmentStoreState {
   // State
   assignments: Assignment[];
   spaces: Space[];
-  customers: Customer[];
   loading: boolean;
   error: string | null;
   selectedAssignment: Assignment | null;
@@ -44,14 +35,13 @@ interface AssignmentStoreState {
 
   // Actions
   getAllSpaces: () => Promise<Space[]>;
-  getAllCustomers: () => Promise<Customer[]>;
   createAssignment: (assignmentData: Omit<Assignment, 'id'>) => Promise<Assignment>;
   getAssignments: () => Promise<Assignment[]>;
   getAssignmentById: (id: string | number) => Promise<Assignment>;
   updateAssignment: (id: string | number, assignmentData: Partial<Assignment>) => Promise<Assignment>;
   deleteAssignment: (id: string | number) => Promise<void>;
   setSelectedAssignment: (assignment: Assignment | null) => void;
-  checkConflicts: (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number) => Promise<ConflictCheck>;
+  checkConflicts: (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number, daysOfWeek?: number[]) => Promise<ConflictCheck>;
   clearError: () => void;
   resetStore: () => void;
 }
@@ -68,29 +58,10 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   // State - מצב התחלתי של הסטור
   assignments: [],
   spaces: [],
-  customers: [],
   loading: false,
   error: null,
   selectedAssignment: null,
   conflictCheck: null,
-
-  /**
-   * מביא את כל הלקוחות מהשרת - לצורך הצגה בטופס
-   */
-  getAllCustomers: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await api.get<Customer[]>('/customers');
-      set({ customers: response.data, loading: false });
-      return response.data;
-    } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
-        : 'An unknown error occurred';
-      set({ error: errorMessage, loading: false });
-      throw error;
-    }
-  },
 
   /**
    * מביא את כל חללי העבודה מהשרת - לצורך הצגה בטופס
@@ -102,8 +73,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       set({ spaces: response.data, loading: false });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -124,8 +95,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       }));
       return newAssignment;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -143,8 +114,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       set({ assignments: response.data, loading: false });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -161,8 +132,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       set({ loading: false });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -178,15 +149,15 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       const response = await api.put<Assignment>(`/space/updateSpace/${id}`, assignmentData);
       const updatedAssignment = response.data;
       set((state) => ({
-        assignments: state.assignments.map((assignment) => 
+        assignments: state.assignments.map((assignment) =>
           assignment.id === id ? updatedAssignment : assignment
         ),
         loading: false
       }));
       return updatedAssignment;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -205,8 +176,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
         loading: false
       }));
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -215,20 +186,21 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   /**
    * בדיקת קונפליקטים לפני יצירת/עדכון הקצאה
    */
-  checkConflicts: async (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number) => {
+  checkConflicts: async (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number, daysOfWeek?: number[]) => {
     try {
       const response = await api.post<ConflictCheck>('/space/checkConflicts', {
         workspaceId,
         assignedDate,
         unassignedDate,
-        excludeId
+        excludeId,
+        daysOfWeek
       });
-      
+
       set({ conflictCheck: response.data });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage });
       throw error;
@@ -256,7 +228,6 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
     set({
       assignments: [],
       spaces: [],
-      customers: [],
       loading: false,
       error: null,
       selectedAssignment: null,

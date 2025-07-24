@@ -40,18 +40,29 @@ h1 ::after{
     box-shadow: 3px 3px 3px 3px rgb(224, 224, 224);
     padding: 10px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 10px;
+    align-items: stretch;
+     box-sizing: border-box;
 }
 .search{
    width: 20%;
-   height: 100%;
-   /* background-color:#fafafa ; */
-   /* gap: 10px; */
+   /* height: 100%; */
+   min-width: 250px;
+   flex-shrink: 0;
+   display: flex;
+    flex-direction: column;
+box-sizing: border-box;
+ border: 1px solid transparent;
+}
+.search > :last-child {
+    margin-top: auto; 
 }
 .workspaceMap {
     position: relative;
     flex: 1;
-    width: 100%;
+    width: calc(100% - 270px);
+    min-width: 0;
     height: 100%;
     overflow: hidden;
     display: flex;
@@ -60,6 +71,21 @@ h1 ::after{
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 8px;
+    box-sizing: border-box;
+}
+ .toggleSidebarBtn {
+   position: absolute;
+    right: 30px;
+    top: 90px;
+    z-index: 1001; 
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .toggleSidebarBtn:hover {
+    background: #f8f9fa;
 }
 .workspaceMap.fullWidth {
     width: 100%;
@@ -73,9 +99,13 @@ h1 ::after{
 
 .content.sidebarHidden .workspaceMap {
     flex: 1;
-    height: 100%;/* התאם לפי הצורך */
+    width: 100%;
+    height: 100%;
 }
 
+.content.sidebarHidden .zoom {
+    margin-left: 0;
+}
 .search.hidden {
     display: none;
 }
@@ -90,7 +120,7 @@ h1 ::after{
     transform: translateX(-50%);
     z-index: 1000;
     pointer-events: none;
-    margin-left: calc(50vw - 50%); /* התאמה למרכז המפה האמיתי */
+    margin-left: calc(50vw - 50%); 
 }
 
 .zoom-controls {
@@ -449,4 +479,146 @@ position: absolute;
 right: 30px;
 top: 90px;
 }
+}
+/* תצוגה רספונסיבית*/
+@media (max-width: 1200px) {
+  .content {
+    width: 95%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    min-width: auto;
+
+  }
+  
+  .workspaceMap {
+    width: 100%;
+    height: 60vh;
+    flex: 1;
+  }
+
+}
+
+@media (max-width: 768px) {
+  .all {
+    height: 100vh;
+    padding: 10px;
+  }
+  
+  .content {
+    width: 100%;
+    height: 90vh;
+    padding: 5px;
+    gap: 5px;
+  }
+  
+  .search {
+    padding: 10px;
+  }
+  
+  .statusAndType, .displayDate {
+    margin-top: 2vh;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    min-width: 250px;
+    flex-shrink: 0; 
+    box-sizing: border-box;
+  }
+  
+  .workspaceMap {
+    height: 70vh;
+  }
+  
+  .zoom {
+    bottom: 5px;
+    margin-left: 0;
+    transform: translateX(-50%) scale(0.8);
+  }
+  
+  .zoom-controls {
+    padding: 4px 8px;
+    gap: 4px;
+  }
+  
+  .zoom-btn, .reset-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+  
+  .slider {
+    width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+    padding: 5px 0;
+  }
+  
+  h2 {
+    font-size: 0.9rem;
+    padding: 5px 0;
+  }
+  
+ 
+  .minimap {
+    width: 150px;
+    height: 75px;
+    top: 60px;
+    left: 10px;
+  }
+  
+  .workspaceMap {
+    height: 65vh;
+  }
+  
+  .zoom {
+    transform: translateX(-50%) scale(0.7);
+  }
+}
+
+/* שיפור התצוגה במסכים קטנים */
+.content.sidebarHidden {
+  padding: 5px;
+}
+
+.content.sidebarHidden .workspaceMap {
+  height: calc(100vh - 120px);
+}
+
+/* הוספת גמישות לטקסט במפה */
+.space-text {
+  font-size: clamp(8px, 1vw, 12px);
+}
+
+/* שיפור התצוגה של הכפתורים במסכים קטנים */
+.clearSearchBtn, .backBtn {
+  margin-top: auto;
+  width: 100%;
+    margin-bottom: 10px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+.clearSearchBtn:hover, .backBtn:hover {
+    box-shadow: 0 2px 4px rgba(255, 136, 0, 0.2) !important;
+}
+
+@media (max-width: 480px) {
+  .clearSearchBtn, .backBtn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
 }

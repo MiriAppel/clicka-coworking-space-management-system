@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { useAssignmentStore } from "../../../Stores/Workspace/assigmentStore";
+import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
+import { useForm, FormProvider, useWatch } from "react-hook-form";
+import { InputField } from "../../../Common/Components/BaseComponents/Input";
+import { Button } from "../../../Common/Components/BaseComponents/Button";
+import { SelectField } from "../../../Common/Components/BaseComponents/Select";
+import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
+import { useFeatureStore } from "../../../Stores/Workspace/featureStore";
+import { v4 as uuidv4 } from "uuid";
 import { WorkspaceType } from "shared-types";
+import { useLocation } from "react-router-dom";
 
 interface AssignmentFormProps {
   onSubmit?: (data: any) => Promise<void>;
   title?: string;
-  // Props פשוטים וישירים
   workspaceId?: string | number;
   workspaceName?: string;
   workspaceType?: WorkspaceType;
@@ -18,36 +25,33 @@ interface AssignmentFormProps {
   assignedBy?: string;
   status?: 'ACTIVE' | 'SUSPENDED' | 'ENDED';
 }
-
-export const AssignmentForm: React.FC<AssignmentFormProps> = ({
-  onSubmit,
-  title,
-  workspaceId,
-  workspaceName,
-  workspaceType,
-  customerId,
-  customerName,
-  assignedDate,
-  unassignedDate,
-  notes,
-  assignedBy,
-  status = 'ACTIVE',
-}) => { 
-  const computedTitle =
-    title ||
-    (customerName
-      ? `הקצאה עבור לקוח ${customerName}`
-      : workspaceName
-      ? `הקצאת חלל עבודה: ${workspaceName}`
-      : "הקצאת חלל עבודה");
+export const AssignmentForm: React.FC<AssignmentFormProps> = (props) => {
+  const location = useLocation(); // :white_check_mark: שימוש תקין בתוך הקומפוננטה
+  // :white_check_mark: שליפת נתונים שהועברו דרך ניווט
+  const {
+    customerId: customerIdFromState,
+    customerName: customerNameFromState,
+    workspaceType: workspaceTypeFromState,
+  } = location.state || {};
+  // :white_check_mark: שילוב בין props ובין location.state
+  const customerId = props.customerId || customerIdFromState;
+  const customerName = props.customerName || customerNameFromState;
+  const workspaceType = props.workspaceType || workspaceTypeFromState;
+  const workspaceId = props.workspaceId;
+  const workspaceName = props.workspaceName;
+  const assignedDate = props.assignedDate;
+  const unassignedDate = props.unassignedDate;
+  const notes = props.notes;
+  const assignedBy = props.assignedBy;
+  const status = props.status || 'ACTIVE';
+  const onSubmit = props.onSubmit;
+  const title = props.title || "הקצאת חלל עבודה";
   const {
     spaces,
-    customers,
     loading,
     error,
     conflictCheck,
     getAllSpaces,
-    getAllCustomers,
     createAssignment,
     checkConflicts,
     clearError,
@@ -61,23 +65,27 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
       customerId: customerId || "",
       assignedDate: assignedDate || "",
       unassignedDate: unassignedDate || "",
+      daysOfWeek: [],
       notes: notes || "",
       assignedBy: assignedBy || "",
       status: status,
     },
   });
+  const customers = useCustomerStore((s) => s.customers);
+  const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
 
   // מעקב אחר שינויים בשדות
   const watchedWorkspaceId = watch("workspaceId");
   const watchedAssignedDate = watch("assignedDate");
   const watchedUnassignedDate = watch("unassignedDate");
+  const watchedDaysOfWeek = watch("daysOfWeek");
+
 
   useEffect(() => {
     const loadData = async () => {
       try {
         console.log('Loading data...'); // debug
         await getAllSpaces();
-        await getAllCustomers();
         console.log('Data loaded successfully'); // debug
       } catch (error) {
         console.error("Error loading data:", error);
@@ -91,17 +99,28 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
       clearError();
     };
   }, []); // ← רק פעם אחת בטעינה
+  useEffect(() => {
+    fetchCustomers()
+  }, []);
 
   // בדיקת קונפליקטים בזמן אמת
   useEffect(() => {
     const checkForConflicts = async () => {
+      const daysOfWeekForConflicts =
+        Array.isArray(watchedDaysOfWeek)
+          ? watchedDaysOfWeek.map(Number)
+          : typeof watchedDaysOfWeek === "string"
+            ? [Number(watchedDaysOfWeek)]
+            : [];
       if (watchedWorkspaceId && watchedAssignedDate) {
         setIsCheckingConflicts(true);
         try {
           await checkConflicts(
             watchedWorkspaceId,
             watchedAssignedDate,
-            watchedUnassignedDate || undefined
+            watchedUnassignedDate || undefined,
+            undefined,
+            daysOfWeekForConflicts
           );
         } catch (error) {
           console.error('Error checking conflicts:', error);
@@ -113,9 +132,7 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
 
     const timeoutId = setTimeout(checkForConflicts, 500);
     return () => clearTimeout(timeoutId);
-  }, [watchedWorkspaceId, watchedAssignedDate, watchedUnassignedDate, checkConflicts]);
-
-  const filteredSpaces = React.useMemo(() => {
+  }, [watchedWorkspaceId, watchedAssignedDate, watchedUnassignedDate, watchedDaysOfWeek, checkConflicts]); const filteredSpaces = React.useMemo(() => {
     if (!workspaceType) {
       return spaces;
     }
@@ -184,7 +201,8 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
       onSubmit={handleSubmit(handleFormSubmit)}
       className="p-6 bg-white rounded-lg shadow-md max-w-md mx-auto"
     >
-      <h2 className="text-xl font-bold mb-6 text-gray-800">{computedTitle}</h2>
+
+      <h2 className="text-xl font-bold mb-6 text-gray-800">{title}</h2>
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           <strong>שגיאה:</strong> {error}
@@ -307,6 +325,30 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
         />
       </div>
 
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          ימים בשבוע להקצאה: <span className="text-red-500">*</span>
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "ראשון", value: 0 },
+            { label: "שני", value: 1 },
+            { label: "שלישי", value: 2 },
+            { label: "רביעי", value: 3 },
+            { label: "חמישי", value: 4 },
+            { label: "שישי", value: 5 },
+          ].map(day => (
+            <label key={day.value} className="flex items-center gap-1">
+              <input
+                type="checkbox"
+                value={day.value}
+                {...register("daysOfWeek")}
+              />
+              {day.label}
+            </label>
+          ))}
+        </div>
+      </div>
       {/* הערות */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">

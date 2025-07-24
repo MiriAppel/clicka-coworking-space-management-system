@@ -994,7 +994,7 @@ export const WorkspaceMap = () => {
 
     });
     const navigate = useNavigate()
-    const [zoom, setZoom] = useState(0.22);
+    const [zoom, setZoom] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -1036,7 +1036,7 @@ export const WorkspaceMap = () => {
         setZoom(prev => Math.max(prev / 1.2, 1));
     };
     const handleResetZoom = () => {
-        setZoom(0.22); // חזור לזום הראשוני
+        setZoom(1); // חזור לזום הראשוני
         applyPan({ x: 0, y: 0 });
     };
     const getZoomStep = () => {

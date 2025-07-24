@@ -54,34 +54,36 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
     deleteBooking,
     syncWithGoogleCalendar,
     fetchGoogleCalendarEvents
-} = useBookingCalendarStore();
+  } = useBookingCalendarStore();
 
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState<any>(null);
   const [showFormModal, setShowFormModal] = useState(false);
   const [formInitialData, setFormInitialData] = useState<Partial<FormFields>>({});
-
+  useEffect(() => {
+    console.log('bookings:', bookings);
+  }, [bookings]);
   useEffect(() => {
     const loadData = async () => {
-        if (roomId) {
-            try {
-                console.log('Loading data for room:', roomId);
-                
-                // טען הזמנות רגילות
-                await fetchBookings({ roomId });
-                
-                // טען אירועי Google Calendar
-                await fetchGoogleCalendarEvents(roomId);
-                
-                console.log('Data loaded successfully');
-            } catch (error) {
-                console.error('Error loading calendar data:', error);
-            }
+      if (roomId) {
+        try {
+          console.log('Loading data for room:', roomId);
+
+          // טען הזמנות רגילות
+          await fetchBookings({ roomId });
+
+          // טען אירועי Google Calendar
+          await fetchGoogleCalendarEvents(roomId);
+
+          console.log('Data loaded successfully');
+        } catch (error) {
+          console.error('Error loading calendar data:', error);
         }
+      }
     };
-    
+
     loadData();
-}, [roomId]); 
+  }, [roomId]);
   const roomBookings = bookings.filter((booking: any) => booking.roomId === roomId);
 
   const events = roomBookings.map((booking: any) => ({
@@ -146,24 +148,41 @@ export const BookingCalendar: React.FC<BookingCalendarProps> = ({
   };
 
   const handleSelect = (selectInfo: DateSelectArg) => {
+    const start = new Date(selectInfo.startStr);
+    const now = new Date();
+
+    // בדיקה: האם התאריך/שעה עברו?
+    if (start < now) {
+      showAlert('שגיאה', 'לא ניתן להוסיף אירוע בשעה או ביום שעברו!', 'error');
+      selectInfo.view.calendar.unselect();
+      return;
+    }
     setFormInitialData({
       startDate: selectInfo.startStr.slice(0, 10),
       startTime: selectInfo.startStr.slice(11, 16),
-      endDate: selectInfo.endStr.slice(0, 10),
       endTime: selectInfo.endStr.slice(11, 16),
       selectedRoomId: roomId,
     });
     setShowFormModal(true);
-    selectInfo.view.calendar.unselect()
+    selectInfo.view.calendar.unselect();
   };
 
   const handleEventChange = async (changeInfo: EventDropArg) => {
+
     const { id } = changeInfo.event;
     const updatedBooking = {
       startTime: changeInfo.event.startStr,
       endTime: changeInfo.event.endStr
     };
+    const start = new Date(updatedBooking.startTime);
+    const now = new Date();
 
+    // מניעת גרירה לעבר
+    if (start < now) {
+      showAlert('שגיאה', 'לא ניתן לגרור אירוע לשעה או יום שעברו!', 'error');
+      changeInfo.revert();
+      return;
+    }
     try {
       validateBookingUpdate(updatedBooking.startTime, updatedBooking.endTime, id);
       await updateBooking(id, updatedBooking);

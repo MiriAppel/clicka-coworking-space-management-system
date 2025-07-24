@@ -1,4 +1,4 @@
-import { SpaceAssignmentModel } from "../models/spaceAssingment.model";
+import { SpaceAssignmentModel } from "../models/spaceAssignment.model";
 import { SpaceAssignmentService } from "../services/spaceAssignmentsystem.service";
 import { Request, Response } from "express";
 
@@ -90,15 +90,16 @@ export class SpaceAssignmentController {
 
     async checkConflicts(req: Request, res: Response) {
         try {
-            const { workspaceId, assignedDate, unassignedDate, excludeId } = req.body;
+            const { workspaceId, assignedDate, unassignedDate, excludeId, daysOfWeek } = req.body;
             
-            console.log('Checking conflicts for:', { workspaceId, assignedDate, unassignedDate, excludeId });
+            console.log('Checking conflicts for:', { workspaceId, assignedDate, unassignedDate, excludeId , daysOfWeek});
             
             const conflicts = await this.spaceAssignmentService.checkConflicts(
                 workspaceId, 
                 assignedDate, 
                 unassignedDate, 
-                excludeId
+                excludeId,
+                daysOfWeek
             );
             
             res.status(200).json({
