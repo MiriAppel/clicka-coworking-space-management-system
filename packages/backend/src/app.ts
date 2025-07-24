@@ -48,7 +48,7 @@ dotenv.config();
 setupSwagger(app);
 
 // Apply middlewares
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
@@ -77,7 +77,7 @@ app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/pricing', routerPricing);
 app.use('/api/emailTemplate', emailTemplateRouter);
-app.use('/api/drive', driveRouter);
+// app.use('/api/drive', driveRouter);
 
 app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);

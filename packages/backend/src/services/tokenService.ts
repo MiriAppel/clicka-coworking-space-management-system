@@ -36,6 +36,10 @@ export const clearAuthCookie = (res: Response): void => {
 };
 // Function to get the current user ID from the session cookie
 export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string } | null => {
+    if (!req.cookies) {
+        console.warn('req.cookies is undefined - cookie-parser middleware not configured');
+        return null;
+    }
     const sessionToken = req.cookies.session;
     const sessionId = req.cookies.sessionId;
     if (!sessionToken || !sessionId) return null;

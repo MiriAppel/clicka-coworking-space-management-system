@@ -19,7 +19,7 @@ import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
-import { Billing } from './MainMenu/Billing/Components/billing';
+// import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
@@ -73,7 +73,7 @@ export const Routing = () => {
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
         <Route path="expense-form" element={<CreateExpenseForm />} />
-        <Route path="billing/*" element={<Billing />} />
+        {/* <Route path="billing/*" element={<Billing />} /> */}
         <Route path="users" element={< UserTable />} />
         <Route path="meetingRooms" element={<RoomReservations />} />
         <Route path="UserActions" element={< AuditLogTable />} />
