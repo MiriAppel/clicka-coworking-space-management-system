@@ -113,6 +113,8 @@ export const useInvoiceStore = create<InvoiceState>()(
           }
         },
         collection: [],
+
+        
         getCustomersCollection: async () => {
           set({ loading: true, error: null });
           try {
@@ -128,7 +130,6 @@ export const useInvoiceStore = create<InvoiceState>()(
             });
             set({ collection: processedCollection, loading: false });
           } catch (error) {
-            console.error('שגיאה בשליפת פרטי גבייה:', error);
             set({
               error: 'Error fetching collection details',
               loading: false,
@@ -136,8 +137,11 @@ export const useInvoiceStore = create<InvoiceState>()(
             });
             throw error;
           }
-        }
-        ,
+        },
+
+
+
+
         // יצירת חשבונית חדשה
         createInvoice: async (newInvoice) => {
           set({ loading: true, error: null });

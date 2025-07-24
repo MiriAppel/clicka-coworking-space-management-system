@@ -145,6 +145,7 @@ export async function serviceDeleteInvoice(id: ID): Promise<boolean> {
 }
 
 // קבלת כל פרטי הגבייה
+
 export async function serviceGetCustomersCollection() {
   const { data, error } = await supabase
   .from('customer')

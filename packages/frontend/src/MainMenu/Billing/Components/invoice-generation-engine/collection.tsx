@@ -121,5 +121,4 @@ export const Collection = () => {
         </div>
     );
 };
-
 export default Collection;
