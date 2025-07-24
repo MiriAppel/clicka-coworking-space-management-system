@@ -1,6 +1,5 @@
 import express from 'express';
 import * as customerController from '../controllers/customer.controller'; 
-import * as contractController from '../controllers/contract.controller'
 
 const routerCustomer = express.Router();
 
@@ -8,6 +7,8 @@ const routerCustomer = express.Router();
 // routerCustomer.get('/by-page', customerController.getCustomersByPage);
 
 routerCustomer.get('/confirm-email/:id/:email', customerController.confirmEmail);
+
+routerCustomer.get('/sendEmailWithContract/:link', customerController.sendContractEmail)
 
 routerCustomer.get('/page', customerController.getCustomersByPage); 
 
