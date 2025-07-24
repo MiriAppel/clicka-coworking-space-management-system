@@ -1,6 +1,6 @@
 import { DateISO, ID, LoungePricing, MeetingRoomPricing, PricingTier, WorkspaceType } from "shared-types";
 
-export class LoungePricingModel implements LoungePricing{
+export class LoungePricingModel implements LoungePricing {
     id?: ID;
     eveningRate: number;
     memberDiscountRate: number;
@@ -8,7 +8,7 @@ export class LoungePricingModel implements LoungePricing{
     effectiveDate: DateISO;
     createdAt: DateISO;
     updatedAt: DateISO;
-    constructor(data: { 
+    constructor(data: {
         id?: ID;
         eveningRate: number;
         memberDiscountRate: number;
@@ -16,7 +16,7 @@ export class LoungePricingModel implements LoungePricing{
         effectiveDate: DateISO;
         createdAt: DateISO;
         updatedAt: DateISO;
-    }){
+    }) {
         this.id = data.id || undefined;
         this.eveningRate = data.eveningRate;
         this.memberDiscountRate = data.memberDiscountRate;
@@ -37,7 +37,7 @@ export class LoungePricingModel implements LoungePricing{
     }
 }
 
-export class MeetingRoomPricingModel implements MeetingRoomPricing{
+export class MeetingRoomPricingModel implements MeetingRoomPricing {
     id?: ID;
     hourlyRate: number;
     discountedHourlyRate: number;
@@ -55,7 +55,7 @@ export class MeetingRoomPricingModel implements MeetingRoomPricing{
         effectiveDate: DateISO;
         createdAt: DateISO;
         updatedAt: DateISO;
-    }){
+    }) {
         this.id = data.id || undefined;
         this.hourlyRate = data.hourlyRate;
         this.discountedHourlyRate = data.discountedHourlyRate;
@@ -77,7 +77,7 @@ export class MeetingRoomPricingModel implements MeetingRoomPricing{
         };
     }
 }
-export class PricingTierModel implements PricingTier{
+export class PricingTierModel implements PricingTier {
     id?: ID;
     workspaceType: WorkspaceType;
     year1Price: number;
@@ -99,7 +99,7 @@ export class PricingTierModel implements PricingTier{
         effectiveDate: DateISO;
         createdAt: DateISO;
         updatedAt: DateISO;
-    }){
+    }) {
         this.id = data.id || undefined;
         this.workspaceType = data.workspaceType;
         this.year1Price = data.year1Price;
@@ -123,5 +123,19 @@ export class PricingTierModel implements PricingTier{
             created_at: this.createdAt,
             updated_at: this.updatedAt
         };
+    }
+    static fromDatabaseFormat(data: any): PricingTierModel {
+        return new PricingTierModel({
+            id: data.id,
+            workspaceType: data.workspace_type,
+            year1Price: data.year1_price,
+            year2Price: data.year2_price,
+            year3Price: data.year3_price,
+            year4Price: data.year4_price,
+            active: data.active,
+            effectiveDate: data.effective_date,
+            createdAt: data.created_at,
+            updatedAt: data.updated_at
+        });
     }
 }

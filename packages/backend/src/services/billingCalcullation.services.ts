@@ -5,7 +5,7 @@
 // מחשבת סה"כ, מע"מ, וסה"כ לתשלום.
 // מחזירה פירוט לכל חלל ולחשבונית.
 import { v4 as uuidv4 } from 'uuid'; // ייבוא UUID
-import { PricingTier, ID, DateISO, BillingItemType, InvoiceStatus, WorkspaceType } from '../../../shared-types'; // ייבוא טיפוסים רלוונטיים
+import { PricingTier, ID, DateISO, BillingItemType, InvoiceStatus, WorkspaceType, SpaceStatus } from '../../../shared-types'; // ייבוא טיפוסים רלוונטיים
 import { MeetingRoomPricing } from '../../../shared-types/pricing'; // ייבוא טיפוס תמחור חדרי ישיבות
 import { differenceInCalendarDays, startOfMonth, endOfMonth } from 'date-fns'; // פונקציות עזר לתאריכים
 import { VAT_RATE } from '../constants'; // קבוע מע"מ
@@ -14,7 +14,7 @@ import { generateId } from '../models/invoice.mock-db'; // פונקציה ליצ
 import { customerService } from './customer.service'; // שירות לשליפת לקוחות
 import { BookingService } from '../services/booking.service';
 import { UUID } from 'crypto';
-import { serviceCreateInvoice, serviceCreateInvoiceItem } from './invoice.service';
+import { serviceCreateInvoice, serviceCreateInvoiceItem, serviceUpdateInvoice } from './invoice.service';
 import { WorkspaceService } from './workspace.service';
 import { WorkspaceModel } from '../models/workspace.model';
 
@@ -24,7 +24,7 @@ interface MeetingRoomBooking {
     bookingId: ID;
     roomId: ID;
     totalHours: number;
-    pricing: MeetingRoomPricing & { total: number }; // 👈 הרחבה עם השדה החסר
+    pricing: MeetingRoomPricing & { total: number };
     isKlikahCardHolder?: boolean;
 }
 
@@ -33,15 +33,37 @@ interface BillingCalculationInput {
     customerId: ID;
     customerName: string; // שם הלקוח
     billingPeriod: { startDate: DateISO; endDate: DateISO }; // תקופת החיוב
-    dueDate: DateISO; // תאריך יעד לתשלום
+    dueDate: DateISO;
+    // תאריך יעד לתשלום
+    // workspaces: {
+    //     workspaceId: ID;
+    //     workspaceType: WorkspaceType;
+    //     contractStart: DateISO; // תאריך התחלת החוזה
+    //     workspaceStart: DateISO;
+    //     workspaceEnd?: DateISO;
+    //     quantity: number;
+    //     pricingTiers: PricingTier[];
+    // }[];
     workspaces: {
-        workspaceId: ID;
-        workspaceType: WorkspaceType;
+        workspaceId: ID; // שם שדה תואם ל-id של חלל עבודה
+        workspaceType: WorkspaceType; // סוג חלל
         contractStart: DateISO; // תאריך התחלת החוזה
-        workspaceStart: DateISO;
-        workspaceEnd?: DateISO;
-        quantity: number;
-        pricingTiers: PricingTier[];
+        workspaceStart: DateISO; // תאריך התחלת חלל העבודה
+        workspaceEnd?: DateISO; // תאריך סוף חלל העבודה (אופציונלי)
+        quantity: number; // כמות
+        pricingTiers: PricingTier[]; // מדרגות מחירים
+        name: string; // הוסף שם
+        status: SpaceStatus;
+        positionX: number;
+        positionY: number;
+        width: number;
+        height: number;
+        createdAt: DateISO;
+        updatedAt: DateISO;
+        description?: string;
+        room?: string;
+        currentCustomerId?: ID;
+        currentCustomerName?: string;
     }[];
     meetingRoomBookings?: MeetingRoomBooking[];
     taxRate?: number; // אחוז מע"מ, ברירת מחדל 18%
@@ -137,19 +159,52 @@ export const calculateBillingForCustomer = async (
         const rawWorkspaces = await workspaceService.getWorkspacesByCustomerId(customerId) ?? [];
         console.log('Raw workspaces fetched:', rawWorkspaces);
 
-        const workspaces = rawWorkspaces.map(ws => ({
-            workspaceId: ws.id ?? '', // חובה: string
-            workspaceType: ws.type,
-            contractStart: billingPeriod.startDate,
-            workspaceStart: billingPeriod.startDate,
-            workspaceEnd: undefined,
-            quantity: 1,
-            pricingTiers: [],
+        if (rawWorkspaces.length === 0) {
+            throw new Error('No workspaces found for the customer');
+        } else if (rawWorkspaces.length > 1) {
+            throw new Error('Multiple workspaces found when a single workspace was expected');
+        }
+        // const workspaces = rawWorkspaces.map(ws => ({
+        //     workspaceId: ws.id ?? '', 
+        //     workspaceType: ws.type,
+        //     contractStart: billingPeriod.startDate,
+        //     workspaceStart: billingPeriod.startDate,
+        //     workspaceEnd: undefined,
+        //     quantity: 1,
+        //     pricingTiers: [],
+        // }));
+
+
+        const workspaces = await Promise.all(rawWorkspaces.map(async ws => {
+            const pricingTiers = await workspaceService.getPricingTiersByWorkspaceType(ws.type) || []; // קריאה לפונקציה לקבלת מדרגות תמחור
+
+            return {
+                workspaceId: ws.id ?? '',
+                workspaceType: ws.type, // ודא שהשדה הזה קיים
+                contractStart: billingPeriod.startDate,
+                workspaceStart: billingPeriod.startDate,
+                workspaceEnd: undefined,
+                quantity: 1,
+                pricingTiers: pricingTiers, // קבלת מדרגות תמחור על פי ID של חלל העבודה
+                name: ws.name ?? '', // הוסף שם
+                status: ws.status, // הוסף סטטוס
+                positionX: ws.positionX ?? 0, // הוסף מיקום X
+                positionY: ws.positionY ?? 0, // הוסף מיקום Y
+                width: ws.width ?? 0, // הוסף רוחב
+                height: ws.height ?? 0, // הוסף גובה
+                createdAt: new Date().toISOString(), // הוסף תאריך יצירה
+                updatedAt: new Date().toISOString(), // הוסף תאריך עדכון
+                description: ws.description ?? '', // הוסף תיאור (אופציונלי)
+                room: ws.room ?? '',
+                currentCustomerId: ws.currentCustomerId ?? '', // הוסף ID של לקוח נוכחי (אופציונלי)
+                currentCustomerName: ws.currentCustomerName ?? '', // הוסף שם לקוח נוכחי (אופציונלי)
+            };
         }));
+
         console.log('Mapped workspaces:', workspaces);
 
         const allBookings = await bookingService.getAllBooking();
-        console.log('All Bookings fetched:', allBookings);
+
 
         if (!allBookings) {
             console.error('Error: No bookings found');
@@ -184,10 +239,7 @@ export const calculateBillingForCustomer = async (
             new Date().toISOString(),
             new Date().toISOString()
         );
-        const invoiceId= initialInvoice.id;
         console.log('Initial Invoice created:', initialInvoice);
-
-        console.log('Initial Invoice:', initialInvoice);
         const savedInvoice = await serviceCreateInvoice(initialInvoice);
         console.log('Saved Invoice:', savedInvoice);
 
@@ -222,7 +274,7 @@ export const calculateBillingForCustomer = async (
             workspaces: workspaces,
             meetingRoomBookings,
             taxRate
-        }, savedInvoice.id);
+        }, savedInvoice.id, savedInvoice.invoice_number);
 
         console.log('Billing calculation result:', result);
 
@@ -234,8 +286,7 @@ export const calculateBillingForCustomer = async (
             total: result.total,
         };
 
-        console.log('Updated Invoice:', updatedInvoice);
-        await serviceCreateInvoice(updatedInvoice);
+        await serviceUpdateInvoice(savedInvoice.id, updatedInvoice);
 
         return result;
 
@@ -250,7 +301,7 @@ export const calculateBillingForCustomer = async (
 };
 
 // פונקציה זו מבצעת את החישובים בפועל ומחזירה את תוצאת החיוב.
-export const billingCalculation = async (input: BillingCalculationInput, invoiceId: ID): Promise<BillingCalculationResult> => {
+export const billingCalculation = async (input: BillingCalculationInput, invoiceId: ID, invoice_number: ID): Promise<BillingCalculationResult> => {
     console.log('Starting billing calculation...');
     console.log('Input for billing calculation:', input);
     const taxRate = input.taxRate ?? VAT_RATE;
@@ -264,9 +315,11 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
     );
 
     console.log('Is Klikah Card Holder:', isKlikahCardHolder);
-
+    const DEFAULT_UNIT_PRICE = 100; // מחיר ברירת מחדל
+    // חישוב עבור חללי עבודה
     for (const ws of input.workspaces) {
         console.log('Processing workspace:', ws);
+
         const pricing = ws.pricingTiers
             .filter(
                 p =>
@@ -276,25 +329,27 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
             )
             .sort((a, b) => new Date(b.effectiveDate).getTime() - new Date(a.effectiveDate).getTime())[0];
 
-        if (!pricing) {
-            console.error('Error: No pricing tier found for workspace:', ws);
-            throw new Error('No pricing tier found for workspace');
+        let unitPrice;
+        let tenureYears = 1; // הגדר ברירת מחדל של שנות ותק
+
+        if (pricing) {
+            tenureYears = Math.max(
+                1,
+                Math.floor(
+                    (new Date(input.billingPeriod.startDate).getTime() - new Date(ws.contractStart).getTime()) /
+                    (365 * 24 * 60 * 60 * 1000)
+                ) + 1
+            );
+
+            unitPrice = tenureYears === 2 ? pricing.year2Price :
+                tenureYears === 3 ? pricing.year3Price :
+                    tenureYears >= 4 ? pricing.year4Price : pricing.year1Price;
+        } else {
+            console.warn('No active pricing tier found for this workspace. Using default unit price.');
+            unitPrice = DEFAULT_UNIT_PRICE; // השתמש במחיר ברירת המחדל
         }
 
-        const tenureYears = Math.max(
-            1,
-            Math.floor(
-                (new Date(input.billingPeriod.startDate).getTime() - new Date(ws.contractStart).getTime()) /
-                (365 * 24 * 60 * 60 * 1000)
-            ) + 1
-        );
-
-        let unitPrice = pricing.year1Price;
-        if (tenureYears === 2) unitPrice = pricing.year2Price;
-        else if (tenureYears === 3) unitPrice = pricing.year3Price;
-        else if (tenureYears >= 4) unitPrice = pricing.year4Price;
-
-        console.log(`Unit price for workspace ${ws.workspaceId} for tenure ${tenureYears} years:`, unitPrice);
+        console.log(`Unit price for workspace ${ws.workspaceId} for tenure:`, unitPrice);
 
         const periodStart = ws.workspaceStart > input.billingPeriod.startDate ? ws.workspaceStart : input.billingPeriod.startDate;
         const periodEnd = ws.workspaceEnd && ws.workspaceEnd < input.billingPeriod.endDate ? ws.workspaceEnd : input.billingPeriod.endDate;
@@ -331,23 +386,26 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
             period: { startDate: periodStart, endDate: periodEnd },
         });
 
-        items.push(
-            new InvoiceItemModel(
-                generateId(),
-                invoiceId,
-                'WORKSPACE_RENTAL' as BillingItemType,
-                `השכרת ${ws.workspaceType}`,
-                ws.quantity,
-                unitPrice,
-                totalPrice,
-                taxRate,
-                Math.round(totalPrice * (taxRate / 100) * 100) / 100,
-                ws.workspaceType,
-                ws.workspaceId,
-                new Date().toISOString(),
-                new Date().toISOString()
-            )
+        // הוסף פריטי חשבונית
+        const invoiceItem = new InvoiceItemModel(
+            generateId(),
+            invoiceId,
+            BillingItemType.WORKSPACE,
+            `השכרת ${ws.workspaceType}`,
+            ws.quantity,
+            unitPrice,
+            totalPrice,
+            taxRate,
+            Math.round(totalPrice * (taxRate / 100) * 100) / 100,
+            ws.workspaceType,
+            ws.workspaceId,
+            new Date().toISOString(),
+            new Date().toISOString()
         );
+
+        // הוסף את פריט החשבונית ל-DB
+        await serviceCreateInvoiceItem(invoiceItem);
+        items.push(invoiceItem); // הוסף את הפריט לרשימת הפריטים
 
         subtotal += totalPrice;
         console.log(`Subtotal after workspace ${ws.workspaceId}: ${subtotal}`);
@@ -372,23 +430,25 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
                 totalPrice,
             });
 
-            items.push(
-                new InvoiceItemModel(
-                    generateId(),
-                    invoiceId,
-                    'MEETING_ROOM_USAGE' as BillingItemType,
-                    'שימוש בחדר ישיבות',
-                    booking.totalHours,
-                    pricePerHour,
-                    totalPrice,
-                    taxRate,
-                    Math.round(totalPrice * (taxRate / 100) * 100) / 100,
-                    'MEETING_ROOM',
-                    booking.roomId,
-                    new Date().toISOString(),
-                    new Date().toISOString()
-                )
+            const meetingRoomItem = new InvoiceItemModel(
+                generateId(),
+                invoiceId,
+                BillingItemType.MEETING_ROOM,
+                'שימוש בחדר ישיבות',
+                booking.totalHours,
+                pricePerHour,
+                totalPrice,
+                taxRate,
+                Math.round(totalPrice * (taxRate / 100) * 100) / 100,
+                'MEETING_ROOM',
+                booking.roomId,
+                new Date().toISOString(),
+                new Date().toISOString()
             );
+
+            // הוספת פריט החשבונית ל-DB
+            await serviceCreateInvoiceItem(meetingRoomItem);
+            items.push(meetingRoomItem); // הוספת הפריט לרשימת הפריטים
 
             subtotal += totalPrice;
             console.log(`Subtotal after booking ${booking.bookingId}: ${subtotal}`);
@@ -404,7 +464,7 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
     return {
         invoice: new InvoiceModel(
             invoiceId,
-            `INV-${invoiceId}`,
+            invoice_number,
             input.customerId,
             input.customerName,
             InvoiceStatus.DRAFT,

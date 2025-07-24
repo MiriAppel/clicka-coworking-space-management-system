@@ -62,7 +62,7 @@ export async function serviceCreateInvoiceItem(data: Partial<InvoiceItemModel>):
     // הכנת הנתונים להוספה
     const itemData = {
         invoice_id: data.invoice_id || '',
-        type: data.type || 'WORKSPACE_RENTAL', // ברירת מחדל
+        type: data.type || '', // ברירת מחדל
         description: data.description || '',
         quantity: data.quantity || 0,
         unit_price: data.unit_price || 0,
