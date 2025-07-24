@@ -55,7 +55,7 @@ app.use(cookieParser());
 // app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // Adjust as needed
+  origin: [process.env.CORS_ORIGIN || 'http://localhost:3000' , 'https://57737495d7dc.ngrok-free.app'], // Adjust as needed
   credentials: true, // Allow cookies to be sent with requests
 }));
  
@@ -64,6 +64,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
+app.use('/api/customers', routerCustomer);
+
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
 app.use('/api/audit-logs', auditLogRouter);
@@ -92,7 +94,7 @@ app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 app.use('/api/interaction', interactionRouter)
 app.use(urlencoded({ extended: true }));
-app.use('/api/customers', routerCustomer);
+// app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/payment', routerPayment);app.use('/api/document', documentRouter);

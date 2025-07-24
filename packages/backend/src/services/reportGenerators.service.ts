@@ -1,4 +1,3 @@
-
 import { ReportParameters,CashFlowReportData , ReportData,Expense, ExpenseCategory,BookingStatus, BillingItemType, Payment, Invoice, BillingItem, InvoiceStatus } from 'shared-types';
 import { ExpenseService } from './expense.services';
 import { groupByPeriod } from '../utils/groupingUtils.service';
@@ -6,19 +5,19 @@ import { PaymentService } from '../services/payments.service';
 import { serviceGetInvoiceById } from '../services/invoice.service';
 import { BookingService } from '../services/booking.service';
 
-// function getPeriodLabel(dateStr: string, groupBy: 'month' | 'quarter' | 'year' = 'month'): string {
-//   const date = new Date(dateStr);
-//   const year = date.getFullYear();
+function getPeriodLabel(dateStr: string, groupBy: 'month' | 'quarter' | 'year' = 'month'): string {
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
 
-//   if (groupBy === 'year') return `${year}`;
-//   if (groupBy === 'quarter') {
-//     const quarter = Math.floor(date.getMonth() / 3) + 1;
-//     return `Q${quarter} ${year}`;
-//   }
+  if (groupBy === 'year') return `${year}`;
+  if (groupBy === 'quarter') {
+    const quarter = Math.floor(date.getMonth() / 3) + 1;
+    return `Q${quarter} ${year}`;
+  }
 
-//   const month = (date.getMonth() + 1).toString().padStart(2, '0');
-//   return `${year}-${month}`;
-// }
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  return `${year}-${month}`;
+}
 
 export async function generateExpenseData(parameters: ReportParameters): Promise<ReportData | null> {
   const expenseService = new ExpenseService();
@@ -148,7 +147,7 @@ export async function generateRevenueDataFromPayments(parameters: ReportParamete
     let effectiveDate = payment.date;
 
     if (payment.invoice_id) {
-      const invoice: Invoice | null = await serviceGetInvoiceById(payment.invoice_id);
+      const invoice: InvoiceModel | null = await serviceGetInvoiceById(payment.invoice_id);
 
       // אם יש תאריך חשבונית – השתמש בו במקום בתאריך התשלום
       if (invoice?.issue_date) {
@@ -324,6 +323,7 @@ import { WorkspaceService } from '../services/workspace.service'; // ייבוא 
 
 import { WorkspaceType } from 'shared-types'; // תקן את הנתיב בהתאם
 import { serviceGetAllInvoices } from "../services/invoice.service";
+import { InvoiceModel } from '../models/invoice.model';
 
 export async function generateOccupancyRevenueData(parameters: ReportParameters): Promise<ReportData | null> {
   const bookingService = new BookingService();
@@ -657,18 +657,4 @@ async function getCategoryForPayment(payment: Payment): Promise<string> {
   // אם יש invoice_id, נשלוף את החשבונית וניתן את הקטגוריה
   const invoice = await serviceGetInvoiceById(payment.invoice_id); // פונקציה אסינכרונית
   return invoice?.items?.[0]?.type || 'Other'; // אם אין קטגוריה, נחזיר 'Other'
-}
-
-function getPeriodLabel(dateStr: string, groupBy: 'month' | 'quarter' | 'year' = 'month'): string {
-  const date = new Date(dateStr);
-  const year = date.getFullYear();
-
-  if (groupBy === 'year') return `${year}`;
-  if (groupBy === 'quarter') {
-    const quarter = Math.floor(date.getMonth() / 3) + 1;
-    return `Q${quarter} ${year}`;
-  }
-
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  return `${year}-${month}`;
 }
