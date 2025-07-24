@@ -12,66 +12,56 @@ type VendorSummaryProps = {
   vendor: Vendor & { folderId?: string };
 };
 
-// טיפוס לפרופס של קומפוננטת יצירת הנתיב - כולל שם הספק ל
+// טיפוס לפרופס של קומפוננטת יצירת הנתיב
 export interface FileUploaderProps {
   onFilesUploaded?: (files: FileItem[]) => void;
   onPathReady: (path: string) => void;
-  vendorName: string;            
+  vendorName: string;
   documentCategory: string;
 }
 
-// קומפוננטה שיוצרת את נתיב התיקייה לפי שם הספק וקטגוריית המסמך
+// קומפוננטה שיוצרת נתיב תיקייה לפי שם הספק וקטגוריה
 export const FolderPathGenerator: React.FC<FileUploaderProps> = ({ vendorName, documentCategory, onPathReady }) => {
   useEffect(() => {
-    // אם יש שם ספק וקטגוריה, יוצרים נתיב בתבנית "ספקים/שם הספק/קטגוריה"
     if (vendorName && documentCategory) {
       const path = `ספקים/${vendorName}/${documentCategory}`;
-      onPathReady(path); // מעדכנים את הנתיב בקומפוננטה ההורה
+      onPathReady(path);
     }
   }, [vendorName, documentCategory, onPathReady]);
 
-  return null; // אין ממשק חזותי - כל העבודה היא פנימית בלבד
+  return null;
 };
 
 export default function VendorSummary({ vendor }: VendorSummaryProps) {
   const navigate = useNavigate();
   const { fetchExpensesByVendorId, expenses, deleteVendor } = useVendorsStore();
 
-  // סטייט לשמירת קטגוריית הקובץ שנבחרה
   const [fileCategory, setFileCategory] = useState("חשבוניות ספקים");
-  // סטייט לשמירת נתיב התיקייה שנוצר
   const [folderPath, setFolderPath] = useState("");
 
-  // יצירת instance של react-hook-form לניהול הטופס
   const methods = useForm({
     defaultValues: {
-      documentType: DocumentType.INVOICE, // ברירת מחדל לסוג המסמך
+      documentType: DocumentType.INVOICE,
     }
   });
 
-  // טוען הוצאות של הספק לפי ה-ID שלו בכל שינוי של ה-ID
   useEffect(() => {
     fetchExpensesByVendorId(vendor.id);
   }, [vendor.id, fetchExpensesByVendorId]);
 
-  // סינון ההוצאות רק של הספק הנוכחי
   const vendorExpenses = expenses.filter((e) => e.vendor_id === vendor.id);
-
-  // חישובים סטטיסטיים על ההוצאות
   const expenseCount = vendorExpenses.length;
   const totalExpenses = vendorExpenses.reduce((sum, e) => sum + e.amount, 0);
   const averageExpense = expenseCount > 0 ? parseFloat((totalExpenses / expenseCount).toFixed(2)) : 0;
   const lastExpenseDate = expenseCount > 0 ? vendorExpenses[expenseCount - 1].date : "-";
 
-  // פונקציה למחיקת ספק עם אישור משתמש
   const handleDeleteVendor = async () => {
     if (window.confirm("האם למחוק את הספק?")) {
       await deleteVendor(vendor.id);
-      navigate("/vendors"); // מעבירים את המשתמש לדף רשימת הספקים
+      navigate("/vendors");
     }
   };
 
-  // מאזין לשינויים בטופס - מעדכן את קטגוריית הקובץ לפי סוג המסמך שנבחר
   useEffect(() => {
     const subscription = methods.watch((value) => {
       if (value.documentType) {
@@ -87,7 +77,8 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
         console.log("Form submitted with data:", data);
       })}>
         <div className="p-4 border-t mt-4 text-sm">
-          {/* פרטי הספק */}
+
+          {/* פרטי ספק */}
           <div className="grid grid-cols-2 gap-4">
             <div><strong>שם:</strong> {vendor.name}</div>
             <div><strong>קטגוריה:</strong> {vendor.category}</div>
@@ -111,23 +102,52 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
             />
           </div>
 
-          {/* יצירת נתיב לפי שם הספק וקטגוריה שנבחרה */}
+          {/* יצירת נתיב */}
           <FolderPathGenerator
-            vendorName={vendor.name || ""}       
+            vendorName={vendor.name || ""}
             documentCategory={fileCategory}
             onPathReady={(path) => {
-              setFolderPath(path);                {/* מעדכנים את נתיב התיקייה בסטייט */}
+              setFolderPath(path);
             }}
           />
 
-          {/* העלאת קבצים רק אם יש גם ספק וגם נתיב */}
+          {/* העלאת קבצים */}
           {vendor && folderPath && (
             <div className="mt-6">
               <FileUploader
                 folderPath={folderPath}
-                onFilesUploaded={(files) => {
-                  console.log("קבצים הועלו:", files);
-                  // ניתן להוסיף כאן לוגיקה נוספת אחרי העלאת הקבצים
+                onFilesUploaded={async (files) => {
+                  if (!files || files.length === 0) return;
+                  const uploaded = files[0];
+
+                  const document = {
+                    name: uploaded.file.name,
+                    path: folderPath,
+                    mimeType: uploaded.file.type,
+                    size: uploaded.file.size,
+                    url: uploaded.fileUrl || "",
+                    googleDriveId: uploaded.id,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                  };
+
+                  try {
+                    const res = await fetch(`http://localhost:3000/vendor/${vendor.id}/documents`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ file: document }),
+                    });
+
+                    if (res.ok) {
+                      console.log("📁 המסמך נשמר בהצלחה במסד הנתונים");
+                    } else {
+                      console.error("❌ שגיאה בשמירת המסמך:", await res.text());
+                    }
+                  } catch (error) {
+                    console.error("❗ שגיאה בבקשת שמירת המסמך:", error);
+                  }
                 }}
               />
             </div>
@@ -141,7 +161,7 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
             <div><strong>תאריך הוצאה אחרונה:</strong> {lastExpenseDate}</div>
           </div>
 
-          {/* טבלת הוצאות אם קיימת לפחות אחת */}
+          {/* טבלת הוצאות */}
           {vendorExpenses.length > 0 && (
             <div className="mt-4">
               <Table
@@ -158,7 +178,7 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
             </div>
           )}
 
-          {/* כפתורים לשמירה ומחיקה */}
+          {/* כפתורים */}
           <div className="mt-6">
             <button
               type="submit"

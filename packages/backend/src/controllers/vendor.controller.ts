@@ -1,6 +1,6 @@
 //controller/vendor.controller.ts
 import type{ CreateVendorRequest, Vendor } from 'shared-types';
-import {create ,deleteVendor ,getAllVendors ,getVendorById } from '../services/vendor.servic';
+import {create ,deleteVendor ,getAllVendors ,getVendorById,saveDocumentAndAttachToVendor } from '../services/vendor.servic';
 import { Request, Response } from 'express';
 import { VendorModel } from '../models/vendor.model';
 export const createVendorController = async (req: Request, res: Response) => {
@@ -37,5 +37,22 @@ export const deleteVendorController = async (req: Request, res: Response) => {
     res.status(400).json({ error: error.message });
   }
 };
+export async function uploadVendorDocument(req: Request, res: Response) {
+  const vendorId = req.params.id;
+  const file = req.body.file;
+
+  if (!file || !vendorId) {
+    return res.status(400).json({ error: 'חסרים פרטים' });
+  }
+
+  try {
+    const document = await saveDocumentAndAttachToVendor(vendorId, file);
+    return res.status(201).json(document);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'שגיאה בשמירת המסמך' });
+  }
+}
+
 
 
