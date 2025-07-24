@@ -122,6 +122,7 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = tr
               outerRadius={100} // רדיוס פרוסות העוגה
               labelLine={false} // ביטול קו תוויות
               isAnimationActive={true} // הפעלת אנימציה
+              label// תווית פרוסה
               onClick={(entry: any) => {
                 if (onClickLabel && entry && entry.label) {
                   onClickLabel(entry.label);

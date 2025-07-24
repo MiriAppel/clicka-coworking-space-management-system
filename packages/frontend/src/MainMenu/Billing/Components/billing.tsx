@@ -10,7 +10,6 @@ export const Billing = () => {
         <Routes>
             <Route path="*" element={<FinancialReportsDashboard />} />
 
-            <Route path="/financeReports" element={<FinancialReportsDashboard />} />
         </Routes>
     )
     // <div className='billing'>

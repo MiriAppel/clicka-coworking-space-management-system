@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
@@ -9,51 +10,39 @@ import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
 import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
 
-// import {
-//  // CustomerStatus,
-//   DateISO,
-//   PaymentMethodType,
-//  // WorkspaceType,
-// } from "shared-types";
+import {
+  CustomerStatus,
+  PaymentMethodType,
+  WorkspaceType,
+} from "shared-types";
 
 interface ValuesToTable {
   id: string;
 }
 
-// const statusLabels: Record<CustomerStatus, string> = {
-//   ACTIVE: "פעיל",
-//   NOTICE_GIVEN: "הודעת עזיבה",
-//   EXITED: "עזב",
-//   PENDING: "בהמתנה",
-// };
-
-// const workspaceTypeLabels: Record<WorkspaceType, string> = {
-//   PRIVATE_ROOM: 'חדר פרטי',
-//   DESK_IN_ROOM: 'שולחן בחדר',
-//   OPEN_SPACE: 'אופן ספייס',
-//   KLIKAH_CARD: 'כרטיס קליקה',
-//   DOOR_PASS: 'דלת כניסה',
-//   WALL: 'קיר',
-//   COMPUTER_STAND: 'עמדת מחשב',
-//   RECEPTION_DESK: 'דלפק קבלה',
-// };
-
-// const PaymentMethodTypeLabels: Record<PaymentMethodType, string> = {
-//   CREDIT_CARD: 'כרטיס אשראי',
-//   BANK_TRANSFER: 'העברה בנקאית',
-//   CHECK: 'שיק',
-//   CASH: 'מזומן',
-//   OTHER: 'אחר',
-// };
-
-// const formatDate = (dateString: DateISO | undefined) => {
-//   if (!dateString) return "לא זמין";
-//   const date = new Date(dateString);
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = String(date.getFullYear()).slice(-2);
-//   return `${day}/${month}/${year}`;
-// };
+export interface CustomerCardProps {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  businessName: string;
+  businessType: string;
+  status: CustomerStatus;
+  image?: string;
+  idNumber?: string;
+  currentWorkspaceType?: WorkspaceType;
+  workspaceCount?: number;
+  contractSignDate?: string;
+  contractStartDate?: string;
+  billingStartDate?: string;
+  notes?: string;
+  invoiceName?: string;
+  paymentMethodType?: PaymentMethodType;
+  createdAt?: string;
+  updatedAt?: string;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+}
 
 export const CustomersList = () => {
   const navigate = useNavigate();
@@ -75,27 +64,30 @@ export const CustomersList = () => {
     fetchPrevPage,
   } = useCustomerStore();
 
+
+
   useEffect(() => {
-    fetchCustomersByPage();
+    fetchCustomersByPage()
   }, [fetchCustomersByPage]);
 
+  // הפונקציה שמטפלת בשינוי החיפוש
   const handleSearch = (term: string) => {
-    searchCustomersInPage(term);
+    searchCustomersInPage(term)
+      .then(() => {
+      })
   };
 
-  const deleteCurrentCustomer = async (val: ValuesToTable) => {
-    const confirmed = await ShowAlertWarn(
-      "האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?",
-      "לא ניתן לשחזר את המידע לאחר מחיקה."
-    );
 
+  const deleteCurrentCustomer = async (val: ValuesToTable) => {
+    const confirmed = await ShowAlertWarn('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?', 'לא ניתן לשחזר את המידע לאחר מחיקה.');
     if (confirmed) {
       await deleteCustomer(val.id);
       showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
       const latestError = useCustomerStore.getState().error;
       if (latestError) {
-        const errorMessage = latestError || "שגיאה בלתי צפויה";
-        console.error("Error:", errorMessage);
+        // נניח שהשגיאה מכילה את ההודעה שהגדרת ב-store
+        const errorMessage = latestError || 'שגיאה בלתי צפויה';
+        console.error('Error:', errorMessage);
         showAlert("שגיאה במחיקת לקוח", errorMessage, "error");
       }
     }
@@ -103,35 +95,50 @@ export const CustomersList = () => {
 
   const editCustomer = (val: ValuesToTable) => {
     const selected = customers.find((c) => c.id === val.id);
+    console.log("selected customer", selected);
+
     navigate("update", { state: { data: selected } });
   };
+
 
   const debouncedSearch = useRef(
     debounce((value: string) => handleSearch(value), 400)
   ).current;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
     const value = e.target.value;
+    console.log("value", value);
+
     // setTerm(value);
     setSearchTerm(value);
     debouncedSearch(value);
-  };
+  }
 
-  const searchInApi = async (e: { key: string }) => {
+
+  const searchInApi = async (e: { key: string; }) => {
+    //איך ידעו שבלחיצה על אנטר זה מחפש בשרת?...
     if (
-      (e.key === "Enter" && searchTerm.trim()) ||
-      customers.length === 0
+      (e.key === "Enter" && searchTerm.trim())
+      || customers.length === 0 // אין תוצאות בדף הנוכחי
     ) {
-      await searchCustomersByText(searchTerm);
+      console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
+
+      await searchCustomersByText(searchTerm)
+      // .then(() => {
+      //   console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
+      // }).catch((error) => {
+      //   console.error("שגיאה בחיפוש מהשרת:", error);
+      // });
     }
-  };
+  }
 
   const getCardData = () => {
     return customers.map((c) => ({
       id: c.id!,
       name: c.name,
       phone: c.phone,
-      email: c.email,
+      email: c.email ?? "",
       businessName: c.businessName,
       businessType: c.businessType,
       status: c.status,
@@ -155,12 +162,12 @@ export const CustomersList = () => {
         לקוחות
       </h2>
 
-    <div className="flex items-center gap-4 mb-4">
-  <Button variant="primary" size="sm" onClick={() => navigate("new")} className="flex gap-1 items-center">
-    ➕ הוספת לקוח חדש
-  </Button>
-  <ExportToExcel data={customers} fileName="לקוחות" />
-</div>
+      <div className="flex items-center gap-4 mb-4">
+        <Button variant="primary" size="sm" onClick={() => navigate("new")} className="flex gap-1 items-center">
+          ➕ הוספת לקוח חדש
+        </Button>
+        <ExportToExcel data={customers} fileName="לקוחות" />
+      </div>
 
       <br />
       <Stack spacing={2} direction="row">
@@ -186,12 +193,11 @@ export const CustomersList = () => {
         </div>
 
         {loading && (
-          <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-            <div className="loader border-8 border-gray-300 border-t-8 border-t-blue-500 rounded-full w-10 h-10 animate-spin"></div>
+          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
           </div>
         )}
       </div>
-
 
       <div className="flex justify-center space-x-4 my-4">
         <Button
@@ -222,3 +228,12 @@ export const CustomersList = () => {
     </div>
   );
 };
+
+// const formatDate = (dateString: DateISO | undefined) => {
+//   if (!dateString) return "לא זמין";
+//   const date = new Date(dateString);
+//   const day = String(date.getDate()).padStart(2, "0");
+//   const month = String(date.getMonth() + 1).padStart(2, "0");
+//   const year = String(date.getFullYear()).slice(-2);
+//   return `${day}/${month}/${year}`;
+// };

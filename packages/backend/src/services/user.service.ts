@@ -89,7 +89,26 @@ export class UserService {
             throw error; // זריקת השגיאה כדי לטפל בה במקום אחר
         }
     }
+    async updatePassword(userId: string, hashedPassword: string): Promise<UserModel | null> {
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .update({ password: hashedPassword })
+                .eq('id', userId)
+                .select()
+                .single();
 
+            if (error) {
+                console.error('Error updating user password:', error);
+                return null;
+            }
+
+            return UserModel.fromDatabaseFormat(data);
+        } catch (error) {
+            console.error('Error updating user password:', error);
+            throw error;
+        }
+    }
     async updateGoogleIdUser(id: string, googleId: string): Promise<UserModel | null> {
         try {
             const { data, error } = await supabase

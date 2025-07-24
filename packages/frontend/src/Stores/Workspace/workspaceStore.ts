@@ -1,21 +1,24 @@
 import {create} from "zustand";
 import axios from "axios";
-import {ID, Space} from "shared-types"
+import {ID, Room, Space, SpaceStatus} from "shared-types";
 
 //הצהרות
 interface WorkSpaceState {
     workSpaces: Space[];
+    rooms: Room[];
     getAllWorkspace: () => Promise<void>;
-     getWorkspaceById: (id:ID) => Promise<void>;
+    getAllRooms: () => Promise<void>;
+    getWorkspaceById: (id:ID) => Promise<void>;
     updateWorkspace: (workspace:Space,id:ID) => Promise<void>;
     createWorkspace: (workspace:Space) => Promise<void>;
     deleteWorkspace: (id:ID) => Promise<void>;
-    getHistory: (date: Date) => Promise<void>;
+    getWorkspaceHistory: (date: Date) => Promise<void>;
 }
 
 //מימוש הפונקציות
-export const useWorkSpaceStore = create<WorkSpaceState>((set) => ({
+export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
     workSpaces: [],
+    rooms: [],
     //get all spaces
     getAllWorkspace: async () => {
         try {
@@ -23,6 +26,15 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set) => ({
             set({ workSpaces: response.data });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
+        }
+    },
+    //get all rooms
+    getAllRooms: async () => {
+        try {
+            const response = await axios.get('api/rooms/getAllRooms');
+            set({ rooms: response.data });
+        } catch (error){
+             console.error('Error fetching rooms:', error);
         }
     },
     //get by id
@@ -37,8 +49,10 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set) => ({
     //update space
     updateWorkspace: async (workspace,id) => {
         try {
-            const response = await axios.put(`api/workspace/updateWorkspace/${id}`,workspace);
-            set({ workSpaces: response.data });
+            // const response = await axios.put(`api/workspace/updateWorkspace/${id}`,workspace);
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            //  set({ workSpaces: Array.isArray(response.data) ? response.data : [response.data] });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
         }
@@ -46,8 +60,10 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set) => ({
     //add space
     createWorkspace: async (workspace) => {
         try {
-            const response = await axios.post('api/workspace/createWorkspace',workspace);
-            set({ workSpaces: response.data });
+            // const response = await axios.post('api/workspace/createWorkspace',workspace);
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            // set({ workSpaces: response.data });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
         }
@@ -55,26 +71,46 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set) => ({
     //delete space
     deleteWorkspace: async (id) => {
         try {
-            const response = await axios.delete(`api/workspace/deleteWorkspace/${id}`);
-            set({ workSpaces: response.data });
+            // const response = await axios.delete(`api/workspace/deleteWorkspace/${id}`);
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            // set({ workSpaces: response.data });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
         }
     },
-    //get map by occupancy
-    getHistory: async (date: Date) => {
-        try {
-            const formattedDate = date.toISOString().split('T')[0];
-            console.log('Sending date to API:', formattedDate);
-            
-            const response = await axios.get(`api/occupancy/getHistory/${formattedDate}`); 
-            set({ workSpaces: response.data || []});
-            
-        } catch (error) {
-            console.error('Error fetching work spaces:', error);
-            set({workSpaces: []});
-        }
-    },
+getWorkspaceHistory: async (date: Date) => {
+  try {
+    const formattedDate = date.toISOString().split('T')[0];
+    console.log('Sending date to API:', formattedDate);
+
+    const response = await axios.get<Space[]>(`api/space/getHistory/${formattedDate}`);
+    const serverData = response.data;
+
+    const { workSpaces: localData } = get();
+
+    const mergedData: Space[] = [...serverData];
+
+    localData.forEach(localItem => {
+      const exists = serverData.some(serverItem => serverItem.id === localItem.id);
+      if (!exists) {
+        const { currentCustomerId, currentCustomerName, ...rest } = localItem;
+        mergedData.push({
+          ...rest,
+          currentCustomerId: '',
+          currentCustomerName: '',
+          status: rest.type === 'BASE' ? SpaceStatus.NONE : SpaceStatus.AVAILABLE,
+        });
+      }
+    });
+
+    set({ workSpaces: mergedData });
+  } catch (error) {
+    console.error('Error fetching work spaces:', error);
+    set({ workSpaces: [] });
+  }
+}
+
+
+
 }));
-
-

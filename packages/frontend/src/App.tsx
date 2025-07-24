@@ -1,19 +1,24 @@
 import { useEffect } from 'react';
 import './App.css';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
-import { Button } from './Common/Components/BaseComponents/Button';
-import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
+import { VoiceCommand } from './VoiceAssistant';
 
+import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 
 function App() {
   // const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
   // const [loading, setLoading] = useState(true);
   // const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
+  useEffect(() => {
+    const lang = localStorage.getItem('language') || 'he';
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+  }, []);
   useEffect(() => {
     fetch('http://localhost:3001/api/health')
       .then((response) => {
@@ -32,10 +37,13 @@ function App() {
         // setLoading(false);
       });
   }, []);
-  
+
 
   return (
+    
     <AuthProvider>
+
+      <VoiceCommand/>
     <div className="App">
       
       <header className="App-header">
@@ -43,14 +51,7 @@ function App() {
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
-<Button
-  onClick={() => navigate('/graph')}
-  
-  className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
->
- 
-  graph
-</Button>
+
       <div className='menu' style={{ backgroundColor: 'black' }}>
       </div>
      
@@ -60,9 +61,11 @@ function App() {
           {/* אפשר להוסיף כאן ראוטים נוספים */}
         </Routes>
         <AuthenticationScreen />
-    </div>
+        
+
+      </div>
     </AuthProvider>
-    
+
   );
 }
 
