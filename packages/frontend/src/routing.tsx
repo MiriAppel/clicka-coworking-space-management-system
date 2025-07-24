@@ -30,6 +30,7 @@ import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSys
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
+import ClientSearchAndSelect from './MainMenu/LeadAndCustomer/Components/upload';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -64,14 +65,13 @@ export const Routing = () => {
         <Route path="expenses/expense-form" element={<CreateExpenseForm />} />
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
         {/* <Route path="/workspaceMap" element={<WorkspaceMap />} /> */}
-        <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
         <Route path="payment" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-        <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
         <Route path="expense-form" element={<CreateExpenseForm />} />
         {/* <Route path="billing/*" element={<Billing />} /> */}
         <Route path="users" element={< UserTable />} />

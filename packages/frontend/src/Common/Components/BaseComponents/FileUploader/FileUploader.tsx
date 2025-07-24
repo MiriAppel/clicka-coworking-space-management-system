@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Card, CardContent, LinearProgress, IconButton, Chip } from '@mui/material';
 import { Upload, X, CheckCircle, AlertCircle, File, Image, FileText, ExternalLink, Copy, CloudUpload, Share } from 'lucide-react';
-import { LoginResponse } from 'shared-types';
+import { FileReference, LoginResponse } from 'shared-types';
 import axios from 'axios';
 import { useAuthStore } from '../../../../Stores/CoreAndIntegration/useAuthStore';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -27,6 +27,7 @@ export interface FileUploaderProps {
   category?: 'חוזה' | 'חשבונית' | 'קבלה' | 'שונות';
   description?: string;
   customerId?: string;
+   contractId?: string;
   folderId?: string;
   onFilesUploaded?: (files: FileItem[]) => void;
   dir?: 'rtl' | 'ltr';
@@ -56,6 +57,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   folderPath,
   category = 'שונות',
   customerId = '',
+  contractId = '',
   folderId = '',
   description = '',
   dir,
@@ -140,21 +142,24 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const formData = new FormData();
     formData.append('file', fileItem.file);
     formData.append('category', category);
+    formData.append('contractId', contractId);
     formData.append('conflictResolution', 'rename');
     if (customerId) formData.append('customerId', customerId);
     if (folderId) formData.append('folderId', folderId);
     if (description) formData.append('description', description);
     if (folderPath) formData.append('folderPath', folderPath);
 
+    const token = localStorage.getItem('accessToken') || '';
     try {
       const res = await axios.post(
-        'http://localhost:3001/api/drive/upload',
+        'http://localhost:3001/api/document/save',
         formData,
         {
           withCredentials: true,
           timeout: 120000,
           headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
           },
           onUploadProgress: (event) => {
             if (event.total) {
@@ -167,8 +172,17 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               console.log(`⬆️ Upload progress for "${fileItem.file.name}": ${percent}%`);
             }
           }
-        }
+        },
       );
+    // const fileRef:FileReference = res.data;
+    //  await fetch(`http://localhost:3001/api/contracts/documents`, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify({ fileReference: fileRef }),
+    //   });
       console.log('📥 Response data:', res.data);
       const fileUrl = `https://drive.google.com/file/d/${res.data.id}/view`;
       console.log('🔗 קישור לקובץ בדרייב:', fileUrl);

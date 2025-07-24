@@ -7,7 +7,7 @@ import { LeadsHomePage } from "./Leads/leadHomePage";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
-// import { CustomersList } from "./Customers/customersList"
+import { CustomersList } from "./Customers/customersList"
 import { LeadInteractions } from "./Interactions/leadIntersection";
 import { InteractionForm } from "./Interactions/interactionForm";
 // import { addInteraction } from "./Interactions/leadInteractionDetails";
@@ -16,6 +16,7 @@ import { Lead } from "shared-types";
 import { NewCustomerPage } from "./Customers/newCustomer";
 import { EditContract } from "./Contracts/editContract";
 import { AddContract } from "./Contracts/addContract";
+import ClientSearchAndSelect from "./upload";
 
 export const LeadAndCustomerRouting = () => {
     const nav = useNavigate()
@@ -25,7 +26,7 @@ export const LeadAndCustomerRouting = () => {
     return (
         <Routes>
             <Route path="/" element={<LeadAndCustomer />} />
-            {/* <Route path="customers" element={<CustomersList />} /> */}
+            <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
             <Route path="customers/new" element={<NewCustomerPage />} />
             {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
@@ -42,7 +43,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="contracts/edit/:contractId" element={<EditContract />} />
             <Route path="leads" element={<LeadsHomePage />} />
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
-            
+            <Route path="customer/upload" element={<ClientSearchAndSelect />} />
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
             <Route path="leads/intersections/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />

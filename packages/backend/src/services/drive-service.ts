@@ -1,5 +1,8 @@
 import { google } from 'googleapis';
 import { Readable } from 'stream';
+import { UserTokenService } from './userTokenService';
+import { DocumentModel } from '../models/document.model';
+import { saveDocument } from './document.service';
 
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();
@@ -50,7 +53,7 @@ export async function uploadFileToDrive(
     requestBody,
     media: {
       mimeType: file.mimetype,
-      body: Readable.from(file.buffer), 
+      body: Readable.from(file.buffer),
     },
   });
   return res.data;
@@ -241,7 +244,39 @@ export async function getOrCreateFolderByPath(
   // שלב 3: העלה את הקובץ
   return await uploadFileToDrive(file, token, folderId);
 }
- 
 
+const tokenService = new UserTokenService();
 
-  
+export async function uploadFileAndReturnReference(
+  file: Express.Multer.File,
+  folderPath: string
+): Promise<DocumentModel> {
+const token= await tokenService.getSystemAccessToken();
+if (!token) {
+  throw new Error('Missing system token');
+}
+if (!process.env.SYSTEM_EMAIL) {
+    throw new Error('SYSTEM_EMAIL env var is missing');
+}
+  const folderId = await getOrCreateFolderByPath(folderPath, token??'');
+  const uploaded = await uploadFileToDrive(file, token??'', folderId);
+  const metadata = await getFileMetadataFromDrive(uploaded.id!, token??'');
+
+  const fileUrl = `https://drive.google.com/drive/u/0/folders/${folderId}`;
+
+  const document = new DocumentModel( {
+    id: uploaded.id!,
+    name: metadata.name!,
+    path: folderPath,
+    mimeType: metadata.mimeType!,
+    size: Number(metadata.size),
+    url: fileUrl,
+    googleDriveId: uploaded.id!,
+    created_at: metadata.createdTime!,
+    updated_at: metadata.modifiedTime!,
+  });
+console.log('File uploaded and reference created:', document);
+// saveDocument(document);
+  return document;
+}
+

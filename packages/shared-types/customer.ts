@@ -1,5 +1,6 @@
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
+// import {DocumentModel} from '../backend/src/models/document.model';
 
 export enum TimelineEventType {
   LEAD_CREATED = 'LEAD_CREATED',
