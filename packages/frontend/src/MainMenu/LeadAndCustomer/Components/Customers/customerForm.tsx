@@ -10,8 +10,6 @@ import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
 
-//ליצור תקופת לקוח ללקוח חדש!!!!! 
-
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
     { value: WorkspaceType.PRIVATE_ROOM, label: 'חדר פרטי' },
@@ -108,7 +106,14 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
 
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        defaultValues: { ...defaultValues, workspaceCount: 1, notes: defaultValues?.notes || "" }
+        defaultValues: {
+            ...defaultValues,
+            workspaceCount: 1,
+            notes: defaultValues?.notes || "",
+            contractSignDate: defaultValues?.contractSignDate || new Date().toISOString().split("T")[0],
+            contractStartDate: defaultValues?.contractStartDate || new Date().toISOString().split("T")[0],
+            billingStartDate: defaultValues?.billingStartDate || new Date().toISOString().split("T")[0],
+        }
     });
 
 
@@ -167,7 +172,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
             )
         },
 
-        ...(isEditMode ? [] : [{
+        {
             title: "פרטי חוזה",
             content: (
                 <>
@@ -190,7 +195,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                     <FileInputField name="contractDocuments" label="מסמכי חוזה" multiple />
                 </>
             )
-        }]),
+        },
         {
             title: "פרטי תשלום",
             content: (

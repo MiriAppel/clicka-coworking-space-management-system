@@ -4,6 +4,7 @@ import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerSto
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useNavigate } from "react-router-dom";
 import { CreateCustomerRequest, PaymentMethodType } from "shared-types";
+import { ShowAlertWarn } from "../../../../Common/Components/BaseComponents/showAlertWarn";
 
 export const NewCustomerPage: React.FC = () => {
     const navigate = useNavigate();
@@ -59,13 +60,27 @@ export const NewCustomerPage: React.FC = () => {
         if (latestError) {
             showAlert("שגיאה ביצירת לקוח", latestError || "שגיאה בלתי צפויה", "error");
         } else {
-            showAlert("", "הלקוח נוסף בהצלחה", "success");
-            navigate(-1);
+            showAlert("הלקוח נוסף בהצלחה", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
+            //המתנה של 2 שניות כדי שיספיקו לראות את ההודעה לפני ההודעה הבאה
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            const confirmed = await ShowAlertWarn(`האם ברוצנך לבחור חלל עכשיו?`, "תוכל לבחור חלל מאוחר יותר דרך הקצאות במפת החללים", "question");
+            if (confirmed) {
+                navigate('/assignmentForm', {
+                    state: {
+                        customerId: data.idNumber,
+                        customerName: data.name,
+                        workspaceType: data.currentWorkspaceType,
+                    }
+                });
+            }
+            else {
+                navigate(-1);
+            }
         }
 
     }
 
-     return (
+    return (
         <div className="relative">
             <CustomerRegistrationForm
                 defaultValues={{}} // אין ערכי ברירת מחדל

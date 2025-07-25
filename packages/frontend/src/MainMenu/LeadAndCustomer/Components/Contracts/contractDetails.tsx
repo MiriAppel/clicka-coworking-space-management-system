@@ -5,7 +5,7 @@ import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
 import { Pencil, Trash } from "lucide-react";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
+import { ShowAlertWarn } from "../../../../Common/Components/BaseComponents/showAlertWarn";
 
 const statusLabels: Record<ContractStatus, string> = {
   DRAFT: "טיוטה",

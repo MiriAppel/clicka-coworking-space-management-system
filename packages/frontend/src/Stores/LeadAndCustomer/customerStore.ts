@@ -1,3 +1,4 @@
+import { log } from 'console';
 import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest, StatusChangeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
 import { create } from 'zustand';
 
@@ -161,6 +162,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
                     const errorBody = await response.json();
                     errorMsg = errorBody?.error?.details || errorBody?.error?.message || errorBody?.message || errorMsg;
                 } catch (e) { }
+                console.log(errorMsg);
                 throw new Error(errorMsg);
             }
             await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות

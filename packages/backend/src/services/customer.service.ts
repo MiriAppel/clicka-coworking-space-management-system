@@ -66,7 +66,7 @@ export class customerService extends baseService<CustomerModel> {
   ): Promise<CustomerModel> => {
     // console.log("in servise");
     // console.log(newCustomer);
-    
+
     const customerData: CustomerModel = {
       name: newCustomer.name,
       email: newCustomer.email,
@@ -156,8 +156,8 @@ export class customerService extends baseService<CustomerModel> {
 
     const contract = await serviceContract.post(newContract)
 
-    console.log("new contract in customer service");
-    console.log(contract);
+    // console.log("new contract in customer service");
+    // console.log(contract);
 
     //create customer payment method
     if (newCustomer.paymentMethodType == PaymentMethodType.CREDIT_CARD) {
@@ -383,42 +383,42 @@ export class customerService extends baseService<CustomerModel> {
     );
 
     return CustomerModel.fromDatabaseFormatArray(customersWithPayments);
-  }; 
+  };
 
   emailService = new EmailTemplateService();
-  
+
 
   confirmEmail = async (email: string, id: ID) => {
 
-    try{
-    const customerToUpdate: CustomerModel | null = await this.getById(id);
-    customerToUpdate.email = email;
-    // customerToUpdate.status = CustomerStatus.ACTIVE;
-  
-    await this.patch(customerToUpdate, id);
+    try {
+      const customerToUpdate: CustomerModel | null = await this.getById(id);
+      customerToUpdate.email = email;
+      // customerToUpdate.status = CustomerStatus.ACTIVE;
 
-    const changeStautsData: StatusChangeRequest = {
-      newStatus: CustomerStatus.ACTIVE,
-      effectiveDate: new Date().toISOString(), // תאריך עדכון הסטטוס הוא התאריך הנוכחי
-      reason: "אימות מייל",
-      notifyCustomer: true,
+      await this.patch(customerToUpdate, id);
+
+      const changeStautsData: StatusChangeRequest = {
+        newStatus: CustomerStatus.ACTIVE,
+        effectiveDate: new Date().toISOString(), // תאריך עדכון הסטטוס הוא התאריך הנוכחי
+        reason: "אימות מייל",
+        notifyCustomer: true,
+      }
+
+      await fetch(`http://localhost:3000/api/customers/${id}/status-change`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(changeStautsData),
+      });
+
+      console.log('אימות הסתיים בהצלחה');
+    } catch (error) {
+      console.error('שגיאה באימות:', error);
+      throw error;
+
     }
 
-    await fetch(`http://localhost:3000/api/customers/${id}/status-change`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(changeStautsData),
-    });
-
-    console.log('אימות הסתיים בהצלחה');
-  } catch (error) {
-    console.error('שגיאה באימות:', error);
-    throw error;
-
-  }
-    
 
   }
 
@@ -431,10 +431,10 @@ export class customerService extends baseService<CustomerModel> {
 
     console.log("Customer in sendStatusChangeEmails:", customer);
     console.log("Details for change status:", detailsForChangeStatus);
+    await this.updateCustomer({status: detailsForChangeStatus.newStatus} ,id);
 
-
-    // סטטוסים שדורשים התראה לצוות
-    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE","CREATED"];
+    // סטטוסים שדורשים התראה לצוות 
+    const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE", "CREATED"];
     const shouldNotifyTeam = notifyTeamStatuses.includes(
       detailsForChangeStatus.newStatus,
     );
@@ -468,8 +468,8 @@ export class customerService extends baseService<CustomerModel> {
       minute: "2-digit",
     });
 
-    detailsForChangeStatus.effectiveDate = formattedDate;    
-    
+    detailsForChangeStatus.effectiveDate = formattedDate;
+
     const status = statusTranslations[detailsForChangeStatus.newStatus as CustomerStatus] ||
       detailsForChangeStatus.newStatus;
 

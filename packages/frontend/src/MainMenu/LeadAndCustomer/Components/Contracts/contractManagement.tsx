@@ -9,7 +9,7 @@ import { Table , TableColumn } from "../../../../Common/Components/BaseComponent
 import { Contract, ContractStatus, ID } from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
-import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
+import { ShowAlertWarn } from "../../../../Common/Components/BaseComponents/showAlertWarn";
 // טיפוס פנימי לתצוגת טבלה
 interface ValuesToTable {
   id: ID;

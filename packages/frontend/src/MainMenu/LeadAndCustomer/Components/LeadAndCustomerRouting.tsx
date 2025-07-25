@@ -28,7 +28,6 @@ export const LeadAndCustomerRouting = () => {
             <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
             <Route path="customers/new" element={<NewCustomerPage />} />
-            {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
             <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
@@ -41,9 +40,7 @@ export const LeadAndCustomerRouting = () => {
             <Route path="contracts/customer/:customerId" element={<ContractDetails />} />
             <Route path="contracts/addContract" element={<AddContract/>} />
             <Route path="contracts/edit/:contractId" element={<EditContract />} />
-            <Route path="leads" element={<LeadsHomePage />} />
-            {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
-            
+            <Route path="leads" element={<LeadsHomePage />} />            
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
             <Route path="leads/intersections/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />

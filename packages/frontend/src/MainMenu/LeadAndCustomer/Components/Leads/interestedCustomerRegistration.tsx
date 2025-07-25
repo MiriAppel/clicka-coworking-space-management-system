@@ -9,6 +9,7 @@ import {
   PaymentMethodType,
 } from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { ShowAlertWarn } from "../../../../Common/Components/BaseComponents/showAlertWarn";
 
 export const InterestedCustomerRegistration: React.FC = () => {
   const navigate = useNavigate();
@@ -67,16 +68,34 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
     try {
       await createCustomer(customerRequest);
-      showAlert("", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
+      let latestError = useCustomerStore.getState().error;
+      if (latestError) {
+        showAlert("שגיאה ביצירת לקוח", latestError, "error");
+        return;
+      }
+      showAlert("הלקוח נוסף בהצלחה", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
       await handleUpdateLead(lead!.id!, { status: LeadStatus.CONVERTED });
-      const latestError = useLeadsStore.getState().error;
+      latestError = useLeadsStore.getState().error;
       if (latestError) {
         showAlert(
           "שגיאה בעדכון סטטוס למתעניין",
           latestError || "שגיאה בלתי צפויה",
           "error"
         );
-      } else {
+
+      }
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      const confirmed = await ShowAlertWarn(`האם ברוצנך לבחור חלל עכשיו?`, "תוכל לבחור חלל מאוחר יותר דרך הקצאות במפת החללים", "question");
+      if (confirmed) {
+        navigate('/assignmentForm', {
+          state: {
+            customerId: data.idNumber,
+            customerName: data.name,
+            workspaceType: data.currentWorkspaceType,
+          }
+        });
+      }
+      else {
         navigate(-1);
       }
     } catch (error: any) {
@@ -84,43 +103,14 @@ export const InterestedCustomerRegistration: React.FC = () => {
         error?.response?.data?.message || error.message || "שגיאה בלתי צפויה";
       showAlert("שגיאה ביצירת לקוח", errorMessage, "error");
     }
-    // try {
 
-
-    //   await createCustomer(customerRequest);
-    //   showAlert("", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
-    //   let latestError = useCustomerStore.getState().error;
-    //   if (latestError) {
-    //     showAlert("שגיאה ביצירת לקוח", latestError, "error");
-    //     return;
-    //   }
-    //   // showAlert("", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
-    //   await handleUpdateLead(lead!.id!, { status: LeadStatus.CONVERTED });
-
-    //   latestError = useLeadsStore.getState().error;
-    //   if (latestError) {
-    //     showAlert(
-    //       "שגיאה בעדכון סטטוס למתעניין",
-    //       latestError || "שגיאה בלתי צפויה",
-    //       "error"
-    //     );
-    //     return;
-    //   }
-    //   navigate(-1);
-
-
-    // } catch (error: any) {
-    //   const errorMessage =
-    //     error?.response?.data?.message || error.message || "שגיאה בלתי צפויה";
-    //   showAlert("שגיאה ביצירת לקוח", errorMessage, "error");
-    // }
   };
 
 
   return (
     <div className="relative">
       <CustomerRegistrationForm
-        defaultValues={{...lead, currentWorkspaceType: lead?.interestedIn}}
+        defaultValues={{ ...lead, currentWorkspaceType: lead?.interestedIn }}
         onSubmit={onSubmit}
         title="רישום מתעניין ללקוח"
         subtitle="מלא את הפרטים החסרים"

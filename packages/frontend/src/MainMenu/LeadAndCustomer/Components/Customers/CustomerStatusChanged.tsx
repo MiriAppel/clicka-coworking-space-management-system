@@ -159,13 +159,7 @@ export const CustomerStatusChanged: React.FC = () => {
         exitReason: data.exitReason!,
         exitReasonDetails: data.exitReasonDetails,
       });
-    }
-    // 2. שולחים את עדכון הלקוח
-    await updateCustomer(customerId, {
-      status: data.status,
-      notes: data.exitReasonDetails,
-      ...(data.reason && { reason: data.reason }),
-    });
+    }    
     try {
       console.log("Changing customer status:", customerId, changeStautsData);
       

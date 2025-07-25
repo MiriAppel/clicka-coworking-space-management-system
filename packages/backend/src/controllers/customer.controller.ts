@@ -11,6 +11,7 @@ import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.
 import { UserTokenService } from "../services/userTokenService";
 import { sendEmail } from "../services/gmail-service";
 import { EmailTemplateService } from "../services/emailTemplate.service";
+import { th } from "date-fns/locale";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
@@ -30,52 +31,23 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 };
 
 export const postCustomer = async (req: Request, res: Response) => {
-  try {
+   try {
     const newCustomer: CreateCustomerRequest = req.body;
-
     const email = newCustomer.email;
-
     const customer = await serviceCustomer.createCustomer(newCustomer);
-
     const token = await userTokenService.getSystemAccessToken();
-
-    const template = await emailService.getTemplateByName(
-          "אימות לקוח",
-    );
-    if (!template) {
-          console.warn("Team email template not found");
-          return;
-        }
-        // const renderedHtml = await emailService.renderTemplate(
-        //   template.bodyHtml,
-        //   {
-        //     "שם": customer.name,
-        //     "סטטוס": status,
-        //     "תאריך": formattedDate,
-        //     "סיבה": detailsForChangeStatus.reason || "ללא סיבה מצוינת",
-        //   },
-        // );
     
-
-    if (!email || !token)
-      res.status(401).json("its have a problam on email or token");
+    if (!email || !token) {
+      return res.status(401).json("its have a problam on email or token");
+    }
     
-    
-
-    // sendEmail( "me",
-    //       {
-    //         to: [email ?? ""],
-    //         subject: template.subject,
-    //         body: renderedHtml,
-    //         isHtml: true,
-    //       },
-    //       token,)
     console.log("in controller");
     console.log(customer);
-
-    res.status(200).json(customer);
+    
+    return res.status(200).json(customer); // הוסף return כאן
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching customers', error });
+    console.error("Error creating customer:", error);
+    return res.status(500).json({ message: 'Error fetching customers', error });
   }
 }
 
@@ -272,8 +244,6 @@ export const confirmEmail = async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.error("שגיאה באימות:", error);
-
-   
 
     // כל שגיאה אחרת
     res

@@ -4,7 +4,7 @@ import { sendEmailToConfrim } from "./gmail-service";
 
 export class baseService<T> {
   // בשביל שם המחלקה
-  constructor(private tableName: string) {}
+  constructor(private tableName: string) { }
 
   getById = async (id: ID): Promise<T> => {
     const { data, error } = await supabase
@@ -32,7 +32,7 @@ export class baseService<T> {
       .from(this.tableName)
       .select("*");
 
-    console.log(data);
+    // console.log(data);
 
     if (!data || data.length === 0) {
       console.log(` אין נתונים בטבלה ${this.tableName}`);
@@ -106,18 +106,20 @@ export class baseService<T> {
     console.log("added");
     console.log(data);
 
-    const createdRecord = data?.[0];
-
-    if (this.tableName === "customer") {
-      sendEmailToConfrim(emailToSave, createdRecord.id);
-    }
-
     if (error) {
       console.log("enter to log", error);
 
       console.error("שגיאה בהוספת הנתונים:", error);
       throw error;
     }
+
+    const createdRecord = data?.[0];
+
+    if (this.tableName === "customer") {
+      sendEmailToConfrim(emailToSave, createdRecord.id);
+    }
+
+
     if (!data) throw new Error("לא התקבלה תשובה מהשרת אחרי ההוספה");
     console.log(data);
 

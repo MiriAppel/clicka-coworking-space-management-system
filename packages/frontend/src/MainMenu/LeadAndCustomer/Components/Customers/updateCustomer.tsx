@@ -18,11 +18,7 @@ export const UpdateCustomer: React.FC = () => {
     const firstPayment = customer.paymentMethods![0] || {};
 
     const defaultValues = {
-        ...customer,
-        currentWorkspaceType: customer.currentWorkspaceType || WorkspaceType.DESK_IN_ROOM,
-        contractSignDate: customer.contractSignDate || new Date().toISOString().split("T")[0],
-        contractStartDate: customer.contractStartDate || new Date().toISOString().split("T")[0],
-        billingStartDate: customer.billingStartDate || new Date().toISOString().split("T")[0],
+        ...customer,        
         creditCardNumber: firstPayment.creditCardNumber || "",
         creditCardExpiry: firstPayment.creditCardExpiry || "",
         creditCardHolderIdNumber: firstPayment.creditCardHolderIdNumber || customer.idNumber || "",
