@@ -142,15 +142,3 @@ export async function deleteVendor(id: ID): Promise<boolean> {
     throw e;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

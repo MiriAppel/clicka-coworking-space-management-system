@@ -20,6 +20,7 @@ const workspaceTypeOptions = [
     { value: WorkspaceType.WALL, label: 'קיר' },
     { value: WorkspaceType.COMPUTER_STAND, label: 'עמדת מחשב' },
     { value: WorkspaceType.RECEPTION_DESK, label: 'דלפק קבלה' },
+    { value: WorkspaceType.BASE, label: "בסיס" },
 ];
 
 const PaymentMethodTypeOptions = [
