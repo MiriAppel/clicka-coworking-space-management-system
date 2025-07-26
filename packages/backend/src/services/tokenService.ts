@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { LoginResponse } from "shared-types"
+import { LoginResponse, UserRole } from "shared-types"
 import { UserTokenService } from './userTokenService';
 import { generateJwtToken, verifyJwtToken } from './authService';
 import { decrypt } from './cryptoService';
@@ -52,7 +52,7 @@ export const clearAuthCookie = (res: Response): void => {
 };
 // Function to get the current user ID from the session cookie
 
-export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string } | null => {
+export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string ;role:UserRole } | null => {
     const sessionToken = req.cookies.session;
     const sessionId = req.cookies.sessionId;
 
@@ -82,7 +82,8 @@ export const getUserFromCookie = (req: Request): { userId: string; email: string
         return {
             userId,
             email: payload.email,
-            googleId: payload.googleId
+            googleId: payload.googleId,
+            role: payload.role
         };
     } catch (error) {
         console.error('Error verifying JWT token:', error);

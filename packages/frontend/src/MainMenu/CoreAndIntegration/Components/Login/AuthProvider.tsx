@@ -1,4 +1,4 @@
-import { Children, ReactNode, useEffect } from "react";
+import {  ReactNode, useEffect } from "react";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
 import { axiosInstance } from "../../../../Service/Axios";
@@ -9,7 +9,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const { setUser, clearUser, setLoading, setSessionId, sessionId, user } = useAuthStore();
+  const { setUser, clearUser, setLoading, setSessionId, user, isLoading } = useAuthStore();
   const verifyFunction = async () => {
     try {
       setLoading(true);
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       verifyFunction();
     };
     checkAuth();
-  }, [setUser, clearUser, setLoading, setSessionId]);
+  }, []);
   //check session every 30 seconds to check if the session is still valid and same as the one in the store
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
@@ -77,9 +77,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, [user, clearUser]);
 
-  // if(isLoading){
-  //     return <div className="auth-loading"> מאמת זהות...</div>
-  // }
+  if(isLoading){
+      return null;
+  }
   return <>
     {/* {user == null && <GoogleOneTap />} */}
     {children}</>

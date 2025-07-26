@@ -45,11 +45,9 @@ function App() {
 
 
   return (
-    
-    <AuthProvider>
+        <div className="App">
 
       <VoiceCommand/>
-    <div className="App">
       
       <header className="App-header">
         <h3>welcome to our world</h3>
@@ -69,8 +67,6 @@ function App() {
         
 
       </div>
-    </AuthProvider>
-
   );
 }
 
