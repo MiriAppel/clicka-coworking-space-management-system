@@ -1,4 +1,3 @@
-
 // middlewares/authMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
@@ -18,6 +17,7 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
     res.status(401).json({ error: 'not authenticated' });
     return;
   }
+
   try {
     const payload = verifyJwtToken(token);
     const result = await userService.loginByGoogleId(payload.googleId);
@@ -25,9 +25,15 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
       res.status(404).json({ error: 'user not found' });
       return;
     }
+
     const userTokenService = new UserTokenService();
-    if (await userTokenService.checkIfExpiredAccessToken(payload.userId))
-      throw new Error('TokenExpiredError');
+
+    if (! await userTokenService.validateSession(payload.userId, sessionId)) {
+      res.status(409).json({ error: 'SessionConflict', message: 'User is already logged in on another device.' });
+      return
+    }
+    // if (await userTokenService.checkIfExpiredAccessToken(result.id ?? payload.userId))
+    //   throw new Error('TokenExpiredError');
 
     const user: User = result;
     (req as any).user = user;// Store the user object in the request object for further use;

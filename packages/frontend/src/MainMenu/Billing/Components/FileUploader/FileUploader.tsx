@@ -4,13 +4,13 @@ import {  Upload,  X,  CheckCircle,  AlertCircle,  File,  Image,  FileText} from
 import { designSystem, spacing } from '../../Css/theme';
 
 
-interface FileUploadRequest {
-  file: File;
-  folderId?: string;
-  category: 'חוזה' | 'חשבונית' | 'קבלה' | 'שונות';
-  customerId?: string;
-  description?: string;
-}
+// interface FileUploadRequest {
+//   file: File;
+//   folderId?: string;
+//   category: 'חוזה' | 'חשבונית' | 'קבלה' | 'שונות';
+//   customerId?: string;
+//   description?: string;
+// }
 
 interface FileItem {
   id: string;

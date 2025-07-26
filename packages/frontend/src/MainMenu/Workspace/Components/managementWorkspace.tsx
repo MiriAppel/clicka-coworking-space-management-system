@@ -1,14 +1,11 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useWorkSpaceStore } from "../../../Stores/Workspace/workspaceStore";
 import { Space, SpaceStatus, WorkspaceType } from "shared-types";
 import { Table as StyledTable, TableColumn } from "../../../Common/Components/BaseComponents/Table";
-import { Pencil, Trash } from "lucide-react";
+// import { Pencil, Trash } from "lucide-react";
 import { Button } from "../../../Common/Components/BaseComponents/Button"; // עיצוב הכפתורים
 
-
-import axios from "axios";
-import { s } from "@fullcalendar/core/internal-common";
 
 export const ManagementWorkspace = () => {
   const { workSpaces, getAllWorkspace, createWorkspace, updateWorkspace, deleteWorkspace } = useWorkSpaceStore();
