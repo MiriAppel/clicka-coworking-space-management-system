@@ -198,4 +198,24 @@ export class ExpenseService extends baseService<ExpenseModel> {
     }
   }
 
+
+async getPettyCashExpenses() {
+  try {
+    const { data, error } = await supabase
+      .from('expense')
+      .select('*')
+      .eq('category', 'PETTY_CASH'); // משתמש בערך מתוך ה-enum
+
+    if (error) {
+      console.error('Error fetching petty cash expenses:', error);
+      return null;
+    }
+
+    return data;
+  } catch (err) {
+    console.error('Unexpected error in getPettyCashExpenses:', err);
+    return null;
+  }
+}
+
 }

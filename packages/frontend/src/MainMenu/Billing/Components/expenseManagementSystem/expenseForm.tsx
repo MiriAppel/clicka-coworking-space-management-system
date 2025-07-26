@@ -5,9 +5,14 @@ import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { NumberInputField } from '../../../../Common/Components/BaseComponents/InputNumber';
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
 import FileUploader from '../FileUploader';
-import { ExpenseCategory, ExpenseStatus, Vendor } from 'shared-types';
+import { Expense, ExpenseCategory, ExpenseStatus, Vendor } from 'shared-types';
 import { getAllVendors } from '../../../../Api/vendor-api';
 import { useParams } from "react-router-dom";
+
+interface CreateExpenseFormProps {
+  fixedCategory?: ExpenseCategory;
+  onSave?: (newExpense: Expense) => void;
+}
 
 // --------------------------------------------------
 // מילונים
@@ -51,7 +56,7 @@ type ExpenseFormValues = z.infer<typeof schema>;
 // --------------------------------------------------
 // קומפוננטת יצירת/עריכת הוצאה
 // --------------------------------------------------
-export const CreateExpenseForm: React.FC = () => {
+export const CreateExpenseForm: React.FC<CreateExpenseFormProps> = ({ fixedCategory, onSave }) => {
   const { id } = useParams<{ id: string }>();
   const [defaultValues, setDefaultValues] = useState<Partial<ExpenseFormValues>>({});
   const [loadingExpense, setLoadingExpense] = useState(!!id);
@@ -64,6 +69,7 @@ export const CreateExpenseForm: React.FC = () => {
     PAID: 'שולם',
     REJECTED: 'נדחה',
   };
+  
 
   useEffect(() => {
     const fetchVendors = async () => {

@@ -30,6 +30,7 @@ import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSys
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
+import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -67,7 +68,7 @@ export const Routing = () => {
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
-        <Route path="payment" element={<PaymentForm />} />
+        <Route path="payments" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
@@ -85,6 +86,8 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/petty-cash" element={<PettyCashPage />} />
+
       </Route>
     </Routes>
   );
