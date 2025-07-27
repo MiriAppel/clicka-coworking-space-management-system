@@ -150,7 +150,18 @@ export const shareCalendar = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Failed to share calendar', error: error });
     }
 }
+export const handleGoogleCalendarWebhook = async (req: Request, res: Response) => {
+  try {
+    const headers = req.headers;
 
+    await CalendarService.processCalendarWebhook(headers);
+
+    res.status(200).send("Webhook received");
+  } catch (error) {
+    console.error("Error handling webhook:", error);
+    res.status(500).send("Error processing webhook");
+  }
+};
 function extractToken(req: Request): string | null {
   const auth = req.headers.Authorization;
   if (typeof auth === 'string' && auth.startsWith('Bearer ')) {
