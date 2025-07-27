@@ -9,15 +9,8 @@ import { createEvent } from './calendar-service'
 import { BookingModel } from "../models/booking.model";
 import * as syncController from "../controllers/googleCalendarBookingIntegration.controller";
 import {BookingService} from "./booking.service"
-<<<<<<< HEAD
-<<<<<<< HEAD
 // import { log } from "util";
-=======
-import { log } from "util";
-=======
->>>>>>> origin/main
 import { Event } from "shared-types/google";
->>>>>>> origin/googleSyncByNechami
 // טוען את משתני הסביבה מקובץ .env
 dotenv.config();
 

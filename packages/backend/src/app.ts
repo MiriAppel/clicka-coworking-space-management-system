@@ -3,12 +3,15 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
+
+
 import routerCustomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import routerPricing from './routes/pricing.route';
 import expenseRouter from './routes/expense.route';
 import routerPayment from './routes/payment.route';
+
 import interactionRouter from './routes/leadInteraction.route';
 import routerAuth from './routes/auth';;
 import cookieParser from 'cookie-parser';
@@ -22,28 +25,40 @@ import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
-import emailTemplateRouter from './routes/emailTemplate.route';
-import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
-import userRouter from './routes/user.route';
 import router from './routes';
-import dotenv from 'dotenv';
-import translationRouter from './routes/translation.route';
-import auditLogRouter from './routes/auditLog.route';
-import driveRoutes from './routes/drive-route';
-import paymentRoutes from './routes/payment.route';
-import invoiceRouter from './routes/invoice.route';
+import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
 import documentRouter from './routes/document.routes';
-import routerLayout from './routes/mapLayout.route';
-import routerCalendarSync from './routes/calendar-route';
+import invoiceRouter from './routes/invoice.route';
+import paymentRoutes from './routes/payment.routes';
+import emailTemplateRouter from './routes/emailTemplate.route';
+import driveRoutes from './routes/drive-route';
+import translationRouter from './routes/translation.route';
+import userRouter from './routes/user.route';
+import auditLogRouter from './routes/auditLog.route';
+import dotenv from 'dotenv';
+import syncRouter from './routes/googleCalendarBookingIntegration.route';
+
+
+// import cookieParser from "cookie-parser";
+// const cookieParser = require("cookie-parser")
+// import cookieParser from "cookie-parser";
+// const cookieParser = require("cookie-parser")
+// Create Express app
 const app = express();
 dotenv.config();
+
+// Create Express app
+// setupSwagger(app);
 app.use(cookieParser());
+
+// Apply middlewares
+// app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE, 
-  credentials: true, 
+  origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE, // Adjust as needed
+  credentials: true, // Allow cookies to be sent with requests
 }));
-
+ 
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.json());
@@ -71,12 +86,11 @@ app.use('/api/occupancy', occupancyrouter);
 app.use('/api/map', routerMap);
 app.use('/api/reports', routerReport);
 app.use('/api/emailTemplate', emailTemplateRouter);
-
-app.use('/api/vendor', (req, res, next) => {
+app.use('api/google-calendar', syncRouter);
+app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
-app.use('/api/auth', routerAuth);
 app.use('/api', router);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);

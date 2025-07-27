@@ -364,9 +364,9 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         const result = await createBooking(bookingPayload);
         const resultCalendar = await createBookingInCalendar(bookingPayload, "primary");
 //הוספת ההזמנה גם לגוגל קלנדר
-        if (resultCalendar) {
           methods.reset();
           onSubmit?.();
+          if (resultCalendar) {
         }
       } catch (err) {
         console.error("שגיאה ביצירת ההזמנה:", err);
