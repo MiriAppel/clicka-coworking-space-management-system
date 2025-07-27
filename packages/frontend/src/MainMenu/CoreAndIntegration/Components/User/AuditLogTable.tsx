@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
-import { useNavigate } from "react-router-dom";
-import { Button } from "../../../../Common/Components/BaseComponents/Button";
 
 /**
  * קומפוננט לתצוגת טבלת יומן פעולות המשתמשים
@@ -9,7 +7,6 @@ import { Button } from "../../../../Common/Components/BaseComponents/Button";
  */
 const AuditLogTable = () => {
 
-  const navigate = useNavigate(); // יצירת פונקציית ניווט
   const [filteredLogs, setFilteredLogs] = useState<any[]>([]);
 
   /**
@@ -178,7 +175,6 @@ const AuditLogTable = () => {
         />
       </div>
 
-      <Button onClick={() => { navigate('/') }} className="inline-block">Back</Button>
       {/* הטבלה עצמה */}
       <Table
         columns={columns}     // הגדרות העמודות
