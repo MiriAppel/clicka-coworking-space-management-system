@@ -207,6 +207,10 @@ export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceMo
     const dataToUpdate: any = {
         updated_at: new Date().toISOString()
     };
+    const existingInvoice = await serviceGetInvoiceById(id); 
+    if (!existingInvoice) {
+        throw new Error(`Invoice with ID ${id} does not exist.`);
+    }
     // הוסף רק שדות שקיימים ב-updateData
     if (updateData.invoice_number !== undefined) dataToUpdate.invoice_number = updateData.invoice_number;
     if (updateData.customer_id !== undefined) dataToUpdate.customer_id = updateData.customer_id;
@@ -222,7 +226,7 @@ export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceMo
     const { data: invoice, error } = await supabase
         .from('invoice')
         .update(dataToUpdate)
-        .eq('invoice_number', id) // השתמש ב-invoice_number במקום id
+        .eq('id', id) // השתמש ב-invoice_number במקום id
         .select()
         .single();
 

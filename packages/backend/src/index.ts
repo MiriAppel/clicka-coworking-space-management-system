@@ -10,8 +10,8 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection:', reason);
 });
 
-
 import app from './app';
+import './cron/billing-cron'; // Import the billing cron job  
 console.log('process.env.GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
 
 
