@@ -40,6 +40,8 @@ export const PaymentList = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
   const fetchPayment = async (
     page: number,
     limit: number,
@@ -48,7 +50,7 @@ export const PaymentList = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        "http://localhost:3001/api/payment/by-page",
+        `${API_URL}/api/payment/by-page`,
         {
           params: { page, limit },
         }
@@ -229,7 +231,7 @@ const filtered = allPaymentsRef.current.filter(
                   console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
 
                   axios
-                    .get("http://localhost:3001/api/payment/search", {
+                    .get(`${API_URL}/api/payment/search`, {
                       params: { text: searchTerm },
                     })
                     .then((response) => {

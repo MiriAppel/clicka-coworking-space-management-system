@@ -17,7 +17,7 @@ export const ExpenseDetails: React.FC<ExpenseDetailsProps> = ({ id, onClose }) =
   const [loading, setLoading] = useState(true);
  useEffect(() => {
     axios
-      .get(`http://localhost:3001/api/expenses/getExpenseById/${id}`)
+      .get(`${process.env.REACT_APP_API_URL}/expenses/getExpenseById/${id}`)
       .then((res) => setExpense(res.data))
       .finally(() => setLoading(false));
   }, [id]);

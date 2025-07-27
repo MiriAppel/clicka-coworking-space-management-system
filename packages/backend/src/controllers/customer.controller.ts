@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { customerService } from "../services/customer.service";
-import { CreateCustomerRequest, ID, StatusChangeRequest } from "shared-types";
+import {
+  CreateCustomerRequest,
+  CustomerStatus,
+  ID,
+  StatusChangeRequest,
+} from "shared-types";
 import { contractService } from "../services/contract.service";
 import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.service";
 import { UserTokenService } from "../services/userTokenService";
@@ -16,7 +21,7 @@ const emailService = new EmailTemplateService();
 
 export const sendContractEmail = async (req: Request, res: Response) => {
   try {
-    const  customer: CustomerModel  = req.body;
+    const customer: CustomerModel = req.body;
     const link = req.params.link; // assuming the link is passed as a route param
 
     if (!customer) {
@@ -44,25 +49,16 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 };
 
 export const postCustomer = async (req: Request, res: Response) => {
-   try {
-    const newCustomer: CreateCustomerRequest = req.body;
-    const email = newCustomer.email;
-    const customer = await serviceCustomer.createCustomer(newCustomer);
-    const token = await userTokenService.getSystemAccessToken();
+  try {
     
-    if (!email || !token) {
-      return res.status(401).json("its have a problam on email or token");
-    }
-    
-    console.log("in controller");
-    console.log(customer);
-    
-    return res.status(200).json(customer); // הוסף return כאן
-  } catch (error) {
-    console.error("Error creating customer:", error);
-    return res.status(500).json({ message: 'Error fetching customers', error });
+    const newCustomer = req.body; 
+    await serviceCustomer.createCustomer(newCustomer)
   }
-};
+  catch (error) {
+    console.error("Error posting customer:", error);
+    res.status(500).json({ message: "Failed to post customer" });
+  }
+}
 
 export const getCustomerById = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -112,10 +108,12 @@ export const getAllCustomerStatus = async (req: Request, res: Response) => {
 export const deleteCustomer = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const statuses = await serviceCustomer.delete(id);
-    res.status(200).json(statuses);
+    await serviceCustomer.deleteCustomerCompletely(id);
+    res.status(200).json({
+      message: "Customer and all related data deleted successfully",
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching all statuses", error });
+    res.status(500).json({ message: "Error deleting customer", error });
   }
 };
 

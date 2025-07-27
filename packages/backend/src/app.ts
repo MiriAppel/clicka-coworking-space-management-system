@@ -20,6 +20,7 @@ import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/workspaceMap.route';
+import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import router from './routes';
@@ -34,7 +35,7 @@ import auditLogRouter from './routes/auditLog.route';
 import calendarSyncRouter from './routes/googleCalendarBookingIntegration.route';
 
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
-import { setupSwagger } from './docs/swagger';
+import { file } from 'googleapis/build/src/apis/file';
 
 dotenv.config();
 
@@ -50,7 +51,6 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(globalAuditMiddleware);
 
 app.use('/api/customers', routerCustomer);
@@ -67,6 +67,10 @@ app.use('/api/pricing', routerPricing);
 app.use('/api/emailTemplate', emailTemplateRouter);
 app.use('/api/calendar-sync', calendarSyncRouter);
 app.use('/api/book', bookRouter);
+app.use('/vendor', (req, res, next) => {
+  console.log('Vendor route hit:', req.method, req.originalUrl);
+  next();
+}, vendorRouter);
 app.use('/api/auth', routerAuth);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
@@ -96,4 +100,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
+
+ 
 export default app;

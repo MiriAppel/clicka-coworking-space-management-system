@@ -49,17 +49,20 @@ export const NewCustomerPage: React.FC = () => {
                 creditCardHolderIdNumber: data.creditCardHolderIdNumber,
                 creditCardHolderPhone: data.creditCardHolderPhone,
             } : undefined,
-            contractDocuments: data.contractDocuments // אם יש שדה כזה
+            contractDocuments: data.contractDocuments, // אם יש שדה כזה
+            requireEmailVerification: data.requireEmailVerification === true,
         };
 
         console.log(customerRequest);
 
-        await createCustomer(customerRequest);
+        try {
+            await createCustomer(customerRequest);
 
-        const latestError = useCustomerStore.getState().error;
-        if (latestError) {
-            showAlert("שגיאה ביצירת לקוח", latestError || "שגיאה בלתי צפויה", "error");
-        } else {
+            // const { error } = useCustomerStore.getState();
+            // if (error) {
+            //     // ה-store כבר טיפל בשגיאה והציג alert
+            //     return;
+            // }
             showAlert("הלקוח נוסף בהצלחה", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
             //המתנה של 2 שניות כדי שיספיקו לראות את ההודעה לפני ההודעה הבאה
             await new Promise(resolve => setTimeout(resolve, 3000));
@@ -76,7 +79,13 @@ export const NewCustomerPage: React.FC = () => {
             else {
                 navigate(-1);
             }
+            // }
+        } catch (error: Error | any) {
+            console.error('Error creating customer:', error);
+            showAlert("שגיאה ביצירת לקוח", error.messege || "שגיאה בלתי צפויה", "error");
         }
+
+
 
     }
 

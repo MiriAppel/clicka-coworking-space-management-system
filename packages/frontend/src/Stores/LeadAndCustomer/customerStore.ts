@@ -1,6 +1,7 @@
 import { log } from 'console';
 import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest, StatusChangeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
 import { create } from 'zustand';
+import { showAlert } from '../../Common/Components/BaseComponents/ShowAlert';
 
 interface CustomerStore {
     customersPage: Customer[]; //כל פעם גם משתנה זה מתעדכן עם הלקוחות של העמוד הזה כדי שבחיפוש יחפשו מתוך הרשימה הזו
@@ -55,7 +56,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     fetchCustomersByPage: async () => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/page?page=${useCustomerStore.getState().currentPage}&limit=${useCustomerStore.getState().limit}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/page?page=${useCustomerStore.getState().currentPage}&limit=${useCustomerStore.getState().limit}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch customers by page");
             }
@@ -91,7 +92,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     searchCustomersByText: async (searchTerm: string) => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/search?text=${searchTerm}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/search?text=${searchTerm}`);
             if (!response.ok) {
                 throw new Error("Failed to search customers");
             }
@@ -133,7 +134,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     fetchCustomerById: async (id: string) => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/${id}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/${id}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch customer by ID");
             }
@@ -149,7 +150,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     createCustomer: async (customer: CreateCustomerRequest) => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/post-customer`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/post-customer`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -167,7 +168,9 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
             }
             await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות
         } catch (error: any) {
-            set({ error: error.message || "שגיאה ביצירת לקוח", loading: false });
+            // showAlert("שגיאה ביצירת לקוח", error, "error");
+             set({ error: error.message || "שגיאה ביצירת לקוח", loading: false });
+            console.log(error)
         } finally {
             set({ loading: false });
         }
@@ -178,7 +181,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
 
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -208,7 +211,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     deleteCustomer: async (id: string) => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/${id}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {
@@ -226,7 +229,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     recordExitNotice: async (id: string, data: RecordExitNoticeRequest): Promise<void> => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/${id}/exit-notice`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/${id}/exit-notice`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -258,7 +261,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     getCustomerPaymentMethods: async (id: string) => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/${id}/payment-methods`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/${id}/payment-methods`);
             if (!response.ok) {
                 throw new Error("Failed to fetch customer payment methods");
             }
@@ -276,7 +279,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     changeCustomerStatus: async (id: string, statusChangeData: StatusChangeRequest) => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${BASE_API_URL}/${id}/status-change`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/${id}/status-change`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

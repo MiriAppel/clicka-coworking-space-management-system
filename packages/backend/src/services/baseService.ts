@@ -26,11 +26,16 @@ export class baseService<T> {
   };
 
   getAll = async (): Promise<T[]> => {
-    // console.log("🧾 טבלה:", this.tableName);
+    console.log("🧾 טבלה:", this.tableName);
 
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select("*");
+    let query = supabase.from(this.tableName).select("*");
+    
+    // אם זה טבלת customer, נוסיף מיון לפי created_at
+    if (this.tableName === 'customer') {
+      query = query.order('created_at', { ascending: false });
+    }
+
+    const { data, error } = await query;
 
     // console.log(data);
 
@@ -84,7 +89,7 @@ export class baseService<T> {
     let dataForInsert = dataToAdd;
     console.log("tableName:", this.tableName);
 
-    if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
+   if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
       dataForInsert = (dataToAdd as any).toDatabaseFormat();
       console.log(dataForInsert);
     }
@@ -105,6 +110,7 @@ export class baseService<T> {
 
     console.log("added");
     console.log(data);
+
 
     if (error) {
       console.log("enter to log", error);

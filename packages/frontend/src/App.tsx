@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { useNavigate, Routes, Route } from 'react-router-dom';
-// import { Button } from './Common/Components/BaseComponents/Button';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
@@ -12,6 +11,7 @@ import { VoiceCommand } from './VoiceAssistant';
 import FileUploader from './Common/Components/BaseComponents/FileUploader';
 
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
+import ClientSearchAndSelect from './MainMenu/LeadAndCustomer/Components/upload';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
@@ -25,7 +25,7 @@ function App() {
     document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
   }, []);
   useEffect(() => {
-    fetch('http://localhost:3001/api/health')
+    fetch(`${process.env.REACT_APP_API_URL}/health`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('API server not responding');
@@ -73,8 +73,6 @@ function App() {
           {/* אפשר להוסיף כאן ראוטים נוספים */}
         </Routes>
         <AuthenticationScreen />
-        <FileUploader/>
-
       </div>
     </AuthProvider>
 

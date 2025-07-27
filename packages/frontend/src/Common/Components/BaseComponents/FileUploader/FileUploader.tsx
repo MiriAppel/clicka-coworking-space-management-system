@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Card, CardContent, LinearProgress, IconButton, Chip } from '@mui/material';
 import { Upload, X, CheckCircle, AlertCircle, File, Image, FileText, ExternalLink, Copy, CloudUpload, Share } from 'lucide-react';
-import { LoginResponse } from 'shared-types';
+import { FileReference, LoginResponse } from 'shared-types';
 import axios from 'axios';
 import { useAuthStore } from '../../../../Stores/CoreAndIntegration/useAuthStore';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -18,7 +18,7 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001',
   withCredentials: true,
 });
 
@@ -27,6 +27,7 @@ export interface FileUploaderProps {
   category?: 'חוזה' | 'חשבונית' | 'קבלה' | 'שונות';
   description?: string;
   customerId?: string;
+   contractId?: string;
   folderId?: string;
   onFilesUploaded?: (files: FileItem[]) => void;
   dir?: 'rtl' | 'ltr';
@@ -56,6 +57,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   folderPath,
   category = 'שונות',
   customerId = '',
+  contractId = '',
   folderId = '',
   description = '',
   dir,
@@ -140,21 +142,24 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const formData = new FormData();
     formData.append('file', fileItem.file);
     formData.append('category', category);
+    formData.append('contractId', contractId);
     formData.append('conflictResolution', 'rename');
     if (customerId) formData.append('customerId', customerId);
     if (folderId) formData.append('folderId', folderId);
     if (description) formData.append('description', description);
     if (folderPath) formData.append('folderPath', folderPath);
 
+    const token = localStorage.getItem('accessToken') || '';
     try {
       const res = await axios.post(
-        'http://localhost:3001/api/drive/upload',
+        `${process.env.REACT_APP_API_URL}/document/save`,
         formData,
         {
           withCredentials: true,
           timeout: 120000,
           headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
           },
           onUploadProgress: (event) => {
             if (event.total) {
@@ -167,17 +172,53 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               console.log(`⬆️ Upload progress for "${fileItem.file.name}": ${percent}%`);
             }
           }
-        }
+        },
       );
+    // const fileRef:FileReference = res.data;
+    //  await fetch(`http://localhost:3001/api/contracts/documents`, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify({ fileReference: fileRef }),
+    //   });
       console.log('📥 Response data:', res.data);
-      const fileUrl = `https://drive.google.com/file/d/${res.data.id}/view`;
+      console.log('📥 Document data:', res.data.document);
+      console.log('📥 Google Drive ID:', res.data.document?.googleDriveId);
+      console.log('📥 File URL:', res.data.document?.url);
+      const googleDriveId = res.data.document?.url;
+      const fileUrl = res.data.document?.url || (googleDriveId ? `https://drive.google.com/uc?id=${googleDriveId}&export=download` : null);
+      
       console.log('🔗 קישור לקובץ בדרייב:', fileUrl);
+      
+      if (!fileUrl) {
+        console.error('❌ No valid file URL found in response');
+        throw new Error('לא ניתן ליצור קישור לקובץ');
+      }
       setFiles(prev =>
         prev.map(f =>
           f.id === fileItem.id ? { ...f, status: 'success', progress: 100, fileUrl: fileUrl } : f
         )
       );
-      if (onFilesUploaded) onFilesUploaded([{ ...fileItem, status: 'success', progress: 100, fileUrl: fileUrl }]);
+      const uploadedFile = { 
+        ...fileItem,
+        status: 'success' as const,
+        progress: 100,
+        fileUrl: fileUrl,
+        id: res.data.document.id,
+        name: res.data.document.name,
+        path: res.data.document.path,
+        mimeType: res.data.document.mimeType,
+        size: res.data.document.size,
+        url: res.data.document.url,
+        googleDriveId: res.data.document.googleDriveId,
+        created_at: res.data.document.created_at,
+        updated_at: res.data.document.updated_at
+      };
+      
+      console.log('Calling onFilesUploaded with:', uploadedFile);
+      if (onFilesUploaded) onFilesUploaded([uploadedFile]);
       console.log(`✅ Upload successful for "${fileItem.file.name}"`);
     } catch (error: any) {
       console.error(`❌ Upload failed for "${fileItem.file.name}"`, error);

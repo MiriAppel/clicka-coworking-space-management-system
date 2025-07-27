@@ -16,6 +16,8 @@ import { NewCustomerPage } from "./Customers/newCustomer";
 import { EditContract } from "./Contracts/editContract";
 import { AddContract } from "./Contracts/addContract";
 import { LeadForm } from "./Leads/leadForm";
+import ClientSearchAndSelect from "./upload";
+import LeadSourcesPieChart from "./Leads/LeadSourcesPieChart";
 
 export const LeadAndCustomerRouting = () => {
     const nav = useNavigate()
@@ -28,6 +30,8 @@ export const LeadAndCustomerRouting = () => {
             <Route path="customers" element={<CustomersList />} />
             <Route path="customers/update" element={<UpdateCustomer />} />
             <Route path="customers/new" element={<NewCustomerPage />} />
+            <Route path="leads/LeadSourcesPieChart" element={<LeadSourcesPieChart />} />
+            {/* <Route path="customers/:customerId" element={<CustomerDetails />} /> */}
             <Route path="customers/updateStatus/:customerId" element={<CustomerStatusChanged />} />
             <Route path="customers/:customerId/contract" element={<ContractDetails />} />
             <Route path="customers/:customerId/dashboard" element={<CustomerDashboard />} />
@@ -41,6 +45,8 @@ export const LeadAndCustomerRouting = () => {
             <Route path="contracts/addContract" element={<AddContract/>} />
             <Route path="contracts/edit/:contractId" element={<EditContract />} />
             <Route path="leads" element={<LeadsHomePage />} />            
+            {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
+            <Route path="customer/upload" element={<ClientSearchAndSelect />} />
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
             <Route path="leads/intersections/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
