@@ -117,8 +117,7 @@ export const useInvoiceStore = create<InvoiceState>()(
 
         getCustomersCollection: async () => {
           set({ loading: true, error: null });
-          try {
-           
+          try { 
             const response = await axios.get('http://localhost:3001/api/invoices/getCustomersCollection');
             const collectionData = Array.isArray(response.data.collectionDetails) ? response.data.collectionDetails : [];
             set({ collection: collectionData, loading: false });
