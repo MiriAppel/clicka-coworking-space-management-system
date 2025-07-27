@@ -456,6 +456,7 @@ box-sizing: border-box;
 .room-workstation.MAINTENANCE {
     --space-fill: #fff3cd;
     fill: #fff3cd;
+}
 
 .room-space.NONE,
 .room-workstation.NONE {
@@ -480,7 +481,7 @@ position: absolute;
 right: 30px;
 top: 90px;
 }
-}
+
 /* תצוגה רספונסיבית*/
 @media (max-width: 1200px) {
   .content {

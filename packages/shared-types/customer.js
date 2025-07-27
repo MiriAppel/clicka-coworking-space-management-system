@@ -17,6 +17,7 @@ export var ContractStatus;
     ContractStatus["ACTIVE"] = "ACTIVE";
     ContractStatus["EXPIRED"] = "EXPIRED";
     ContractStatus["TERMINATED"] = "TERMINATED";
+    ContractStatus["RENEWED"] = "RENEWED";
 })(ContractStatus || (ContractStatus = {}));
 // Workspace type enum
 export var WorkspaceType;
@@ -29,6 +30,8 @@ export var WorkspaceType;
     WorkspaceType["WALL"] = "WALL";
     WorkspaceType["COMPUTER_STAND"] = "COMPUTER_STAND";
     WorkspaceType["RECEPTION_DESK"] = "RECEPTION_DESK";
+    WorkspaceType["BASE"] = "BASE";
+
 })(WorkspaceType || (WorkspaceType = {}));
 // Customer status enum
 export var CustomerStatus;

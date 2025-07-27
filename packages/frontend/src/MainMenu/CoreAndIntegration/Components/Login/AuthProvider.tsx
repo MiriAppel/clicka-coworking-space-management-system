@@ -10,56 +10,54 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { setUser, clearUser, setLoading, setSessionId, sessionId, user } = useAuthStore();
-  const verifyFunction = async () => {
-    try {
-      setLoading(true);
-      let res = await axiosInstance.get("/auth/verify");
-      if (res.status == 200) {
-        console.log("Authenticated successfully");
-        const data = res.data;
-        setUser(data.user);
-        setSessionId(data.sessionId);
-        return;
-      }
-      clearUser();
-    }
-    catch (err: any) {
-      if (axios.isAxiosError(err) && err.response?.status === 401) {
-        const data = err.response.data;
-        if (data.error === 'TokenExpired') {
-          console.log(" Token expired, trying to refresh...");
-          try {
-            const refreshRes = await axiosInstance.post("/auth/refresh");
-            if (refreshRes.status === 200) {
-              console.log("Refresh token success");
-              const res = await axiosInstance.get("/auth/verify");
-              if (res.status === 200) {
-                const data = res.data;
-                setUser(data.user);
-                return;
-              }
-            }
-          } catch (refreshErr) {
-            console.warn(" Refresh token failed", refreshErr);
-          }
-        }
-      }
-      if (axios.isAxiosError(err) && err.response?.status === 409) {
-        console.warn("Session ID mismatch - logging out.");
-        showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
-        clearUser();
-      }
 
-      clearUser();
-
-    } finally {
-      setLoading(false);
-    }
-  }
 
   useEffect(() => {
     const checkAuth = async () => {
-      verifyFunction();
+      try {
+        setLoading(true);
+        let res = await axiosInstance.get("/auth/verify");
+        if (res.status == 200) {
+          console.log("Authenticated successfully");
+          const data = res.data;
+          setUser(data.user);
+          setSessionId(data.sessionId);
+          return;
+        }
+        clearUser();
+      }
+      catch (err: any) {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          const data = err.response.data;
+          if (data.error === 'TokenExpired') {
+            console.log(" Token expired, trying to refresh...");
+            try {
+              const refreshRes = await axiosInstance.post("/auth/refresh");
+              if (refreshRes.status === 200) {
+                console.log("Refresh token success");
+                const res = await axiosInstance.get("/auth/verify");
+                if (res.status === 200) {
+                  const data = res.data;
+                  setUser(data.user);
+                  return;
+                }
+              }
+            } catch (refreshErr) {
+              console.warn("❌ Refresh token failed", refreshErr);
+            }
+          }
+        }
+        if (axios.isAxiosError(err) && err.response?.status === 409) {
+          console.warn("Session ID mismatch - logging out.");
+          showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
+          clearUser();
+        }
+
+        clearUser();
+
+      } finally {
+        setLoading(false);
+      }
     };
     checkAuth();
   }, [setUser, clearUser, setLoading, setSessionId]);
@@ -68,7 +66,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     let interval: NodeJS.Timeout | undefined;
     if (user != null) {
       interval = setInterval(async () => {
-        verifyFunction();
+        try {
+          const res = await axiosInstance.get("/auth/verify");
+        } catch (err: any) {
+          if (axios.isAxiosError(err) && err.response?.status === 409) {
+            console.warn("Session ID mismatch - logging out.");
+            showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
+            clearUser();
+          }
+          console.error("Failed session check", err);
+          clearUser();
+        }
       }, 30000); // כל 30 שניות
     }
 
@@ -80,8 +88,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // if(isLoading){
   //     return <div className="auth-loading"> מאמת זהות...</div>
   // }
-  return <>
-    {/* {user == null && <GoogleOneTap />} */}
-    {children}</>
+  return <>{children}</>
 
 }

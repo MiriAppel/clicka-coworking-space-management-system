@@ -39,12 +39,10 @@ export const LeadAndCustomerRouting = () => {
             <Route path="contracts/:customerId" element={<ContractDetails />} />
             <Route path="contracts/new" element={<AddContract />} />
             <Route path="leads" element={<LeadInteractions />} />
-            <Route path="leads" element={<LeadInteractions />} />
             <Route path="leads/newLead" element={<LeadForm/>} />
             <Route path="contracts/customer/:customerId" element={<ContractDetails />} />
             <Route path="contracts/addContract" element={<AddContract/>} />
             <Route path="contracts/edit/:contractId" element={<EditContract />} />
-            <Route path="leads" element={<LeadsHomePage />} />            
             {/* <Route path="leads/:leadId" element={<DetailsOfTheLead />} /> */}
             <Route path="customer/upload" element={<ClientSearchAndSelect />} />
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />

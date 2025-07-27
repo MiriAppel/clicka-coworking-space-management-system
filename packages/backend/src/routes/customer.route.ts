@@ -38,3 +38,4 @@ routerCustomer.patch('/:id', customerController.patchCustomer);
 routerCustomer.delete('/:id', customerController.deleteCustomer);
 
 export default routerCustomer;
+

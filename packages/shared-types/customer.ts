@@ -19,7 +19,8 @@ export enum ContractStatus {
   SIGNED = 'SIGNED',
   ACTIVE = 'ACTIVE',
   EXPIRED = 'EXPIRED',
-  TERMINATED = 'TERMINATED'
+  TERMINATED = 'TERMINATED',
+  RENEWED =  "RENEWED",
 }
 
 // Workspace type enum

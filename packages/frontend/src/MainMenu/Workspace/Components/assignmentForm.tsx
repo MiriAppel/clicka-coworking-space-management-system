@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useAssignmentStore } from "../../../Stores/Workspace/assigmentStore";
 import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
@@ -74,7 +75,6 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = (props) => {
   const customers = useCustomerStore((s) => s.customers);
   const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
 
-  // מעקב אחר שינויים בשדות
   const watchedWorkspaceId = watch("workspaceId");
   const watchedAssignedDate = watch("assignedDate");
   const watchedUnassignedDate = watch("unassignedDate");
@@ -265,11 +265,12 @@ useEffect(() => {
         ) : (
           <select
             {...register("workspaceId", { required: "חובה לבחור חלל עבודה" })}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md"
           >
             <option value="">בחר חלל עבודה</option>
-            {spaces.length > 0 && spaces.map((space) => (
+            {filteredSpaces.map((space) => (
               <option key={space.id} value={space.id}>
+                {space.name}
                 {space.name}
               </option>
             ))}
@@ -284,7 +285,7 @@ useEffect(() => {
         </label>
         {customerId ? (
           <div className="block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">
-            ✅ {customerName || `לקוח ${customerId}`}
+            {customerName || `לקוח ${customerId}`}
             <input
               type="hidden"
               {...register("customerId", { required: "חובה לבחור לקוח" })}
@@ -293,7 +294,7 @@ useEffect(() => {
         ) : (
           <select
             {...register("customerId", { required: "חובה לבחור לקוח" })}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md"
           >
             <option value="">בחר לקוח</option>
             {customers.map((customer) => (
@@ -304,6 +305,7 @@ useEffect(() => {
           </select>
         )}
       </div>
+
       {/* תאריך הקצאה */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -312,7 +314,7 @@ useEffect(() => {
         <input
           type="date"
           {...register("assignedDate", { required: "חובה להזין תאריך הקצאה" })}
-          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md"
         />
       </div>
 
@@ -324,7 +326,7 @@ useEffect(() => {
         <input
           type="date"
           {...register("unassignedDate")}
-          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md"
         />
       </div>
 
@@ -359,7 +361,7 @@ useEffect(() => {
         </label>
         <textarea
           {...register("notes")}
-          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md"
           rows={3}
         />
       </div>
@@ -372,7 +374,7 @@ useEffect(() => {
         <input
           type="text"
           {...register("assignedBy", { required: "חובה להזין מי מקצה" })}
-          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md"
         />
       </div>
 
@@ -383,7 +385,7 @@ useEffect(() => {
         </label>
         <select
           {...register("status", { required: "חובה לבחור סטטוס" })}
-          className="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="block w-full px-3 py-2 border border-gray-300 rounded-md"
         >
           <option value="ACTIVE">פעיל</option>
           <option value="SUSPENDED">מושעה</option>

@@ -1,4 +1,3 @@
-//controller/vendor.controller.ts
 import type{ CreateVendorRequest, Vendor } from 'shared-types';
 import {create ,deleteVendor ,getAllVendors ,getVendorById } from '../services/vendor.servic';
 import { Request, Response } from 'express';

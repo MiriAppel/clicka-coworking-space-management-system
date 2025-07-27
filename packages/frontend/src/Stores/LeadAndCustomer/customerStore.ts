@@ -11,6 +11,8 @@ interface CustomerStore {
     error?: string;
     currentPage: number;
     limit: number;
+    searchCache: Record<string, Customer[]>;
+
     fetchNextPage: () => Promise<void>;
     fetchPrevPage: () => Promise<void>;
     fetchCustomers: () => Promise<void>;
@@ -25,12 +27,12 @@ interface CustomerStore {
     recordExitNotice: (id: string, data: RecordExitNoticeRequest) => Promise<void>;
     getCustomerPaymentMethods: (id: string) => Promise<CustomerPaymentMethod[]>;
     changeCustomerStatus: (id: string, statusChangeData: StatusChangeRequest) => Promise<void>;
-
+    clearSearchCache: () => void;
 }
 
 const BASE_API_URL = `${process.env.REACT_APP_API_URL}/customers`;
 
-export const useCustomerStore = create<CustomerStore>((set) => ({
+export const useCustomerStore = create<CustomerStore>((set, get) => ({
     customersPage: [],
     customers: [],
     selectedCustomer: null,
@@ -38,7 +40,10 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     limit: 20, // מספר הלקוחות לעמוד
     loading: false,
     error: undefined,
-
+    searchCache: {},
+    clearSearchCache: () => {
+        set({ searchCache: {} });
+    },
     fetchCustomers: async () => {
         set({ loading: true, error: undefined });
         try {
@@ -91,13 +96,27 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
 
     searchCustomersByText: async (searchTerm: string) => {
         set({ loading: true, error: undefined });
+        const normalizedTerm = searchTerm.trim().toLowerCase();
+        const cache = get().searchCache;
+
+        if (cache[normalizedTerm]) {
+            set({ customers: cache[normalizedTerm], loading: false });
+            console.log("🟡 חיפוש מהמטמון:", normalizedTerm);
+            return;
+        }
+
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/customers/search?text=${searchTerm}`);
-            if (!response.ok) {
-                throw new Error("Failed to search customers");
-            }
+            const response = await fetch(`${BASE_API_URL}/search?text=${normalizedTerm}`);
+            if (!response.ok) throw new Error("Failed to search customers");
             const data: Customer[] = await response.json();
-            set({ customers: data, loading: false });
+
+            set((state) => ({
+                customers: data,
+                searchCache: { ...state.searchCache, [normalizedTerm]: data },
+                loading: false,
+
+            }))
+            console.log("🔵 חיפוש מהשרת:", normalizedTerm);
         } catch (error: any) {
             set({ error: error.message || "שגיאה בחיפוש לקוחות", loading: false });
         }
@@ -166,10 +185,17 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
                 console.log(errorMsg);
                 throw new Error(errorMsg);
             }
-            await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות
+            try {
+                await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות
+
+            }
+            catch (error: any) {
+                console.error("Error fetching customers after creation:", error);
+                set({ error: "שגיאה בעדכון הלקוחות לאחר יצירת לקוח", loading: false });
+            }
         } catch (error: any) {
             // showAlert("שגיאה ביצירת לקוח", error, "error");
-             set({ error: error.message || "שגיאה ביצירת לקוח", loading: false });
+            set({ error: error.message || "שגיאה ביצירת לקוח", loading: false });
             console.log(error)
         } finally {
             set({ loading: false });
@@ -195,12 +221,14 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
                     const errorBody = await response.json();
                     // נניח שהשרת מחזיר error.details או error.message
                     errorMsg = errorBody?.error?.details || errorBody?.error?.message || errorBody?.message || errorMsg;
+
                 } catch (e) {
                     // אם לא הצלחנו לקרוא json, נשאיר את הודעת ברירת המחדל
                 }
                 throw new Error(errorMsg);
             }
             await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות
+            get().clearSearchCache();
         } catch (error: any) {
             set({ error: error.message || "שגיאה בעדכון לקוח", loading: false });
         } finally {
@@ -219,6 +247,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
             }
             // await useCustomerStore.getState().fetchCustomers(); // עדכן את הלקוחות
             await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות
+            get().clearSearchCache();
         } catch (error: any) {
             set({ error: error.message || "שגיאה במחיקת לקוח", loading: false });
         } finally {
@@ -246,6 +275,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
             }
             // עדכן את הלקוחות אחרי שינוי
             await useCustomerStore.getState().fetchCustomersByPage();
+            get().clearSearchCache();
         } catch (error: any) {
             set({ error: error.message || "שגיאה ברישום הודעת עזיבה", loading: false });
             throw error;
@@ -287,7 +317,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
                 body: JSON.stringify(statusChangeData),
             });
             console.log("Changing customer status in store:", id, statusChangeData);
-            
+
             if (!response.ok) {
                 let errorMsg = "Failed to change customer status";
                 try {
@@ -301,7 +331,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
         } catch (error: any) {
             set({ error: error.message || "שגיאה בשינוי סטטוס לקוח", loading: false });
             console.log("Error changing customer status in store:", error);
-            
+
             throw error;
         } finally {
             set({ loading: false });

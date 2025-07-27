@@ -14,6 +14,7 @@ const statusLabels: Record<ContractStatus, string> = {
   ACTIVE: "פעיל",
   EXPIRED: "פג תוקף",
   TERMINATED: "הסתיים",
+  RENEWED: "חודש"
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
@@ -25,7 +26,7 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
     WALL: "קיר",
     RECEPTION_DESK: "דלפק קבלה",
     COMPUTER_STAND: "עמדת מחשב",
-    BASE: "בסיס",
+    BASE: "בסיס"
 };
 
 const formatDate = (iso?: string) =>

@@ -13,7 +13,6 @@ export class UserModel implements User{
     active: boolean;
     createdAt: DateISO;
     updatedAt: DateISO;
-    password?: string; // Optional, if you want to store password hash
 
     constructor(data:{
         id: ID,
@@ -26,7 +25,6 @@ export class UserModel implements User{
         createdAt: DateISO,
         updatedAt: DateISO,
         lastLogin?: DateISO,
-        password?: string 
     }) {
         this.id = data.id || "";
         this.email = data.email;
@@ -38,7 +36,6 @@ export class UserModel implements User{
         this.active = data.active;
         this.createdAt = data.createdAt;
         this.updatedAt = data.updatedAt;
-        this.password = data.password || ''; 
     }
     // Convert the user model to a format suitable for database storage
     toDatabaseFormat() {
@@ -52,7 +49,6 @@ export class UserModel implements User{
             active: this.active,
             created_at: this.createdAt,
             updated_at: this.updatedAt,
-            password: this.password ? this.password : undefined, // Optional field
         };
     }
     static fromDatabaseFormat(dbData: any): UserModel {
@@ -67,7 +63,6 @@ export class UserModel implements User{
             createdAt: dbData.created_at,
             updatedAt: dbData.updated_at,
             lastLogin: dbData.last_login,
-            password: dbData.password, // Optional field
         });
     }
     static fromDatabaseFormatArray(dbDataArray: any[] ): UserModel[] {

@@ -8,10 +8,10 @@ import { Button } from './Common/Components/BaseComponents/Button';
 import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
 import LanguageSelector from './Common/Components/LanguageSelector';
 import { VoiceCommand } from './VoiceAssistant';
-import FileUploader from './Common/Components/BaseComponents/FileUploader';
 
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 import ClientSearchAndSelect from './MainMenu/LeadAndCustomer/Components/upload';
+import FileUploader from './Common/Components/BaseComponents/FileUploader';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);

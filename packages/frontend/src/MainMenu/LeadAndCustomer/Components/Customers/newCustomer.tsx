@@ -70,7 +70,7 @@ export const NewCustomerPage: React.FC = () => {
             if (confirmed) {
                 navigate('/assignmentForm', {
                     state: {
-                        customerId: data.idNumber,
+                        customerId: data.id,
                         customerName: data.name,
                         workspaceType: data.currentWorkspaceType,
                     }

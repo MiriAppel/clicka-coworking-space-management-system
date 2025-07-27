@@ -12,7 +12,7 @@ export const getAllLeads = async (req: Request, res: Response) => {
     console.log("enter");
 
     const leads = await serviceLead.getAllLeads();
-    // console.log(leads);
+    console.log(leads);
     console.log("controller get");
 
     res.status(200).json(leads);
@@ -39,13 +39,13 @@ export const getLeadById = async (req: Request, res: Response) => {
 
 export const createLead = async (req: Request, res: Response) => {
   console.log("controller");
-  // console.log("body", req.body);
+  console.log("body", req.body);
 
   try {
     const leadData: LeadModel = req.body;
     console.log(leadData);
 
-    const newLead = await serviceLead.createLead(leadData);
+    const newLead = await serviceLead.post(leadData);
 
     res.status(201).json(newLead);
   } catch (error: any) {
@@ -88,12 +88,12 @@ export const addInteractionToLead = async (req: Request, res: Response) => {
   const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
   const interactionData = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
 
-  try {
-    const updatedLead = await serviceLead.addInteraction(id, interactionData);
-    res.status(200).json(updatedLead);
-  } catch (error) {
-    res.status(500).json({ message: "Error adding interaction to lead", error });
-  }
+  // try {
+  //   const updatedLead = await serviceLead.addInteraction(id, interactionData);
+  //   res.status(200).json(updatedLead);
+  // } catch (error) {
+  //   res.status(500).json({ message: "Error adding interaction to lead", error });
+  // }
 }
 export const postLeadFromCSV = async (req: Request, res: Response) => {
   const csvData: string = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה

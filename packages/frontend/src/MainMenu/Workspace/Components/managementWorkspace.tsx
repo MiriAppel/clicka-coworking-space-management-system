@@ -1,60 +1,36 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { useEffect, useState } from "react";
+// import { useWorkspaceStore } from "../../../Stores/Workspace/workspaceStore";
+import { Space, WorkspaceType, SpaceStatus } from "shared-types";
 import { useWorkSpaceStore } from "../../../Stores/Workspace/workspaceStore";
-import { Space, SpaceStatus, WorkspaceType } from "shared-types";
-import { Table as StyledTable, TableColumn } from "../../../Common/Components/BaseComponents/Table";
-import { Pencil, Trash } from "lucide-react";
-import { Button } from "../../../Common/Components/BaseComponents/Button"; // עיצוב הכפתורים
-
-
-import axios from "axios";
-import { s } from "@fullcalendar/core/internal-common";
 
 export const ManagementWorkspace = () => {
-  const { workSpaces, getAllWorkspace, createWorkspace, updateWorkspace, deleteWorkspace } = useWorkSpaceStore();
+  const { workSpaces, getAllWorkspace, createWorkspace } = useWorkSpaceStore();
   const [open, setOpen] = useState(false);
-  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-  const [workspaceToDelete, setWorkspaceToDelete] = useState<Space | null>(null);
   const [newSpace, setNewSpace] = useState<Space>({
     id: '',
     name: '',
     description: '',
     type: WorkspaceType.PRIVATE_ROOM,
     status: SpaceStatus.AVAILABLE,
-    currentCustomerId: 'עוד לא עודכן לקוח',
-    currentCustomerName: 'עוד לא עודכן לקוח',
+    workspaceMapId: '',
+    // room: '',
+    currentCustomerId: '',
+    currentCustomerName: '',
     positionX: 0,
     positionY: 0,
     width: 0,
     height: 0,
-    workspaceMapId: '',
-    location: '',
     createdAt: '',
     updatedAt: '',
   });
 
   useEffect(() => {
+    // דואגים לשלוף את כל החללים
     getAllWorkspace();
   }, [getAllWorkspace]);
 
   const handleAddSpace = () => {
-    setNewSpace({
-      id: '',
-      name: '',
-      description: '',
-      type: WorkspaceType.PRIVATE_ROOM,
-      status: SpaceStatus.AVAILABLE,
-      positionX: 0,
-      positionY: 0,
-      width: 0,
-      height: 0,
-      workspaceMapId: '',
-      createdAt: '',
-      updatedAt: '',
-      location: '',
-      // currentCustomerId: 'עוד לא עודכן לקוח',
-      // currentCustomerName: 'עוד לא עודכן לקוח',
-    });
     setOpen(true);
   };
 
@@ -76,91 +52,45 @@ export const ManagementWorkspace = () => {
       };
 
       const spaceWithDates = {
-        ...newSpace,
-        updatedAt: formatDate(new Date()),
+        name: newSpace.name,
+        type: newSpace.type,
+        status: newSpace.status,
+        positionX: newSpace.positionX,
+        positionY: newSpace.positionY,
+        width: newSpace.width,
+        height: newSpace.height,
+        workspaceMapId: newSpace.workspaceMapId,
+        createdAt: formatDate(new Date()), // תאריך יצירה בפורמט המבוקש
+        updatedAt: formatDate(new Date()), // תאריך עדכון בפורמט המבוקש
+        description: newSpace.description,
+        // room: newSpace.room,
+        // currentCustomerId: newSpace.currentCustomerId,
+        // currentCustomerName: newSpace.currentCustomerName,
       };
 
-      if (newSpace.id) {
-        await updateWorkspace(spaceWithDates, spaceWithDates.id || "");
-      }
-      else {
-        const newSpaceData = {
-          ...spaceWithDates,
-          createdAt: formatDate(new Date()),
-        };
-        await createWorkspace(newSpaceData);
-      }
+      console.log("Saving new space:", spaceWithDates);
 
-      setOpen(false);
-      // getAllWorkspace();
+      // קריאה ל־createWorkspace בשירות ה־zustand עם החלל החדש
+      await createWorkspace(spaceWithDates);
+
+      setOpen(false); // סגירת הדיאלוג אחרי שהחלל נשמר
+      // עדכון החללים בסטור לאחר שמירת החלל החדש
+      getAllWorkspace();
     } catch (error) {
       console.error("Error saving new space:", error);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
-    const { name, value } = e.target;
-    setNewSpace({ ...newSpace, [name as string]: value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewSpace({ ...newSpace, [e.target.name]: e.target.value });
   };
-
-  // תיקון: פונקציה ל-Select בלבד
-  const handleSelectChange = (e: any) => {
-    const { name, value } = e.target;
-    setNewSpace({ ...newSpace, [name]: value });
-  };
-
-  const handleEdit = (workspace: Space) => {
-    setNewSpace(workspace);
-    setOpen(true);
-  };
-
-  const handleDelete = (workspace: Space) => {
-    setWorkspaceToDelete(workspace);
-    setConfirmDeleteOpen(true);
-  };
-  const confirmDelete = async () => {
-    if (!workspaceToDelete) return;
-    try {
-      await deleteWorkspace(workspaceToDelete.id || "");
-      // getAllWorkspace();
-      setConfirmDeleteOpen(false);
-      setWorkspaceToDelete(null);
-    } catch (error) {
-      console.error("Error deleting workspace:", error);
-    }
-  };
-
-  const cancelDelete = () => {
-    setConfirmDeleteOpen(false);
-    setWorkspaceToDelete(null);
-  };
-
-
-  const columns: TableColumn<Space>[] = [
-    { header: 'שם חלל', accessor: 'name' },
-    { header: 'סוג', accessor: 'type' },
-    { header: 'סטטוס', accessor: 'status' },
-    { header: 'מיקום X', accessor: 'positionX' },
-    { header: 'מיקום Y', accessor: 'positionY' },
-    { header: 'רוחב', accessor: 'width' },
-    { header: 'אורך', accessor: 'height' },
-    { header: 'תיאור', accessor: 'description' },
-    { header: 'קוד לקוח', accessor: 'currentCustomerId' },
-    { header: 'שם לקוח', accessor: 'currentCustomerName' },
-    { header: 'נוצר ב', accessor: 'createdAt' },
-    { header: 'עודכן ב', accessor: 'updatedAt' },
-  ];
-
-
 
   return (
     <div style={{ padding: "20px" }}>
       <h1>ניהול חללים</h1>
 
       <div style={{ marginBottom: "20px" }}>
-        {/* <Button variant="contained" color="primary" onClick={handleAddSpace}> */}
-        <Button variant="primary" onClick={handleAddSpace}>
-
+        <Button variant="contained" color="primary" onClick={handleAddSpace}>
           הוספת חלל חדש
         </Button>
       </div>
@@ -169,18 +99,51 @@ export const ManagementWorkspace = () => {
       {workSpaces.length === 0 ? (
         <p>אין חללים להצגה.</p>
       ) : (
-        <StyledTable<Space>
-          columns={columns}
-          data={workSpaces}
-          onUpdate={handleEdit}
-          onDelete={handleDelete}
-          className="shadow-lg"
-        />
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>שם חלל</TableCell>
+                <TableCell>סוג</TableCell>
+                <TableCell>סטטוס</TableCell>
+                <TableCell>מיקום X</TableCell>
+                <TableCell>מיקום Y</TableCell>
+                <TableCell>רוחב</TableCell>
+                <TableCell>אורך</TableCell>
+                <TableCell>תיאור</TableCell>
+                <TableCell>חדר</TableCell>
+                <TableCell>קוד לקוח</TableCell>
+                <TableCell>שם לקוח</TableCell>
+                <TableCell>נוצר ב</TableCell>
+                <TableCell>התעדכן ב</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {workSpaces.map((space) => (
+                <TableRow key={space.id}>
+                  <TableCell>{space.name}</TableCell>
+                  <TableCell>{space.type}</TableCell>
+                  <TableCell>{space.status}</TableCell>
+                  <TableCell>{space.positionX}</TableCell>
+                  <TableCell>{space.positionY}</TableCell>
+                  <TableCell>{space.width}</TableCell>
+                  <TableCell>{space.height}</TableCell>
+                  <TableCell>{space.description}</TableCell>
+                  {/* <TableCell>{space.room}</TableCell> */}
+                  <TableCell>{space.currentCustomerId}</TableCell>
+                  <TableCell>{space.currentCustomerName}</TableCell>
+                  <TableCell>{space.createdAt}</TableCell>
+                  <TableCell>{space.updatedAt}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
 
-      {/* Modal for Adding/Editing Space */}
+      {/* Modal for Adding Space */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{newSpace.id ? "עריכת חלל" : "הוספת חלל חדש"}</DialogTitle>
+        <DialogTitle>הוספת חלל חדש</DialogTitle>
         <DialogContent>
           <TextField
             label="שם חלל"
@@ -235,44 +198,57 @@ export const ManagementWorkspace = () => {
             style={{ marginBottom: "10px" }}
           />
           <TextField
-            label="workspaceMapId"
+            label="workspace_map_id"
             fullWidth
-            name="workspaceMapId"
+            name="workspace_map_id"
             value={newSpace.workspaceMapId}
             onChange={handleChange}
             required
             style={{ marginBottom: "10px" }}
           />
-          <FormControl fullWidth style={{ marginBottom: "10px" }}>
-            <InputLabel>סוג חלל</InputLabel>
-            <Select
-              name="type"
-              value={newSpace.type}
-              onChange={handleSelectChange}
-              label="סוג חלל"
-            >
-              {Object.values(WorkspaceType).map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth style={{ marginBottom: "10px" }}>
-            <InputLabel>סטטוס חלל</InputLabel>
-            <Select
-              name="status"
-              value={newSpace.status}
-              onChange={handleSelectChange}
-              label="סטטוס חלל"
-            >
-              {Object.values(SpaceStatus).map((status) => (
-                <MenuItem key={status} value={status}>
-                  {status}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <TextField
+            label="סוג חלל"
+            fullWidth
+            name="type"
+            value={newSpace.type}
+            onChange={handleChange}
+            style={{ marginBottom: "10px" }}
+            required
+          />
+          <TextField
+            label="סטטוס חלל"
+            fullWidth
+            name="status"
+            value={newSpace.status}
+            onChange={handleChange}
+            style={{ marginBottom: "10px" }}
+            required
+          />
+          {/* חדש: הוספת שדות קלט חדשים
+          <TextField
+            label="קוד לקוח"
+            fullWidth
+            name="currentCustomerId"
+            value={newSpace.currentCustomerId}
+            onChange={handleChange}
+            style={{ marginBottom: "10px" }}
+          />
+          <TextField
+            label="שם לקוח"
+            fullWidth
+            name="currentCustomerName"
+            value={newSpace.currentCustomerName}
+            onChange={handleChange}
+            style={{ marginBottom: "10px" }}
+          /> */}
+          <TextField
+            label="חדר"
+            fullWidth
+            name="room"
+            // value={newSpace.room}
+            onChange={handleChange}
+            style={{ marginBottom: "10px" }}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">
@@ -283,21 +259,8 @@ export const ManagementWorkspace = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={confirmDeleteOpen} onClose={cancelDelete}>
-        <DialogTitle>אישור מחיקה</DialogTitle>
-        <DialogContent>
-          <p>האם אתה בטוח שברצונך למחוק את החלל "{workspaceToDelete?.name}"?</p>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={cancelDelete} color="secondary">
-            ביטול
-          </Button>
-          <Button onClick={confirmDelete} color="destructive">
-            מחק
-          </Button>
-        </DialogActions>
-      </Dialog>
-
     </div>
   );
 };
+
+

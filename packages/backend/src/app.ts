@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-
+import './scripts/daily-contract-expiry'
 import routerCustomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
@@ -26,7 +26,7 @@ import vendorRouter from './routes/vendor.router';
 import router from './routes';
 import documentRouter from './routes/document.routes';
 import invoiceRouter from './routes/invoice.route';
-import paymentRoutes from './routes/payment.routes';
+import paymentRoutes from './routes/payment.route';
 import emailTemplateRouter from './routes/emailTemplate.route';
 import driveRoutes from './routes/drive-route';
 import translationRouter from './routes/translation.route';
