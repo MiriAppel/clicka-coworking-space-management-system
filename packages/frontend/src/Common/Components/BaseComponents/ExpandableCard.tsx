@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   ChevronDown,
@@ -15,9 +14,9 @@ import {
   ScrollText,
   Coins,
   BadgePercent,
-  User,
+  // User,
   Camera,
-  FileDown,
+  // FileDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";

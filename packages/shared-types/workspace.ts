@@ -26,7 +26,7 @@ export interface Space {
   positionY: number;
   width: number;
   height: number;
-  location: string;
+  location?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
 }

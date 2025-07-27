@@ -83,7 +83,7 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
   return () => {
     clearError();
   };
-}, []); // ← רק פעם אחת בטעינה
+}, [getAllSpaces,getAllCustomers,clearError]); // ← רק פעם אחת בטעינה
 
   // בדיקת קונפליקטים בזמן אמת
   useEffect(() => {
@@ -108,7 +108,7 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = ({
     return () => clearTimeout(timeoutId);
   }, [watchedWorkspaceId, watchedAssignedDate, watchedUnassignedDate, checkConflicts]);
 
-const filteredSpaces = React.useMemo(() => {
+React.useMemo(() => {
     if (!workspaceType) {
       return spaces;
     }

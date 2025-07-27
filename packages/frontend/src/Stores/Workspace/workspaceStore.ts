@@ -1,7 +1,6 @@
 import {create} from "zustand";
 import axios from "axios";
 import {ID, Room, Space, SpaceStatus} from "shared-types";
-import { get } from "lodash";
 
 //הצהרות
 interface WorkSpaceState {
@@ -50,7 +49,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
     //update space
     updateWorkspace: async (workspace,id) => {
         try {
-            const response = await axios.put(`api/workspace/updateWorkspace/${id}`,workspace);
+            // const response = await axios.put(`api/workspace/updateWorkspace/${id}`,workspace);
             const all = await axios.get('api/workspace/getAllWorkspace');
             set({ workSpaces: all.data });
             //  set({ workSpaces: Array.isArray(response.data) ? response.data : [response.data] });
@@ -61,7 +60,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
     //add space
     createWorkspace: async (workspace) => {
         try {
-            const response = await axios.post('api/workspace/createWorkspace',workspace);
+            // const response = await axios.post('api/workspace/createWorkspace',workspace);
             const all = await axios.get('api/workspace/getAllWorkspace');
             set({ workSpaces: all.data });
             // set({ workSpaces: response.data });
@@ -72,7 +71,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
     //delete space
     deleteWorkspace: async (id) => {
         try {
-            const response = await axios.delete(`api/workspace/deleteWorkspace/${id}`);
+            // const response = await axios.delete(`api/workspace/deleteWorkspace/${id}`);
             const all = await axios.get('api/workspace/getAllWorkspace');
             set({ workSpaces: all.data });
             // set({ workSpaces: response.data });
