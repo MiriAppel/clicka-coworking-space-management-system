@@ -2,7 +2,7 @@
 import type{ CreateVendorRequest, Vendor } from 'shared-types';
 import { Request, Response } from 'express';
 import { VendorModel } from '../models/vendor.model';
-import { create, deleteVendor, getAllVendors, getVendorById, saveDocumentAndAttachToVendor } from '../services/vendor.service';
+import { create, deleteVendor, getAllVendors, getExpensesByVendorId, getVendorById, saveDocumentAndAttachToVendor } from '../services/vendor.service';
 export const createVendorController = async (req: Request, res: Response) => {
   try {
     const newVendor = new VendorModel(req.body); // יצירת מופע מודל מ-req.body
@@ -51,6 +51,17 @@ export async function uploadVendorDocument(req: Request, res: Response) {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: 'שגיאה בשמירת המסמך' });
+  }
+}
+export async function fetchExpensesByVendorId(req: Request, res: Response) {
+  const { vendorId } = req.params;
+
+  try {
+    const expenses = await getExpensesByVendorId(vendorId);
+    res.status(200).json(expenses);
+  } catch (error) {
+    console.error('Error in fetchExpensesByVendorId:', error);
+    res.status(500).json({ message: 'Failed to fetch expenses' });
   }
 }
 

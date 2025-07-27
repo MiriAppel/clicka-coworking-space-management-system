@@ -3,6 +3,7 @@ import { Router } from 'express';
 import {
   createVendorController,
   deleteVendorController,
+  fetchExpensesByVendorId,
   getVendorByIdController,
   getVendorController,
   uploadVendorDocument
@@ -17,6 +18,8 @@ vendorRouter.post("/", createVendorController );
 vendorRouter.get("/:id", getVendorByIdController );
 vendorRouter.delete("/:id", deleteVendorController );
 vendorRouter.post('/:id/documents', uploadVendorDocument);
+vendorRouter.get('/getExpensesByVendorId/:vendorId', fetchExpensesByVendorId);
+
 
 
 

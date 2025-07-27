@@ -51,7 +51,7 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
 
   fetchExpensesByVendorId: async (vendorId: string) => {
     try {
-      const res = await axiosInstance.get(`/expenses/getExpensesByVendorId/${vendorId}`);
+      const res = await axiosInstance.get(`/vendor/getExpensesByVendorId/${vendorId}`);
       set({ expenses: res.data });
     } catch (error) {
       console.error("שגיאה בטעינת הוצאות:", error);

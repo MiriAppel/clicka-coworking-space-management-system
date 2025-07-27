@@ -1,5 +1,5 @@
 //server/vendor.service.ts
-import { ID, Vendor, CreateVendorRequest, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms } from "shared-types"
+import { ID, Vendor, CreateVendorRequest, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms, Expense } from "shared-types"
 import { VendorModel } from "../models/vendor.model";
 import { supabase } from '../db/supabaseClient';
 import { DocumentModel } from "../models/document.model";
@@ -205,4 +205,22 @@ export async function saveDocumentAndAttachToVendor(vendorId: string, file: any)
   }
 
   return DocumentModel.fromDatabaseFormat(insertedDoc);
+}
+export async function getExpensesByVendorId(vendorId: string): Promise<Expense[]> {
+  try {
+    const { data, error } = await supabase
+      .from('expense')
+      .select('*')
+      .eq('vendor_id', vendorId);
+
+    if (error) {
+      console.error('Error fetching expenses by vendor id:', error);
+      throw new Error('Failed to fetch expenses');
+    }
+
+    return data || [];
+  } catch (e) {
+    console.error('Exception in getExpensesByVendorId:', e);
+    throw e;
+  }
 }
