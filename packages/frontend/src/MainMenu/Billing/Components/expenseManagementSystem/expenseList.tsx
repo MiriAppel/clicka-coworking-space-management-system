@@ -5,11 +5,10 @@ import {
 } from "../../../../Common/Components/BaseComponents/Table";
 import { Expense } from "shared-types";
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ExpenseDetails } from "./expenseDetails";
+import axiosInstance from "../../../../Service/Axios"; // עדכן לפי נתיב הפרויקט
 
-// טבלת ערכים
 interface ValuesToTable {
     id: string;
     vendor_name: string;
@@ -30,57 +29,56 @@ export const ExpenseList = () => {
     const navigate = useNavigate();
     const [selectedId, setSelectedId] = useState<string | null>(null);
 
-    // שליפה ראשונית מהשרת
     const fetchExpenses = async () => {
-        axios
-            .get("http://localhost:3001/api/expenses/by-page", {
+        try {
+            const response = await axiosInstance.get("/expenses/by-page", {
                 params: { page, limit: 50 },
-            })
-            .then((response) => {
-                if (response.data.length < 50) {
-                    setHasMore(false);
-                }
-                setExpenses((prev) => {
-                    const ids = new Set(prev.map((e) => e.id));
-                    const uniqueNew = response.data.filter(
-                        (expense: Expense) => !ids.has(expense.id)
-                    );
-                    return [...prev, ...uniqueNew];
-                });
-                setAllExpenses((prev) => {
-                    const ids = new Set(prev.map((e) => e.id));
-                    const uniqueNew = response.data.filter(
-                        (expense: Expense) => !ids.has(expense.id)
-                    );
-                    return [...prev, ...uniqueNew];
-                });
-            })
-            .catch((error) => {
-                console.error("Error fetching expenses:", error);
             });
+
+            const data: Expense[] = response.data;
+
+            if (data.length < 50) setHasMore(false);
+
+            setExpenses((prev) => {
+                const ids = new Set(prev.map((e) => e.id));
+                const uniqueNew = data.filter((expense) => !ids.has(expense.id));
+                return [...prev, ...uniqueNew];
+            });
+
+            setAllExpenses((prev) => {
+                const ids = new Set(prev.map((e) => e.id));
+                const uniqueNew = data.filter((expense) => !ids.has(expense.id));
+                return [...prev, ...uniqueNew];
+            });
+        } catch (error) {
+            console.error("Error fetching expenses:", error);
+        }
     };
 
     useEffect(() => {
-        fetchExpenses();
-        // eslint-disable-next-line
-    }, [page]);
+        if (!isSearching) {
+            fetchExpenses();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page, isSearching]);
 
     useEffect(() => {
         if (!loaderRef.current || !hasMore || isSearching) return;
+
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting) {
                 setPage((prev) => prev + 1);
             }
         });
+
         observer.observe(loaderRef.current);
         return () => observer.disconnect();
     }, [hasMore, isSearching]);
 
-    // חיפוש
-    const handleSearch = (term: string) => {
+    const handleSearch = async (term: string) => {
         setSearchTerm(term);
 
-        if (!term) {
+        if (!term.trim()) {
             setIsSearching(false);
             setExpenses(allExpenses);
             setPage(1);
@@ -100,23 +98,20 @@ export const ExpenseList = () => {
         if (filtered.length > 0) {
             setExpenses(filtered);
         } else {
-            axios
-                .get("http://localhost:3001/api/expenses/filter", {
+            try {
+                const response = await axiosInstance.get("/expenses/filter", {
                     params: { q: term, page: 1, limit: 50 },
-                })
-                .then((response) => {
-                    setExpenses(response.data);
-                })
-                .catch((error) => {
-                    console.error("Error searching from server:", error);
                 });
+                setExpenses(response.data);
+            } catch (error) {
+                console.error("Error searching from server:", error);
+            }
         }
     };
 
-    // מחיקת הוצאה
     const deleteCurrentExpense = async (id: string) => {
         try {
-            await axios.delete(`http://localhost:3001/api/expenses/${id}`);
+            await axiosInstance.delete(`/expenses/${id}`);
             setExpenses([]);
             setAllExpenses([]);
             setPage(1);
@@ -129,7 +124,6 @@ export const ExpenseList = () => {
         }
     };
 
-    // טבלת ערכים
     const valuesToTable: ValuesToTable[] = expenses.map((expense) => ({
         id: expense.id!,
         vendor_name: expense.vendor_name,
@@ -139,7 +133,6 @@ export const ExpenseList = () => {
         date: new Date(expense.date).toLocaleDateString("he-IL"),
     }));
 
-    // עמודות כולל כפתור "פרטים"
     const Columns: TableColumn<ValuesToTable>[] = [
         { header: "ספק", accessor: "vendor_name" },
         { header: "קטגוריה", accessor: "category" },
@@ -150,11 +143,7 @@ export const ExpenseList = () => {
             header: "פרטים",
             accessor: "id",
             render: (value, row) => (
-                <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() =>  setSelectedId(row.id)}
-                >
+                <Button variant="primary" size="sm" onClick={() => setSelectedId(row.id)}>
                     פרטים
                 </Button>
             ),
@@ -164,16 +153,11 @@ export const ExpenseList = () => {
     return (
         <div style={{ direction: "rtl", padding: "20px" }}>
             <h2 className="text-3xl font-bold text-center text-blue-600 my-4">הוצאות</h2>
-            <Button
-                variant="primary"
-                size="sm"
-                onClick={() => navigate("expense-form")}
-            >
+            <Button variant="primary" size="sm" onClick={() => navigate("expense-form")}>
                 הוספת הוצאה חדשה
             </Button>
             <br />
             <br />
-            {/* שדה חיפוש פשוט */}
             <input
                 type="text"
                 placeholder="חפש לפי ספק, תיאור או קטגוריה"
@@ -191,8 +175,8 @@ export const ExpenseList = () => {
                 renderActions={() => null}
             />
             {selectedId && (
-    <ExpenseDetails id={selectedId} onClose={() => setSelectedId(null)} />
-)}
+                <ExpenseDetails id={selectedId} onClose={() => setSelectedId(null)} />
+            )}
             <div ref={loaderRef} style={{ height: "1px" }} />
         </div>
     );

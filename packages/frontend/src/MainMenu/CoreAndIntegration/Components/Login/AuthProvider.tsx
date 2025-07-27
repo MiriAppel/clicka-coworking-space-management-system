@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setLoading(true);
       let res = await axiosInstance.get("/auth/verify");
-      if (res.status == 200) {
+      if (res.status === 200) {
         console.log("Authenticated successfully");
         const data = res.data;
         setUser(data.user);
@@ -49,13 +49,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
         clearUser();
       }
-
       clearUser();
-
     } finally {
       setLoading(false);
     }
-  }
+  }, [setUser, clearUser, setLoading, setSessionId]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -69,13 +67,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user != null) {
       interval = setInterval(async () => {
         verifyFunction();
-      }, 30000); // כל 30 שניות
+      }, 30000); // every 30 seconds
     }
-
     return () => {
-      if (interval) clearInterval(interval); // ניקוי כאשר הקומפוננטה מוסרת
+      if (interval) clearInterval(interval); // cleanup when component unmounts
     };
-  }, [user, clearUser]);
+  }, [user, verifyFunction]);
 
   if(isLoading){
       return null;

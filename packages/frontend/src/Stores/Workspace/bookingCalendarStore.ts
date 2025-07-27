@@ -1,7 +1,5 @@
 import { create } from "zustand";
-import axios from "axios";
 import type { Booking } from "./../../../../shared-types";
-import type { ApiResponse } from "./../../../../shared-types";
 
 interface BookingCalendarState {
     bookings: Booking[];

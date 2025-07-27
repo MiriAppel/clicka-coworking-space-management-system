@@ -26,7 +26,7 @@ export const Default: Story = {
     const methods = useForm(); // יצירת useForm
     return (
       <FormProvider {...methods}> {/* מקיף את הקומפוננטה ב-FormProvider */}
-        <SelectField {...args} /> {/* שולח את ה-args ל-SelectField */}
+        <SelectField name={''} label={''} options={[]} {...args} /> {/* שולח את ה-args ל-SelectField */}
       </FormProvider>
     );
   },

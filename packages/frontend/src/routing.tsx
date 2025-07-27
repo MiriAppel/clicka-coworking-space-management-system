@@ -2,18 +2,16 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
-import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
-import VendorSummary from './MainMenu/Billing/Components/Vendor-management/VendorSummary';
+// import VendorSummary from './MainMenu/Billing/Components/Vendor-management/VendorSummary';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
-import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import MainLayout from './layout/MainLayout';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
-import { ExpenseDetails } from './MainMenu/Billing/Components/expenseManagementSystem/expenseDetails';
+// import { ExpenseDetails } from './MainMenu/Billing/Components/expenseManagementSystem/expenseDetails';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
@@ -25,18 +23,15 @@ import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/Ema
 import { SendEmail } from './MainMenu/CoreAndIntegration/Components/SendEmail/SendEmail';
 // import EmailConfirmationPage from './MainMenu/LeadAndCustomer/Components/Leads/EmailConfirmationPage';
 import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLogTable';
-import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
+// import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSystem/ExpensesPage';
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
 import { RegisterUser } from './MainMenu/CoreAndIntegration/Components/Login/registerUser';
+import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
+import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 export const Routing = () => {
-  // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
-  const [vendors, setVendors] = useState<Vendor[]>([]);
-  // משתנה שמייצג האם הנתונים עוד בטעינה
-  const [loading, setLoading] = useState(true);
-  // useEffect - רץ פעם אחת לאחר טעינת הקומפוננטה
-  // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
+    const [vendors, setVendors] = useState<Vendor[]>([]);
   return (
     <Routes>
       <Route element={<MainLayout />}>
@@ -51,8 +46,8 @@ export const Routing = () => {
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
-        <Route path="payment" element={<PaymentForm />} />
-        <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
+        <Route path="payments" element={<PaymentForm />} />
+        <Route path="vendor" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
@@ -70,6 +65,8 @@ export const Routing = () => {
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
         <Route path="/registerUser" element={<RegisterUser />} />
+        <Route path="/petty-cash" element={<PettyCashPage />} />
+
       </Route>
     </Routes>
   );

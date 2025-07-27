@@ -1,80 +1,93 @@
 // useMeetingRoomPricingStore.ts
+
+// Zustand: ספריית ניהול state גלובלי
 import { create } from 'zustand';
+
+// יבוא של פונקציות שירות לניהול נתוני התמחור
 import { 
-  getCurrentMeetingRoomPricing, 
-  createMeetingRoomPricingWithHistory,
-  updateMeetingRoomPricing,
-  deleteMeetingRoomPricing,     // ודא שזה מיובא
-  getAllMeetingRoomPricingHistory // ודא שזה מיובא
-}  from '../../../Service/pricing.service';
+  getCurrentMeetingRoomPricing,            // שליפת המחיר הנוכחי
+  createMeetingRoomPricingWithHistory,     // יצירת מחיר חדש כולל היסטוריה
+  updateMeetingRoomPricing,                // עדכון מחיר קיים
+  deleteMeetingRoomPricing,                // מחיקת מחיר לפי מזהה
+  getAllMeetingRoomPricingHistory          // שליפת כל היסטוריית המחירים
+} from '../../../Service/pricing.service';
+
+// טיפוסים משותפים לנתוני המחירים ולבקשת עדכון
 import { MeetingRoomPricing, UpdateMeetingRoomPricingRequest } from 'shared-types';
 
+// ממשק ל-state של ה-store
 interface MeetingRoomPricingState {
-  current: MeetingRoomPricing | null;
-  history: MeetingRoomPricing[]; // הוספנו מצב (state) להיסטוריה
-  loading: boolean;
-  error: string | null;
-  fetch: () => Promise<void>;
-  fetchHistory: () => Promise<void>; // פונקציה להבאת היסטוריה
-  save: (data: UpdateMeetingRoomPricingRequest, id?: string) => Promise<void>; 
-  delete: (id: string) => Promise<void>; // פונקציה למחיקה
+  current: MeetingRoomPricing | null;       // המחיר הנוכחי (אחד בלבד)
+  history: MeetingRoomPricing[];            // רשימת מחירים היסטוריים
+  loading: boolean;                         // האם נטען כרגע
+  error: string | null;                     // הודעת שגיאה כללית
+  fetch: () => Promise<void>;               // שליפת המחיר הנוכחי
+  fetchHistory: () => Promise<void>;        // שליפת ההיסטוריה
+  save: (data: UpdateMeetingRoomPricingRequest, id?: string) => Promise<void>; // שמירה (עדכון או יצירה)
+  delete: (id: string) => Promise<void>;    // מחיקה לפי מזהה
 }
 
+// יצירת ה-store באמצעות Zustand
 export const useMeetingRoomPricingStore = create<MeetingRoomPricingState>((set, get) => ({
-  current: null,
-  history: [], // אתחול מערך ההיסטוריה
-  loading: false,
-  error: null,
+  current: null,                            // אתחול המחיר הנוכחי לריק
+  history: [],                              // אתחול ההיסטוריה כ-מערך ריק
+  loading: false,                           // אתחול סטטוס טעינה
+  error: null,                              // אתחול שגיאה
+
+  // פונקציה: שליפת המחיר הנוכחי מהשרת
   fetch: async () => {
     set({ loading: true, error: null });
     try {
-      const pricing = await getCurrentMeetingRoomPricing();
-      set({ current: pricing, loading: false });
-    } catch (e: any) { 
+      const pricing = await getCurrentMeetingRoomPricing();   // קריאת API
+      set({ current: pricing, loading: false });              // שמירה ל-state
+    } catch (e: any) {
       set({ error: e?.message || 'שגיאה בטעינת מחירי חדרי ישיבות', loading: false });
     }
   },
-  // *** חדש: פונקציה להבאת כל המחירים ההיסטוריים ***
+
+  // פונקציה: שליפת כל ההיסטוריה
   fetchHistory: async () => {
     set({ loading: true, error: null });
     try {
-      const historyData = await getAllMeetingRoomPricingHistory();
-      set({ history: historyData, loading: false });
+      const historyData = await getAllMeetingRoomPricingHistory(); // קריאת כל ההיסטוריה
+      set({ history: historyData, loading: false });               // שמירה ל-state
     } catch (e: any) {
       set({ error: e?.message || 'שגיאה בטעינת היסטוריית מחירי חדרי ישיבות', loading: false });
     }
   },
-  save: async (data, id) => { 
+
+  // פונקציה: שמירה (עדכון אם יש ID, יצירה חדשה אחרת)
+  save: async (data, id) => {
     set({ loading: true, error: null });
     try {
       if (id) {
-        await updateMeetingRoomPricing(id, data); 
+        await updateMeetingRoomPricing(id, data);            // עדכון מחיר קיים
       } else {
-        await createMeetingRoomPricingWithHistory(data);
+        await createMeetingRoomPricingWithHistory(data);     // יצירת חדש עם היסטוריה
       }
       set({ loading: false });
-      // **חשוב**: רענון הנתונים לאחר שמירה/עדכון
-      await get().fetch(); 
-      await get().fetchHistory(); // רענן את נתוני ההיסטוריה לאחר שמירה/עדכון
+      await get().fetch();           // רענון המחיר הנוכחי
+      await get().fetchHistory();    // רענון ההיסטוריה
     } catch (e: any) {
       const message = e?.response?.data?.error || e?.message || 'שגיאה בשמירת הנתונים';
       set({ error: message, loading: false });
-      throw new Error(message); 
+      throw new Error(message); // משליך את השגיאה למעלה (לשימוש חיצוני)
     }
   },
-  // *** חדש: פונקציית מחיקה עם רענון לאחר מכן ***
+
+  // פונקציה: מחיקת מחיר לפי ID
   delete: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      await deleteMeetingRoomPricing(id);
+      await deleteMeetingRoomPricing(id);       // מחיקה
       set({ loading: false });
       alert('המחיר נמחק בהצלחה!');
-      await get().fetch(); // רענן את המחיר הנוכחי (למקרה שהמחיר הנוכחי נמחק)
-      await get().fetchHistory(); // רענן את נתוני ההיסטוריה לאחר המחיקה
+      await get().fetch();                      // רענון המחיר הנוכחי
+      await get().fetchHistory();               // רענון ההיסטוריה
     } catch (e: any) {
       const message = e?.response?.data?.error || e?.message || 'שגיאה במחיקת הנתונים';
       set({ error: message, loading: false });
-      alert(`שגיאה במחיקה: ${message}`); 
+      alert(`שגיאה במחיקה: ${message}`);
       throw new Error(message);
     }
   },

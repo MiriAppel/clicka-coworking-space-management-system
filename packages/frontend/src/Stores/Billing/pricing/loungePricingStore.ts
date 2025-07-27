@@ -1,82 +1,98 @@
 // Stores/Billing/pricing/loungePricingStore.ts
+
 import { create } from 'zustand';
+
+// ייבוא פונקציות השירות שמתקשרות עם ה-API לקבלת ושמירת נתונים
 import { 
   getCurrentLoungePricing, 
   createLoungePricingWithHistory,
   updateLoungePricing,
-  deleteLoungePricing // וודא שזה מיובא
-}  from '../../../Service/pricing.service';
+  deleteLoungePricing // חשוב לוודא שהפונקציה הזו מיובאת
+} from '../../../Service/pricing.service';
+
+// ייבוא טיפוסים רלוונטיים מטייפס שיירד-טייפס (shared-types)
 import { LoungePricing, UpdateLoungePricingRequest } from 'shared-types';
 
+// הגדרת מבנה הסטייט ב-store עבור תמחור לאונג'
 interface LoungePricingState {
-  current: LoungePricing | null;
-  history: LoungePricing[]; // נניח שיש לך גם היסטוריה בסטור, אם לא, נצטרך להוסיף fetchHistory
-  loading: boolean;
-  error: string | null;
-  fetch: () => Promise<void>;
-  fetchHistory: () => Promise<void>; // ייתכן ותצטרך פונקציה נפרדת להבאת היסטוריה
-  save: (data: UpdateLoungePricingRequest, id?: string) => Promise<void>;
-  delete: (id: string) => Promise<void>; // הוספת פונקציית מחיקה לסטור
+  current: LoungePricing | null;          // המחיר הנוכחי של הלאונג'
+  history: LoungePricing[];                // היסטוריית מחירים (אם קיימת)
+  loading: boolean;                        // מצב טעינה לUI
+  error: string | null;                    // שגיאות אפשריות
+  fetch: () => Promise<void>;              // פונקציה לקבלת המחיר הנוכחי
+  fetchHistory: () => Promise<void>;       // פונקציה לקבלת היסטוריית מחירים
+  save: (data: UpdateLoungePricingRequest, id?: string) => Promise<void>;  // שמירת מחיר חדש או עדכון מחיר קיים
+  delete: (id: string) => Promise<void>;  // מחיקת מחיר ע"פ ID
 }
 
+// יצירת ה-store עם Zustand
 export const useLoungePricingStore = create<LoungePricingState>((set, get) => ({
-  current: null,
-  history: [], // אתחול
-  loading: false,
-  error: null,
+  current: null,        // אתחול המחיר הנוכחי לריק
+  history: [],          // אתחול היסטוריה כריקה
+  loading: false,       // אתחול מצב טעינה ל-false
+  error: null,          // אתחול שגיאה ל-null
+
+  // פונקציה לאחזור המחיר הנוכחי מה-API
   fetch: async () => {
-    set({ loading: true, error: null });
+    set({ loading: true, error: null });  // סימון התחלת טעינה וניקוי שגיאות קודמות
     try {
-      const pricing = await getCurrentLoungePricing();
-      set({ current: pricing, loading: false });
+      const pricing = await getCurrentLoungePricing();  // קריאה לשירות לקבלת המחיר הנוכחי
+      set({ current: pricing, loading: false });        // שמירת המחיר והסרת מצב טעינה
     } catch (e: any) {
-      set({ error: e?.message || 'שגיאה בטעינת מחירי לאונג', loading: false });
+      set({ error: e?.message || 'שגיאה בטעינת מחירי לאונג', loading: false }); // טיפול בשגיאה
     }
   },
-  // פונקציה להבאת היסטוריית מחירים (ייתכן שצריך להוסיף ל-pricing.service.ts)
+
+  // פונקציה לאחזור היסטוריית מחירים
   fetchHistory: async () => {
     set({ loading: true, error: null });
     try {
-      // נניח שיש לך פונקציה ב service שמביאה את כל ההיסטוריה
-      // אם לא, נצטרך להוסיף אותה (לדוגמה: getAllLoungePricingHistory())
-      // בינתיים, נשתמש ב current אם אין פונקציה אחרת
-      // אולי ה-current מביא גם את ההיסטוריה, או שיש לו מערך היסטוריה בפנים
-      // לצורך הדוגמה, נניח שיש API שמביא את כל הרשומות
-      // חשוב: אם זה לא קיים ב service, תצטרך להוסיף אותו שם
-      // const historyData = await getAllLoungePricingHistory(); 
+      // יש להוסיף פונקציה מתאימה בשירות אם צריך, לדוגמה:
+      // const historyData = await getAllLoungePricingHistory();
       // set({ history: historyData, loading: false });
-      set({ loading: false }); // אם אין fetchHistory בפועל, רק נוריד את הלואדינג
+      
+      // אם אין פונקציה כזו, כרגע מורידים טעינה בלבד:
+      set({ loading: false });
     } catch (e: any) {
       set({ error: e?.message || 'שגיאה בטעינת היסטוריית מחירי לאונג', loading: false });
     }
   },
+
+  // פונקציה לשמירת מחיר חדש או עדכון מחיר קיים
   save: async (data, id) => {
     set({ loading: true, error: null });
     try {
       if (id) {
+        // עדכון מחיר קיים
         await updateLoungePricing(id, data);
       } else {
+        // יצירת מחיר חדש עם היסטוריה
         await createLoungePricingWithHistory(data);
       }
       set({ loading: false });
-      await get().fetch(); // רענן את המידע הנוכחי
-      await get().fetchHistory(); // *** רענן את נתוני ההיסטוריה לאחר שמירה/עדכון ***
+      // רענון המחיר הנוכחי וההיסטוריה לאחר שמירה
+      await get().fetch();
+      await get().fetchHistory();
     } catch (e: any) {
+      // טיפול בשגיאות - מקבל הודעת שגיאה מפורטת במידת האפשר
       const message = e?.response?.data?.error || e?.message || 'שגיאה בשמירת הנתונים';
       set({ error: message, loading: false });
-      throw new Error(message);
+      throw new Error(message); // זריקת שגיאה כדי לאפשר טיפול חיצוני במידת הצורך
     }
   },
-  // *** פונקציית מחיקה עם רענון לאחר מכן ***
+
+  // פונקציה למחיקת מחיר לפי ID
   delete: async (id: string) => {
     set({ loading: true, error: null });
     try {
       await deleteLoungePricing(id);
       set({ loading: false });
-      alert('המחיר נמחק בהצלחה!');
-      await get().fetch(); // רענן את המידע הנוכחי (אם המחיר הנוכחי נמחק)
-      await get().fetchHistory(); // *** רענן את נתוני ההיסטוריה לאחר מחיקה ***
+      alert('המחיר נמחק בהצלחה!'); // הודעה למשתמש על הצלחה
+      // רענון המידע לאחר מחיקה
+      await get().fetch();
+      await get().fetchHistory();
     } catch (e: any) {
+      // טיפול בשגיאות במחיקה והצגתן למשתמש
       const message = e?.response?.data?.error || e?.message || 'שגיאה במחיקת הנתונים';
       set({ error: message, loading: false });
       alert(`שגיאה במחיקה: ${message}`);
