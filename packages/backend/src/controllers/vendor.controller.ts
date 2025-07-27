@@ -1,8 +1,8 @@
 //controller/vendor.controller.ts
 import type{ CreateVendorRequest, Vendor } from 'shared-types';
-import {create ,deleteVendor ,getAllVendors ,getVendorById,saveDocumentAndAttachToVendor } from '../services/vendor.servic';
 import { Request, Response } from 'express';
 import { VendorModel } from '../models/vendor.model';
+import { create, deleteVendor, getAllVendors, getVendorById, saveDocumentAndAttachToVendor } from '../services/vendor.service';
 export const createVendorController = async (req: Request, res: Response) => {
   try {
     const newVendor = new VendorModel(req.body); // יצירת מופע מודל מ-req.body

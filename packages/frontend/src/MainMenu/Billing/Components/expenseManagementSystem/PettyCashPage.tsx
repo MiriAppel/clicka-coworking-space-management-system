@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../../../Service/Axios'; // עדכן את הנתיב בהתאם לפרויקט שלך
 import { ExpenseCategory, Expense } from 'shared-types';
 import { CreateExpenseForm } from './expenseForm';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
@@ -11,31 +11,33 @@ const PettyCashPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
 
+  const fetchPettyCashExpenses = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axiosInstance.get('/expenses/petty-cash');
+      const allExpenses: Expense[] = response.data || [];
+      const pettyOnly = allExpenses.filter(exp => exp.category === ExpenseCategory.PETTY_CASH);
+      setExpenses(pettyOnly);
+    } catch (err: any) {
+      setError('שגיאה בטעינת הוצאות קופה קטנה');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchPettyCashExpenses = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/api/expenses/petty-cash');
-        const allExpenses: Expense[] = response.data || [];
-        const pettyOnly = allExpenses.filter(exp => exp.category === ExpenseCategory.PETTY_CASH);
-        setExpenses(pettyOnly);
-      } catch (err: any) {
-        setError('שגיאה בטעינת הוצאות קופה קטנה');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPettyCashExpenses();
   }, []);
 
   const handleNewExpense = (newExpense: Expense) => {
     setExpenses(prev => [newExpense, ...prev]);
-    setShowForm(false); // לסגור את הטופס אחרי הוספה
+    setShowForm(false);
   };
 
   const toggleForm = () => setShowForm(prev => !prev);
 
-  // הגדרת עמודות לטבלה
   const columns = [
     {
       header: 'מספר',

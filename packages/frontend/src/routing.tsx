@@ -7,7 +7,6 @@ import VendorsList from './MainMenu/Billing/Components/Vendor-management/Vendors
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
-import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import MainLayout from './layout/MainLayout';
@@ -32,28 +31,7 @@ import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generat
 import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 export const Routing = () => {
-  // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
-  const [vendors, setVendors] = useState<Vendor[]>([]);
-  // משתנה שמייצג האם הנתונים עוד בטעינה
-  const [loading, setLoading] = useState(true);
-  // useEffect - רץ פעם אחת לאחר טעינת הקומפוננטה
-  useEffect(() => {
-    const fetchVendors = async () => {
-      try {
-        // קריאה לפונקציה שמביאה את רשימת הספקים מהשרת (API)
-        const data = await getAllVendors();
-        setVendors(data); // שומר את הנתונים ב-state
-      } catch (err) {
-        console.error("שגיאה בשליפת ספקים:", err); // הדפסת שגיאה אם השליפה נכשלה
-      } finally {
-        setLoading(false); // מסמן שהטעינה הסתיימה (בין אם הצליחה או נכשלה)
-      }
-    };
-    fetchVendors(); // מפעיל את הפונקציה
-  }, []); // [] אומר שה־useEffect ירוץ רק בפעם הראשונה
-  // אם עדיין טוען – מציג הודעת טעינה למשתמש
-  if (loading) return <div>טוען נתונים...</div>;
-  // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
+    const [vendors, setVendors] = useState<Vendor[]>([]);
   return (
     <Routes>
       <Route element={<MainLayout />}>

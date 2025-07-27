@@ -1,6 +1,7 @@
 // vendors.store.ts
 import { create } from 'zustand';
 import { Vendor, Expense } from 'shared-types';
+import axiosInstance from '../../Service/Axios'; // ודאי שזה הנתיב הנכון
 
 interface VendorsState {
   vendors: Vendor[];
@@ -24,9 +25,8 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
   fetchVendors: async () => {
     set({ loading: true, error: undefined });
     try {
-      const res = await fetch('http://localhost:3001/vendor/');
-      const data = await res.json();
-      set({ vendors: data, loading: false });
+      const res = await axiosInstance.get('/vendor/');
+      set({ vendors: res.data, loading: false });
     } catch (error: any) {
       set({ error: error.message || "שגיאה בטעינת ספקים", loading: false });
     }
@@ -39,22 +39,20 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
 
   deleteVendor: async (vendorId: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/vendor/${vendorId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error("שגיאה במחיקה");
+      await axiosInstance.delete(`/vendor/${vendorId}`);
       set(state => ({
         vendors: state.vendors.filter(v => v.id !== vendorId),
         selectedVendor: state.selectedVendor?.id === vendorId ? null : state.selectedVendor
       }));
     } catch (error) {
-      console.error(error);
+      console.error("שגיאה במחיקת ספק:", error);
     }
   },
 
   fetchExpensesByVendorId: async (vendorId: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/expenses/getExpensesByVendorId/${vendorId}`);
-      const data = await res.json();
-      set({ expenses: data });
+      const res = await axiosInstance.get(`/expenses/getExpensesByVendorId/${vendorId}`);
+      set({ expenses: res.data });
     } catch (error) {
       console.error("שגיאה בטעינת הוצאות:", error);
       set({ expenses: [] });

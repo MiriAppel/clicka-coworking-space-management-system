@@ -2,7 +2,6 @@ import { google } from 'googleapis';
 import { FileReference, ID } from 'shared-types';
 import { Readable } from 'stream';
 import { UserTokenService } from './userTokenService';
-import { saveDocumentAndAttachToVendor } from './vendor.servic';
 import { DocumentModel } from '../models/document.model';
 
 function getAuth(token: string) {

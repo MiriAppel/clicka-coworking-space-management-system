@@ -3,12 +3,11 @@ import { useNavigate, Link } from "react-router-dom";
 import { Vendor } from "shared-types";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import React, { useState, useEffect } from "react";
-import { deleteVendor } from "../../../../Api/vendor-api";
 import { FaTrash, FaPen, FaEye } from "react-icons/fa";
 import VendorSummary from "./VendorSummary";
 import axiosInstance from "../../../../Service/Axios";
+import { useVendorsStore } from "../../../../Stores/Billing/vendorsStore";
 
-// טיפוס עבור פרופס שמקבל הקומפוננטה
 type VendorsListProps = {
   vendors: Vendor[];
   setVendors: React.Dispatch<React.SetStateAction<Vendor[]>>;
@@ -20,13 +19,13 @@ async function fetchVendors(): Promise<Vendor[]> {
   return response.data;
 }
 
-// קומפוננטת רשימת ספקים
 export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
   const navigate = useNavigate();
   const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  // טוען ספקים מהשרת בעת טעינת הקומפוננטה
+  const { deleteVendor } = useVendorsStore();
+
   useEffect(() => {
     fetchVendors()
       .then(setVendors)
@@ -36,15 +35,12 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
       });
   }, [setVendors]);
 
-  // פונקציה למחיקת ספק
   const handleDelete = async (vendorId: string) => {
     if (window.confirm("האם למחוק את הספק?")) {
       try {
-        const success = await deleteVendor(vendorId);
-        if (success) {
-          setVendors(vendors.filter((v) => v.id !== vendorId));
-          alert("הספק נמחק בהצלחה");
-        }
+        await deleteVendor(vendorId);
+        setVendors(vendors.filter((v) => v.id !== vendorId));
+        alert("הספק נמחק בהצלחה");
       } catch (error) {
         alert("שגיאה במחיקת ספק");
         console.error("Error:", error);
@@ -52,7 +48,6 @@ export default function VendorsList({ vendors, setVendors }: VendorsListProps) {
     }
   };
 
-  // סינון ספקים לפי טקסט חיפוש
   const filteredVendors = vendors.filter((vendor) =>
     [vendor.name, vendor.phone, vendor.email, vendor.address, vendor.category]
       .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))

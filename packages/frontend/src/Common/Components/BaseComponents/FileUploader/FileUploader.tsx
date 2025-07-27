@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Button as CustomButton } from '../Button';
 import { showAlert } from '../../BaseComponents/ShowAlert';
 import { useTheme } from '../../themeConfig';
+import axiosInstance from '../../../../Service/Axios';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_FILE_TYPES = [
@@ -141,8 +142,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const token = localStorage.getItem('accessToken') || '';
 
     try {
-      const res = await axios.post(
-        'http://localhost:3001/api/drive/upload',
+      const res = await axiosInstance.post(
+        '/drive/upload',
         formData,
         {
           withCredentials: true,
@@ -164,7 +165,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           }
         }
       );
-      
+
       console.log('📥 Response data:', res.data);
       const fileUrl = `https://drive.google.com/file/d/${res.data.id}/view`;
       console.log('🔗 קישור לקובץ בדרייב:', fileUrl);
@@ -636,7 +637,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               backgroundColor: theme.colors.neutral[0]
             }}>
               <CustomButton
-               
+
                 variant="secondary"
                 size="md"
                 disabled={files.filter(f => f.status === 'pending' || f.status === 'error').length === 0}
