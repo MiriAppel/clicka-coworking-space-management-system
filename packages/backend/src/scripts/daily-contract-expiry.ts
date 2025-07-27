@@ -79,13 +79,13 @@ if (fetchLeavingError) {
 
 
 // // ✅ ירוץ כל יום בשעה 22:00
-// cron.schedule("0 22 * * *", () => {
-//   console.log("🔥 cron רץ לבדיקת חוזים בשעה 22:00...");
-//   updateContractsAndCustomers();
-// });
-// ✅ ירוץ כל דקה
-cron.schedule("* * * * *", () => {
-  console.log("🔥 cron רץ לבדיקת חוזים ולקוחות (כל דקה)...");
+cron.schedule("0 22 * * *", () => {
+  console.log("🔥 cron רץ לבדיקת חוזים בשעה 22:00...");
   updateContractsAndCustomers();
 });
+// ✅ ירוץ כל דקה
+// cron.schedule("* * * * *", () => {
+//   console.log("🔥 cron רץ לבדיקת חוזים ולקוחות (כל דקה)...");
+//   updateContractsAndCustomers();
+// });
 
