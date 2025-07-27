@@ -95,14 +95,11 @@ export default function VendorDocuments({ vendorId }: VendorDocumentsProps) {
       formData.append('type', docType);
       formData.append('file', file);
 
-      const res = await fetch(`http://localhost:3001/api/document`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (!res.ok) throw new Error('Failed to upload document');
+      const res = await axiosInstance.post("/document");
+      if (!res) throw new Error('Failed to upload document');
 
       // עדכון המסמכים במסמך החדש
-      const newDoc: BackendDocument = await res.json();
+      const newDoc: BackendDocument = await res.data;
       setDocuments((docs) => [...docs, newDoc]);
       setMessage('המסמך נוסף בהצלחה!');
       if (fileInput.current) fileInput.current.value = '';
@@ -116,10 +113,8 @@ export default function VendorDocuments({ vendorId }: VendorDocumentsProps) {
   // פונקציית מחיקה של מסמך
   const deleteDocument = async (docId: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/document/${docId}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) throw new Error('Failed to delete document');
+      const res = await axiosInstance.delete(`/document/${docId}`);
+      if (!res) throw new Error('Failed to delete document');
 
       // מסנן את המסמך שנמחק מתוך הרשימה
       setDocuments((docs) => docs.filter((d) => d.id !== docId));

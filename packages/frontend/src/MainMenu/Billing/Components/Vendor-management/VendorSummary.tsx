@@ -67,7 +67,7 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
   const handleDeleteVendor = async () => {
     if (window.confirm("האם למחוק את הספק?")) {
       await deleteVendor(vendor.id);
-      navigate("/vendors"); // מעבירים את המשתמש לדף רשימת הספקים
+      navigate("/vendor"); // מעבירים את המשתמש לדף רשימת הספקים
     }
   };
 

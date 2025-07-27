@@ -124,7 +124,7 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
         alert("הספק נוסף בהצלחה");
       }
 
-      navigate("/vendors");
+      navigate("/vendor");
     } catch (error) {
       console.error("שגיאה:", error);
       alert("אירעה שגיאה. נסה שוב.");
