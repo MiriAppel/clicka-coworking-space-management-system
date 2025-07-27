@@ -3,6 +3,7 @@ import { SelectField } from '../../../../Common/Components/BaseComponents/Select
 import { useForm, FormProvider } from 'react-hook-form';
 import { DocumentType } from 'shared-types';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
+import axiosInstance from '../../../../Service/Axios';
 
 // טיפוס שמתאים למבנה ה-API שלך
 interface BackendDocument {
@@ -47,11 +48,11 @@ export default function VendorDocuments({ vendorId }: VendorDocumentsProps) {
     async function fetchDocuments() {
       try {
         // שליחת בקשת GET לשרת לקבלת כל המסמכים של הספק
-        const res = await fetch(`http://localhost:3001/api/document/vendor/${vendorId}`);
-        if (!res.ok) throw new Error('Failed to fetch documents');
+        const res = axiosInstance.get("/document/vendor/${vendorId}");
+        if (!res) throw new Error('Failed to fetch documents');
 
         // 1. קרא את ה-JSON הגולמי מהשרת
-        const raw: any[] = await res.json();
+        const raw: any[] = await (await res).data;
         console.log('🔴 raw from server:', raw);
 
         // 2. ממפה את השדה המתאים לשדה id

@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import { deleteVendor } from "../../../../Api/vendor-api";
 import { FaTrash, FaPen, FaEye } from "react-icons/fa";
 import VendorSummary from "./VendorSummary";
+import axiosInstance from "../../../../Service/Axios";
 
 // טיפוס עבור פרופס שמקבל הקומפוננטה
 type VendorsListProps = {
@@ -15,12 +16,9 @@ type VendorsListProps = {
 
 // פונקציה לשליפת רשימת ספקים מהשרת
 async function fetchVendors(): Promise<Vendor[]> {
-  const response = await fetch("http://localhost:3001/vendor/", {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-  if (!response.ok) throw new Error("שגיאה בשליפת ספקים");
-  return response.json();
+  const response = axiosInstance.get("/vendor/");
+  if (!response) throw new Error("שגיאה בשליפת ספקים");
+  return (await response).data;
 }
 // קומפוננטת רשימת ספקים
 export default function VendorsList({ vendors, setVendors }: VendorsListProps) {

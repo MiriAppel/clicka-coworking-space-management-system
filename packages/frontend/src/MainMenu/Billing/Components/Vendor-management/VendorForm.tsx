@@ -12,6 +12,7 @@ import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { PaymentMethod } from "shared-types";
 import { Vendor, VendorCategory } from "shared-types";
+import axiosInstance from "../../../../Service/Axios";
 
 // טיפוס פרופס: מערך ספקים ופונקציית עדכון שלהם
 type VendorFormProps = {
@@ -114,15 +115,11 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
         alert("הספק עודכן בהצלחה");
       } else {
         // יצירת ספק חדש
-        const response = await fetch("http://localhost:3001/vendor/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formattedData), // כאן אנחנו משתמשים במשתנה שהגדרנו
-        });
+        const response = axiosInstance.post("/vendor/");
 
-        if (!response.ok) throw new Error("שגיאה בהוספת ספק");
+        if (!response) throw new Error("שגיאה בהוספת ספק");
 
-        const newVendor = await response.json();
+        const newVendor = (await response).data;
         setVendors([...vendors, newVendor]);
         alert("הספק נוסף בהצלחה");
       }

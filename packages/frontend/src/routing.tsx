@@ -68,7 +68,7 @@ export const Routing = () => {
         <Route path="assignmentForm" element={<AssignmentForm />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
         <Route path="payment" element={<PaymentForm />} />
-        <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
+        <Route path="vendor" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
