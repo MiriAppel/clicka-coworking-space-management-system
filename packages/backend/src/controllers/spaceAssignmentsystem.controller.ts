@@ -1,4 +1,4 @@
-import { SpaceAssignmentModel } from "../models/spaceAssignment.model";
+import { SpaceAssignmentModel } from "../models/spaceAssingment.model";
 import { SpaceAssignmentService } from "../services/spaceAssignmentsystem.service";
 import { Request, Response } from "express";
 

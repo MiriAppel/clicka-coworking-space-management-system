@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { RoomModel } from "../models/room.model";
 import { SpaceStatus, type DateRangeFilter, type ID, type OccupancyReportResponse, type Space } from "shared-types";
 import dotenv from 'dotenv';
-import { SpaceAssignmentModel } from '../models/spaceAssignment.model';
+import { SpaceAssignmentModel } from '../models/spaceAssingment.model';
 dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';

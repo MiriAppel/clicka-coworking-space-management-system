@@ -155,7 +155,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       },
       mode: "onSubmit",
       resolver: zodResolver(bookingSchema),
-      resolver: zodResolver(bookingSchema),
     });
 
     const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail} = useBookingStore();
@@ -297,8 +296,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       const name = data.name?.trim() || "";
       const startTime = `${data.startDate}T${data.startTime}`;
       const endTime = `${data.startDate}T${data.endTime}`;
-      const startTime = `${data.startDate}T${data.startTime}`;
-      const endTime = `${data.startDate}T${data.endTime}`;
       const selectedRoom = roomOptions.find((room) => room.value === data.selectedRoomId);
       const roomName = selectedRoom?.label ?? "Unknown";
 
@@ -318,7 +315,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         status: BookingStatus.PENDING,
         notes: "",
         googleCalendarEventId: null,
-        totalHours: totalMinutes,
         totalHours: totalMinutes,
         chargeableHours: 0,
         totalCharge: 0,

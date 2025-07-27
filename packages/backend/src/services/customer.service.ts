@@ -97,7 +97,7 @@ export class customerService extends baseService<CustomerModel> {
       idNumber: newCustomer.idNumber,
       businessName: newCustomer.businessName,
       businessType: newCustomer.businessType,
-      status: CustomerStatus.CREATED,
+      status: CustomerStatus.PENDING,
       currentWorkspaceType: newCustomer.currentWorkspaceType,
       workspaceCount: newCustomer.workspaceCount,
       contractSignDate: newCustomer.contractSignDate,
@@ -479,7 +479,7 @@ export class customerService extends baseService<CustomerModel> {
       NOTICE_GIVEN: "הודעת עזיבה",
       EXITED: "עזב",
       PENDING: "בהמתנה",
-      CREATED: "נוצר"
+      // CREATED: "נוצר"
     };
 
     const effectiveDate = new Date(detailsForChangeStatus.effectiveDate);

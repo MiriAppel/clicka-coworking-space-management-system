@@ -3,15 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { json, urlencoded } from 'express';
-
-
 import routerCustomer from './routes/customer.route';
 import routerContract from './routes/contract.route';
 import routerLead from './routes/lead.route';
 import routerPricing from './routes/pricing.route';
 import expenseRouter from './routes/expense.route';
 import routerPayment from './routes/payment.route';
-
 import interactionRouter from './routes/leadInteraction.route';
 import routerAuth from './routes/auth';;
 import cookieParser from 'cookie-parser';
@@ -22,15 +19,20 @@ import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
 import routerMap from './routes/workspaceMap.route';
-import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
 import emailTemplateRouter from './routes/emailTemplate.route';
-import bookRouter from './routes/booking.route';
 import { globalAuditMiddleware } from './middlewares/globalAudit.middleware';
 import userRouter from './routes/user.route';
 import router from './routes';
+import dotenv from 'dotenv';
+import translationRouter from './routes/translation.route';
+import auditLogRouter from './routes/auditLog.route';
+import driveRoutes from './routes/drive-route';
+import paymentRoutes from './routes/payment.route';
+import invoiceRouter from './routes/invoice.route';
+import documentRouter from './routes/document.routes';
 
 // import routerMap from './routes/mapLayout.route';
 import routerLayout from './routes/mapLayout.route';

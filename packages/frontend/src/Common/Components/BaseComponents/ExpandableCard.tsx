@@ -62,14 +62,6 @@ const statusLabels: Record<CustomerStatus, string> = {
   CREATED: "נוצר"
 };
 
-<<<<<<< HEAD
-// const workspaceTypeLabels: Record<WorkspaceType, string> = {
-//   PRIVATE_ROOM: "חדר פרטי",
-//   DESK_IN_ROOM: "שולחן בחדר",
-//   OPEN_SPACE: "אופן ספייס",
-//   KLIKAH_CARD: "כרטיס קליקה",
-// };
-=======
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
   PRIVATE_ROOM: "חדר פרטי",
   DESK_IN_ROOM: "שולחן בחדר",
@@ -82,7 +74,6 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   BASE:"בסיס"
 
 };
->>>>>>> origin/main
 
 const paymentMethodLabels: Record<PaymentMethodType, string> = {
   CREDIT_CARD: "כרטיס אשראי",

@@ -7,11 +7,13 @@ import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
+import { useRoomStore } from '../../../Stores/Workspace/roomStore';
 
 
 export const WorkspaceMap = () => {
 
     const { workSpaces, rooms, getAllWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
+    const {getAllRooms}=useRoomStore();
     const uniqueStatus = Object.values(SpaceStatus);
     const uniqueType = Object.values(WorkspaceType);
     const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");

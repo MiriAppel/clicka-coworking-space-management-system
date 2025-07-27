@@ -33,15 +33,9 @@ export const LoginWithGoogle = () => {
                 setUser(response.data.user);
                 setSessionId(response.data.sessionId!)
                 // Optionally, you can handle the token and expiration here
-<<<<<<< HEAD
-            } catch (error: any) {
-                if (axios.isAxiosError(error) && error.response?.status === 401) {
-                    showAlert("", "המשתמש לא מורשה לגשת למשאב זה", "error");
-=======
             } catch (error:any) {
                  if (axios.isAxiosError(error) && error.response?.status === 401){
                     alert('You are not authorized to access this resource.');
->>>>>>> origin/main
                     return;
                  }
                  if(axios.isAxiosError(error)){
@@ -53,16 +47,7 @@ export const LoginWithGoogle = () => {
         onError: (error) => console.error('Login Failed:', error),
         scope: googleAuthConfig.scopes.join(' '),
         redirect_uri: googleAuthConfig.redirectUri,
-<<<<<<< HEAD
-        extraQueryParams: {
-            prompt: 'consent',
-            access_type: 'offline',
-             include_granted_scopes: 'false',
-        }
-    } as any);
-=======
     });
->>>>>>> origin/main
 
     return (
         <button onClick={() => login()}> Google התחבר עם </button>

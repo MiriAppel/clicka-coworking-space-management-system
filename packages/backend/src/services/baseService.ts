@@ -29,14 +29,9 @@ export class baseService<T> {
     // console.log("🧾 טבלה:", this.tableName);
 
     const { data, error } = await supabase
-<<<<<<< HEAD
     .from(this.tableName)
     // .select("*, lead_interaction(*)")
     .select("*");
-=======
-      .from(this.tableName)
-      .select("*, lead_interaction(*)");
->>>>>>> origin/main
 
     console.log(data);
 
