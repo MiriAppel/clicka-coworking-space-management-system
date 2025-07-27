@@ -1,28 +1,37 @@
+// LeadInteractions.tsx
 import { useEffect, useRef, useState } from "react";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { LeadInteractionDetails } from "./leadInteractionDetails";
 import { SearchLeads } from "../Leads/SearchLeads";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from "react-router-dom";
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  ChevronDown,
+  ChevronUp,
+  Mail,
+  Phone,
+  Building2,
+  Calendar,
+  FileText,
+  ScrollText,
+} from "lucide-react";
 
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 
 export const LeadInteractions = () => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const navigate = useNavigate();
-
   const [alertCriterion, setAlertCriterion] = useState<AlertCriterion>("noRecentInteraction");
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
-  const [status, setStatus] = useState("");//הוספה
   const allLeadsRef = useRef<Lead[]>([]);
+  const navigate = useNavigate();
+
   const {
     leads,
     fetchLeads,
@@ -34,9 +43,7 @@ export const LeadInteractions = () => {
 
   const handleRegistration = (lead: Lead | undefined) => {
     if (lead) {
-      navigate("interestedCustomerRegistration", {
-        state: { data: lead },
-      });
+      navigate("interestedCustomerRegistration", { state: { data: lead } });
     }
   };
 
@@ -44,63 +51,47 @@ export const LeadInteractions = () => {
     fetchLeads().then(() => {
       allLeadsRef.current = useLeadsStore.getState().leads;
     });
-  }, [page]);
+  }, [page,fetchLeads]);
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !isSearching) {
-        setPage((prevPage) => prevPage + 1);
+        setPage((prev) => prev + 1);
       }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isSearching]);
 
-const handleSearch = (term: string, status: string = "") => {
-  setSearchTerm(term);
-  setStatus(status);
-  setPage(1);
-
-  // אין טקסט ואין סטטוס => החזר הכל
-  if (!term.trim() && !status.trim()) {
-    setIsSearching(false);
-    useLeadsStore.setState({ leads: allLeadsRef.current });
-    return;
-  }
-
-  // ✅ אם כל הלידים טעונים (לא פונים לשרת בכלל)
-  if (allLeadsRef.current.length > 0) {
-    const filtered = allLeadsRef.current.filter((l) => {
-      const matchesTerm =
-        !term.trim() ||
-        l.name?.toLowerCase().includes(term.toLowerCase()) ||
-        l.phone?.includes(term) ||
-        l.email?.toLowerCase().includes(term.toLowerCase());
-
-      const matchesStatus = !status.trim() ||
-        l.status?.toLowerCase().trim() === status.toLowerCase().trim();
-
-      return matchesTerm && matchesStatus;
-    });
-
-    setIsSearching(true);
-    useLeadsStore.setState({ leads: filtered });
-    return;
-  }
-
-  // ✅ אם אין את כל הלידים טעונים => fallback לשרת
-  fetch(`http://localhost:3001/api/leads/search?q=${term}&status=${status}`)
-    .then((res) => res.json())
-    .then((data: Lead[]) => {
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setPage(1);
+    if (!term.trim()) {
+      setIsSearching(false);
+      useLeadsStore.setState({ leads: allLeadsRef.current });
+      return;
+    }
+    const filtered = allLeadsRef.current.filter((l) =>
+      l.name?.toLowerCase().includes(term.toLowerCase()) ||
+      l.phone?.includes(term) ||
+      l.email?.toLowerCase().includes(term.toLowerCase())
+    );
+    if (filtered.length > 0) {
       setIsSearching(true);
-      useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
-    })
-    .catch((err) => {
-      console.error("שגיאה בחיפוש מהשרת:", err);
-      useLeadsStore.setState({ leads: [] });
-    });
-};
-
+      useLeadsStore.setState({ leads: filtered });
+    } else {
+      fetch(`http://localhost:3001/api/leads/search?q=${term}`)
+        .then((res) => res.json())
+        .then((data: Lead[]) => {
+          setIsSearching(true);
+          useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
+        })
+        .catch((err) => {
+          console.error("שגיאה בחיפוש מהשרת:", err);
+          useLeadsStore.setState({ leads: [] });
+        });
+    }
+  };
 
   const isAlert = (lead: Lead): boolean => {
     switch (alertCriterion) {
@@ -145,32 +136,15 @@ const handleSearch = (term: string, status: string = "") => {
     if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
-  console.log("Sorted Leads:", sortedLeads); // לוג של הלידים הממוינים
 
   return (
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
-      <SearchLeads
-        term={searchTerm}
-        setTerm={setSearchTerm}
-        status={status}        // ✅ הוספה
-        setStatus={setStatus}  // ✅ הוספה
-        onSearch={handleSearch}
-      />
+
+      <SearchLeads term={searchTerm} setTerm={setSearchTerm} onSearch={handleSearch} />
 
       <div className="flex flex-wrap justify-center gap-4 mb-6 mt-4">
-
-        <div className="relative flex flex-col items-start">
-          <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
-          <Button
-            onClick={() => navigate("interestedCustomerRegistration")}
-            variant="primary"
-            size="sm"
-          >
-            הוספת מתעניין חדש
-          </Button>
-        </div>
-        <div className="relative flex flex-col items-start">
+        <div className="flex flex-col items-start">
           <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
           <select
             value={sortField}
@@ -190,13 +164,13 @@ const handleSearch = (term: string, status: string = "") => {
             onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
             className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl shadow transition"
           >
-            {sortOrder === "asc" ? ":arrow_up: עולה" : ":arrow_down: יורד"}
+            {sortOrder === "asc" ? "⬆️ עולה" : "⬇️ יורד"}
             <span className="hidden sm:inline">
               ({sortOrder === "asc" ? "מהקטן לגדול" : "מהגדול לקטן"})
             </span>
           </button>
         </div>
-        <div className="relative flex flex-col items-start">
+        <div className="flex flex-col items-start">
           <label className="mb-1 text-sm font-medium text-gray-700">קריטריון התרעה:</label>
           <select
             value={alertCriterion}
@@ -208,86 +182,123 @@ const handleSearch = (term: string, status: string = "") => {
             <option value="oldLead">ליד ישן (לפני 6 חודשים)</option>
           </select>
         </div>
-      </div>
-      {sortedLeads.map((lead) => (
-        <div
-          key={lead.id}
-          className={`border rounded-lg p-4 mb-2 cursor-pointer transition ${selectedLead?.id === lead.id
-              ? "bg-blue-100 border-blue-300"
-              : isAlert(lead)
-                ? "border-red-500 bg-red-50"
-                : "hover:bg-gray-50"
-            }`}
-          onClick={() => {
-            if (selectedLead?.id === lead.id) {
-              resetSelectedLead();
-            } else {
-              handleSelectLead(lead.id!);
-            }
-          }}
+        <Button
+          onClick={() => navigate("interestedCustomerRegistration")}
+          variant="primary"
+          size="sm"
         >
-          <div className="flex flex-col gap-2">
-            <div>
-              <div className="font-semibold text-lg">{lead.name}</div>
-              <div className="text-sm text-gray-600">סטטוס: {lead.status}</div>
-              <div className="text-sm text-gray-600">מייל: {lead.email}</div>
-              <div className="text-sm text-gray-600">פלאפון: {lead.phone}</div>
-              <div className="text-sm text-gray-600">מקור : {lead.source}</div>
+          הוספת מתעניין חדש
+        </Button>
+      </div>
 
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (lead.id) {
-                      handleDeleteLead(lead.id);
-                    } else {
-                      console.error("ID של המתעניין אינו קיים");
-                    }
-                  }}
-                  className="text-red-500 hover:text-red-700 ml-4"
-                  aria-label="מחק מתעניין"
-                >
-                  <FontAwesomeIcon icon={faTrash} className="text-sm" />
-                </button>
-                <Button
-                  onClick={() => handleRegistration(leads.find((l) => l.id === lead.id))}
-                  variant="primary"
-                  size="sm"
-                >
-                  לטופס רישום
-                </Button>
-              </div>
-            </div>
-            {selectedLead !== null && selectedLead.id === lead.id && (
-              <LeadInteractionDetails />
-            )}
-          </div>
-
-        </div>
-
+      {sortedLeads.map((lead) => (
+        <LeadCard
+          key={lead.id}
+          lead={lead}
+          isSelected={selectedLead?.id === lead.id}
+          isAlert={isAlert(lead)}
+          onClick={() => {
+            if (selectedLead?.id === lead.id) resetSelectedLead();
+            else handleSelectLead(lead.id!);
+          }}
+          onDelete={() => handleDeleteLead(lead.id!)}
+          onRegister={() => handleRegistration(lead)}
+          children={
+            selectedLead?.id === lead.id && <LeadInteractionDetails />
+          }
+        />
       ))}
+
       <Button
         onClick={() => navigate("/leadAndCustomer/leads/LeadSourcesPieChart")}
         variant="primary"
         size="sm"
         style={{
-          backgroundColor: 'orange', // צבע כתום
-          color: 'white', // טקסט לבן
-          border: 'none', // ללא גבול
-          borderRadius: '8px', // פינות מעוגלות
-          padding: '10px 20px', // ריפוד
-          fontSize: '1em', // גודל טקסט
-          cursor: 'pointer', // מצביע על יד
-          display: 'block', // כדי למרכז
-          margin: '0 auto', // למרכז
+          backgroundColor: "orange",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          padding: "10px 20px",
+          fontSize: "1em",
+          cursor: "pointer",
+          display: "block",
+          margin: "0 auto",
         }}
       >
         הצג את מקורות הלידים
       </Button>
+    </div>
+  );
+};
 
+// LeadCard Component (עיצוב בלבד)
+const LeadCard = ({
+  lead,
+  isSelected,
+  isAlert,
+  onClick,
+  onDelete,
+  onRegister,
+  children,
+}: {
+  lead: Lead;
+  isSelected: boolean;
+  isAlert: boolean;
+  onClick: () => void;
+  onDelete: () => void;
+  onRegister: () => void;
+  children?: React.ReactNode;
+}) => {
+  const [open, setOpen] = useState(false);
+  const initials = lead.name?.charAt(0).toUpperCase() || "?";
 
+  return (
+    <div
+      className={`rounded-xl border shadow p-5 mb-4 bg-white transition-all duration-300 cursor-pointer ${
+        isSelected ? "bg-blue-100 border-blue-300" : isAlert ? "border-red-500 bg-red-50" : ""
+      }`}
+      onClick={() => {
+        setOpen(!open);
+        onClick();
+      }}
+    >
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 flex items-center justify-center rounded-full font-bold bg-blue-200 text-blue-800">
+            {initials}
+          </div>
+          <div className="text-xl font-bold text-gray-900">{lead.name}</div>
+          <div className="text-sm text-gray-500">{lead.status}</div>
+        </div>
+        {open ? <ChevronUp /> : <ChevronDown />}
+      </div>
+
+      {open && (
+        <div className="mt-4 space-y-2 text-sm text-gray-700">
+          <div className="flex gap-2 items-center"><Phone size={16} /> {lead.phone}</div>
+          <div className="flex gap-2 items-center"><Mail size={16} /> {lead.email}</div>
+          <div className="flex gap-2 items-center"><Building2 size={16} /> מקור: {lead.source}</div>
+          <div className="flex gap-2 items-center"><Calendar size={16} /> נוצר ב: {new Date(lead.createdAt || 0).toLocaleDateString()}</div>
+          <div className="flex gap-2 items-center"><FileText size={16} /> סטטוס: {lead.status}</div>
+          <div className="flex gap-2 items-center"><ScrollText size={16} /> מזהה: {lead.id}</div>
+          <div className="flex gap-4 mt-2">
+            <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); onRegister(); }}>
+              לטופס רישום
+            </Button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="text-red-600 hover:text-red-800 text-sm"
+            >
+              <FontAwesomeIcon icon={faTrash} className="mr-1" />
+              מחק
+            </button>
+          </div>
+          {children}
+        </div>
+      )}
     </div>
   );
 };

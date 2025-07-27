@@ -23,7 +23,7 @@ export const Default: Story = {
     const methods = useForm(); // יצירת useForm כאן
     return (
       <FormProvider {...methods}>  {/* מקיף את הקומפוננטה ב־FormProvider */}
-        <InputField {...args} />  {/* שולח את ה־props (כולל שם השדה, תווית וכו') */}
+        <InputField name={''} label={''} {...args} />  {/* שולח את ה־props (כולל שם השדה, תווית וכו') */}
       </FormProvider>
     );
   },

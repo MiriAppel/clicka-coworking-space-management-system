@@ -1,120 +1,181 @@
-import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Expense, Vendor } from 'shared-types';
-import { Button } from '../../../../Common/Components/BaseComponents/Button';
-import { Table } from '../../../../Common/Components/BaseComponents/Table';
-//import VendorDocuments from './VendorDocuments';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm, FormProvider } from "react-hook-form";
+import { Table } from "../../../../Common/Components/BaseComponents/Table";
+import { useVendorsStore } from "../../../../Stores/Billing/vendorsStore";
+import { Vendor, DocumentType } from "shared-types";
+import FileUploader, { FileItem } from '../../../../Common/Components/BaseComponents/FileUploader/FileUploader';
+import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
 
-// טיפוס הפרופס - מערך ספקים ופונקציה לעדכון
+// טיפוס לפרופס של הקומפוננטה - כולל אפשרות ל-folderId אם יש
 type VendorSummaryProps = {
-  vendors: Vendor[];
-  setVendors: React.Dispatch<React.SetStateAction<Vendor[]>>;
+  vendor: Vendor & { folderId?: string };
 };
 
-export default function VendorSummary({ vendors, setVendors }: VendorSummaryProps) {
-  const { id } = useParams();
-  const navigate = useNavigate();
+// טיפוס לפרופס של קומפוננטת יצירת הנתיב - כולל שם הספק ל
+export interface FileUploaderProps {
+  onFilesUploaded?: (files: FileItem[]) => void;
+  onPathReady: (path: string) => void;
+  vendorName: string;            
+  documentCategory: string;
+}
 
-  // ה-Hooks חייבים להיקרא תמיד - לכן הם תמיד בראש הפונקציה
-const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [summary, setSummary] = useState<null | {
-    totalExpenses: number;
-    expenseCount: number;
-    lastExpenseDate: string | null;
-    averageExpense: number;
-    onTimePayments: number;
-    latePayments: number;
-    averagePaymentDays: number;
-  }>(null);
-
-  // חיפוש ספק לפי מזהה
-  const vendor = vendors.find((v) => v.id === id);
-
-  // קריאת הוצאות מהשרת
+// קומפוננטה שיוצרת את נתיב התיקייה לפי שם הספק וקטגוריית המסמך
+export const FolderPathGenerator: React.FC<FileUploaderProps> = ({ vendorName, documentCategory, onPathReady }) => {
   useEffect(() => {
-    async function fetchExpenses() {
-      if (!id) return;
-      try {
-        const res = await fetch(`http://localhost:3001/expense/getExpensesByVendorId/${id}`);
-        const data = await res.json();
-         console.log('הוצאות מהשרת:', data);  
-        setExpenses(data);
-      } catch (err) {
-        console.error(err);
-      }
+    // אם יש שם ספק וקטגוריה, יוצרים נתיב בתבנית "ספקים/שם הספק/קטגוריה"
+    if (vendorName && documentCategory) {
+      const path = `ספקים/${vendorName}/${documentCategory}`;
+      onPathReady(path); // מעדכנים את הנתיב בקומפוננטה ההורה
     }
+  }, [vendorName, documentCategory, onPathReady]);
 
-    fetchExpenses();
-  }, [id]);
+  return null; // אין ממשק חזותי - כל העבודה היא פנימית בלבד
+};
 
-  // אם לא נמצא ספק - מחזירים הודעה מוקדם, אבל רק אחרי שכל ה-Hooks קראו
-  if (!vendor) return <div>לא נמצא ספק</div>;
+export default function VendorSummary({ vendor }: VendorSummaryProps) {
+  const navigate = useNavigate();
+  const { fetchExpensesByVendorId, expenses, deleteVendor } = useVendorsStore();
 
-  const vendorExpenses = expenses.filter((e) => e.vendor_id === vendor?.id);
-  console.log('vendorExpenses:', vendorExpenses);
+  // סטייט לשמירת קטגוריית הקובץ שנבחרה
+  const [fileCategory, setFileCategory] = useState("חשבוניות ספקים");
+  // סטייט לשמירת נתיב התיקייה שנוצר
+  const [folderPath, setFolderPath] = useState("");
+
+  // יצירת instance של react-hook-form לניהול הטופס
+  const methods = useForm({
+    defaultValues: {
+      documentType: DocumentType.INVOICE, // ברירת מחדל לסוג המסמך
+    }
+  });
+
+  // טוען הוצאות של הספק לפי ה-ID שלו בכל שינוי של ה-ID
+  useEffect(() => {
+    fetchExpensesByVendorId(vendor.id);
+  }, [vendor.id, fetchExpensesByVendorId]);
+
+  // סינון ההוצאות רק של הספק הנוכחי
+  const vendorExpenses = expenses.filter((e) => e.vendor_id === vendor.id);
+
+  // חישובים סטטיסטיים על ההוצאות
   const expenseCount = vendorExpenses.length;
   const totalExpenses = vendorExpenses.reduce((sum, e) => sum + e.amount, 0);
-  console.log('expenseCount:', expenseCount, 'totalExpenses:', totalExpenses);
   const averageExpense = expenseCount > 0 ? parseFloat((totalExpenses / expenseCount).toFixed(2)) : 0;
-  const lastExpenseDate = expenseCount > 0 ? vendorExpenses[expenseCount - 1].date : '-';
+  const lastExpenseDate = expenseCount > 0 ? vendorExpenses[expenseCount - 1].date : "-";
 
-  const handleDeleteVendor = () => {
-    if (window.confirm('האם את בטוחה שברצונך למחוק את הספק?')) {
-      setVendors(vendors.filter((v) => v.id !== id));
-      navigate('/vendors');
+  // פונקציה למחיקת ספק עם אישור משתמש
+  const handleDeleteVendor = async () => {
+    if (window.confirm("האם למחוק את הספק?")) {
+      await deleteVendor(vendor.id);
+      navigate("/vendors"); // מעבירים את המשתמש לדף רשימת הספקים
     }
   };
 
+  // מאזין לשינויים בטופס - מעדכן את קטגוריית הקובץ לפי סוג המסמך שנבחר
+  useEffect(() => {
+    const subscription = methods.watch((value) => {
+      if (value.documentType) {
+        setFileCategory(value.documentType);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [methods]);
+
   return (
-    <div className="p-6 space-y-6" dir="rtl">
-      <h2 className="text-2xl font-bold text-center">פרטי ספק</h2>
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit((data) => {
+        console.log("Form submitted with data:", data);
+      })}>
+        <div className="p-4 border-t mt-4 text-sm">
+          {/* פרטי הספק */}
+          <div className="grid grid-cols-2 gap-4">
+            <div><strong>שם:</strong> {vendor.name}</div>
+            <div><strong>קטגוריה:</strong> {vendor.category}</div>
+            <div><strong>טלפון:</strong> {vendor.phone}</div>
+            <div><strong>אימייל:</strong> {vendor.email}</div>
+            <div><strong>כתובת:</strong> {vendor.address}</div>
+          </div>
 
-      <div className="flex justify-center gap-4 mb-6">
-        <Button variant="primary" onClick={() => navigate(`/vendors/${vendor.id}/edit`)}>
-          ערוך ספק
-        </Button>
-        <Button variant="accent" onClick={handleDeleteVendor}>
-          מחק ספק
-        </Button>
-      </div>
+          {/* בחירת סוג מסמך */}
+          <div className="mt-6">
+            <SelectField
+              name="documentType"
+              label="סוג מסמך"
+              options={[
+                { value: DocumentType.INVOICE, label: 'חשבונית' },
+                { value: DocumentType.RECEIPT, label: 'קבלה' },
+                { value: DocumentType.CREDIT_NOTE, label: 'זיכוי' },
+                { value: DocumentType.STATEMENT, label: 'דוח' },
+                { value: DocumentType.TAX_INVOICE, label: 'חשבונית מס' },
+              ]}
+            />
+          </div>
 
-      <div className="grid grid-cols-2 gap-4 max-w-xl mx-auto text-right">
-        <div><strong>שם:</strong> {vendor.name}</div>
-        <div><strong>קטגוריה:</strong> {vendor.category}</div>
-        <div><strong>טלפון:</strong> {vendor.phone}</div>
-        <div><strong>אימייל:</strong> {vendor.email}</div>
-        <div><strong>כתובת:</strong> {vendor.address}</div>
-      </div>
-
-      {/* קומפוננטת מסמכים של הספק */}
-      {/* <VendorDocuments /> */}
-
-      <div className="max-w-xl mx-auto mt-8 space-y-4">
-        <h3 className="text-xl font-semibold">סיכום הוצאות</h3>
-        <div><strong>סך הכל הוצאות:</strong> {totalExpenses} ₪</div>
-        <div><strong>מספר הוצאות:</strong> {expenseCount}</div>
-        <div><strong>ממוצע הוצאה:</strong> {averageExpense} ₪</div>
-        <div><strong>תאריך הוצאה אחרונה:</strong> {lastExpenseDate}</div>
-      </div>
-
-      {vendorExpenses.length > 0 && (
-        <div className="max-w-4xl mx-auto mt-6">
-          <h3 className="text-xl font-semibold mb-4">פירוט הוצאות</h3>
-          <Table
-            columns={[
-              { header: 'סכום', accessor: 'amount' },
-              { header: 'קטגוריה', accessor: 'category' },
-              { header: 'תיאור', accessor: 'description' },
-              { header: 'תאריך', accessor: 'date' },
-              { header: 'סטטוס', accessor: 'status' },
-            ]}
-            data={vendorExpenses}
-            dir="rtl"
+          {/* יצירת נתיב לפי שם הספק וקטגוריה שנבחרה */}
+          <FolderPathGenerator
+            vendorName={vendor.name || ""}       
+            documentCategory={fileCategory}
+            onPathReady={(path) => {
+              setFolderPath(path);     /* מעדכנים את נתיב התיקייה בסטייט */
+            }}
           />
+
+          {/* העלאת קבצים רק אם יש גם ספק וגם נתיב */}
+          {vendor && folderPath && (
+            <div className="mt-6">
+              <FileUploader
+                folderPath={folderPath}
+                onFilesUploaded={(files) => {
+                  console.log("קבצים הועלו:", files);
+                  // ניתן להוסיף כאן לוגיקה נוספת אחרי העלאת הקבצים
+                }}
+              />
+            </div>
+          )}
+
+          {/* סיכום הוצאות */}
+          <div className="mt-4 space-y-2">
+            <div><strong>סך הוצאות:</strong> {totalExpenses} ₪</div>
+            <div><strong>מספר הוצאות:</strong> {expenseCount}</div>
+            <div><strong>ממוצע הוצאה:</strong> {averageExpense} ₪</div>
+            <div><strong>תאריך הוצאה אחרונה:</strong> {lastExpenseDate}</div>
+          </div>
+
+          {/* טבלת הוצאות אם קיימת לפחות אחת */}
+          {vendorExpenses.length > 0 && (
+            <div className="mt-4">
+              <Table
+                columns={[
+                  { header: "סכום", accessor: "amount" },
+                  { header: "קטגוריה", accessor: "category" },
+                  { header: "תיאור", accessor: "description" },
+                  { header: "תאריך", accessor: "date" },
+                  { header: "סטטוס", accessor: "status" },
+                ]}
+                data={vendorExpenses}
+                dir="rtl"
+              />
+            </div>
+          )}
+
+          {/* כפתורים לשמירה ומחיקה */}
+          <div className="mt-6">
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              שמור
+            </button>
+            <button
+              type="button"
+              onClick={handleDeleteVendor}
+              className="ml-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              מחק ספק
+            </button>
+          </div>
         </div>
-      )}
-    </div>
+      </form>
+    </FormProvider>
   );
 }
-

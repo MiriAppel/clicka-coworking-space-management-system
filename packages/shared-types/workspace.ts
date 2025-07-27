@@ -20,13 +20,13 @@ export interface Space {
   type: WorkspaceType;
   status: SpaceStatus;
   workspaceMapId?: ID
-  // room?: string;
   currentCustomerId?: ID;
   currentCustomerName?: string;
   positionX: number;
   positionY: number;
   width: number;
   height: number;
+  location?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
 }

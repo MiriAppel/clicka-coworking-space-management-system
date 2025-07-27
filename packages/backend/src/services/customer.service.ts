@@ -14,7 +14,7 @@ import {
   StatusChangeRequest,
   UpdateCustomerRequest,
 } from "shared-types";
-import { supabase } from "../db/supabaseClient";
+import { supabase } from '../db/supabaseClient'
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
 import { ContractModel } from "../models/contract.model";
 import { contractService } from '../services/contract.service';
@@ -22,7 +22,7 @@ import { customerPaymentMethodModel } from "../models/customerPaymentMethod.mode
 import { serviceCustomerPaymentMethod } from "./customerPaymentMethod.service";
 import { EmailTemplateService } from "./emailTemplate.service";
 import { EmailTemplateModel } from "../models/emailTemplate.model";
-import { sendEmail } from "./gmail-service";
+import { encodeSubject, sendEmail } from "./gmail-service";
 import { log } from "node:console";
 import { changeCustomerStatus } from "../controllers/customer.controller";
 import { token } from "morgan";
@@ -398,7 +398,7 @@ export class customerService extends baseService<CustomerModel> {
   confirmEmail = async (email: string, id: ID) => {
 
     try{
-    const customerToUpdate = await this.getById(id);
+    const customerToUpdate: CustomerModel | null = await this.getById(id);
     customerToUpdate.email = email;
     customerToUpdate.status = CustomerStatus.ACTIVE;
   
@@ -417,6 +417,8 @@ export class customerService extends baseService<CustomerModel> {
     console.log('אימות הסתיים בהצלחה');
   } catch (error) {
     console.error('שגיאה באימות:', error);
+    throw error;
+
   }
     
 
@@ -501,7 +503,7 @@ export class customerService extends baseService<CustomerModel> {
           "me",
           {
             to: ["diversitech25clicka@gmail.com"],
-            subject: template.subject,
+            subject: encodeSubject(template.subject),
             body: renderedHtml,
             isHtml: true,
           },
@@ -551,7 +553,7 @@ export class customerService extends baseService<CustomerModel> {
         "me",
         {
           to: [customer.email ?? ""],
-          subject: template.subject,
+          subject: encodeSubject(template.subject),
           body: renderedHtml,
           isHtml: true,
         },
@@ -606,7 +608,7 @@ export class customerService extends baseService<CustomerModel> {
           "me",
           {
             to: [customer.email ?? ""],
-            subject: template.subject,
+            subject: encodeSubject(template.subject),
             body: renderedHtml,
             isHtml: true,
           },
@@ -661,9 +663,9 @@ const serviceCustomer = new customerService();
 
 //   const csvHeader = csvStringifier.getHeaderString();
 //   // const csvBody = csvStringifier.stringifyRecords(customerToExport);
-// const csvFull = csvHeader + csvBody;
+  // const csvFull = csvHeader + csvBody;
 
-// return Buffer.from(csvFull, "utf-8");
+  // return Buffer.from(csvFull, "utf-8");
 // };
 
 // לשאול את שולמית

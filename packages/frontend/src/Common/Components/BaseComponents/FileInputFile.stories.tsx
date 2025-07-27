@@ -24,7 +24,7 @@ export const Default: Story = {
     const methods = useForm();  // יצירת אובייקט useForm
     return (
       <FormProvider {...methods}> {/* עוטף את הקומפוננטה ב־FormProvider */}
-        <FileInputField {...args} />
+        <FileInputField name={''} label={''} {...args} />
       </FormProvider>
     );
   },

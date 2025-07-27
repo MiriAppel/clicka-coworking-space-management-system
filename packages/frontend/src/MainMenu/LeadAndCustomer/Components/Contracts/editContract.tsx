@@ -34,6 +34,7 @@ const workspaceTypeLabels = {
   WALL: "קיר",
   COMPUTER_STAND: "עמדת מחשב",
   RECEPTION_DESK: "דלפק קבלה",
+  BASE: "בסיס",
 } satisfies Record<WorkspaceType, string>;
 
 // סכימת אימות Zod
@@ -82,7 +83,7 @@ export const EditContract = () => {
       })
       .catch(() => showAlert("טעינת חוזה", "שגיאה בטעינת חוזה", "error"))
       .finally(() => setLoading(false));
-  }, [contractId, formMethods]);
+  }, [contractId, formMethods,fetchContractDetails]);
 
   // שליחה
   const handleSubmit = async (data: ContractFormData) => {

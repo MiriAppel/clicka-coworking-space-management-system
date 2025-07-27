@@ -5,11 +5,13 @@ import {
   serviceGetAllInvoiceItems,
   serviceGetInvoiceById,
   serviceUpdateInvoice,
-  serviceDeleteInvoice
+  serviceDeleteInvoice,
+  sendStatusChangeEmails
 } from "../services/invoice.service";
 import { BillingItem, ID } from "shared-types";
 import { InvoiceModel } from '../models/invoice.model';
 import { UUID } from 'crypto';
+import { UserTokenService } from '../services/userTokenService';
 
 /**
  * בקר ליצירת חשבונית ידנית
@@ -33,11 +35,11 @@ export async function createInvoice(req: Request, res: Response): Promise<void> 
   }
 }
 
+
+
 // /**
 //  * בקר לקבלת כל החשבוניות
 //  */
-
-
 export const getAllInvoices = async (_req: Request, res: Response) => {
   try {
     const invoices = await serviceGetAllInvoices();
@@ -50,28 +52,24 @@ export const getAllInvoices = async (_req: Request, res: Response) => {
     res.status(500).json({ message: (error as Error).message });
   }
 };
-
-
 //  * בקר לקבלת כל פרטי החשבוניות
 //  */
-
-
 export const getAllInvoiceItems = async (req: Request, res: Response) => {
+  console.log('=== getAllInvoiceItems CALLED ===*****');
+  console.log('Full URL:', req.url);
   try {
     const invoiceId = req.params.invoice_id as UUID;
     const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
+    //const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
     res.status(200).json({
       message: `נמצאו ${invoiceItems.length} חשבוניות`,
       invoiceItems
     });
   } catch (error) {
+    console.error(' CONTROLLER: שגיאה:', error);
     res.status(500).json({ message: (error as Error).message });
   }
 };
-
-
-
-
 
 /**
  * בקר לקבלת חשבונית לפי מזהה
@@ -83,10 +81,12 @@ export const getInvoiceById = async (req: Request, res: Response): Promise<void>
   try {
     const id = req.params.id as ID;
     const invoice = await serviceGetInvoiceById(id);
+
     if (!invoice) {
       res.status(404).json({ message: "חשבונית לא נמצאה" });
       return;
     }
+
     res.status(200).json(invoice);
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
@@ -117,8 +117,26 @@ export const updateInvoice = async (req: Request, res: Response): Promise<void> 
   }
 };
 
+// export const updateInvoice = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const id = req.params.id as ID;
+//     const updateData = req.body;
 
+//     const updatedInvoice = await serviceUpdateInvoice(id, updateData);
 
+//     if (!updatedInvoice) {
+//       res.status(404).json({ message: "חשבונית לא נמצאה" });
+//       return; 
+//     }
+
+//     res.status(200).json({
+//       message: "חשבונית עודכנה בהצלחה",
+//       invoice: updatedInvoice
+//     });
+//   } catch (error) {
+//     res.status(400).json({ message: (error as Error).message });
+//   }
+// };
 
 
 /**
@@ -126,8 +144,8 @@ export const updateInvoice = async (req: Request, res: Response): Promise<void> 
  */
 export const deleteInvoice = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id = req.params.id as string;
-    const isDeleted = await serviceDeleteInvoice(id);
+    const number = req.params.invoice_number as string;
+    const isDeleted = await serviceDeleteInvoice(number);
 
     if (!isDeleted) {
       res.status(404).json({ message: "חשבונית לא נמצאה" });
@@ -138,3 +156,37 @@ export const deleteInvoice = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ message: (error as Error).message });
   }
 };
+export const sendEmail = async (req: Request, res: Response) => {
+  try {
+    console.log("sendEmail called with params:", req.params);
+    const userTokenService = new UserTokenService();
+
+    const customerName = req.body.customerName;
+    const amount = req.body.amount;
+    const invoiceNumber = req.body.invoiceNumber;
+
+    const token = await userTokenService.getSystemAccessToken();
+    console.log("sendEmail called with token:", token);
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing access token" });
+    }
+
+    if (!customerName || !amount || !invoiceNumber) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    await sendStatusChangeEmails(customerName, amount, invoiceNumber, token);
+
+    res
+      .status(200)
+      .json({ message: "Status change processed and emails sent." });
+  } catch (error) {
+    console.error("Error in sendEmail:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// פונקציה לדוגמה למחיקת חשבונית (בהתבסס על הקוד שנתת)

@@ -4,17 +4,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-import { useTheme } from '../../../../Common/Components/themeConfig';
-
+// import { useTheme } from '../../../../Common/Components/themeConfig';
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph';
 import { ExportButtons } from '../../../../Common/Components/BaseComponents/ExportButtons';
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
-
 import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1';
 import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types';
 
@@ -72,65 +69,67 @@ export const FinancialReportsDashboard: React.FC = () => {
       customerIds: [],
     },
   });
-  const { theme } = useTheme();  // גישה לנושא הצבעים
+  // const { theme } = useTheme();  // גישה לנושא הצבעים
 
   const fetchReport = useFinancialReportsStore((s) => s.fetchReport);
   const reportData = useFinancialReportsStore((s) => s.reportData);
   const loading = useFinancialReportsStore((s) => s.loading);
   const error = useFinancialReportsStore((s) => s.error);
-const [loadingReport, setLoadingReport] = useState(false);
+  const [loadingReport, setLoadingReport] = useState(false);
   const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE);
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'pie' | 'line'>('bar');
   const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]);
   const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
   const exportContentRef = useRef<HTMLDivElement>(null);
-// תרגום שמות עמודות בטבלה בלבד — לא משפיע על הגרף
-const columnTranslations: Record<string, string> = {
-  // RevenueReportData.breakdown
-  date: 'תאריך',
-  totalRevenue: 'סה״כ הכנסות',
-  membershipRevenue: 'הכנסות ממנויים',
-  meetingRoomRevenue: 'הכנסות מחדרי ישיבות',
-  loungeRevenue: 'הכנסות מטרקלין',
-  otherRevenue: 'הכנסות נוספות',
+  const [formError, setFormError] = useState<string | null>(null);
 
-  // ExpenseReportData.monthlyTrend
-  month: 'חודש',
-  totalExpenses: 'סה״כ הוצאות',
-  'קטגוריה 1': 'קטגוריה 1',
-  'סכום 1': 'סכום 1',
-  'קטגוריה 2': 'קטגוריה 2',
-  'סכום 2': 'סכום 2',
-  'קטגוריה 3': 'קטגוריה 3',
-  'סכום 3': 'סכום 3',
+  // תרגום שמות עמודות בטבלה בלבד — לא משפיע על הגרף
+  const columnTranslations: Record<string, string> = {
+    // RevenueReportData.breakdown
+    date: 'תאריך',
+    totalRevenue: 'סה״כ הכנסות',
+    membershipRevenue: 'הכנסות ממנויים',
+    meetingRoomRevenue: 'הכנסות מחדרי ישיבות',
+    loungeRevenue: 'הכנסות מטרקלין',
+    otherRevenue: 'הכנסות נוספות',
 
-  // ProfitLossReportData.breakdown
-  revenue: 'הכנסות',
-  expenses: 'הוצאות',
-  profit: 'רווח',
+    // ExpenseReportData.monthlyTrend
+    month: 'חודש',
+    totalExpenses: 'סה״כ הוצאות',
+    'קטגוריה 1': 'קטגוריה 1',
+    'סכום 1': 'סכום 1',
+    'קטגוריה 2': 'קטגוריה 2',
+    'סכום 2': 'סכום 2',
+    'קטגוריה 3': 'קטגוריה 3',
+    'סכום 3': 'סכום 3',
 
-  // CashFlowReportData.breakdown
-  totalPayments: 'סה״כ תשלומים',
+    // ProfitLossReportData.breakdown
+    revenue: 'הכנסות',
+    expenses: 'הוצאות',
+    profit: 'רווח',
 
-  // // OccupancyRevenueReportData.occupancyData
-  // totalSpaces: 'סה״כ מקומות',
-  // occupiedSpaces: 'מקומות תפוסים',
-  // openSpaceCount: 'עמדות Open Space',
-  // deskInRoomCount: 'שולחנות בחדרים',
-  // privateRoomCount: 'חדרים פרטיים',
-  // roomForThreeCount: 'חדר לשלושה',
-  // klikahCardCount: 'חברות קליקה',
-  // occupancyRate: 'אחוז תפוסה',
-  // revenue: 'הכנסה מתפוסה',
+    // CashFlowReportData.breakdown
+    totalPayments: 'סה״כ תשלומים',
 
-  // מידע כללי
-  name: 'שם',
-  percentOfTotal: 'אחוז מהסך הכולל',
-};
+    // OccupancyRevenueReportData.occupancyData
+    // totalSpaces: 'סה״כ מקומות',
+    // occupiedSpaces: 'מקומות תפוסים',
+    // openSpaceCount: 'עמדות Open Space',
+    // deskInRoomCount: 'שולחנות בחדרים',
+    // privateRoomCount: 'חדרים פרטיים',
+    // roomForThreeCount: 'חדר לשלושה',
+    // klikahCardCount: 'חברות קליקה',
+    // occupancyRate: 'אחוז תפוסה',
+    // revenue: 'הכנסה מתפוסה',
+
+    // מידע כללי
+    name: 'שם',
+    percentOfTotal: 'אחוז מהסך הכולל',
+  };
   const [color, setColor] = useState("#3498db"); // צבע התחלתי
 
   useEffect(() => {
-        const interval = setInterval(() => {
+    const interval = setInterval(() => {
       setColor(prevColor => prevColor === "#3498db" ? "#e7ae3cff" : "#3498db");
     }, 1000);
 
@@ -138,12 +137,12 @@ const columnTranslations: Record<string, string> = {
     async function fetchEntities() {
       try {
         const [customerRes, vendorRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/customers', { withCredentials: true }),
+          axios.get('http://localhost:3001/api/customers/page?page=1&limit=10000', { withCredentials: true }),
           axios.get('http://localhost:3001/vendor', { withCredentials: true }),
         ]);
         setCustomers(customerRes.data || []);
         setVendors(vendorRes.data || []);
-      } catch {}
+      } catch { }
     }
     fetchEntities();
     return () => clearInterval(interval);  // חשוב לנקות את ה-interval אחרי השימוש
@@ -151,13 +150,21 @@ const columnTranslations: Record<string, string> = {
   }, []);
 
   const onSubmit = async (data: ExtendedReportParameters) => {
-      setLoadingReport(true); 
+    const { startDate, endDate } = data.dateRange || {};
+    const { groupBy } = data;
+
+    if (!startDate || !endDate || !groupBy) {
+      setFormError('יש למלא טווח תאריכים וקיבוץ לפי לפני יצירת הדוח');
+      return;
+    }
+    setFormError(null); // איפוס הודעת שגיאה אם הכל תקין
+    setLoadingReport(true);
     const transformed = {
       ...data,
       vendorId: selectedType === ReportType.EXPENSES ? data.customerIds?.[0] : undefined,
     };
     await fetchReport(selectedType, transformed);
-      setLoadingReport(false);
+    setLoadingReport(false);
   };
 
   const getChartData = () => {
@@ -167,9 +174,9 @@ const columnTranslations: Record<string, string> = {
       case ReportType.EXPENSES:
         return reportData?.expenseData?.monthlyTrend?.map((i) => ({ label: i.month, value: i.totalExpenses })) || [];
       case ReportType.PROFIT_LOSS:
-       return reportData?.profitLossData?.breakdown?.map((i) => ({ label: i.date, value: i.profit })) || [];
-     case ReportType.CASH_FLOW:
-       return reportData?.cashFlowData?.breakdown?.map((i) => ({ label: i.date, value: i.totalPayments })) || [];
+        return reportData?.profitLossData?.breakdown?.map((i) => ({ label: i.date, value: i.profit })) || [];
+      case ReportType.CASH_FLOW:
+        return reportData?.cashFlowData?.breakdown?.map((i) => ({ label: i.date, value: i.totalPayments })) || [];
       default:
         return [];
     }
@@ -216,9 +223,9 @@ const columnTranslations: Record<string, string> = {
     if (selectedType === ReportType.REVENUE && reportData.revenueData?.breakdown?.length) {
       data = reportData.revenueData.breakdown;
       columns = Object.keys(data[0]).map((key) => ({
-  header: columnTranslations[key] || key,
-  accessor: key,
-}));
+        header: columnTranslations[key] || key,
+        accessor: key,
+      }));
 
     } else if (selectedType === ReportType.EXPENSES && reportData.expenseData?.monthlyTrend?.length) {
       data = reportData.expenseData.monthlyTrend.map((item) => {
@@ -234,29 +241,29 @@ const columnTranslations: Record<string, string> = {
           'סכום 3': top[2]?.amount || '',
         };
       });
-     columns = Object.keys(data[0]).map((key) => ({
-  header: columnTranslations[key] || key,
-  accessor: key,
-}));
+      columns = Object.keys(data[0]).map((key) => ({
+        header: columnTranslations[key] || key,
+        accessor: key,
+      }));
 
     } else if (selectedType === ReportType.PROFIT_LOSS && reportData.profitLossData?.breakdown?.length) {
       data = reportData.profitLossData.breakdown;
       columns = Object.keys(data[0]).map((key) => ({
-  header: columnTranslations[key] || key,
-  accessor: key,
-}));
+        header: columnTranslations[key] || key,
+        accessor: key,
+      }));
     } else if (selectedType === ReportType.CASH_FLOW && reportData.cashFlowData?.breakdown?.length) {
       data = reportData.cashFlowData.breakdown;
       columns = Object.keys(data[0]).map((key) => ({
-  header: columnTranslations[key] || key,
-  accessor: key,
-}));
+        header: columnTranslations[key] || key,
+        accessor: key,
+      }));
     }
 
     return { data, columns };
   })();
 
-  return (
+  return (<>
     <Form label="טופס דוחות פיננסיים" schema={ReportFormSchema} onSubmit={onSubmit} methods={methods}>
 
       <div className="flex flex-col gap-4">
@@ -290,96 +297,155 @@ const columnTranslations: Record<string, string> = {
         />
 
         {selectedType === ReportType.REVENUE && (
-          <>
-            <label>בחר לקוחות:</label>
-            <select {...methods.register('customerIds')} multiple className="w-full px-2 py-1 border rounded">
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </>
+          <div>
+            <label className="font-medium mb-1 block">בחר לקוחות:</label>
+            <details className="w-full border rounded p-2">
+              <summary className="cursor-pointer select-none">בחר מרשימת הלקוחות</summary>
+              <div className="mt-2 flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+                {customers.map((c) => (
+                  <label key={c.id} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={methods.getValues('customerIds')?.includes(c.id)}
+                      value={c.id}
+                      {...methods.register('customerIds')}
+                      onChange={(e) => {
+                        const current = methods.getValues("customerIds") ?? [];
+                        methods.setValue("customerIds", [...current, c.id.toString()]);
+                      }}
+
+                      className="accent-blue-600"
+                    />
+                    {c.name}
+                  </label>
+                ))}
+              </div>
+            </details>
+          </div>
         )}
 
-        {selectedType === ReportType.EXPENSES && (
-          <>
-            <label>בחר ספק:</label>
-            <select {...methods.register('customerIds')} multiple className="w-full px-2 py-1 border rounded">
-              {vendors.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
 
-            <label>בחר סוג הוצאה:</label>
-            <select {...methods.register('categories')} multiple className="w-full px-2 py-1 border rounded">
-              {Object.values(ExpenseCategory).map((cat) => (
-                <option key={cat} value={cat}>
-                  {expenseCategoryLabels[cat]}
-                </option>
-              ))}
-            </select>
-          </>
-        )}
-
-        <Button type="submit" disabled={loading}>
-          {loading ? 'טוען...' : 'צור דוח'}
-        </Button>
+ {selectedType === ReportType.EXPENSES && (
+  <div className="flex flex-col gap-4">
+    {/* בחר ספק */}
     <div>
-      {/* הצגת הודעת טעינה רק כשיש טעינה */}
- {loadingReport && (
-  <div
-    style={{
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.3)', // רקע כהה
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 9999,
-    }}
-  >
-    <div
-      style={{
-        backgroundColor: '#fff',
-        padding: '20px',
-        borderRadius: '8px',
-        textAlign: 'center',
-      }}
-    >
-      {/* אנימציה של סיבוב */}
-      <div
-        style={{
-          border: '8px solid #f3f3f3',
-          borderTop: `8px solid ${color}`, // השפעת הצבע על הסיבוב
-          borderRadius: '50%',
-          width: '40px',
-          height: '40px',
-          animation: 'spin 2s linear infinite',
-          marginBottom: '10px',
-        }}
-      ></div>
+      <label className="font-medium mb-1 block">בחר ספק:</label>
+      <details className="w-full border rounded p-2">
+        <summary className="cursor-pointer select-none">בחר מרשימת הספקים</summary>
+        <div className="mt-2 flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+          {vendors.map((v) => (
+            <label key={v.id} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={methods.getValues('customerIds')?.includes(v.id)}
+                value={v.id}
+                {...methods.register('customerIds')}
+                onChange={(e) => {
+                  const current = methods.getValues('customerIds') ?? [];
+                  const newValue = e.target.checked
+                    ? [...current, v.id.toString()]
+                    : current.filter((id: string) => id !== v.id.toString());
+                  methods.setValue('customerIds', newValue);
+                }}
+                className="accent-blue-600"
+              />
+              {v.name}
+            </label>
+          ))}
+        </div>
+      </details>
+    </div>
 
-      {/* טקסט עם שינוי צבעים */}
-      <p
-        style={{
-          fontSize: '16px',
-          fontWeight: 'bold',
-          color: color,  // הצגת הצבע המשתנה
-          animation: 'colorChange 2s infinite alternate',  // אנימציה לשינוי צבע
-        }}
-      >
-        יצירת הדוח... אנא המתן
-      </p>
+    {/* בחר סוג הוצאה */}
+    <div>
+      <label className="font-medium mb-1 block">בחר סוג הוצאה:</label>
+      <details className="w-full border rounded p-2">
+        <summary className="cursor-pointer select-none">בחר מתוך הקטגוריות</summary>
+        <div className="mt-2 flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+          {Object.values(ExpenseCategory).map((cat) => (
+            <label key={cat} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={methods.getValues('categories')?.includes(cat)}
+                value={cat}
+                {...methods.register('categories')}
+                onChange={(e) => {
+                  const current = methods.getValues('categories') ?? [];
+                  const newValue = e.target.checked
+                    ? [...current, cat]
+                    : current.filter((c: string) => c !== cat);
+                  methods.setValue('categories', newValue);
+                }}
+                className="accent-blue-600"
+              />
+              {expenseCategoryLabels[cat]}
+            </label>
+          ))}
+        </div>
+      </details>
     </div>
   </div>
 )}
-    </div>
+
+<div style={{textAlign: 'center'}}>
+        <Button type="submit"  disabled={loading} className="w-full">
+          {loading ? 'טוען...' : 'צור דוח'}
+        </Button>
+        </div>
+        {formError && <p className="text-red-600 mt-2">{formError}</p>}
+        <div>
+          {/* הצגת הודעת טעינה רק כשיש טעינה */}
+          {loadingReport && (
+            <div
+              style={{
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)', // רקע כהה
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 9999,
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: '#fff',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                }}
+              >
+                {/* אנימציה של סיבוב */}
+                <div
+                  style={{
+                    border: '8px solid #f3f3f3',
+                    borderTop: `8px solid ${color}`, // השפעת הצבע על הסיבוב
+                    borderRadius: '50%',
+                    width: '40px',
+                    height: '40px',
+                    animation: 'spin 2s linear infinite',
+                    marginBottom: '10px',
+                  }}
+                ></div>
+
+                {/* טקסט עם שינוי צבעים */}
+                <p
+                  style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: color,  // הצגת הצבע המשתנה
+                    animation: 'colorChange 2s infinite alternate',  // אנימציה לשינוי צבע
+                  }}
+                >
+                  יצירת הדוח... אנא המתן
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
 
         {error && <p className="text-red-600">{error.message}</p>}
 
@@ -389,11 +455,11 @@ const columnTranslations: Record<string, string> = {
           onChange={(e) => setSelectedChartType(e.target.value as 'bar' | 'pie' | 'line')}
           className="w-full px-2 py-1 border rounded"
         >
-<option value="bar">גרף עמודות</option>
-{selectedType !== ReportType.PROFIT_LOSS && (
-  <option value="pie">גרף עוגה</option>
-)}
-<option value="line">גרף קו</option>
+          <option value="bar">גרף עמודות</option>
+          {selectedType !== ReportType.PROFIT_LOSS && (
+            <option value="pie">גרף עוגה</option>
+          )}
+          <option value="line">גרף קו</option>
         </select>
 
         {reportData && (
@@ -432,5 +498,6 @@ const columnTranslations: Record<string, string> = {
         )}
       </div>
     </Form>
+    </>
   );
 };

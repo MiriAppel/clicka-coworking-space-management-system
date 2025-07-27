@@ -1,0 +1,713 @@
+
+import { useEffect, useRef, useState } from 'react';
+import '../Css/workspaceMap.css';
+import { Room, Space, SpaceStatus, WorkspaceType } from 'shared-types';
+import { Button } from '@mui/material';
+// import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
+import { useNavigate } from 'react-router-dom';
+import MenuIcon from '@mui/icons-material/Menu';
+import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
+
+
+export const WorkspaceMap = () => {
+
+    const { workSpaces, rooms, getAllWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
+    const uniqueStatus = Object.values(SpaceStatus);
+    const uniqueType = Object.values(WorkspaceType);
+    const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
+    const [selectedType, setSelectedType] = useState("PLACEHOLDER");
+    const [activeStatusSearch, setActiveStatusSearch] = useState(false);
+    const [activeTypeSearch, setActiveTypeSearch] = useState(false);
+    const [displayDate, setDisplayDate] = useState(new Date());
+    const [scale, setScale] = useState(1);
+    const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [mapDimensions,] = useState({ width: 2840, height: 1060 });
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [tooltip, setTooltip] = useState<{
+        visible: boolean;
+        x: number;
+        y: number;
+        content: string;
+    }>({
+        visible: false,
+        x: 0,
+        y: 0,
+        content: ''
+    });
+    // const [details, setDetails] = useState({
+    //     name: "",
+    //     description: "",
+    //     type: "",
+    //     status: "",
+    //     workspaceMapId: "",
+    //     // room: "",
+    //     currentCustomerId: "",
+    //     currentCustomerName: "",
+    //     positionX: 0,
+    //     positionY: 0,
+    //     width: 0,
+    //     height: 0,
+    //     createdAt: "",
+    //     updatedAt: ""
+    // });
+    // const [roomDetails, setRoomDetails] = useState({
+
+    // });
+    const navigate = useNavigate()
+    const [zoom, setZoom] = useState(3);
+    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    // const [initialScale, setInitialScale] = useState(1);
+    // const [signal, setSignal] = useState(1);
+
+    useEffect(() => {
+        getAllWorkspace();
+        const updateSize = () => {
+            if (containerRef.current) {
+                const rect = containerRef.current.getBoundingClientRect();
+                setContainerSize({ width: rect.width, height: rect.height });
+            }
+        };
+        updateSize();
+        window.addEventListener("resize", updateSize);
+        return () => window.removeEventListener("resize", updateSize);
+    }, [getAllWorkspace])
+    useEffect(() => {
+        getAllWorkspace();
+    }, [getAllWorkspace]);
+    useEffect(() => {
+        if (selectedStatus !== "" && selectedStatus !== "PLACEHOLDER") {
+            setActiveStatusSearch(true);
+        }
+        else setActiveStatusSearch(false);
+    }, [selectedStatus]);
+    useEffect(() => {
+        if (selectedType !== "" && selectedType !== "PLACEHOLDER") {
+            setActiveTypeSearch(true);
+        }
+        else setActiveTypeSearch(false);
+    }, [selectedType]);
+    //קנה מידה של המפה
+    // הוסף אחרי ה-useEffect הקיימים
+    useEffect(() => {
+        const calculateScale = () => {
+            const container = document.querySelector('.spaces');
+            if (container) {
+                const containerRect = container.getBoundingClientRect();
+                const scaleX = (containerRect.width - 20) / mapDimensions.width;
+                const scaleY = (containerRect.height - 20) / mapDimensions.height;
+                const newScale = Math.min(scaleX, scaleY, 1);
+                setScale(newScale);
+            }
+        };
+        calculateScale();
+        window.addEventListener('resize', calculateScale);
+        return () => window.removeEventListener('resize', calculateScale);
+    }, [mapDimensions]);
+    const handleZoomIn = () => {
+        setZoom(prev => Math.min(prev * 1.2, 100));
+    };
+    const handleZoomOut = () => {
+        setZoom(prev => Math.max(prev / 1.2, 3));
+    };
+    const handleResetZoom = () => {
+        setZoom(3); // איפוס ל-300%
+        applyPan({ x: 0, y: 0 });
+    };
+    const getZoomStep = () => {
+        if (zoom < 10) return 0.1;
+        if (zoom < 100) return 1;
+        if (zoom < 1000) return 10;
+        return 100;
+    };
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (zoom >= 3) {
+            e.preventDefault();
+            setIsDragging(true);
+            setDragStart({
+                x: e.clientX - pan.x,
+                y: e.clientY - pan.y
+            });
+        }
+    };
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (isDragging && zoom > 1) {
+            e.preventDefault();
+            applyPan({
+                x: e.clientX - dragStart.x,
+                y: e.clientY - dragStart.y
+            });
+        }
+    };
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+    const handleMiniMapClick = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+
+        // קנה מידה של המפה הממוזערת
+        const scaleX = mapDimensions.width / rect.width;
+        const scaleY = mapDimensions.height / rect.height;
+
+        const targetX = clickX * scaleX;
+        const targetY = clickY * scaleY;
+
+        const centerOffsetX = containerSize.width / (2 * scale * zoom);
+        const centerOffsetY = containerSize.height / (2 * scale * zoom);
+
+        applyPan({
+            x: -(targetX - centerOffsetX) * scale * zoom,
+            y: -(targetY - centerOffsetY) * scale * zoom
+        });
+    };
+    const resetSearch = () => {
+        setActiveStatusSearch(false);
+        setActiveTypeSearch(false);
+        setSelectedStatus("PLACEHOLDER");
+        setSelectedType("PLACEHOLDER");
+    };
+    const ocoupancy = (d: Date) => {
+        //בדיקה האם זה התאריך הנוכחי
+        if (d.toDateString() === new Date().toDateString())
+            getAllWorkspace();
+        else {
+            // המרה לפורמט YYYY-MM-DD לפני השליחה
+            // const formattedDate = d.toISOString().split('T')[0];
+            getWorkspaceHistory(d);
+        }
+        // ?
+        setDisplayDate(d);
+    }
+
+    const getSpaceClass = (space: Space) => {
+        const name = space.name.toLowerCase();
+        if (name.includes('דלת') || name.includes('כניסה') || name.includes('יציאה')) {
+            return 'door';
+        }
+        if (name.includes('קיר')) {
+            return 'wall';
+        }
+        if (name.includes('שירותים')) {
+            return 'bathroom';
+        }
+        if (name.includes('מטבח')) {
+            return 'kitchen';
+        }
+        if (name.includes('ארון') || name.includes('עמדת')) {
+            return 'INACTIVE';
+        }
+        return space.status;
+    };
+    const getRoomSpaceClass = (room: Room) => {
+        const name = room.name.toLowerCase();
+        if (name.includes('לאונז')) {
+            return 'lounge';
+        }
+        if (name.includes('ישיבות')) {
+            return 'meeting';
+        }
+        return room.status;
+    };
+
+    // const getPanBounds = () => {
+    //     const scaledWidth = mapDimensions.width * scale * zoom;
+    //     const scaledHeight = mapDimensions.height * scale * zoom;
+
+    //     return {
+    //         minX: containerSize.width - scaledWidth,
+    //         maxX: 0,
+    //         minY: containerSize.height - scaledHeight,
+    //         maxY: 0
+    //     };
+    // };
+
+    const applyPan = (newPan: { x: number; y: number }) => {
+        const scaledWidth = mapDimensions.width * 1 * zoom;
+        const scaledHeight = mapDimensions.height * 1 * zoom;
+
+        let minX, maxX, minY, maxY;
+
+        if (scaledWidth <= containerSize.width) {
+            // אם המפה קטנה מהקונטיינר - מרכז אותה
+            const centerX = (containerSize.width - scaledWidth) / 2;
+            minX = maxX = centerX;
+        } else {
+            // אם המפה גדולה מהקונטיינר - אפשר גרירה בגבולות
+            maxX = 0; // הקצה השמאלי של המפה לא יעבור את השמאל של הקונטיינר
+            minX = containerSize.width - scaledWidth; // הקצה הימני של המפה לא יעבור את הימין של הקונטיינר
+        }
+
+        if (scaledHeight <= containerSize.height) {
+            // אם המפה קטנה מהקונטיינר - מרכז אותה
+            const centerY = (containerSize.height - scaledHeight) / 2;
+            minY = maxY = centerY;
+        } else {
+            // אם המפה גדולה מהקונטיינר - אפשר גרירה בגבולות
+            maxY = 0; // הקצה העליון של המפה לא יעבור את העליון של הקונטיינר
+            minY = containerSize.height - scaledHeight; // הקצה התחתון של המפה לא יעבור את התחתון של הקונטיינר
+        }
+
+        const clampedX = Math.max(Math.min(newPan.x, maxX), minX);
+        const clampedY = Math.max(Math.min(newPan.y, maxY), minY);
+
+        setPan({ x: clampedX, y: clampedY });
+    };
+
+    const getSpaceIcon = (space: Space) => {
+        const name = space.name.toLowerCase();
+
+        // בדוק קודם אם זה עמדת קבלה
+        if (name.includes('קבלה')) return '📋';
+
+        // אל תחזיר אייקון עבור עמדות מחשב רגילות - הן יקבלו אייקון מחשב
+        if (name.includes('עמדה') && (space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) {
+            return null;
+        }
+
+        if (name.includes('שירותים')) return '🚻';
+        if (name.includes('מטבח')) return '🍽️';
+        if (name.includes('מעלית')) return '🛗';
+        if (name.includes('ארון חשמל')) return '⚡';
+        if (name.includes('ארון תקשורת')) return '📡';
+        if (name.includes('עמדת הדפסה')) return '🖨️';
+
+        return null;
+    };
+    const getRoomSpaceIcon = (room: Room) => {
+        const name = room.name.toLowerCase();
+        if (name.includes('לאונז')) return '🛋️';
+        if (name.includes('ישיבות')) return '👥';
+        return null;
+    };
+    const renderComputerStand = (space: Space) => {
+        // if (!(space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) return null;
+
+        const centerX = space.positionX + space.width / 2;
+        const centerY = space.positionY + space.height / 2;
+
+        return (
+            <g style={
+                {
+                    // pointerEvents: 'INACTIVE'
+                }
+            }>
+                {/* מסך */}
+                <rect
+                    x={centerX - 15}
+                    y={centerY - 12}
+                    width="30"
+                    height="20"
+                    fill="#2c3e50"
+                    stroke="#34495e"
+                    strokeWidth="1"
+                    rx="2"
+                />
+                {/* מסך פנימי - צבע לפי סטטוס */}
+                <rect
+                    x={centerX - 12}
+                    y={centerY - 9}
+                    width="24"
+                    height="15"
+                    fill={space.status === SpaceStatus.AVAILABLE ? '#caf9d5' :
+                        space.status === SpaceStatus.OCCUPIED ? '#f6c1bd' : '#f7d6a5'}
+                    rx="1"
+                />
+                {/* בסיס */}
+                <rect
+                    x={centerX - 3}
+                    y={centerY + 8}
+                    width="6"
+                    height="4"
+                    fill="#7f8c8d"
+                />
+                <rect
+                    x={centerX - 10}
+                    y={centerY + 12}
+                    width="20"
+                    height="2"
+                    fill="#95a5a6"
+                    rx="1"
+                />
+            </g>
+        );
+    };
+
+    const renderReceptionDesk = (space: Space) => {
+        // if (space.type !== 'RECEPTION_DESK') return null;
+        const centerX = space.positionX + space.width / 2;
+        const centerY = space.positionY + space.height / 2;
+        return (
+            <g>
+                {/* שולחן חצי עיגול */}
+                <path
+                    d={`M ${centerX - 18} ${centerY + 3} A 18 12 0 0 1 ${centerX + 18} ${centerY + 3} L ${centerX + 15} ${centerY + 8} L ${centerX - 15} ${centerY + 8} Z`}
+                    fill="#8B4513"
+                    stroke="#654321"
+                    strokeWidth="1"
+                />
+                {/* משטח עליון */}
+                <ellipse
+                    cx={centerX}
+                    cy={centerY}
+                    rx="18"
+                    ry="10"
+                    fill="#D2691E"
+                    stroke="#A0522D"
+                    strokeWidth="1"
+                />
+            </g>
+        );
+    };
+    return <div className="all">
+        <h1>{displayDate.toLocaleDateString()}</h1>
+        {tooltip.visible && (
+            <div
+                className="tooltip"
+                style={{
+                    position: 'fixed',
+                    left: tooltip.x,
+                    top: tooltip.y,
+                    transform: 'translateX(-50%) translateY(-100%)',
+                    background: 'rgba(0,0,0,0.8)',
+                    color: 'white',
+                    padding: '8px 12px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    // pointerEvents: 'INACTIVE',
+                    zIndex: 1000
+                }}
+            >
+                {tooltip.content}
+            </div>
+        )}
+        <button
+            className={`toggleSidebarBtn ${isSidebarOpen ? 'open' : 'closed'}`}
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            title={isSidebarOpen ? "הסתר תפריט" : "הצג תפריט"}
+        >
+            <MenuIcon />        </button>
+        {/* <div className="content">  */}
+        <div className={`content ${!isSidebarOpen ? 'sidebarHidden' : ''}`}>
+            <div className={`search ${!isSidebarOpen ? 'hidden' : ''}`}>                <div className='statusAndType'>
+                <h2>חיפוש וסינון</h2>
+                <label>סטטוס</label>
+                <select value={selectedStatus} onChange={(e) => { setSelectedStatus(e.target.value) }}>
+                    <option value="PLACEHOLDER" disabled>choose status to search</option>
+                    {uniqueStatus.map((status, index) => {
+                        return <option key={status} value={status}>{status}</option>
+                    })}
+                </select>
+                <label>סוג</label>
+                <select value={selectedType} onChange={(e) => { setSelectedType(e.target.value) }}>
+                    <option value="PLACEHOLDER" disabled>choose type to search</option>
+                    {uniqueType.map((type, index) => {
+                        return <option key={type} value={type}>{type}</option>
+                    })}
+                </select>
+            </div>
+                <Button onClick={resetSearch} className="clearSearchBtn">Clear Search</Button>
+                <div className='displayDate'>
+                    <h2>תצוגת מפה</h2>
+                    <label>תאריך</label>
+                    <input type="date" onChange={(e) => { ocoupancy(new Date(e.target.value)) }} />
+                </div>
+                <Button onClick={() => { navigate('/') }} className="backBtn">Back</Button>
+            </div>
+
+            <div className={`workspaceMap ${!isSidebarOpen ? 'fullWidth' : ''}`}>
+                <div className="spaces" ref={containerRef} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} style={{ cursor: zoom >= 3 ? (isDragging ? 'grabbing' : 'grab') : 'default', position: 'relative' }}>
+                    <svg
+                        className="mapContent"
+                        style={{
+                            transform: `scale(${scale * zoom}) translate(${pan.x / (scale * zoom)}px, ${pan.y / (scale * zoom)}px)`,
+                            transformOrigin: '0 0',
+                            width: `${mapDimensions.width}px`,
+                            height: `${mapDimensions.height}px`,
+                        }}
+                        viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
+                    >
+                        <defs>
+                            <pattern id="doorPattern" patternUnits="userSpaceOnUse" width="10" height="10">
+                                <rect width="10" height="10" fill="#f8f9fa" />
+                                <path d="M0,10 L10,0" stroke="#6c757d" strokeWidth="1" />
+                            </pattern>
+                        </defs>
+
+                        {workSpaces.length > 0 &&
+                            [...workSpaces]
+                               .sort((a, b) => (b.width * b.height) - (a.width * a.height))
+                                .map((w) => {
+                                    const hasActiveSearch = activeStatusSearch || activeTypeSearch;
+                                    const matchesStatusSearch = !activeStatusSearch || w.status === selectedStatus;
+                                    const matchesTypeSearch = !activeTypeSearch || w.type === selectedType;
+                                    const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
+
+                                    const isWorkstation = w.type === 'COMPUTER_STAND' || w.type === 'DESK_IN_ROOM' || w.type === 'RECEPTION_DESK';
+                                    return (
+                                        <g key={w.id}>
+                                            {isWorkstation ? (
+                                                // כל העמדות יעברו דרך הענף הזה
+                                                <g
+                                                    className={`space-rect ${getSpaceClass(w)}`}
+                                                    style={{ opacity: isHighlighted ? 1 : 0.3 }}
+                                                    onMouseEnter={(e) => {
+                                                        e.stopPropagation();
+                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                        setTooltip({
+                                                            visible: true,
+                                                            x: rect.left + rect.width / 2,
+                                                            y: rect.top - 10,
+                                                            content: `${w.name} - ${w.status}`
+                                                        });
+                                                    }}
+                                                    onMouseLeave={() => setTooltip(prev => ({ ...prev, visible: false }))}
+                                                    onClick={() => {
+                                                        if (w.status === SpaceStatus.AVAILABLE) {
+                                                            navigate('/assignmentForm');
+                                                        }
+                                                    }}
+                                                >
+                                                    <rect
+                                                        x={w.positionX}
+                                                        y={w.positionY}
+                                                        width={w.width}
+                                                        height={w.height}
+                                                        className={`space-rect ${getSpaceClass(w)}`}
+                                                        stroke={isHighlighted ? "#333" : "#999"}
+                                                        strokeWidth="2"
+                                                        opacity={0.3}
+                                                    />
+                                                    {renderComputerStand(w)}
+                                                    {w.type === 'RECEPTION_DESK' && renderReceptionDesk(w)}
+                                                    <text
+                                                        x={w.positionX + w.width / 2}
+                                                        y={w.positionY + w.height + 15}
+                                                        textAnchor="middle"
+                                                        fontSize="8"
+                                                        fill="#333"
+                                                        style={{ pointerEvents: 'none' }}
+                                                    >
+                                                        {w.name}
+                                                    </text>
+                                                </g>
+                                            ) : (
+                                                <rect
+                                                    x={w.positionX}
+                                                    y={w.positionY}
+                                                    width={w.width}
+                                                    height={w.height}
+                                                    stroke={isHighlighted ? "#333" : "#999"}
+                                                    strokeWidth="2"
+                                                    opacity={isHighlighted ? 1 : 0.3}
+                                                    className={`space-rect ${getSpaceClass(w)}`}
+                                                    onMouseEnter={(e) => {
+                                                        e.stopPropagation();
+                                                        const rect = e.currentTarget.getBoundingClientRect();
+                                                        setTooltip({
+                                                            visible: true,
+                                                            x: rect.left + rect.width / 2,
+                                                            y: rect.top - 10,
+                                                            content: ['door', 'wall', 'bathroom', 'kitchen', 'INACTIVE'].includes(getSpaceClass(w))
+                                                                ? w.name
+                                                                : `${w.name} - ${w.status} ${w.currentCustomerName ? `${w.currentCustomerName}` : ""},`
+                                                        });
+                                                    }}
+                                                    onMouseLeave={() => {
+                                                        setTooltip(prev => ({ ...prev, visible: false }));
+                                                    }}
+                                                    onClick={() => {
+                                                        if (w.status === SpaceStatus.AVAILABLE) {
+                                                            if (w.type === WorkspaceType.OPEN_SPACE) {
+                                                                navigate('/bookingCalendar');
+                                                            } else {
+                                                                // <AssignmentForm  workspaceId={w.id} workspaceName={ w.name }  workspaceType={w.type} assignedDate={displayDate} />
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    {renderComputerStand(w)}
+                                                </rect>
+                                            )}
+                                            {w.width > 50 && w.height > 30 && (
+                                                <g>
+                                                    {getSpaceIcon(w) && (
+                                                        <text
+                                                            x={w.positionX + w.width / 2}
+                                                            y={w.positionY + w.height / 2 - 15}
+                                                            textAnchor="middle"
+                                                            dominantBaseline="middle"
+                                                            fontSize="48"
+                                                            fill="#333"
+                                                            style={{
+                                                                pointerEvents: 'none',
+                                                                fontWeight: 'bold',
+                                                                fontFamily: 'Arial Unicode MS, Segoe UI Emoji, sans-serif'
+                                                            }}
+                                                        >
+                                                            {getSpaceIcon(w)}
+                                                        </text>
+                                                    )}
+                                                    <text
+                                                        x={w.positionX + w.width / 2}
+                                                        y={w.positionY + w.height / 2 + (getSpaceIcon(w) ? 5 : 0)}
+                                                        textAnchor="middle"
+                                                        dominantBaseline="middle"
+                                                        fontSize={Math.min(w.width / 8, w.height / 4, 12)}
+                                                        fill="white"
+                                                        className="space-text"
+                                                        style={{ pointerEvents: 'none' }}
+                                                    >
+                                                        {w.name}
+                                                    </text>
+                                                    {/* הצגת שם לקוח אם קיים */}
+                                                    {w.currentCustomerName && (
+                                                        <text
+                                                            x={w.positionX + w.width / 2}
+                                                            y={w.positionY + w.height / 2 + (getSpaceIcon(w) ? 20 : 15)}
+                                                            textAnchor="middle"
+                                                            dominantBaseline="middle"
+                                                            fontSize={Math.min(w.width / 10, w.height / 5, 10)}
+                                                            fill="#ffeb3b"
+                                                            style={{ pointerEvents: 'none', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}
+                                                        >
+                                                            👤 {w.currentCustomerName}
+                                                        </text>
+                                                    )}
+                                                </g>
+                                            )}
+                                        </g>
+                                    );
+                                })}
+                        {rooms.length > 0 && rooms.map((r) => {
+                            // const hasActiveSearch = activeStatusSearch || activeTypeSearch;
+                            // const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
+                            // const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
+                            // const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
+
+
+                            return (
+                                <g key={r.id}>
+                                    {r.width > 50 && r.height > 30 && (
+                                        <g
+                                        // onClick={()=>{if(r.status === "AVAILABLE")}}
+                                        >
+                                            <rect
+                                                x={r.positionX}
+                                                y={r.positionY}
+                                                width={r.width}
+                                                height={r.height}
+                                                className={`space-rect room-space ${getRoomSpaceClass(r)}`} // הוסף room-space
+
+                                            // שאר הקוד...
+                                            />
+                                            {getRoomSpaceIcon(r) && (
+
+                                                <text
+                                                    x={r.positionX + r.width / 2}
+                                                    y={r.positionY + r.height / 2 - 15}
+                                                    textAnchor="middle"
+                                                    dominantBaseline="middle"
+                                                    fontSize="48"
+                                                    fill="#333"
+                                                    style={{
+                                                        pointerEvents: 'none',
+                                                        fontWeight: 'bold',
+                                                        fontFamily: 'Arial Unicode MS, Segoe UI Emoji, sans-serif'
+                                                    }}
+                                                >
+                                                    {getRoomSpaceIcon(r)}
+                                                </text>
+                                            )}
+                                            <text
+                                                x={r.positionX + r.width / 2}
+                                                y={r.positionY + r.height / 2 + (getRoomSpaceIcon(r) ? 5 : 0)}
+                                                textAnchor="middle"
+                                                dominantBaseline="middle"
+                                                fontSize={Math.min(r.width / 8, r.height / 4, 12)}
+                                                fill="white"
+                                                className="space-text"
+                                                style={{ pointerEvents: 'none' }}
+                                            >
+                                                {r.name}
+                                            </text>
+                                        </g>
+                                    )}
+                                </g>
+                            );
+                        })}
+
+                    </svg>
+                </div>
+                <div className="zoom">
+                    <div className="zoom-controls">
+                        <button className="zoom-btn" onClick={handleZoomOut} disabled={zoom <= 3}> - </button>
+                        <div className="zoom-slider">
+                            <input
+                                type="range"
+                                min="3"
+                                max="100"
+                                step={getZoomStep()}
+                                value={zoom}
+                                onChange={(e) => setZoom(Number(e.target.value))}
+                                className="slider"
+                            />
+                            <span className="zoom-value">{Math.round(zoom * 100)}%</span>
+                        </div>
+                        <button className="zoom-btn" onClick={handleZoomIn} disabled={zoom >= 10}>+</button>
+                        <button className="reset-btn" onClick={handleResetZoom}>⌂</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div
+            className="minimap"
+            style={{
+                position: 'absolute',
+                // bottom: 10,
+                // right: 50,
+                top: 80,
+                left: 20,
+                width: 200,
+                height: 100,
+                border: '1px solid #999',
+                background: '#fff',
+                zIndex: 100,
+                overflow: 'hidden'
+            }}
+        >
+            <svg
+                onClick={handleMiniMapClick}
+                viewBox={`0 0 ${mapDimensions.width} ${mapDimensions.height}`}
+                width="200"
+                height="100"
+                style={{ cursor: 'pointer' }}
+            >
+                {workSpaces.map(w => (
+                    <rect
+                        key={w.id}
+                        x={w.positionX}
+                        y={w.positionY}
+                        width={w.width}
+                        height={w.height}
+                        fill="#ddd"
+                        stroke="#333"
+                        strokeWidth="0.5"
+                    />
+                ))}
+                <rect
+                    x={-pan.x / (scale * zoom) /* ← משמר התאמה בין תצוגה לפאן */}
+                    y={-pan.y / (scale * zoom)}
+                    width={containerSize.width / (scale * zoom)}
+                    height={containerSize.height / (scale * zoom)}
+                    fill="INACTIVE"
+                    stroke="red"
+                    strokeWidth="2"
+                />
+            </svg>
+        </div>
+    </div>
+}
