@@ -14,7 +14,9 @@ import {
   ScrollText,
   Coins,
   BadgePercent,
+  // User,
   Camera,
+  // FileDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
@@ -49,7 +51,7 @@ const statusColors: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "bg-yellow-100 text-yellow-800",
   EXITED: "bg-red-100 text-red-800",
   PENDING: "bg-gray-100 text-gray-800",
-  CREATED: "bg-blue-100 text-gray-800",
+  CREATED: "bg-blue-100 text-gray-800"
 };
 
 const statusLabels: Record<CustomerStatus, string> = {
@@ -57,7 +59,7 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "הודעת עזיבה",
   EXITED: "עזב",
   PENDING: "בהמתנה",
-  CREATED: "נוצר",
+  CREATED: "נוצר"
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
@@ -69,7 +71,8 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   WALL: "קיר",
   COMPUTER_STAND: "עמדת מחשב",
   RECEPTION_DESK: "דלפק קבלה",
-  BASE: "בסיס",
+  BASE:"בסיס"
+
 };
 
 const paymentMethodLabels: Record<PaymentMethodType, string> = {

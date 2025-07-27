@@ -11,6 +11,7 @@ import { useForm, Controller, FormProvider } from 'react-hook-form';
 import clsx from 'clsx';
 import { useTheme } from '../../../../Common/Components/themeConfig';
 import { useAuthStore } from '../../../../Stores/CoreAndIntegration/useAuthStore';
+const urll = process.env.REACT_APP_API_URL ;
 
 interface Props {
   type: 'workspace' | 'meeting-room' | 'lounge';
@@ -20,20 +21,6 @@ interface FormInputs {
   workspaceType: WorkspaceType;
   effectiveDate: string;
 }
-// type PriceRecord = {
-//   id: string;
-//   effectiveDate: string;
-//   year1Price?: number;
-//   year2Price?: number;
-//   year3Price?: number;
-//   year4Price?: number;
-//   hourlyRate?: number;
-//   discountedHourlyRate?: number;
-//   freeHoursKlikahCard?: number;
-//   eveningRate?: number;
-//   memberDiscountRate?: number;
-// };
-
 
 const typeLabels: Record<Props['type'], string> = {
   workspace: 'סביבת עבודה',
@@ -99,16 +86,17 @@ const PricingSectionPage: React.FC<Props> = ({ type }) => {
     setLoading(true);
     setError(null);
     let url = '';
-    switch (type) {
-      case 'workspace':
-        url = `http://localhost:3001/api/pricing/workspace/history/${watchedWorkspaceType}`;
-        break;
-      case 'meeting-room':
-        url = 'http://localhost:3001/api/pricing/meeting-room/history';
-        break;
-      case 'lounge':
-        url = 'http://localhost:3001/api/pricing/lounge/history';
-        break;
+   switch (type) {
+  case 'workspace':
+    url = `${urll}/pricing/workspace/history/${watchedWorkspaceType}`;
+    break;
+  case 'meeting-room':
+    url = `${urll}/pricing/meeting-room/history`;
+    break;
+  case 'lounge':
+    url = `${urll}/pricing/lounge/history`;
+    break;
+
     }
 
     try {
@@ -132,17 +120,18 @@ const PricingSectionPage: React.FC<Props> = ({ type }) => {
     setLoading(true);
     setError(null);
     let url = '';
-    switch (type) {
-      case 'workspace':
-        url = `http://localhost:3001/api/pricing/workspace/current/${watchedWorkspaceType}`;
-        break;
-      case 'meeting-room':
-        url = 'http://localhost:3001/api/pricing/meeting-room/current';
-        break;
-      case 'lounge':
-        url = 'http://localhost:3001/api/pricing/lounge/current';
-        break;
-    }
+  switch (type) {
+  case 'workspace':
+    url = `${urll}/pricing/workspace/current/${watchedWorkspaceType}`;
+    break;
+  case 'meeting-room':
+    url = `${urll}/pricing/meeting-room/current`;
+    break;
+  case 'lounge':
+    url = `${urll}/pricing/lounge/current`;
+    break;
+}
+
     try {
       const res = await fetch(url, { credentials: 'include' });
       if (!res.ok) {
@@ -239,22 +228,21 @@ const PricingSectionPage: React.FC<Props> = ({ type }) => {
     let url = '';
 
     const recordIdToDelete = selectedPriceData.id;
-
-    switch (type) {
-      case 'workspace':
-        url = `http://localhost:3001/api/pricing/workspace/${recordIdToDelete}`;
-        break;
-      case 'meeting-room':
-        url = `http://localhost:3001/api/pricing/meeting-room/${recordIdToDelete}`;
-        break;
-      case 'lounge':
-        url = `http://localhost:3001/api/pricing/lounge/${recordIdToDelete}`;
-        break;
-      default:
-        Swal.fire('שגיאה', 'שגיאה: סוג מחיר לא נתמך למחיקה.', 'error');
-        setLoading(false);
-        return;
-    }
+switch (type) {
+  case 'workspace':
+    url = `${urll}/pricing/workspace/${recordIdToDelete}`;
+    break;
+  case 'meeting-room':
+    url = `${urll}/pricing/meeting-room/${recordIdToDelete}`;
+    break;
+  case 'lounge':
+    url = `${urll}/pricing/lounge/${recordIdToDelete}`;
+    break;
+  default:
+    Swal.fire('שגיאה', 'שגיאה: סוג מחיר לא נתמך למחיקה.', 'error');
+    setLoading(false);
+    return;
+}
 
     try {
       const response = await fetch(url, {
