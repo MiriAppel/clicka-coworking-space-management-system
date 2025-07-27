@@ -100,6 +100,7 @@ export const Collection = () => {
                 title="collection"
                 exportData={dataToExport}
                 refContent={reportRef}
+                showPDF={false}
             />
             <div className="flex gap-4 mb-4">
                 <input

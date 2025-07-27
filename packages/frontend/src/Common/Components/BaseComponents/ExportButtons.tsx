@@ -17,7 +17,9 @@ import { utils, writeFile } from 'xlsx'; // utils: המרת JSON ל־sheet, writ
 interface ExportButtonsProps {
   title?: string; // כותרת הדוח (לא חובה)
   exportData?: Record<string, any>[]; // מערך אובייקטים שמיועדים לייצוא כ־Excel
- refContent: React.RefObject<HTMLDivElement | null>; // רפרנס לתוכן שיומר לתמונה לצורך PDF
+  refContent: React.RefObject<HTMLDivElement | null>; // רפרנס לתוכן שיומר לתמונה לצורך PDF
+  showPDF?: boolean; // אם true, יוצג כפתור PDF
+  showExcel?: boolean; // אם true, יוצג כפתור Excel
 }
 /**
  * קומפוננטת כפתורי ייצוא: מייצרת כפתורי ייצוא CSV + PDF
@@ -26,6 +28,8 @@ export const ExportButtons = ({
   title,
   exportData,
   refContent,
+  showPDF = true, // ברירת מחדל היא להציג PDF
+  showExcel = true, // ברירת מחדל היא להציג Excel
 }: ExportButtonsProps) => {
   // פונקציה לייצוא ל־Excel (CSV)
   const exportCSV = () => {
@@ -51,7 +55,7 @@ export const ExportButtons = ({
   // JSX – החזרת רכיבי UI
   return (
     <div className="flex gap-2"> {/* עיטוף כפתורים עם מרווח בין כפתורים */}
-      {exportData && ( // הצגת כפתור CSV רק אם יש נתונים לייצוא
+      {showExcel && exportData && ( // הצגת כפתור CSV רק אם יש נתונים לייצוא
         <Button
           onClick={exportCSV} // הפעלת ייצוא ל־Excel בלחיצה
           className="bg-blue-500 text-white px-2 py-1 rounded" // עיצוב Tailwind
@@ -59,16 +63,18 @@ export const ExportButtons = ({
           CSV {/* טקסט הכפתור */}
         </Button>
       )}
+    {showPDF && (
       <Button
         onClick={exportPDF} // הפעלת ייצוא ל־PDF בלחיצה
         className="bg-green-500 text-white px-2 py-1 rounded" // עיצוב Tailwind
       >
         PDF {/* טקסט הכפתור */}
       </Button>
+    )}
     </div>
   );
-
 };
+
 
 
 
