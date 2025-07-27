@@ -479,7 +479,7 @@ export class customerService extends baseService<CustomerModel> {
       NOTICE_GIVEN: "הודעת עזיבה",
       EXITED: "עזב",
       PENDING: "בהמתנה",
-      // CREATED: "נוצר"
+      CREATED: "נוצר"
     };
 
     const effectiveDate = new Date(detailsForChangeStatus.effectiveDate);

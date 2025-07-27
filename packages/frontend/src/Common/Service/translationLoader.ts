@@ -16,12 +16,9 @@ export function detectTextLanguage(text: string): 'he' | 'en' | 'mixed' | 'unkno
 export async function fetchTranslations(keys: string[], lang: string): Promise<Record<string, string>> {
   let lng = detectTextLanguage(keys[0]) === 'he' ? 'en' : 'he';
   if(lang !== 'he' && lng === 'he') {
-    console.log(lang, lng);
-    
     return {};
   }
   else if(lang !== 'en' && lng === 'en') {
-    console.log(lang, lng);
     return {};
   }
   console.log(keys, lang);
