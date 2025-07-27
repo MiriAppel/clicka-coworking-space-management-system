@@ -137,8 +137,8 @@ export const FinancialReportsDashboard: React.FC = () => {
     async function fetchEntities() {
       try {
         const [customerRes, vendorRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/customers/page?page=1&limit=10000', { withCredentials: true }),
-          axios.get('http://localhost:3001/vendor', { withCredentials: true }),
+          axios.get(`${process.env.REACT_APP_API_URL}/customers/page?page=1&limit=10000`, { withCredentials: true }),
+          axios.get(`${process.env.REACT_APP_API_URL}/vendor`, { withCredentials: true }),
         ]);
         setCustomers(customerRes.data || []);
         setVendors(vendorRes.data || []);

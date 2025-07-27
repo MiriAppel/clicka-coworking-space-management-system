@@ -1,7 +1,10 @@
 //server/vendor.service.ts
-import { ID, Vendor, CreateVendorRequest, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms } from "shared-types"
+import { ID, Vendor, CreateVendorRequest, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms, Expense } from "shared-types"
 import { VendorModel } from "../models/vendor.model";
 import { supabase } from '../db/supabaseClient';
+import { DocumentModel } from "../models/document.model";
+import { v4 as uuidv4 } from 'uuid';
+
 export async function create(
     request: CreateVendorRequest
 ): Promise<Vendor> {
@@ -20,7 +23,7 @@ export async function create(
             category: VendorCategory.Other,
             status: VendorStatus.Inactive, // סטטוס ברירת מחדל אם לא נשלח
             notes: request.notes,
-            document_ids: request.documents || [],
+            document_ids: request.document_ids || [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         });
@@ -139,6 +142,85 @@ export async function deleteVendor(id: ID): Promise<boolean> {
     return true;
   } catch (e) {
     console.error('Exception in deleteLoungePricing:', e);
+    throw e;
+  }
+}
+
+
+export async function saveDocumentAndAttachToVendor(vendorId: string, file: any) {
+  const document = new DocumentModel({
+    id: uuidv4(),
+    name: file.name,
+    path: file.folder_path || "נתיב_ברירת_מחדל",  // חובה! לא להכניס null
+    mimeType: file.mime_type || "application/octet-stream", // חובה! לא להכניס null
+    size: file.size || 0, // אם יש מידע, אחרת 0
+    url: file.url,
+    googleDriveId: file.googleDriveId || "", // אם יש
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+
+
+  // 2. שמירה בטבלת documents
+  const { data: insertedDoc, error: insertError } = await supabase
+    .from('document')
+    .insert(document.toDatabaseFormat())
+    .select()
+    .single();
+
+  if (insertError || !insertedDoc) {
+    console.error('שגיאה בשמירת המסמך:', insertError);
+    throw new Error('שמירת המסמך נכשלה');
+  }
+
+  // 3. שליפת הספק הקיים
+  const { data: vendorData, error: vendorFetchError } = await supabase
+    .from('vendor')
+    .select('document_ids')
+    .eq('id', vendorId)
+    .single();
+
+  if (vendorFetchError || !vendorData) {
+    console.error('שגיאה בשליפת הספק:', vendorFetchError);
+    throw new Error('שליפת הספק נכשלה');
+  }
+
+  const existingDocumentIds = vendorData.document_ids || [];
+
+  // 4. עדכון הספק עם מערך document_ids כולל החדש
+  const updatedDocumentIds = [...existingDocumentIds, insertedDoc.id];
+
+  const { error: updateError } = await supabase
+    .from('vendor')
+    .update({
+      document_ids: updatedDocumentIds,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', vendorId);
+
+  if (updateError) {
+    console.error('שגיאה בעדכון מזהי המסמכים של הספק:', updateError);
+    throw new Error('עדכון הספק עם מזהה המסמך נכשל');
+  }
+
+  return DocumentModel.fromDatabaseFormat(insertedDoc);
+}
+export async function getExpensesByVendorId(vendorId: string): Promise<Expense[]> {
+  try {
+    const { data, error } = await supabase
+      .from('expense')
+      .select('*')
+      .eq('vendor_id', vendorId);
+
+    if (error) {
+      console.error('Error fetching expenses by vendor id:', error);
+      throw new Error('Failed to fetch expenses');
+    }
+
+    return data || [];
+  } catch (e) {
+    console.error('Exception in getExpensesByVendorId:', e);
     throw e;
   }
 }
