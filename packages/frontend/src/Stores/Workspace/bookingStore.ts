@@ -19,7 +19,6 @@ interface BookingState {
   setCurrentBooking: (booking: Booking | null) => void;
   clearError: () => void;
   getCustomerByPhoneOrEmail: (value: string) => Promise<any>;
-  getAllRooms: () => Promise<{ id: string; name: string }[]>;
 }
 
 export const useBookingStore = create<BookingState>((set, get) => ({
@@ -166,19 +165,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
       return null;
     }
   },
-  getAllRooms: async (): Promise<{ id: string; name: string }[]> => {
-    set({ loading: true, error: null });
-    try {
-      const response = await axiosInstance.get('rooms/getAllRooms');
-      console.log("🎯 rooms from server:", response.data); // חשוב!
-      return response.data;
-    } catch (error) {
-      console.error('שגיאה בשליפת רשימת חדרים:', error);
-      set({ error: 'שגיאה בשליפת רשימת חדרים', loading: false });
-      return [];
-    }
-  },
 
-
+  
 
 }));

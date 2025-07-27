@@ -5,6 +5,7 @@ import { Button } from "../../../Common/Components/BaseComponents/Button";
 import { SelectField } from "../../../Common/Components/BaseComponents/Select";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
 import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
+import {useRoomStore} from "../../../Stores/Workspace/roomStore"
 import { v4 as uuidv4 } from "uuid";
 import "../Css/roomReservations.css";
 
@@ -54,7 +55,8 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       mode: "onSubmit",
     });
 
-    const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
+    const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail } = useBookingStore();
+    const {rooms,getAllRooms} = useRoomStore();
     const customers = useCustomerStore((s) => s.customers);
     const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
 
@@ -75,16 +77,10 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     }));
 
     useEffect(() => {
+      
       fetchCustomers();
-
-      getAllRooms().then((rooms: Room[]) => {
-        setRoomOptions(
-          rooms.map((room) => ({
-            label: room.name,
-            value: room.id,
-          }))
-        );
-      });
+      getAllRooms();
+        
     }, []);
 
     useEffect(() => {

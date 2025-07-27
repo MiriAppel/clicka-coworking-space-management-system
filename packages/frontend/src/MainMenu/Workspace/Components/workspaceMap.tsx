@@ -3,55 +3,56 @@ import { useEffect, useRef, useState } from 'react';
 import '../Css/workspaceMap.css';
 import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 'shared-types';
 import { Button } from '@mui/material';
-// import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
+import { useRoomStore } from '../../../Stores/Workspace/roomStore';
 
 
 export const WorkspaceMap = () => {
 
 
 
-    const rrr: Room[] = [
-        {
-            id: "space-002",
-            name: "לאונז'",
-            type: "LOUNGE" as RoomType,
-            status: RoomStatus.AVAILABLE,
-            positionX: 100,
-            positionY: 460,
-            hourlyRate: 1,
-            capacity: 10,
-            workspaceMapId: "space-002",
-            discountedHourlyRate: 1,
-            description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-            width: 600,
-            height: 500,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
-        },
-        {
-            id: "space-002",
-            name: "חדר ישיבות",
-            type: "MEETING_ROOM" as RoomType,
-            status: RoomStatus.AVAILABLE,
-            positionX: 1420,
-            positionY: 60,
-            hourlyRate: 1,
-            discountedHourlyRate: 1,
-            capacity: 10,
-            workspaceMapId: "space-002",
-            description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-            width: 450,
-            height: 335,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
-        },
+    // const rrr: Room[] = [
+    //     {
+    //         id: "space-002",
+    //         name: "לאונז'",
+    //         type: "LOUNGE" as RoomType,
+    //         status: RoomStatus.AVAILABLE,
+    //         positionX: 100,
+    //         positionY: 460,
+    //         hourlyRate: 1,
+    //         capacity: 10,
+    //         workspaceMapId: "space-002",
+    //         discountedHourlyRate: 1,
+    //         description: "חדר ישיבות מרווח עם מסך טלוויזיה",
+    //         width: 600,
+    //         height: 500,
+    //         createdAt: "2024-01-01T08:00:00Z",
+    //         updatedAt: "2024-01-01T08:00:00Z"
+    //     },
+    //     {
+    //         id: "space-002",
+    //         name: "חדר ישיבות",
+    //         type: "MEETING_ROOM" as RoomType,
+    //         status: RoomStatus.AVAILABLE,
+    //         positionX: 1420,
+    //         positionY: 60,
+    //         hourlyRate: 1,
+    //         discountedHourlyRate: 1,
+    //         capacity: 10,
+    //         workspaceMapId: "space-002",
+    //         description: "חדר ישיבות מרווח עם מסך טלוויזיה",
+    //         width: 450,
+    //         height: 335,
+    //         createdAt: "2024-01-01T08:00:00Z",
+    //         updatedAt: "2024-01-01T08:00:00Z"
+    //     },
+    // ]
 
 
-    ]
-    const { workSpaces, rooms, getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
+    const { workSpaces, getAllWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
+    const { rooms, getAllRooms } = useRoomStore();
     const uniqueStatus = Object.values(SpaceStatus);
     const uniqueType = Object.values(WorkspaceType);
     const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
@@ -75,25 +76,7 @@ export const WorkspaceMap = () => {
         y: 0,
         content: ''
     });
-    const [details, setDetails] = useState({
-        name: "",
-        description: "",
-        type: "",
-        status: "",
-        workspaceMapId: "",
-        // room: "",
-        currentCustomerId: "",
-        currentCustomerName: "",
-        positionX: 0,
-        positionY: 0,
-        width: 0,
-        height: 0,
-        createdAt: "",
-        updatedAt: ""
-    });
-    const [roomDetails, setRoomDetails] = useState({
 
-    });
     const navigate = useNavigate()
     const [zoom, setZoom] = useState(3);
     const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -104,6 +87,7 @@ export const WorkspaceMap = () => {
 
     useEffect(() => {
         getAllWorkspace();
+        getAllRooms()
         const updateSize = () => {
             if (containerRef.current) {
                 const rect = containerRef.current.getBoundingClientRect();
@@ -116,6 +100,7 @@ export const WorkspaceMap = () => {
     }, [])
     useEffect(() => {
         getAllWorkspace();
+        getAllRooms();
     }, [signal]);
     useEffect(() => {
         if (selectedStatus !== "" && selectedStatus !== "PLACEHOLDER") {
@@ -129,8 +114,6 @@ export const WorkspaceMap = () => {
         }
         else setActiveTypeSearch(false);
     }, [selectedType]);
-    //קנה מידה של המפה
-    // הוסף אחרי ה-useEffect הקיימים
     useEffect(() => {
         const calculateScale = () => {
             const container = document.querySelector('.spaces');
@@ -153,7 +136,7 @@ export const WorkspaceMap = () => {
         setZoom(prev => Math.max(prev / 1.2, 3));
     };
     const handleResetZoom = () => {
-        setZoom(3); // איפוס ל-300%
+        setZoom(3);
         applyPan({ x: 0, y: 0 });
     };
     const getZoomStep = () => {
@@ -189,7 +172,6 @@ export const WorkspaceMap = () => {
         const clickX = e.clientX - rect.left;
         const clickY = e.clientY - rect.top;
 
-        // קנה מידה של המפה הממוזערת
         const scaleX = mapDimensions.width / rect.width;
         const scaleY = mapDimensions.height / rect.height;
 
@@ -211,20 +193,17 @@ export const WorkspaceMap = () => {
         setSelectedType("PLACEHOLDER");
     };
     const ocoupancy = (d: Date) => {
-        //בדיקה האם זה התאריך הנוכחי
         if (d.toDateString() === new Date().toDateString())
             getAllWorkspace();
         else {
-            // המרה לפורמט YYYY-MM-DD לפני השליחה
             const formattedDate = d.toISOString().split('T')[0];
             getWorkspaceHistory(d);
         }
-        // ?
         setDisplayDate(d);
     }
 
     const getSpaceClass = (space: Space) => {
-        const name = space.name.toLowerCase();
+        const name = (space.name || '').toString().toLowerCase();
         if (name.includes('דלת') || name.includes('כניסה') || name.includes('יציאה')) {
             return 'door';
         }
@@ -242,8 +221,9 @@ export const WorkspaceMap = () => {
         }
         return space.status;
     };
+
     const getRoomSpaceClass = (room: Room) => {
-        const name = room.name.toLowerCase();
+        const name = (room.name || '').toString().toLowerCase();
         if (name.includes('לאונז')) {
             return 'lounge';
         }
@@ -272,49 +252,35 @@ export const WorkspaceMap = () => {
         let minX, maxX, minY, maxY;
 
         if (scaledWidth <= containerSize.width) {
-            // אם המפה קטנה מהקונטיינר - מרכז אותה
             const centerX = (containerSize.width - scaledWidth) / 2;
             minX = maxX = centerX;
         } else {
-            // אם המפה גדולה מהקונטיינר - אפשר גרירה בגבולות
-            maxX = 0; // הקצה השמאלי של המפה לא יעבור את השמאל של הקונטיינר
-            minX = containerSize.width - scaledWidth; // הקצה הימני של המפה לא יעבור את הימין של הקונטיינר
+            maxX = 0;
+            minX = containerSize.width - scaledWidth;
         }
-
         if (scaledHeight <= containerSize.height) {
-            // אם המפה קטנה מהקונטיינר - מרכז אותה
             const centerY = (containerSize.height - scaledHeight) / 2;
             minY = maxY = centerY;
         } else {
-            // אם המפה גדולה מהקונטיינר - אפשר גרירה בגבולות
-            maxY = 0; // הקצה העליון של המפה לא יעבור את העליון של הקונטיינר
-            minY = containerSize.height - scaledHeight; // הקצה התחתון של המפה לא יעבור את התחתון של הקונטיינר
+            maxY = 0;
+            minY = containerSize.height - scaledHeight;
         }
-
         const clampedX = Math.max(Math.min(newPan.x, maxX), minX);
         const clampedY = Math.max(Math.min(newPan.y, maxY), minY);
-
         setPan({ x: clampedX, y: clampedY });
     };
-
     const getSpaceIcon = (space: Space) => {
         const name = space.name.toLowerCase();
-
-        // בדוק קודם אם זה עמדת קבלה
         if (name.includes('קבלה')) return '📋';
-
-        // אל תחזיר אייקון עבור עמדות מחשב רגילות - הן יקבלו אייקון מחשב
         if (name.includes('עמדה') && (space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) {
             return null;
         }
-
         if (name.includes('שירותים')) return '🚻';
         if (name.includes('מטבח')) return '🍽️';
         if (name.includes('מעלית')) return '🛗';
         if (name.includes('ארון חשמל')) return '⚡';
         if (name.includes('ארון תקשורת')) return '📡';
         if (name.includes('עמדת הדפסה')) return '🖨️';
-
         return null;
     };
     const getRoomSpaceIcon = (room: Room) => {
@@ -324,8 +290,6 @@ export const WorkspaceMap = () => {
         return null;
     };
     const renderComputerStand = (space: Space) => {
-        // if (!(space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) return null;
-
         const centerX = space.positionX + space.width / 2;
         const centerY = space.positionY + space.height / 2;
 
@@ -335,7 +299,6 @@ export const WorkspaceMap = () => {
                     // pointerEvents: 'INACTIVE'
                 }
             }>
-                {/* מסך */}
                 <rect
                     x={centerX - 15}
                     y={centerY - 12}
@@ -375,21 +338,17 @@ export const WorkspaceMap = () => {
             </g>
         );
     };
-
     const renderReceptionDesk = (space: Space) => {
-        // if (space.type !== 'RECEPTION_DESK') return null;
         const centerX = space.positionX + space.width / 2;
         const centerY = space.positionY + space.height / 2;
         return (
             <g>
-                {/* שולחן חצי עיגול */}
                 <path
                     d={`M ${centerX - 18} ${centerY + 3} A 18 12 0 0 1 ${centerX + 18} ${centerY + 3} L ${centerX + 15} ${centerY + 8} L ${centerX - 15} ${centerY + 8} Z`}
                     fill="#8B4513"
                     stroke="#654321"
                     strokeWidth="1"
                 />
-                {/* משטח עליון */}
                 <ellipse
                     cx={centerX}
                     cy={centerY}
@@ -417,7 +376,6 @@ export const WorkspaceMap = () => {
                     padding: '8px 12px',
                     borderRadius: '4px',
                     fontSize: '12px',
-                    // pointerEvents: 'INACTIVE',
                     zIndex: 1000
                 }}
             >
@@ -453,7 +411,12 @@ export const WorkspaceMap = () => {
                 <div className='displayDate'>
                     <h2>תצוגת מפה</h2>
                     <label>תאריך</label>
-                    <input type="date" onChange={(e) => { ocoupancy(new Date(e.target.value)) }} />
+                    <input type="date" onChange={(e) => {
+                        const val = new Date(e.target.value);
+                        if (!isNaN(val.getTime())) {
+                            ocoupancy(val);
+                        }
+                    }} />
                 </div>
                 <Button onClick={() => { navigate('/') }} className="backBtn">Back</Button>
             </div>
@@ -476,10 +439,9 @@ export const WorkspaceMap = () => {
                                 <path d="M0,10 L10,0" stroke="#6c757d" strokeWidth="1" />
                             </pattern>
                         </defs>
-
                         {workSpaces.length > 0 &&
                             [...workSpaces]
-                               .sort((a, b) => (b.width * b.height) - (a.width * a.height))
+                                .sort((a, b) => (b.width * b.height) - (a.width * a.height))
                                 .map((w) => {
                                     const hasActiveSearch = activeStatusSearch || activeTypeSearch;
                                     const matchesStatusSearch = !activeStatusSearch || w.status === selectedStatus;
@@ -490,7 +452,6 @@ export const WorkspaceMap = () => {
                                     return (
                                         <g key={w.id}>
                                             {isWorkstation ? (
-                                                // כל העמדות יעברו דרך הענף הזה
                                                 <g
                                                     className={`space-rect ${getSpaceClass(w)}`}
                                                     style={{ opacity: isHighlighted ? 1 : 0.3 }}
@@ -501,28 +462,17 @@ export const WorkspaceMap = () => {
                                                             visible: true,
                                                             x: rect.left + rect.width / 2,
                                                             y: rect.top - 10,
-                                                            content: `${w.name} - ${w.status}`
-                                                        });
-                                                        setDetails({
-                                                            name: w.name,
-                                                            description: w.description || "",
-                                                            type: w.type,
-                                                            status: w.status,
-                                                            workspaceMapId: w.workspaceMapId || "",
-                                                            currentCustomerId: w.currentCustomerId || "",
-                                                            currentCustomerName: w.currentCustomerName || "",
-                                                            positionX: w.positionX,
-                                                            positionY: w.positionY,
-                                                            width: w.width,
-                                                            height: w.height,
-                                                            createdAt: w.createdAt,
-                                                            updatedAt: w.updatedAt
+                                                            content: `${w.name} - ${w.status} - ${w.description} - ${w.width}*${w.height}`
                                                         });
                                                     }}
                                                     onMouseLeave={() => setTooltip(prev => ({ ...prev, visible: false }))}
                                                     onClick={() => {
                                                         if (w.status === SpaceStatus.AVAILABLE) {
-                                                            navigate('/assignmentForm');
+                                                            if (w.type === WorkspaceType.PRIVATE_ROOM || w.type === WorkspaceType.DESK_IN_ROOM || w.type === WorkspaceType.COMPUTER_STAND) {
+                                                                navigate('/assignmentForm', { state: { space: w, displayDate } });
+                                                            }
+                                                            else {
+                                                            }
                                                         }
                                                     }}
                                                 >
@@ -537,17 +487,6 @@ export const WorkspaceMap = () => {
                                                         opacity={0.3}
                                                     />
                                                     {renderComputerStand(w)}
-                                                    {w.type === 'RECEPTION_DESK' && renderReceptionDesk(w)}
-                                                    <text
-                                                        x={w.positionX + w.width / 2}
-                                                        y={w.positionY + w.height + 15}
-                                                        textAnchor="middle"
-                                                        fontSize="8"
-                                                        fill="#333"
-                                                        style={{ pointerEvents: 'none' }}
-                                                    >
-                                                        {w.name}
-                                                    </text>
                                                 </g>
                                             ) : (
                                                 <rect
@@ -570,34 +509,18 @@ export const WorkspaceMap = () => {
                                                                 ? w.name
                                                                 : `${w.name} - ${w.status} ${w.currentCustomerName ? `${w.currentCustomerName}` : ""},`
                                                         });
-                                                        setDetails({
-                                                            name: w.name,
-                                                            description: w.description || "",
-                                                            type: w.type,
-                                                            status: w.status,
-                                                            workspaceMapId: w.workspaceMapId || "",
-                                                            currentCustomerId: w.currentCustomerId || "",
-                                                            currentCustomerName: w.currentCustomerName || "",
-                                                            positionX: w.positionX,
-                                                            positionY: w.positionY,
-                                                            width: w.width,
-                                                            height: w.height,
-                                                            createdAt: w.createdAt,
-                                                            updatedAt: w.updatedAt
-                                                        });
                                                     }}
                                                     onMouseLeave={() => {
                                                         setTooltip(prev => ({ ...prev, visible: false }));
                                                     }}
                                                     onClick={() => {
                                                         if (w.status === SpaceStatus.AVAILABLE) {
-                                                            if (w.type === WorkspaceType.OPEN_SPACE) {
-                                                                navigate('/bookingCalendar');
-                                                            } else {
-                                                                // <AssignmentForm  workspaceId={w.id} workspaceName={ w.name }  workspaceType={w.type} assignedDate={displayDate} />
+                                                            if (w.type === WorkspaceType.PRIVATE_ROOM) {
+                                                                navigate('/assignmentForm', { state: { space: w, displayDate } });
                                                             }
                                                         }
                                                     }}
+
                                                 >
                                                     {renderComputerStand(w)}
                                                 </rect>
@@ -621,28 +544,42 @@ export const WorkspaceMap = () => {
                                                             {getSpaceIcon(w)}
                                                         </text>
                                                     )}
-                                                    <text
-                                                        x={w.positionX + w.width / 2}
-                                                        y={w.positionY + w.height / 2 + (getSpaceIcon(w) ? 5 : 0)}
-                                                        textAnchor="middle"
-                                                        dominantBaseline="middle"
-                                                        fontSize={Math.min(w.width / 8, w.height / 4, 12)}
-                                                        fill="white"
-                                                        className="space-text"
-                                                        style={{ pointerEvents: 'none' }}
-                                                    >
-                                                        {w.name}
-                                                    </text>
-                                                    {/* הצגת שם לקוח אם קיים */}
+                                                    {(() => {
+                                                        const name = (w.name || '').toLowerCase();
+                                                        const showName =
+                                                            name.includes('משרד') ||
+                                                            name.includes('שירותים') ||
+                                                            name.includes('מטבח') ||
+                                                            name.includes('לאונז') ||
+                                                            name.includes('ישיבות');
+                                                        return showName ? (
+                                                            <text
+                                                                x={w.positionX + w.width / 2}
+                                                                y={w.positionY + w.height / 2 + (getSpaceIcon(w) ? 5 : 0)}
+                                                                textAnchor="middle"
+                                                                dominantBaseline="middle"
+                                                                fontSize={Math.min(w.width, w.height, 20)}
+                                                                fill="white"
+                                                                className="space-text"
+                                                                style={{ pointerEvents: 'none' }}
+                                                            >
+                                                                {w.name}
+                                                            </text>
+                                                        ) : null;
+                                                    })()}
                                                     {w.currentCustomerName && (
                                                         <text
                                                             x={w.positionX + w.width / 2}
                                                             y={w.positionY + w.height / 2 + (getSpaceIcon(w) ? 20 : 15)}
                                                             textAnchor="middle"
                                                             dominantBaseline="middle"
-                                                            fontSize={Math.min(w.width / 10, w.height / 5, 10)}
+                                                            fontSize="40px"
                                                             fill="#ffeb3b"
-                                                            style={{ pointerEvents: 'none', fontWeight: 'bold', textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}
+                                                            style={{
+                                                                pointerEvents: 'none',
+                                                                fontWeight: 'bold',
+                                                                textShadow: '1px 1px 2px rgba(0,0,0,0.7)'
+                                                            }}
                                                         >
                                                             👤 {w.currentCustomerName}
                                                         </text>
@@ -652,27 +589,38 @@ export const WorkspaceMap = () => {
                                         </g>
                                     );
                                 })}
-                        {rrr.length > 0 && rrr.map((r) => {
+                        {rooms.length > 0 && rooms.map((r) => {
                             const hasActiveSearch = activeStatusSearch || activeTypeSearch;
                             const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
                             const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
                             const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
-
-
                             return (
                                 <g key={r.id}>
                                     {r.width > 50 && r.height > 30 && (
                                         <g
-                                        // onClick={()=>{if(r.status === "AVAILABLE")}}
                                         >
                                             <rect
                                                 x={r.positionX}
                                                 y={r.positionY}
                                                 width={r.width}
                                                 height={r.height}
-                                                className={`space-rect room-space ${getRoomSpaceClass(r)}`} // הוסף room-space
-
-                                            // שאר הקוד...
+                                                className={`space-rect room-space ${getRoomSpaceClass(r)}`}
+                                                onClick={() => {
+                                                    navigate('/bookingCalendar', { state: { room: r, displayDate } });
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.stopPropagation();
+                                                    const rect = e.currentTarget.getBoundingClientRect();
+                                                    setTooltip({
+                                                        visible: true,
+                                                        x: rect.left + rect.width / 2,
+                                                        y: rect.top - 10,
+                                                        content: `${r.name} - ${r.capacity} מקומות`
+                                                    });
+                                                }}
+                                                onMouseLeave={() => {
+                                                    setTooltip(prev => ({ ...prev, visible: false }));
+                                                }}
                                             />
                                             {getRoomSpaceIcon(r) && (
 
@@ -709,7 +657,6 @@ export const WorkspaceMap = () => {
                                 </g>
                             );
                         })}
-
                     </svg>
                 </div>
                 <div className="zoom">
@@ -737,8 +684,6 @@ export const WorkspaceMap = () => {
             className="minimap"
             style={{
                 position: 'absolute',
-                // bottom: 10,
-                // right: 50,
                 top: 80,
                 left: 20,
                 width: 200,
@@ -769,7 +714,7 @@ export const WorkspaceMap = () => {
                     />
                 ))}
                 <rect
-                    x={-pan.x / (scale * zoom) /* ← משמר התאמה בין תצוגה לפאן */}
+                    x={-pan.x / (scale * zoom)}
                     y={-pan.y / (scale * zoom)}
                     width={containerSize.width / (scale * zoom)}
                     height={containerSize.height / (scale * zoom)}
