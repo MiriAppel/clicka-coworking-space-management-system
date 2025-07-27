@@ -31,14 +31,14 @@ import {
 // סביבת עבודה
 // ========================
 
-/** יצירת שכבת תמחור חדשה */
+/*"Create a new pricing tier"*/
 export const createPricingTierController = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
-    const newTier = new PricingTierModel(req.body); // יצירת מופע מודל מ-req.body
+    const newTier = new PricingTierModel(req.body);
     
     
-    const tier = await createPricingTier(newTier); // העברת המודל
+    const tier = await createPricingTier(newTier); 
     res.status(201).json(tier);
     console.log("pricing.routes loaded");
 
