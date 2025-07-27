@@ -141,7 +141,7 @@ export const LeadInteractions = () => {
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
 
-      <SearchLeads term={searchTerm} setTerm={setSearchTerm} onSearch={handleSearch} />
+      {/* <SearchLeads term={searchTerm} setTerm={setSearchTerm} onSearch={handleSearch} /> */}
 
       <div className="flex flex-wrap justify-center gap-4 mb-6 mt-4">
         <div className="flex flex-col items-start">
