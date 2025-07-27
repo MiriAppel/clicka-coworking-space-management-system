@@ -1,6 +1,6 @@
 import type { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
-
+import { sendEmailToConfrim } from "./gmail-service";
 
 export class baseService<T> {
   // בשביל שם המחלקה
@@ -25,17 +25,21 @@ export class baseService<T> {
     return data;
   };
 
-  
   getAll = async (): Promise<T[]> => {
     // console.log("🧾 טבלה:", this.tableName);
 
     const { data, error } = await supabase
+<<<<<<< HEAD
     .from(this.tableName)
     // .select("*, lead_interaction(*)")
     .select("*");
+=======
+      .from(this.tableName)
+      .select("*, lead_interaction(*)");
+>>>>>>> origin/main
 
     console.log(data);
-    
+
     if (!data || data.length === 0) {
       console.log(` אין נתונים בטבלה ${this.tableName}`);
       return []; // תחזירי מערך ריק במקום לזרוק שגיאה
@@ -57,11 +61,10 @@ export class baseService<T> {
       try {
         dataForInsert = (dataToUpdate as any).toDatabaseFormat();
         console.log(dataForInsert);
-
       } catch (error) {
-        console.error("שגיאה בהמרה", error)
+        console.error("שגיאה בהמרה", error);
       }
-    }    
+    }
 
     const { data, error } = await supabase
       .from(this.tableName)
@@ -74,8 +77,9 @@ export class baseService<T> {
       throw error;
     }
 
-    if (!data || data.length === 0)
+    if (!data || data.length === 0) {
       throw new Error("לא התקבלה תשובה מהשרת אחרי העדכון");
+    }
 
     return data[0];
   };
@@ -91,8 +95,14 @@ export class baseService<T> {
       console.log(dataForInsert);
     }
 
-    // if (this.tableName === "customer")
-    //  await CustomerAuthentication((dataForInsert as any).email);
+    // אם זה הוספת לקוח לא מוסיפים לו מייל עד שמאמתים את הלקוח והמייל נוסף רק בצורת עדכון אחרי שהשלקוח נוצר
+    let emailToSave: string | undefined;
+
+    if (this.tableName === "customer") {
+      const { email, ...rest } = dataForInsert as any;
+      emailToSave = email; // שומרת את המייל במשתנה
+      dataForInsert = rest; // dataForInsert בלי המייל
+    }
 
     const { data, error } = await supabase
       .from(this.tableName)
@@ -101,6 +111,12 @@ export class baseService<T> {
 
     console.log("added");
     console.log(data);
+
+    const createdRecord = data?.[0];
+
+    if (this.tableName === "customer") {
+      sendEmailToConfrim(emailToSave, createdRecord.id);
+    }
 
     if (error) {
       console.log("enter to log", error);

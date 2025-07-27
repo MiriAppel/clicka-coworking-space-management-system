@@ -66,6 +66,7 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: 'הודעת עזיבה',
   EXITED: 'עזב',
   PENDING: 'בהמתנה',
+  CREATED: ' נוצר'
 };
 
 const reasonLabels: Record<ExitReason, string> = {
@@ -126,8 +127,7 @@ export const CustomerStatusChanged: React.FC = () => {
       exitReason: latestPeriod?.exitReason,
       exitReasonDetails: latestPeriod?.exitReasonDetails ?? '',
     };
-  },
-    []);
+  },[fetchCustomerById]);
   useCustomerFormData({
     open: !!customerId,
     customerId: customerId ?? "",

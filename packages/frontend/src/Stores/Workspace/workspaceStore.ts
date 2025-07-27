@@ -1,12 +1,13 @@
 import {create} from "zustand";
 import axios from "axios";
 import {ID, Room, Space, SpaceStatus} from "shared-types";
-import { get } from "lodash";
 
 //הצהרות
 interface WorkSpaceState {
     workSpaces: Space[];
+    rooms: Room[];
     getAllWorkspace: () => Promise<void>;
+    getAllRooms: () => Promise<void>;
     getWorkspaceById: (id:ID) => Promise<void>;
     updateWorkspace: (workspace:Space,id:ID) => Promise<void>;
     createWorkspace: (workspace:Space) => Promise<void>;
@@ -27,6 +28,15 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
             console.error('Error fetching work spaces:', error);
         }
     },
+    //get all rooms
+    getAllRooms: async () => {
+        try {
+            const response = await axios.get('api/rooms/getAllRooms');
+            set({ rooms: response.data });
+        } catch (error){
+             console.error('Error fetching rooms:', error);
+        }
+    },
     //get by id
      getWorkspaceById: async (id) => {
         try {
@@ -37,47 +47,38 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set,get) => ({
         }
     },
     //update space
-updateWorkspace: async (workspace, id) => {
-    try {
-        const response = await axios.put(`api/workspace/updateWorkspace/${id}`, workspace);
-
-        set((state) => ({
-            workSpaces: state.workSpaces.map((ws) =>
-                ws.id === id ? response.data : ws
-            )
-        }));
-        
-    } catch (error) {
-        console.error('Error updating workspace:', error);
-    }
-},
-
+    updateWorkspace: async (workspace,id) => {
+        try {
+            // const response = await axios.put(`api/workspace/updateWorkspace/${id}`,workspace);
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            //  set({ workSpaces: Array.isArray(response.data) ? response.data : [response.data] });
+        } catch (error) {
+            console.error('Error fetching work spaces:', error);
+        }
+    },
     //add space
-createWorkspace: async (workspace) => {
-    try {
-        const response = await axios.post('api/workspace/createWorkspace', workspace);
-
-        set((state) => ({
-            workSpaces: [...state.workSpaces, response.data]
-        }));
-
-    } catch (error) {
-        console.error('Error creating workspace:', error);
-    }
-},
+    createWorkspace: async (workspace) => {
+        try {
+            // const response = await axios.post('api/workspace/createWorkspace',workspace);
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            // set({ workSpaces: response.data });
+        } catch (error) {
+            console.error('Error fetching work spaces:', error);
+        }
+    },
     //delete space
-   deleteWorkspace: async (id) => {
-    try {
-        await axios.delete(`api/workspace/deleteWorkspace/${id}`);
-
-        set((state) => ({
-            workSpaces: state.workSpaces.filter((ws) => ws.id !== id)
-        }));
-
-    } catch (error) {
-        console.error('Error deleting workspace:', error);
-    }
-},
+    deleteWorkspace: async (id) => {
+        try {
+            // const response = await axios.delete(`api/workspace/deleteWorkspace/${id}`);
+            const all = await axios.get('api/workspace/getAllWorkspace');
+            set({ workSpaces: all.data });
+            // set({ workSpaces: response.data });
+        } catch (error) {
+            console.error('Error fetching work spaces:', error);
+        }
+    },
 getWorkspaceHistory: async (date: Date) => {
   try {
     const formattedDate = date.toISOString().split('T')[0];
@@ -98,7 +99,7 @@ getWorkspaceHistory: async (date: Date) => {
           ...rest,
           currentCustomerId: '',
           currentCustomerName: '',
-        //   status: rest.type === 'BASE' ? SpaceStatus.NONE : SpaceStatus.AVAILABLE,
+          status: rest.type === 'BASE' ? SpaceStatus.NONE : SpaceStatus.AVAILABLE,
         });
       }
     });

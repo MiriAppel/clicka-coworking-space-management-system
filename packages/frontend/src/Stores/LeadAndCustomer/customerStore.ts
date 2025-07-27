@@ -117,7 +117,7 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
                 (c) =>
                     c.name.toLowerCase().includes(lower) ||
                     c.phone.toLowerCase().includes(lower) ||
-                    c.email.toLowerCase().includes(lower) ||
+                    c.email?.toLowerCase().includes(lower) ||
                     c.businessName?.toLowerCase().includes(lower) ||
                     c.businessType?.toLowerCase().includes(lower) ||
                     statusLabels[c.status].toLowerCase().includes(lower)
@@ -309,4 +309,5 @@ const statusLabels: Record<CustomerStatus, string> = {
     NOTICE_GIVEN: "הודעת עזיבה",
     EXITED: "עזב",
     PENDING: "בהמתנה",
+    CREATED: "נוצר"
 };

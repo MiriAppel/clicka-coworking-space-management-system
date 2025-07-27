@@ -155,6 +155,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       },
       mode: "onSubmit",
       resolver: zodResolver(bookingSchema),
+      resolver: zodResolver(bookingSchema),
     });
 
     const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail} = useBookingStore();
@@ -296,6 +297,8 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       const name = data.name?.trim() || "";
       const startTime = `${data.startDate}T${data.startTime}`;
       const endTime = `${data.startDate}T${data.endTime}`;
+      const startTime = `${data.startDate}T${data.startTime}`;
+      const endTime = `${data.startDate}T${data.endTime}`;
       const selectedRoom = roomOptions.find((room) => room.value === data.selectedRoomId);
       const roomName = selectedRoom?.label ?? "Unknown";
 
@@ -315,6 +318,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         status: BookingStatus.PENDING,
         notes: "",
         googleCalendarEventId: null,
+        totalHours: totalMinutes,
         totalHours: totalMinutes,
         chargeableHours: 0,
         totalCharge: 0,
@@ -340,6 +344,10 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         externalUserPhone: data.phone ?? "",
       };
     };
+    useEffect(() => {
+      console.log("שגיאות בטופס:", methods.formState.errors);
+    }, [methods.formState.errors]);
+
     useEffect(() => {
       console.log("שגיאות בטופס:", methods.formState.errors);
     }, [methods.formState.errors]);
@@ -390,6 +398,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
                   />
                   לקוח קיים
                 </label>
+                <br></br>
                 <br></br>
                 <label>
                   <input

@@ -2,7 +2,6 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
-
 interface TextAreaFieldProps {
     name: string;
     label: string;
@@ -17,7 +16,6 @@ interface TextAreaFieldProps {
     rows?: number;
     minHeight?: number;
 }
-
 export const TextAreaField: React.FC<TextAreaFieldProps> = ({
     name,
     label,
@@ -38,7 +36,6 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
     } = useFormContext();
     const error = errors[name]?.message as string | undefined;
     const effectiveDir = dir || theme.direction;
-
     return (
         <div className="space-y-1 w-full" dir={effectiveDir}>
             <label
@@ -92,3 +89,12 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
         </div>
     );
 };
+
+
+
+
+
+
+
+
+

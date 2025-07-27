@@ -1,5 +1,4 @@
 import { MapLayout } from "shared-types/workspaceMap";
-
 export class MapLayoutModel implements MapLayout {
   id?: string;
   workspaceMapid: string;
@@ -24,10 +23,7 @@ export class MapLayoutModel implements MapLayout {
     this.backgroundImage = params.backgroundImage||undefined;
     this.scale = params.scale;
     this.viewBox = params.viewBox;
-
   }
-
-
   toDatabaseFormat() {
     return {
       workspace_map_id: this.workspaceMapid,
