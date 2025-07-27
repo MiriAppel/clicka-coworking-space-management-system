@@ -117,12 +117,12 @@ export async function deleteCalendarSync(req: Request, res: Response) {
 export const getCalendarByRoom = async (req: Request, res: Response) => {
     try {
         const roomId: ID = req.params.roomId;
-        const calendar = await CalendarService.getCalendarByRoom(roomId);
-        if (calendar) {
-            res.status(200).json(calendar);
-        } else {
-            res.status(404).json({ message: 'Calendar not found for the specified room' });
-        }
+        // const calendar = await CalendarService.getCalendarByRoom(roomId);
+        // if (calendar) {
+        //     res.status(200).json(calendar);
+        // } else {
+        //     res.status(404).json({ message: 'Calendar not found for the specified room' });
+        // }
     } catch (error) {
         console.error('Error getting calendar by room:', error);
         res.status(500).json({ message: 'Failed to get calendar by room', error: error });
