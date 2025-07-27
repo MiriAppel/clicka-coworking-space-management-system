@@ -8,6 +8,8 @@ dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
+   
+
 
 function logUserActivity(userId: string, action: string) {
   console.log(`[Activity Log] ${userId}: ${action}`);
@@ -81,7 +83,16 @@ export class BookingService {
   //אם  הלקוח הוא קיים:
   //1.אם מוקצה לו כרגע חלל - זה בחינם 
   //2.אם יש לו כרטיס קליקה הוא מקבל מחיר מסובסד
- static async calculateBookingCharges(id: string,customerId:string,totalHours:number) {
+  static async calculateExtrenalCharges(totalHours:number) {
+    const roomPricing =await getCurrentMeetingRoomPricing();
+ if(!roomPricing){
+      console.log("there is no pricing");
+      return null;
+    } 
+  let totalCharge: number = 0;
+  let chargeableHours: number = 0;
+  }
+ static async calculateCustomerCharges(customerId:string,totalHours:number) {
    console.log('Received request to update booking:', customerId);
     //בדיקה האם ללקוח כרטיס קליקה
     const customerServic = new customerService() 
@@ -91,7 +102,7 @@ export class BookingService {
     if(!currentCustomerType){
       console.log("there is no customer type");
     }
-   console.log("😍😍😍" + currentCustomerType );
+    console.log("😍😍😍" + currentCustomerType );
     const roomPricing =await getCurrentMeetingRoomPricing();
     if(!roomPricing){
       console.log("there is no pricing");
@@ -113,9 +124,12 @@ export class BookingService {
               totalCharge }
     }
     static async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
-      //כאו יש להוסיף קריאה לעדכון של GOOGLECALENDER
-   if(updatedData.customerId){ 
-    const result = await this.calculateBookingCharges(id,updatedData.customerId,updatedData.totalHours);
+  //אם התקבל לקוח יש לו מחיר מיוחד ואם זה משתמש חיצוני המחיר שלו הוא רגיל
+  if(updatedData.externalUserName){
+     const result = await this.calculateExtrenalCharges(updatedData.totalHours);
+  }
+  if(updatedData.customerId){ 
+    const result = await this.calculateCustomerCharges(updatedData.customerId,updatedData.totalHours);
    if (result) {
     const { chargeableHours, totalCharge } = result; 
     console.log("שעות לחיוב:", chargeableHours);
