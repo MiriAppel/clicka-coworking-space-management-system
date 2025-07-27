@@ -9,16 +9,16 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuthStore();
 
-  // Mostrar pantalla de carga mientras verifica token
+  
   if (isLoading) {
     return <div className="auth-loading">Verificando sesión...</div>;
   }
 
-  // Si no está autenticado o la sesión expiró, redirigir a /auth
+//אם הוא לא רשום עובר להירשם 
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
   }
 
-  // Si todo ok, renderizar hijos
+  //אם הכל בסדר מביא לי את כל הקומפוננטות 
   return children;
 };

@@ -51,10 +51,10 @@ export const Routing = () => {
 
   return (
     <Routes>
-    
+    // ניתוב לרישום 
       <Route path="/auth" element={<AuthenticationScreen />} />
 
-     
+     // משתמש בקומפוננטה של החסימה שרק ישלח אותי לבית מתי שאני אהיה רשומה 
       <Route
         path="/"
         element={

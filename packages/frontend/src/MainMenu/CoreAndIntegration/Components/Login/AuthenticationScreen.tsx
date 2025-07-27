@@ -18,7 +18,7 @@ export const AuthenticationScreen = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
       <div className="flex w-full max-w-4xl bg-white shadow-2xl rounded-2xl overflow-hidden">
-        {/* Panel izquierdo */}
+    
         <div className="w-1/2 bg-gray-50 flex flex-col items-center justify-center p-10 border-r">
           <img src="/favicon.ico" alt="Logo" className="w-40 mb-6" />
           <p className="text-gray-600 text-center text-lg">
@@ -26,7 +26,7 @@ export const AuthenticationScreen = () => {
           </p>
         </div>
 
-        {/* Panel derecho centrado */}
+  
         <div className="w-1/2 flex flex-col justify-center items-center p-10">
           {isAuthenticated ? (
             <div className="text-center">

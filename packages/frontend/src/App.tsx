@@ -48,6 +48,7 @@ function App() {
   if (error) return <div>Error: {error}</div>;
 
   const showLandingHeader = location.pathname === "/";
+  // כדי שיראה לי את דף הבית רק בהתחלה ואז מתי שאני נכנסת למקום כלשהו שימחק 
 
   return (
     <div className="App">
