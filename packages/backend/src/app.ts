@@ -33,33 +33,16 @@ import driveRoutes from './routes/drive-route';
 import paymentRoutes from './routes/payment.route';
 import invoiceRouter from './routes/invoice.route';
 import documentRouter from './routes/document.routes';
-
-// import routerMap from './routes/mapLayout.route';
 import routerLayout from './routes/mapLayout.route';
 import routerCalendarSync from './routes/calendar-route';
-// import cookieParser from "cookie-parser";
-// const cookieParser = require("cookie-parser")
-// Create Express app
 const app = express();
 dotenv.config();
-
-// Create Express app
-// setupSwagger(app);
 app.use(cookieParser());
-
-// Apply middlewares
-// app.use(cookieParser());
 app.use(helmet());
-// app.use(cors({
-//   origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE, 
-//   credentials: true, 
-// }));
-app.use(
-  cors({
-    origin: 'http://localhost:3000', 
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE, 
+  credentials: true, 
+}));
 
 app.use(morgan('dev'));
 app.use(cookieParser());

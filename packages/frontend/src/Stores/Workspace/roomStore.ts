@@ -20,7 +20,7 @@ error: null,
     getAllRooms: async (): Promise<{ id: string; name: string }[]> => {
         set({ loading: true, error: null });
         try {
-          const response = await axiosInstance.get('rooms/getAllRooms');
+          const response = await axiosInstance.get('/rooms/getAllRooms');
           set({ rooms: response.data, loading: false });
           return response.data;
         } catch (error) {
