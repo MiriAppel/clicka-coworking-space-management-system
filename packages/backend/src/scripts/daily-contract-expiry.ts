@@ -7,7 +7,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY! // נדרש להרשאות עדכון
 );
 
-const updateContracts = async () => {
+const updateContractsAndCustomers = async () => {
   const today = dayjs().format('YYYY-MM-DD');
   const tomorrow = dayjs().add(1, 'day').format('YYYY-MM-DD');
 
@@ -37,35 +37,55 @@ const updateContracts = async () => {
     console.log('ℹ️ אין חוזים שפג תוקפם היום.');
   }
 
-  /* ========== ACTIVE-שלב 2: עדכון חוזים שנכנסים מחר לתוקף ל- ========== */
-  const { data: activeContracts, error: fetchActiveError } = await supabase
-    .from('contract')
-    .select('id')
-    .eq('status', 'SIGNED')
-    .in('start_date', [tomorrow]); 
+  /* ========== שלב: לקוחות עם תאריך עזיבה מחר ב-customer_period ========== */
+const { data: leavingPeriods, error: fetchLeavingError } = await supabase
+  .from('customer_period')
+  .select('customer_id')
+  .eq('exit_date', tomorrow);
 
-  if (fetchActiveError) {
-    console.error('❌ שגיאה בשליפת חוזים שנכנסים לתוקף:', fetchActiveError);
-  } else if (activeContracts && activeContracts.length > 0) {
-    const activeIds = activeContracts.map((c) => c.id);
+if (fetchLeavingError) {
+  console.error('❌ שגיאה בשליפת רשומות customer_period:', fetchLeavingError);
+} else if (!leavingPeriods || leavingPeriods.length === 0) {
+  console.log('ℹ️ אין לקוחות עם תאריך עזיבה מחר.');
+} else {
+  const customerIds = leavingPeriods.map((p) => p.customer_id);
 
-    const { error: updateActiveError } = await supabase
-      .from('contract')
-      .update({ status: 'ACTIVE' })
-      .in('id', activeIds);
+  
+  const { data: customers, error: fetchCustomersError } = await supabase
+    .from('customer')
+    .select('id_number')
+    .in('id', customerIds);
 
-    if (updateActiveError) {
-      console.error('❌ שגיאה בעדכון חוזים ל-ACTIVE:', updateActiveError);
-    } else {
-      console.log(`✅ עודכנו ${activeIds.length} חוזים לסטטוס ACTIVE`);
-    }
+  if (fetchCustomersError) {
+    console.error('❌ שגיאה בשליפת id_number מהלקוחות:', fetchCustomersError);
+  } else if (!customers || customers.length === 0) {
+    console.log('ℹ️ לא נמצאו לקוחות מתאימים לעדכון.');
   } else {
-    console.log('ℹ️ אין חוזים שנכנסים היום או מחר לתוקף.');
+    const idNumbers = customers.map((c) => c.id_number);
+
+    const { error: updateCustomersError } = await supabase
+      .from('customer')
+      .update({ status: 'EXITED' })
+      .in('id_number', idNumbers);
+
+    if (updateCustomersError) {
+      console.error('❌ שגיאה בעדכון לקוחות ל-EXITED:', updateCustomersError);
+    } else {
+      console.log(`✅ עודכנו ${idNumbers.length} לקוחות לסטטוס EXITED`);
+    }
   }
+}
 };
 
-// ✅ ירוץ כל יום בשעה 22:00
-cron.schedule("0 22 * * *", () => {
-  console.log("🔥 cron רץ לבדיקת חוזים בשעה 22:00...");
-  updateContracts();
+
+// // ✅ ירוץ כל יום בשעה 22:00
+// cron.schedule("0 22 * * *", () => {
+//   console.log("🔥 cron רץ לבדיקת חוזים בשעה 22:00...");
+//   updateContractsAndCustomers();
+// });
+// ✅ ירוץ כל דקה
+cron.schedule("* * * * *", () => {
+  console.log("🔥 cron רץ לבדיקת חוזים ולקוחות (כל דקה)...");
+  updateContractsAndCustomers();
 });
+

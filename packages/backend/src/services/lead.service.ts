@@ -171,17 +171,45 @@ export class leadService extends baseService<LeadModel> {
     }
   };
 
-  getLeadsByText = async (text: string): Promise<LeadModel[]> => {
-  const searchFields = ["name", "status", "phone", "email", "city"]; // כל השדות שאת רוצה לבדוק בהם
+//   getLeadsByText = async (text: string, status: string): Promise<LeadModel[]> => {
+//   const searchFields = ["name", "phone", "email", "city"]; // כל השדות שאת רוצה לבדוק בהם
 
+//   const filters = searchFields
+//     .map((field) => `${field}.ilike.%${text}%`)
+//     .join(",");
+
+//   const { data, error } = await supabase
+//     .from("leads")
+//     .select("*")
+//     .or(filters);
+
+//   if (error) {
+//     console.error("שגיאה:", error);
+//     return [];
+//   }
+
+//   return data as LeadModel[];
+// };
+
+  
+      
+getLeadsByText = async (text: string, status: string): Promise<LeadModel[]> => {
+  const searchFields = ["name", "phone", "email", "city"];
   const filters = searchFields
     .map((field) => `${field}.ilike.%${text}%`)
     .join(",");
 
-  const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .or(filters);
+  let query = supabase.from("leads").select("*");
+
+  if (status.trim()) {
+    query = query.eq("status", status.trim());
+  }
+
+  if (text.trim()) {
+    query = query.or(filters);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("שגיאה:", error);
@@ -191,9 +219,7 @@ export class leadService extends baseService<LeadModel> {
   return data as LeadModel[];
 };
 
-  
-      
-  
+
 }
 
 

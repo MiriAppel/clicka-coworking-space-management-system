@@ -118,12 +118,13 @@ export const getLeadsToRemind = async (req: Request, res: Response) => {
 export const searchLeadsByText = async (req: Request, res: Response) => {
   try {
     const text = req.query.text as string;
+    const status = (req.query.status as string) || "";//status
 
-    if (!text || text.trim() === "") {
+    if (!text &&!status.trim()) {//status
       return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
     }
 
-    const leads = await serviceLead.getLeadsByText(text);
+    const leads = await serviceLead.getLeadsByText(text,status);
     return res.json(leads);
   } catch (error) {
     console.error("שגיאה בחיפוש לידים:", error);

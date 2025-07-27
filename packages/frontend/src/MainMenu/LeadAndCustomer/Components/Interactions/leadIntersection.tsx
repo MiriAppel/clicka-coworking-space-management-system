@@ -21,8 +21,8 @@ export const LeadInteractions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
-  
-  const allLeadsRef = useRef<Lead[]>([]);  
+  const [status, setStatus] = useState("");//הוספה
+  const allLeadsRef = useRef<Lead[]>([]);
   const {
     leads,
     fetchLeads,
@@ -56,35 +56,51 @@ export const LeadInteractions = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isSearching]);
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setPage(1);
-    if (!term.trim()) {
-      setIsSearching(false);
-      useLeadsStore.setState({ leads: allLeadsRef.current });
-      return;
-    }
-    const filtered = allLeadsRef.current.filter((l) =>
-      l.name?.toLowerCase().includes(term.toLowerCase()) ||
-      l.phone?.includes(term) ||
-      l.email?.toLowerCase().includes(term.toLowerCase())
-    );
-    if (filtered.length > 0) {
+const handleSearch = (term: string, status: string = "") => {
+  setSearchTerm(term);
+  setStatus(status);
+  setPage(1);
+
+  // אין טקסט ואין סטטוס => החזר הכל
+  if (!term.trim() && !status.trim()) {
+    setIsSearching(false);
+    useLeadsStore.setState({ leads: allLeadsRef.current });
+    return;
+  }
+
+  // ✅ אם כל הלידים טעונים (לא פונים לשרת בכלל)
+  if (allLeadsRef.current.length > 0) {
+    const filtered = allLeadsRef.current.filter((l) => {
+      const matchesTerm =
+        !term.trim() ||
+        l.name?.toLowerCase().includes(term.toLowerCase()) ||
+        l.phone?.includes(term) ||
+        l.email?.toLowerCase().includes(term.toLowerCase());
+
+      const matchesStatus = !status.trim() ||
+        l.status?.toLowerCase().trim() === status.toLowerCase().trim();
+
+      return matchesTerm && matchesStatus;
+    });
+
+    setIsSearching(true);
+    useLeadsStore.setState({ leads: filtered });
+    return;
+  }
+
+  // ✅ אם אין את כל הלידים טעונים => fallback לשרת
+  fetch(`http://localhost:3001/api/leads/search?q=${term}&status=${status}`)
+    .then((res) => res.json())
+    .then((data: Lead[]) => {
       setIsSearching(true);
-      useLeadsStore.setState({ leads: filtered });
-    } else {
-      fetch(`http://localhost:3001/api/leads/search?q=${term}`)
-        .then((res) => res.json())
-        .then((data: Lead[]) => {
-          setIsSearching(true);
-          useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
-        })
-        .catch((err) => {
-          console.error("שגיאה בחיפוש מהשרת:", err);
-          useLeadsStore.setState({ leads: [] });
-        });
-    }
-  };
+      useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
+    })
+    .catch((err) => {
+      console.error("שגיאה בחיפוש מהשרת:", err);
+      useLeadsStore.setState({ leads: [] });
+    });
+};
+
 
   const isAlert = (lead: Lead): boolean => {
     switch (alertCriterion) {
@@ -134,9 +150,16 @@ export const LeadInteractions = () => {
   return (
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
-      <SearchLeads term={searchTerm} setTerm={setSearchTerm} onSearch={handleSearch} />
+      <SearchLeads
+        term={searchTerm}
+        setTerm={setSearchTerm}
+        status={status}        // ✅ הוספה
+        setStatus={setStatus}  // ✅ הוספה
+        onSearch={handleSearch}
+      />
+
       <div className="flex flex-wrap justify-center gap-4 mb-6 mt-4">
-     
+
         <div className="relative flex flex-col items-start">
           <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
           <Button
@@ -189,13 +212,12 @@ export const LeadInteractions = () => {
       {sortedLeads.map((lead) => (
         <div
           key={lead.id}
-          className={`border rounded-lg p-4 mb-2 cursor-pointer transition ${
-            selectedLead?.id === lead.id
+          className={`border rounded-lg p-4 mb-2 cursor-pointer transition ${selectedLead?.id === lead.id
               ? "bg-blue-100 border-blue-300"
               : isAlert(lead)
-              ? "border-red-500 bg-red-50"
-              : "hover:bg-gray-50"
-          }`}
+                ? "border-red-500 bg-red-50"
+                : "hover:bg-gray-50"
+            }`}
           onClick={() => {
             if (selectedLead?.id === lead.id) {
               resetSelectedLead();
@@ -242,28 +264,28 @@ export const LeadInteractions = () => {
               <LeadInteractionDetails />
             )}
           </div>
-          
+
         </div>
-        
+
       ))}
-<Button
-  onClick={() => navigate("/leadAndCustomer/leads/LeadSourcesPieChart")}
-  variant="primary"
-  size="sm"
-  style={{
-    backgroundColor: 'orange', // צבע כתום
-    color: 'white', // טקסט לבן
-    border: 'none', // ללא גבול
-    borderRadius: '8px', // פינות מעוגלות
-    padding: '10px 20px', // ריפוד
-    fontSize: '1em', // גודל טקסט
-    cursor: 'pointer', // מצביע על יד
-    display: 'block', // כדי למרכז
-    margin: '0 auto', // למרכז
-  }}
->
-  הצג את מקורות הלידים
-</Button>
+      <Button
+        onClick={() => navigate("/leadAndCustomer/leads/LeadSourcesPieChart")}
+        variant="primary"
+        size="sm"
+        style={{
+          backgroundColor: 'orange', // צבע כתום
+          color: 'white', // טקסט לבן
+          border: 'none', // ללא גבול
+          borderRadius: '8px', // פינות מעוגלות
+          padding: '10px 20px', // ריפוד
+          fontSize: '1em', // גודל טקסט
+          cursor: 'pointer', // מצביע על יד
+          display: 'block', // כדי למרכז
+          margin: '0 auto', // למרכז
+        }}
+      >
+        הצג את מקורות הלידים
+      </Button>
 
 
     </div>
