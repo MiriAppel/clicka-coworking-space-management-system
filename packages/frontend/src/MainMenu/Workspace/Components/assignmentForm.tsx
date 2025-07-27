@@ -33,6 +33,9 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = (props) => {
     customerName: customerNameFromState,
     workspaceType: workspaceTypeFromState,
   } = location.state || {};
+
+  console.log('Location state:', location.state); // :white_check_mark: debug
+  
   // :white_check_mark: שילוב בין props ובין location.state
   const customerId = props.customerId || customerIdFromState;
   const customerName = props.customerName || customerNameFromState;
@@ -108,7 +111,7 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = (props) => {
     const checkForConflicts = async () => {
       const daysOfWeekForConflicts =
         Array.isArray(watchedDaysOfWeek)
-          ? watchedDaysOfWeek.map(Number)
+          ? watchedDaysOfWeek.map(Number) 
           : typeof watchedDaysOfWeek === "string"
             ? [Number(watchedDaysOfWeek)]
             : [];

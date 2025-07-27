@@ -145,7 +145,7 @@ export const ExpandableCustomerCard = ({
   const hasImage = !!image;
 
   return (
-    <div className="rounded-xl border shadow p-5 mb-4 bg-white transition-all duration-300 text-right">
+    <div className="rounded-xl border shadow p-2 mb-0.5 bg-white transition-all duration-300 text-right">
       <div className="cursor-pointer" onClick={() => setOpen(!open)}>
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
