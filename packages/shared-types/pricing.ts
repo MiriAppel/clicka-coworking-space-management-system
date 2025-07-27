@@ -11,6 +11,8 @@ export interface PricingTier {
   year2Price: number;
   year3Price: number;
   year4Price: number;
+  twoDaysFromOfficePrice: number;      
+  threeDaysFromOfficePrice: number;     
   active: boolean;
   effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
   createdAt: DateISO; // שינוי: תוקן ל-DateISO
@@ -74,6 +76,8 @@ export interface UpdatePricingTierRequest {
   year2Price: number;
   year3Price: number;
   year4Price: number;
+  twoDaysFromOfficePrice: number;      
+  threeDaysFromOfficePrice: number;
   effectiveDate: DateISO; 
 }
 
@@ -121,12 +125,13 @@ export interface GetPricingHistoryResponse {
     };
   }[];
 }
-
 export interface PricingTierCreateRequest {
   workspaceType: WorkspaceType;
   year1Price: number;
   year2Price: number;
   year3Price: number;
   year4Price: number;
-  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  twoDaysFromOfficePrice: number;    
+  threeDaysFromOfficePrice: number;   
+  effectiveDate: DateISO;
 }

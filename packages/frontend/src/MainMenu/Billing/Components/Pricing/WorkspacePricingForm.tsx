@@ -6,25 +6,21 @@ import { UpdatePricingTierRequest } from 'shared-types';
 import { WorkspaceType } from 'shared-types/customer';
 import { showAlert } from '../../../../Common/Components/BaseComponents/BaseAlert'; 
 
-// ----------------------
-// Props להגדרת הקומפוננטה
-// ----------------------
 interface Props {
-  workspaceType: WorkspaceType;   // סוג סביבת העבודה
-  initialData?: any;              // ערכים לעריכה אם קיימים
-  onSuccess?: () => void;         // callback לאחר שמירה מוצלחת
+  workspaceType: WorkspaceType;
+  initialData?: any;
+  onSuccess?: () => void;
 }
 
 const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onSuccess }) => {
-  // ----------------------
-  // הגדרת הטופס עם ערכי ברירת מחדל
-  // ----------------------
   const methods = useForm<UpdatePricingTierRequest & { id?: string }>({
     defaultValues: {
       year1Price: 0,
       year2Price: 0,
       year3Price: 0,
       year4Price: 0,
+      twoDaysFromOfficePrice: 0,
+      threeDaysFromOfficePrice: 0,
       workspaceType,
       effectiveDate: '',
       id: initialData?.id || undefined,
@@ -33,9 +29,6 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
 
   const { save, loading } = useWorkspacePricingStore();
 
-  // ----------------------
-  // איפוס ערכים בטופס בהתאם לנתוני העריכה (אם יש)
-  // ----------------------
   useEffect(() => {
     if (initialData) {
       methods.reset({
@@ -49,6 +42,8 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
         year2Price: 0,
         year3Price: 0,
         year4Price: 0,
+        twoDaysFromOfficePrice: 0,
+        threeDaysFromOfficePrice: 0,
         workspaceType,
         effectiveDate: '',
         id: undefined,
@@ -57,12 +52,8 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
     methods.clearErrors();
   }, [initialData, methods, workspaceType]);
 
-  // ----------------------
-  // טיפול בשליחה
-  // ----------------------
   const onSubmit = async (data: UpdatePricingTierRequest & { id?: string }) => {
     methods.clearErrors('effectiveDate');
-
     try {
       const dataToSend = { ...data, workspaceType };
       await save(dataToSend, initialData?.id);
@@ -77,13 +68,14 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
 
       onSuccess?.();
 
-      // איפוס הטופס רק במקרה של יצירה חדשה
       if (!initialData) {
         methods.reset({
           year1Price: 0,
           year2Price: 0,
           year3Price: 0,
           year4Price: 0,
+          twoDaysFromOfficePrice: 0,
+          threeDaysFromOfficePrice: 0,
           workspaceType,
           effectiveDate: '',
           id: undefined,
@@ -93,7 +85,6 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
       let message = e?.message || 'אירעה שגיאה בלתי צפויה בשמירה';
       console.error('שגיאה בשמירה:', message, e);
 
-      // טיפול בשגיאות תאריך התחולה המתנגשות
       if (
         message.includes('תאריך התחולה') &&
         message.includes('מתנגש עם שכבה קיימת')
@@ -113,9 +104,7 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
           title: 'שגיאת תאריך!',
           text: message,
         });
-      }
-      // טיפול בשגיאות כלליות הקשורות לשדה תאריך תחולה
-      else if (message.includes('תאריך תחולה') || message.includes('effectiveDate')) {
+      } else if (message.includes('תאריך תחולה') || message.includes('effectiveDate')) {
         methods.setError('effectiveDate', {
           type: 'manual',
           message,
@@ -126,9 +115,7 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
           title: 'שגיאת תאריך!',
           text: message,
         });
-      }
-      // שגיאה כללית אחרת
-      else {
+      } else {
         showAlert({
           icon: 'error',
           title: 'שגיאה!',
@@ -138,9 +125,6 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
     }
   };
 
-  // ----------------------
-  // UI - טופס
-  // ----------------------
   return (
     <FormProvider {...methods}>
       <form
@@ -155,6 +139,8 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
         <NumberInputField name="year2Price" label="מחיר שנה 2" required min={0} />
         <NumberInputField name="year3Price" label="מחיר שנה 3" required min={0} />
         <NumberInputField name="year4Price" label="מחיר שנה 4" required min={0} />
+        <NumberInputField name="twoDaysFromOfficePrice" label="מחיר ליומיים מהמשרד" required min={0} />
+        <NumberInputField name="threeDaysFromOfficePrice" label="מחיר לשלושה ימים מהמשרד" required min={0} />
 
         <div className="space-y-1">
           <label className="block text-sm font-medium text-gray-700">תאריך תחולה</label>

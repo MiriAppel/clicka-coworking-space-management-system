@@ -11,7 +11,7 @@ export const ManagementWorkspace = () => {
     id: '',
     name: '',
     description: '',
-    type: WorkspaceType.PRIVATE_ROOM,
+    type: WorkspaceType.PRIVATE_ROOM1,
     status: SpaceStatus.AVAILABLE,
     workspaceMapId: '',
     // room: '',

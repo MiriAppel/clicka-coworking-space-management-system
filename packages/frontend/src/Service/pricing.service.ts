@@ -1,5 +1,7 @@
-// pricing.service.ts
+// ייבוא axios והטיפוס AxiosError
 import axios, { AxiosError } from 'axios';
+
+// ייבוא של כל הטיפוסים הדרושים לצורך ניהול תמחורים
 import {
   UpdateLoungePricingRequest,
   LoungePricing,
@@ -8,43 +10,42 @@ import {
   MeetingRoomPricing,
   UpdateMeetingRoomPricingRequest,
   UpdatePricingTierRequest,
-  
 } from 'shared-types';
 
+// כתובת בסיסית לכל קריאות ה-API שקשורות לתמחור
 const API_BASE_URL = '/api/pricing';
 
-// פונקציית עזר לחילוץ הודעת שגיאה
+// פונקציית עזר לשליפת הודעת שגיאה מתוך אובייקט שגיאה של axios או אחר
 function extractErrorMessage(error: any): string {
- if (axios.isAxiosError(error) && error.response) {
-    // ננסה לחלץ את הודעת השגיאה מהתגובה של השרת
+  if (axios.isAxiosError(error) && error.response) {
     const responseData = error.response.data;
-    console.log('Axios Error Response Data:', responseData); // הדפסה לבדיקה
+    console.log('Axios Error Response Data:', responseData); // דיבאג
 
     if (typeof responseData === 'string') {
-      return responseData; // אם התגובה היא מחרוזת ישירות
+      return responseData;
     }
     if (responseData && typeof responseData === 'object') {
-      // ננסה שדות נפוצים
       if (responseData.message) return responseData.message;
       if (responseData.error) return responseData.error;
       if (responseData.description) return responseData.description;
-      // אם יש שדה errors (לדוגמה, מולידציה)
+
       if (responseData.errors && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
         return responseData.errors.map((e: any) => e.message || e.msg || e).join(', ');
       }
     }
-    // אם לא מצאנו שדה ספציפי, נחזיר הודעה כללית עם סטטוס
+
     return `שגיאה מהשרת (קוד: ${error.response.status || 'לא ידוע'})`;
   }
-  // אם זו לא שגיאת Axios או שאין תגובה מהשרת
-  console.log('General Error Object:', error); // הדפסה לבדיקה
+
+  console.log('General Error Object:', error); // דיבאג
   return error.message || 'שגיאה בלתי צפויה.';
-  
- return "";
 }
 
+// ==========================
+// =        Lounge         =
+// ==========================
 
-// --- Lounge Pricing ---
+// שליפת תמחור נוכחי ללאונג'
 export async function getCurrentLoungePricing(): Promise<LoungePricing | null> {
   try {
     const response = await axios.get<LoungePricing>(`${API_BASE_URL}/lounge/current`);
@@ -54,6 +55,7 @@ export async function getCurrentLoungePricing(): Promise<LoungePricing | null> {
   }
 }
 
+// יצירת תמחור חדש ללאונג' עם שמירת היסטוריה
 export async function createLoungePricingWithHistory(
   data: UpdateLoungePricingRequest
 ): Promise<LoungePricing> {
@@ -65,6 +67,7 @@ export async function createLoungePricingWithHistory(
   }
 }
 
+// עדכון תמחור ללאונג' לפי מזהה
 export async function updateLoungePricing(id: string, data: UpdateLoungePricingRequest): Promise<LoungePricing> {
   try {
     const response = await axios.put<LoungePricing>(`${API_BASE_URL}/lounge/${id}`, data);
@@ -74,6 +77,7 @@ export async function updateLoungePricing(id: string, data: UpdateLoungePricingR
   }
 }
 
+// מחיקת תמחור ללאונג' לפי מזהה
 export async function deleteLoungePricing(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/lounge/${id}`);
@@ -82,6 +86,7 @@ export async function deleteLoungePricing(id: string): Promise<void> {
   }
 }
 
+// שליפת כל היסטוריית התמחור של הלאונג'
 export async function getAllLoungePricingHistory(): Promise<LoungePricing[]> {
   try {
     const response = await axios.get<LoungePricing[]>(`${API_BASE_URL}/lounge/history`);
@@ -91,7 +96,11 @@ export async function getAllLoungePricingHistory(): Promise<LoungePricing[]> {
   }
 }
 
-// --- Workspace Pricing ---
+// ==============================
+// =     Workspace Pricing      =
+// ==============================
+
+// שליפת שכבת תמחור נוכחית לפי סוג סביבת עבודה (כמו PRIVATE_ROOM)
 export async function getCurrentPricingTier(workspaceType: string): Promise<PricingTier | null> {
   try {
     const response = await axios.get<PricingTier>(`${API_BASE_URL}/tier/current`, { params: { workspaceType } });
@@ -100,6 +109,8 @@ export async function getCurrentPricingTier(workspaceType: string): Promise<Pric
     throw new Error(extractErrorMessage(error));
   }
 }
+
+// יצירת שכבת תמחור עם שמירת היסטוריה
 export async function createPricingTierWithHistory(data: UpdatePricingTierRequest): Promise<PricingTier> {
   try {
     const response = await axios.post<PricingTier>(`${API_BASE_URL}/tier`, data);
@@ -109,7 +120,7 @@ export async function createPricingTierWithHistory(data: UpdatePricingTierReques
   }
 }
 
-
+// יצירת שכבת תמחור או עדכון אם קיימת
 export async function createOrUpdatePricingTier(data: PricingTierCreateRequest): Promise<PricingTier> {
   try {
     const response = await axios.post<PricingTier>(`${API_BASE_URL}/tier`, data);
@@ -118,6 +129,8 @@ export async function createOrUpdatePricingTier(data: PricingTierCreateRequest):
     throw new Error(extractErrorMessage(error));
   }
 }
+
+// עדכון תמחור של שכבת תמחור לפי מזהה
 export async function updatePricingTierPricing(id: string, data: UpdatePricingTierRequest): Promise<PricingTier> {
   try {
     const response = await axios.put<PricingTier>(`${API_BASE_URL}/tier/${id}`, data);
@@ -127,8 +140,11 @@ export async function updatePricingTierPricing(id: string, data: UpdatePricingTi
   }
 }
 
+// ==============================
+// =    Meeting Room Pricing    =
+// ==============================
 
-// --- Meeting Room Pricing ---
+// שליפת תמחור נוכחי לחדרי ישיבות
 export async function getCurrentMeetingRoomPricing(): Promise<MeetingRoomPricing | null> {
   try {
     const response = await axios.get<MeetingRoomPricing>(`${API_BASE_URL}/meeting-room/current`);
@@ -138,6 +154,7 @@ export async function getCurrentMeetingRoomPricing(): Promise<MeetingRoomPricing
   }
 }
 
+// יצירת תמחור חדש לחדרי ישיבות עם שמירת היסטוריה
 export async function createMeetingRoomPricingWithHistory(data: UpdateMeetingRoomPricingRequest): Promise<MeetingRoomPricing> {
   try {
     const response = await axios.post<MeetingRoomPricing>(`${API_BASE_URL}/meeting-room`, data);
@@ -147,6 +164,7 @@ export async function createMeetingRoomPricingWithHistory(data: UpdateMeetingRoo
   }
 }
 
+// עדכון תמחור לחדרי ישיבות לפי מזהה
 export async function updateMeetingRoomPricing(id: string, data: UpdateMeetingRoomPricingRequest): Promise<MeetingRoomPricing> {
   try {
     const response = await axios.put<MeetingRoomPricing>(`${API_BASE_URL}/meeting-room/${id}`, data);
@@ -156,6 +174,7 @@ export async function updateMeetingRoomPricing(id: string, data: UpdateMeetingRo
   }
 }
 
+// מחיקת תמחור לחדרי ישיבות לפי מזהה
 export async function deleteMeetingRoomPricing(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/meeting-room/${id}`);
@@ -164,6 +183,7 @@ export async function deleteMeetingRoomPricing(id: string): Promise<void> {
   }
 }
 
+// שליפת כל היסטוריית התמחור לחדרי ישיבות
 export async function getAllMeetingRoomPricingHistory(): Promise<MeetingRoomPricing[]> {
   try {
     const response = await axios.get<MeetingRoomPricing[]>(`${API_BASE_URL}/meeting-room/history`);
