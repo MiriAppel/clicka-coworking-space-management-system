@@ -12,6 +12,7 @@ export const Billing = () => {
             <Button variant="accent" size="sm" onClick={() => navigate('')}>Back</Button>
             <Outlet />
         </div>
+        
     );
 }
 
