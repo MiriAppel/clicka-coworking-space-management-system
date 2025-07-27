@@ -201,6 +201,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     //הבאת כל הלקוחות
     useEffect(() => {
       fetchCustomers();
+      console.log("הלקוחות שהתקבלו:", customers);
 //שליפת התכונות לפי חדרים
       getAllRooms().then((rooms: Room[]) => {
         setRoomOptions(
@@ -340,10 +341,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         externalUserPhone: data.phone ?? "",
       };
     };
-    useEffect(() => {
-      console.log("שגיאות בטופס:", methods.formState.errors);
-    }, [methods.formState.errors]);
-
     useEffect(() => {
       console.log("שגיאות בטופס:", methods.formState.errors);
     }, [methods.formState.errors]);

@@ -50,11 +50,17 @@ app.use(cookieParser());
 // Apply middlewares
 // app.use(cookieParser());
 app.use(helmet());
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE, // Adjust as needed
-  credentials: true, // Allow cookies to be sent with requests
-}));
- 
+// app.use(cors({
+//   origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE, 
+//   credentials: true, 
+// }));
+app.use(
+  cors({
+    origin: 'http://localhost:3000', 
+    credentials: true,
+  })
+);
+
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.json());
