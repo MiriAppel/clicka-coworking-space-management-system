@@ -140,7 +140,11 @@ export class ExpenseService extends baseService<ExpenseModel> {
     }
   }
   async updateExpense(id: string, updateData: UpdateExpenseRequest) {
-    try {
+   const expense = await this.getExpenseById(id);
+    if(updateData.status === 'PAID' && expense.status !== 'PAID') {
+      //send email if have invoice
+    }
+      try {
       const { data, error } = await supabase
         .from('expense')
         .update(updateData)

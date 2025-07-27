@@ -1,11 +1,10 @@
 // Stores/Billing/pricing/workspacePricingStore.ts
 import { create } from 'zustand';
 import { getCurrentPricingTier,
-   createOrUpdatePricingTier,
    createPricingTierWithHistory, 
    updatePricingTierPricing, 
    deleteLoungePricing} from '../../../Service/pricing.service';
-import { PricingTier, PricingTierCreateRequest ,UpdatePricingTierRequest} from 'shared-types';
+import { PricingTier ,UpdatePricingTierRequest} from 'shared-types';
 
 interface WorkspacePricingState {
   current: PricingTier | null;

@@ -1,5 +1,5 @@
 // pricing.service.ts
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import {
   UpdateLoungePricingRequest,
   LoungePricing,

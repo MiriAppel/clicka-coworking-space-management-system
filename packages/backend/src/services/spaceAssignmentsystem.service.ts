@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { RoomModel } from "../models/room.model";
-import type { DateRangeFilter, ID, OccupancyReportResponse } from "shared-types";
+import { SpaceStatus, type DateRangeFilter, type ID, type OccupancyReportResponse, type Space } from "shared-types";
 import dotenv from 'dotenv';
 import { SpaceAssignmentModel } from '../models/spaceAssignment.model';
 dotenv.config();
@@ -156,53 +156,138 @@ async  getSpaceById(id:string) {
             throw error;
         }
     }
+
+
+async getHistory(date: Date): Promise<Space[] | null> {
+  const dateStr = date.toISOString().split('T')[0];
+  console.log('🔍 dateStr:', dateStr);
+
+  const { data: assignments, error } = await supabase
+    .from('space_assignment')
+    .select('*')
+    .lte('assigned_date', dateStr); // לשלוף רק הקצאות שהתחילו עד התאריך
+
+  if (error) return null;
+  if (!assignments || assignments.length === 0) return [];
+
+  const workspaceIds = [...new Set(assignments.map((a) => a.workspace_id))];
+  const { data: workspaceData, error: workspaceError } = await supabase
+    .from('workspace')
+    .select('*')
+    .in('id', workspaceIds);
+
+  if (workspaceError || !workspaceData) return null;
+
+  const customerIds = [...new Set(assignments.map((a) => a.customer_id))];
+  const { data: customerData, error: customerError } = await supabase
+    .from('customer')
+    .select('id, name')
+    .in('id', customerIds);
+
+  if (customerError || !customerData) return null;
+
+  const workspaceMap = new Map(workspaceData.map((w) => [w.id, w]));
+  const customerMap = new Map(customerData.map((c) => [c.id, c.name]));
+
+  const targetDate = new Date(dateStr);
+
+  const workspaces: Space[] = assignments.flatMap((record) => {
+    const assignedDate = new Date(record.assigned_date);
+    const unassignedDate = record.unassigned_date ? new Date(record.unassigned_date) : null;
+
+    const isRelevant =
+      targetDate >= assignedDate &&
+      (unassignedDate === null || targetDate <= unassignedDate);
+
+    if (!isRelevant) return []; // התאריך לא בטווח – מדלגים
+
+    const workspace = workspaceMap.get(record.workspace_id);
+    const customerName = customerMap.get(record.customer_id) ?? '';
+
+    let sStatus: SpaceStatus = SpaceStatus.AVAILABLE;
+
+    switch (record.status) {
+      case 'ACTIVE':
+      case 'ENDED':
+        sStatus = SpaceStatus.OCCUPIED;
+        break;
+      case 'SUSPENDED':
+        sStatus = SpaceStatus.RESERVED;
+        break;
+      case 'INACTIVE':
+        sStatus =SpaceStatus.INACTIVE;
+        break;
+    }
+
+    return [{
+      id: record.workspace_id,
+      workspaceMapId: workspace?.workspace_map_id,
+      name: workspace?.name ?? '',
+      description: workspace?.description ?? '',
+      type: workspace?.type ?? '',
+      status: sStatus,
+      currentCustomerId: record.customer_id,
+      currentCustomerName: customerName,
+      positionX: workspace?.position_x,
+      positionY: workspace?.position_y,
+      width: workspace?.width,
+      height: workspace?.height,
+      location: workspace?.location ?? '',
+      createdAt: record.created_at ?? '',
+      updatedAt: record.updated_at ?? '',
+    }];
+  });
+
+  return workspaces;
+}
+    }
     //קבלת דו"ח תפוסה על פי תאריך וסוג חלל
-async getOccupancyReport(type: string, startDate: string, endDate: string): Promise<{
-    count: number;           // סה"כ חללים מהסוג הזה
-   // data: SpaceAssignmentModel[];  // חללים תפוסים בתאריכים
-    occupancyRate: number;         // אחוז תפוסה
-}> {
-  debugger
-    let rate = 0;
-    const { count, error } = await supabase
-        .from('workspace')
-        .select('*', { count: 'exact', head: true })
-        .eq('type', type);
+// async getOccupancyReport(type: string, startDate: string, endDate: string): Promise<{
+//     count: number;           // סה"כ חללים מהסוג הזה
+//    // data: SpaceAssignmentModel[];  // חללים תפוסים בתאריכים
+//     occupancyRate: number;         // אחוז תפוסה
+// }> {
+//   debugger
+//     let rate = 0;
+//     const { count, error } = await supabase
+//         .from('workspace')
+//         .select('*', { count: 'exact', head: true })
+//         .eq('type', type);
 
-    if (error) {
-        console.error('❌ Error counting spaces:', error);
-    }
-    console.log(`✅ Found ${count} total spaces of type ${type}`);
-    const { data, error: DataError } = await supabase
-        .from('space_assignment')
-        .select(`
-            *,
-            workspace_id (
-                id,
-                name,
-                type,
-                room,
-                current_customer_name
-            )
-        `)
-        .eq('workspace_id.type', type)
-        // .lte('assigned_date', startDate)
-        // .or(`unassigned_date.is.null,unassigned_date.gte.${endDate}`);
-    if (DataError) {
-        console.error('Error fetching occupancy report:', DataError);
-    }
-    const spaces = this.getAllSpaces()
-    console.log(`✅ Found ${spaces} occupied spaces of type ${type}`);
-    console.log(spaces);
+//     if (error) {
+//         console.error('❌ Error counting spaces:', error);
+//     }
+//     console.log(`✅ Found ${count} total spaces of type ${type}`);
+//     const { data, error: DataError } = await supabase
+//         .from('space_assignment')
+//         .select(`
+//             *,
+//             workspace_id (
+//                 id,
+//                 name,
+//                 type,
+//                 room,
+//                 current_customer_name
+//             )
+//         `)
+//         .eq('workspace_id.type', type)
+//         // .lte('assigned_date', startDate)
+//         // .or(`unassigned_date.is.null,unassigned_date.gte.${endDate}`);
+//     if (DataError) {
+//         console.error('Error fetching occupancy report:', DataError);
+//     }
+//     const spaces = this.getAllSpaces()
+//     console.log(`✅ Found ${spaces} occupied spaces of type ${type}`);
+//     console.log(spaces);
 
-    // if (count !== null) {
-    //     rate = spaces / count * 100 || 0;
-    // }
- console.log(rate);
-    return {
-        count: count || 0,
-        // data: spaces,
-        occupancyRate: rate || 0,
-    };
-}
-}
+//     // if (count !== null) {
+//     //     rate = spaces / count * 100 || 0;
+//     // }
+//  console.log(rate);
+//     return {
+//         count: count || 0,
+//         // data: spaces,
+//         occupancyRate: rate || 0,
+//     };
+// }
+// }

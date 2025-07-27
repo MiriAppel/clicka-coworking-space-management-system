@@ -1,4 +1,3 @@
-
 import { UUID } from "node:crypto";
 import type { Contract, Customer, CustomerPaymentMethod, CustomerPeriod, CustomerStatus, DateISO, FileReference, ID, PaymentMethod, PaymentMethodType, WorkspaceType } from "shared-types";
 
