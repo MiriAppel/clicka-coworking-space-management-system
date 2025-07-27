@@ -152,7 +152,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const token = localStorage.getItem('accessToken') || '';
     try {
       const res = await axios.post(
-        `${process.env.API_URL}/document/save`,
+        `${process.env.REACT_APP_API_URL}/document/save`,
         formData,
         {
           withCredentials: true,

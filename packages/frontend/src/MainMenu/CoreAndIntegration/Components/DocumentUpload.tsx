@@ -41,7 +41,7 @@ const DocumentUpload: React.FC = () => {
   const fetchCustomers = async () => {
     console.log('Fetching customers...');
     try {
-      const response = await axios.get(`${process.env.API_URL}/customers`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/customers`, {
         withCredentials: true,
         timeout: 5000
       });
@@ -70,7 +70,7 @@ const DocumentUpload: React.FC = () => {
 
   const fetchContracts = async (customerId: string) => {
     try {
-      const response = await axios.get(`${process.env.API_URL}/contract/customer/${customerId}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/contract/customer/${customerId}`, {
         withCredentials: true,
         timeout: 5000
       });
@@ -92,7 +92,7 @@ const DocumentUpload: React.FC = () => {
         try {
           console.log('Processing contract document for customer:', selectedCustomer, 'document:', file.id);
           
-          const response = await axios.post(`${process.env.API_URL}/contract/customer/${selectedCustomer}/document`, {
+          const response = await axios.post(`${process.env.REACT_APP_API_URL}/contract/customer/${selectedCustomer}/document`, {
             customerId: selectedCustomer,
             documentId: file.id
           }, {

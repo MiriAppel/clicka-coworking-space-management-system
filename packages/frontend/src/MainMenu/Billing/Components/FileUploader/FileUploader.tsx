@@ -92,7 +92,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFilesUploaded }) => {
     console.log('FolderPath: test/folder');
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${process.env.API_URL}/document/save`);
+    xhr.open('POST', `${process.env.REACT_APP_API_URL}/document/save`);
 
     // עדכון התקדמות העלאה
     xhr.upload.onprogress = (event) => {

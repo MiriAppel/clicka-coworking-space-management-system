@@ -39,7 +39,7 @@ export const LeadsHomePage = () => {
 
   const fetchLeads = async (page: number, limit: number = 50) => {
     try {
-      const { data } = await axios.get(`${process.env.API_URL}/api/leads/by-page`, {
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/leads/by-page`, {
         params: { page, limit },
       });
 
@@ -90,7 +90,7 @@ export const LeadsHomePage = () => {
     } else {
       // חיפוש בשרת - אם אין תוצאות גם מהשרת, נציג מערך ריק במקום להציג את כל הרשימה
       axios
-        .get(`${process.env.API_URL}/leads/search`, {
+        .get(`${process.env.REACT_APP_API_URL}/leads/search`, {
           params: { q: term },
         })
         .then((res) => {
