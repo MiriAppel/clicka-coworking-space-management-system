@@ -1,80 +1,95 @@
 // Stores/Billing/pricing/workspacePricingStore.ts
-import { create } from 'zustand';
-import { getCurrentPricingTier,
-   createPricingTierWithHistory, 
-   updatePricingTierPricing, 
-   deleteLoungePricing} from '../../../Service/pricing.service';
-import { PricingTier ,UpdatePricingTierRequest} from 'shared-types';
 
+import { create } from 'zustand'; 
+// Zustand - ספרייה לניהול state גלובלי בריאקט (כמו Redux אבל פשוט יותר)
+
+// ייבוא של פונקציות שירות מהשכבת service
+import { 
+  getCurrentPricingTier,                  // שליפת התמחור הנוכחי לפי סוג סביבת עבודה
+  createOrUpdatePricingTier,              // לא בשימוש בקובץ הזה (אפשר למחוק אם לא צריך)
+  createPricingTierWithHistory,           // יצירת תמחור חדש עם היסטוריה
+  updatePricingTierPricing,               // עדכון תמחור קיים
+  deleteLoungePricing                     // מחיקת רשומת תמחור מסוג לאונג'
+} from '../../../Service/pricing.service';
+
+import {
+  PricingTier,                            // טיפוס לייצוג שכבת תמחור
+  PricingTierCreateRequest,               // טיפוס לבקשת יצירה
+  UpdatePricingTierRequest                // טיפוס לבקשת עדכון
+} from 'shared-types';
+
+// ממשק ל־state הכולל את כל הפונקציות והמשתנים הדרושים
 interface WorkspacePricingState {
-  current: PricingTier | null;
-  loading: boolean;
-  error: string | null;
-//  fetch: (workspaceType: string) => Promise<void>;
- // save: (data: PricingTierCreateRequest) => Promise<void>;
-   fetch: (workspaceType: string) => Promise<void>;
-    fetchHistory: () => Promise<void>; // ייתכן ותצטרך פונקציה נפרדת להבאת היסטוריה
-    save: (data: UpdatePricingTierRequest, id?: string) => Promise<void>;
-    delete: (id: string) => Promise<void>; // הוספת פונקציית מחיקה לסטור
+  current: PricingTier | null;            // התמחור הנוכחי של סביבת העבודה
+  loading: boolean;                       // האם יש פעולה ברקע
+  error: string | null;                   // הודעת שגיאה כללית
+
+  fetch: (workspaceType: string) => Promise<void>;  // שליפת התמחור לפי סוג סביבת עבודה
+  fetchHistory: () => Promise<void>;               // שליפת היסטוריית תמחור (כרגע ריקה)
+  save: (data: UpdatePricingTierRequest, id?: string) => Promise<void>; // שמירה (עדכון/יצירה)
+  delete: (id: string) => Promise<void>;           // מחיקה לפי מזהה
 }
+
+// יצירת ה-store של Zustand
 export const useWorkspacePricingStore = create<WorkspacePricingState>((set, get) => ({
-  current: null,
-  history: [], // אתחול
-  loading: false,
-  error: null,
+
+  current: null,               // ערך התחלתי של התמחור הנוכחי
+  history: [],                 // מערך היסטוריה (כרגע לא בשימוש אמיתי)
+  loading: false,             // סטטוס טעינה התחלתית
+  error: null,                // ללא שגיאות בהתחלה
+
+  // פונקציה: שליפת שכבת התמחור לפי סוג סביבת עבודה (PRIVATE_ROOM וכו')
   fetch: async (workspaceType) => {
     set({ loading: true, error: null });
     try {
-      const pricing = await getCurrentPricingTier(workspaceType);
-      set({ current: pricing, loading: false });
+      const pricing = await getCurrentPricingTier(workspaceType);  // API
+      set({ current: pricing, loading: false });                   // שמירת התוצאה ל־state
     } catch (e: any) {
       set({ error: e?.message || 'שגיאה בטעינת מחירי לאונג', loading: false });
     }
   },
-  // פונקציה להבאת היסטוריית מחירים (ייתכן שצריך להוסיף ל-pricing.service.ts)
+
+  // פונקציה (עתידית) לשליפת היסטוריית תמחור – כרגע אין בה מימוש
   fetchHistory: async () => {
     set({ loading: true, error: null });
     try {
-      // נניח שיש לך פונקציה ב service שמביאה את כל ההיסטוריה
-      // אם לא, נצטרך להוסיף אותה (לדוגמה: getAllLoungePricingHistory())
-      // בינתיים, נשתמש ב current אם אין פונקציה אחרת
-      // אולי ה-current מביא גם את ההיסטוריה, או שיש לו מערך היסטוריה בפנים
-      // לצורך הדוגמה, נניח שיש API שמביא את כל הרשומות
-      // חשוב: אם זה לא קיים ב service, תצטרך להוסיף אותו שם
-      // const historyData = await getAllLoungePricingHistory(); 
+      // TODO: להוסיף פונקציית שירות מתאימה כמו getAllLoungePricingHistory()
+      // const historyData = await getAllLoungePricingHistory();
       // set({ history: historyData, loading: false });
-      set({ loading: false }); // אם אין fetchHistory בפועל, רק נוריד את הלואדינג
+      set({ loading: false }); // בינתיים, פשוט מסיים טעינה
     } catch (e: any) {
       set({ error: e?.message || 'שגיאה בטעינת היסטוריית מחירי לאונג', loading: false });
     }
   },
+
+  // פונקציית שמירה: אם קיים מזהה → עדכון, אחרת יצירה חדשה עם היסטוריה
   save: async (data, id) => {
     set({ loading: true, error: null });
     try {
       if (id) {
-        await updatePricingTierPricing(id, data);
+        await updatePricingTierPricing(id, data);         // עדכון לפי ID
       } else {
-        await createPricingTierWithHistory(data);
+        await createPricingTierWithHistory(data);         // יצירת חדש עם היסטוריה
       }
       set({ loading: false });
-    //  await get().fetch(); // רענן את המידע הנוכחי
-      await get().fetchHistory(); // *** רענן את נתוני ההיסטוריה לאחר שמירה/עדכון ***
+      // await get().fetch(); // אופציונלי: רענון הנתונים הנוכחיים
+      await get().fetchHistory(); // תמיד נרענן את ההיסטוריה
     } catch (e: any) {
       const message = e?.response?.data?.error || e?.message || 'שגיאה בשמירת הנתונים';
       set({ error: message, loading: false });
-      throw new Error(message);
+      throw new Error(message); // החוצה לקומפוננטה
     }
   },
-  // *** פונקציית מחיקה עם רענון לאחר מכן ***
-  
+
+  // פונקציית מחיקה: מוחקת לפי ID ומרעננת את ההיסטוריה
   delete: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      await deleteLoungePricing(id);
+      await deleteLoungePricing(id);          // מחיקה
       set({ loading: false });
       alert('המחיר נמחק בהצלחה!');
-      //await get().fetch(); // רענן את המידע הנוכחי (אם המחיר הנוכחי נמחק)
-      await get().fetchHistory(); // *** רענן את נתוני ההיסטוריה לאחר מחיקה ***
+      // await get().fetch(); // רענון נתונים (אם נדרש)
+      await get().fetchHistory();             // רענון ההיסטוריה
     } catch (e: any) {
       const message = e?.response?.data?.error || e?.message || 'שגיאה במחיקת הנתונים';
       set({ error: message, loading: false });
@@ -83,36 +98,3 @@ export const useWorkspacePricingStore = create<WorkspacePricingState>((set, get)
     }
   }
 }));
-/*
-export const useWorkspacePricingStore = create<WorkspacePricingState>((set) => ({
-  current: null,
-  loading: false,
-  error: null,
-  fetch: async (workspaceType) => {
-    set({ loading: true, error: null });
-    try {
-      const pricing = await getCurrentPricingTier(workspaceType);
-      set({ current: pricing, loading: false });
-    } catch (err: any) {
-      console.error("שגיאה ב-fetch (Zustand):", err);
-      set({ error: err.message || 'שגיאה בטעינת המחיר הנוכחי.', loading: false });
-      // חשוב: זרוק את השגיאה גם החוצה כדי שהקומפוננטה תוכל לתפוס אותה
-      throw err; 
-    }
-  },
-  save: async (data) => {
-    set({ loading: true, error: null }); // נקה שגיאות קודמות לפני ניסיון חדש
-    try {
-  
-      const result = await updatePricingTierPricing(data);
-      set({ loading: false, current: result });
-    } catch (err: any) {
-      console.error("שגיאה ב-save (Zustand):", err);
-      // חשוב: השתמש ב-err.message שנוצר ב-pricing.service.ts
-      set({ error: err.message || 'שגיאה בשמירת הנתונים.' });
-      set({ loading: false }); // ודא ש-loading מתאפס
-      // *** הנקודה המרכזית: זרוק את השגיאה הלאה! ***
-      throw err; 
-    }
-  },
-}));*/
