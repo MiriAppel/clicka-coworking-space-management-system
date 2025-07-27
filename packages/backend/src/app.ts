@@ -103,6 +103,9 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/emailTemplate', emailTemplateRouter);
 app.use('/api/drive', driveRoutes);
 // app.use('/api/leadInteraction', routerCstomer);
+app.use('/api/payment', routerPayment);
+app.use('/api/invoices', invoiceRouter);
+// app.use('/api/document', documentRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
