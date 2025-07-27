@@ -6,8 +6,8 @@ import { CustomerDashboard } from "./Customers/customerDashboard";
 import { LeadsHomePage } from "./Leads/leadHomePage";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { UpdateCustomer } from "./Customers/updateCustomer";
+import { CustomersList } from "./Customers/customersList";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
-import { CustomersList } from "./Customers/customersList"
 import { LeadInteractions } from "./Interactions/leadIntersection";
 import { InteractionForm } from "./Interactions/interactionForm";
 // import { addInteraction } from "./Interactions/leadInteractionDetails";

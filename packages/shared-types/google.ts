@@ -1,6 +1,6 @@
 // google-types.d.ts
 
-import { BookingStatus } from 'booking';
+import { BookingStatus } from 'shared-types';
 import { ApiResponse, ID, FileReference } from './core';
 import { Buffer } from 'buffer';
 

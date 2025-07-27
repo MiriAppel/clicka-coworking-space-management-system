@@ -39,7 +39,7 @@ export const useVendorsStore = create<VendorsState>((set, get) => ({
 
   deleteVendor: async (vendorId: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/vendor/${vendorId}`, { method: 'DELETE' });
+      const res = await fetch(`http://localhost:3001/api/vendor/${vendorId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error("שגיאה במחיקה");
       set(state => ({
         vendors: state.vendors.filter(v => v.id !== vendorId),

@@ -2,7 +2,8 @@
   "name": "clicka-project",
   "version": "1.0.0",
   "main": "index.js",
-  "private": true,
+  "packageManager": "yarn@1.22.19",
+  "private": true, 
   "scripts": {
     "start:backend": "yarn workspace clicka-backend dev",
     "start:frontend": "yarn workspace clicka-frontend start",
@@ -57,9 +58,7 @@
     "sweetalert2-react-content": "^5.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "yarn": "^1.22.22",
-    "zod": "^3.25.67",
-    "zustand": "^5.0.6"
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@types/aria-query": "^5.0.4",

@@ -6,13 +6,12 @@ import { useVendorsStore } from "../../../../Stores/Billing/vendorsStore";
 import { Vendor, DocumentType } from "shared-types";
 import FileUploader, { FileItem } from '../../../../Common/Components/BaseComponents/FileUploader/FileUploader';
 import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
+import axiosInstance from "../../../../Service/Axios";
 
-// טיפוס לפרופס של הקומפוננטה - כולל אפשרות ל-folderId אם יש
 type VendorSummaryProps = {
   vendor: Vendor & { folderId?: string };
 };
 
-// טיפוס לפרופס של קומפוננטת יצירת הנתיב
 export interface FileUploaderProps {
   onFilesUploaded?: (files: FileItem[]) => void;
   onPathReady: (path: string) => void;
@@ -20,7 +19,6 @@ export interface FileUploaderProps {
   documentCategory: string;
 }
 
-// קומפוננטה שיוצרת נתיב תיקייה לפי שם הספק וקטגוריה
 export const FolderPathGenerator: React.FC<FileUploaderProps> = ({ vendorName, documentCategory, onPathReady }) => {
   useEffect(() => {
     if (vendorName && documentCategory) {
@@ -58,7 +56,7 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
   const handleDeleteVendor = async () => {
     if (window.confirm("האם למחוק את הספק?")) {
       await deleteVendor(vendor.id);
-      navigate("/vendors");
+      navigate("/vendor");
     }
   };
 
@@ -132,18 +130,14 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
                   };
 
                   try {
-                    const res = await fetch(`http://localhost:3000/vendor/${vendor.id}/documents`, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ file: document }),
+                    const res = await axiosInstance.post(`/vendor/${vendor.id}/documents`, {
+                      file: document,
                     });
 
-                    if (res.ok) {
+                    if (res.status === 200 || res.status === 201) {
                       console.log("📁 המסמך נשמר בהצלחה במסד הנתונים");
                     } else {
-                      console.error("❌ שגיאה בשמירת המסמך:", await res.text());
+                      console.error("❌ שגיאה בשמירת המסמך:", res.statusText);
                     }
                   } catch (error) {
                     console.error("❗ שגיאה בבקשת שמירת המסמך:", error);

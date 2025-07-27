@@ -4,26 +4,15 @@ import { LoginResponse } from "shared-types"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import { axiosInstance } from '../../../../Service/Axios';
 import { googleAuthConfig } from '../../../../Config/googleAuth';
-import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
+
 
 export const LoginWithGoogle = () => {
     const { setUser, setSessionId } = useAuthStore();
-    interface GoogleCodeResponse {
-        code: string;
-        // Add other properties if needed
-    }
-    interface GoogleLoginConfig {
-        flow: 'auth-code';
-        onSuccess: (codeResponse: GoogleCodeResponse) => Promise<void>;
-        onError: (error: unknown) => void;
-        scope: string;
-        redirect_uri: string;
-        extraQueryParams: {
-            prompt: string;
-            access_type: string;
-            include_granted_scopes: string;
-        };
-    }
+    // interface GoogleCodeResponse {
+    //     code: string;
+    //     // Add other properties if needed
+    // }
+
     const login = useGoogleLogin({
         flow: 'auth-code',
         onSuccess: async (codeResponse: { code: any; }) => {
