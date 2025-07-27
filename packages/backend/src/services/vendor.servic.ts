@@ -1,3 +1,4 @@
+//server/vendor.service.ts
 import { ID, Vendor, CreateVendorRequest, PaymentMethod, VendorCategory, VendorStatus, PaymentTerms } from "shared-types"
 import { VendorModel } from "../models/vendor.model";
 import { supabase } from '../db/supabaseClient';
@@ -15,10 +16,11 @@ export async function create(
             tax_id: request.taxId,
             payment_terms: PaymentTerms.COD,
             preferred_payment_method: PaymentMethod.BANK_TRANSFER,
+
             category: VendorCategory.Other,
             status: VendorStatus.Inactive, // סטטוס ברירת מחדל אם לא נשלח
             notes: request.notes,
-            // documents: request.documents || [],
+            document_ids: request.documents || [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         });
@@ -45,7 +47,7 @@ export async function create(
             category: data.category,
             status: data.status, // סטטוס ברירת מחדל אם לא נשלח
             notes: data.notes,
-            // documents: data.documents,
+            document_ids: data.document_ids,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
         });
@@ -80,7 +82,7 @@ export async function getAllVendors(): Promise<Vendor[] | null> {
             category: vendor.category,
             status: vendor.status,
             notes: vendor.notes,
-            // documents: vendor.documents,
+            document_ids: vendor.document_ids,
             createdAt: vendor.createdAt,
             updatedAt: vendor.updatedAt,
         }));
@@ -115,7 +117,7 @@ export async function getVendorById(id: string): Promise<Vendor | null> {
             category: data.category,
             status: data.status,
             notes: data.notes,
-            // documents: data.documents,
+            document_ids: data.document_ids,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
         });
@@ -140,15 +142,3 @@ export async function deleteVendor(id: ID): Promise<boolean> {
     throw e;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

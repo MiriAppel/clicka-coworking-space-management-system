@@ -100,9 +100,10 @@ export async function updateWorkspaceMap(id: string, updatedData: WorkspaceMapMo
         console.error('Error updating map:', error);
         return null;
     }
-    // const map = data as WorkspaceMapModel; 
+
+     const map =  WorkspaceMapModel.fromDatabaseFormat(data); 
   
-    return data;
+    return map;
 
 
 

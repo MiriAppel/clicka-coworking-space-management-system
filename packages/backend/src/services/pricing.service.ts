@@ -131,7 +131,6 @@ export async function createPricingTier(
     if (!request.workspaceType) {
       throw new Error("חובה לבחור סוג סביבת עבודה.");
     }
-
     validatePrices([
       request.year1Price,
       request.year2Price,
@@ -140,9 +139,9 @@ export async function createPricingTier(
       request.twoDaysFromOfficePrice,
       request.threeDaysFromOfficePrice,
     ]);
-
     const effectiveDate = new Date(request.effectiveDate);
     const today = new Date();
+<<<<<<< HEAD
     today.setHours(0, 0, 0, 0);
     if (effectiveDate < today) {
       throw new Error("תאריך התחולה חייב להיות היום או בעתיד.");
@@ -156,6 +155,14 @@ export async function createPricingTier(
       { workspace_type: request.workspaceType }
     );
 
+=======
+    today.setHours(0, 0, 0, 0); 
+    if (effectiveDate < today) {
+      throw new Error("תאריך התחולה חייב להיות היום או בעתיד.");
+    }
+    // בדיקת התנגשות תאריכים מול מסד הנתונים עבור אותו סוג סביבת עבודה
+    await checkEffectiveDateConflict(supabase, 'pricing_tiers', request.effectiveDate, { workspace_type: request.workspaceType });
+>>>>>>> a1beb68e96b0b47f44abc6fa106a8e8e6474013c
     const newPricingTierModel = new PricingTierModel({
       workspaceType: request.workspaceType,
       year1Price: request.year1Price,
@@ -165,22 +172,23 @@ export async function createPricingTier(
       twoDaysFromOfficePrice: request.twoDaysFromOfficePrice,
       threeDaysFromOfficePrice: request.threeDaysFromOfficePrice,
       effectiveDate: request.effectiveDate,
+<<<<<<< HEAD
       active: true,
+=======
+      active: true, 
+>>>>>>> a1beb68e96b0b47f44abc6fa106a8e8e6474013c
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
-
     const { data, error } = await supabase
       .from('pricing_tiers')
       .insert(newPricingTierModel.toDatabaseFormat())
       .select()
       .single();
-
     if (error) {
       console.error('שגיאה ביצירת שכבת תמחור:', error);
       throw new Error('הפעולה ליצירת שכבת תמחור נכשלה.');
     }
-
     return new PricingTierModel({
       id: data.id,
       workspaceType: data.workspace_type,

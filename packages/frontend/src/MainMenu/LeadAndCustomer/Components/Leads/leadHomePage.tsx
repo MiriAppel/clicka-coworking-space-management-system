@@ -17,14 +17,13 @@
 // }
 // //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
 
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { SearchLeads } from "./SearchLeads";
 import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { LeadsTable } from "./LeadsTable"; // 💡 ודאי שהשמות תואמים
-import { deleteLead } from "../../Service/LeadAndCustomersService";
+import { LeadsTable } from "./LeadsTable";
 
 export const LeadsHomePage = () => {
   const navigate = useNavigate();
@@ -77,12 +76,12 @@ export const LeadsHomePage = () => {
       return;
     }
 
-    const filtered = allLeadsRef.current.filter(
-      (l) =>
-        l.name.toLowerCase().includes(term.toLowerCase()) ||
-        l.phone.includes(term) ||
-        l.email.toLowerCase().includes(term.toLowerCase())
-    );
+  const filtered = allLeadsRef.current.filter(
+    (l) =>
+      l.name.toLowerCase().includes(term.toLowerCase()) ||
+      l.phone.includes(term) ||
+      l.email?.toLowerCase().includes(term.toLowerCase())
+  );
 
     if (filtered.length > 0) {
       setIsSearching(true);

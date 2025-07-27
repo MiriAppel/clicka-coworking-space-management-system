@@ -1,5 +1,4 @@
 import type{ Payment } from "shared-types";
-import { PaymentMethodType } from "shared-types";
 import { create } from "zustand";
 
 interface PaymentState {
@@ -12,17 +11,6 @@ interface PaymentState {
 
 export const usePaymentStore = create<PaymentState>((set) => ({
     payments: [
-        {
-            id: 'p1',
-            customer_id: 'c1',
-            customer_name: 'לקוח א',
-            invoice_id: '1',
-            amount: 50,
-            method: PaymentMethodType.CASH,
-            date: '2024-06-10',
-            createdAt: '2024-06-10',
-            updatedAt: '2024-06-10'
-        }
     ],
     getAllPayments: async () => {},
     addPayment: async (payment: Payment) => {

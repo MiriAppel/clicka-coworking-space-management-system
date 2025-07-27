@@ -1,4 +1,6 @@
 import { UserModel } from "../models/user.model";
+import { generateJwtToken } from "../services/authService";
+import { setAuthCookie } from "../services/tokenService";
 import { UserService } from "../services/user.service";
 import { Request, Response } from "express";
 
@@ -43,7 +45,6 @@ export class UserController {
         try {
             const result = await this.userService.loginByGoogleId(googleId);
             if (result) {
-                this.userService.createRoleCookies(res, result.role);
                 res.status(200).json(result);
             } else {
                 res.status(404).json({ error: "User not found" });
@@ -88,6 +89,8 @@ export class UserController {
         try {
             const result = await this.userService.updateUser(userId, updatedUser);
             if (result) {
+                const newJwt = generateJwtToken({ userId: result.id || '', email: result.email || '', role: result.role || '', googleId: result.googleId || '' });
+                setAuthCookie(res,newJwt);
                 res.status(200).json(result);
             } else {
                 res.status(500).json({ error: "Failed to update user" });
@@ -101,12 +104,12 @@ export class UserController {
     async deleteUser(req: Request, res: Response) {
         const userId = req.params.id;
         try {
-                    const result = await this.userService.deleteUser(userId);
-        if (result) {
-            res.status(204).send();
-        } else {
-            res.status(500).json({ error: "Failed to delete user" });
-        }
+            const result = await this.userService.deleteUser(userId);
+            if (result) {
+                res.status(204).send();
+            } else {
+                res.status(500).json({ error: "Failed to delete user" });
+            }
         } catch (error) {
             res.status(404).json({ error: "User not found" });
         }

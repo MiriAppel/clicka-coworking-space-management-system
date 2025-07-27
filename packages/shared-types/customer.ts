@@ -29,10 +29,13 @@ export enum WorkspaceType {
   DESK_IN_ROOM = 'DESK_IN_ROOM',
   OPEN_SPACE = 'OPEN_SPACE',
   KLIKAH_CARD = 'KLIKAH_CARD',
-      DOOR_PASS = "DOOR_PASS",
-    WALL = "WALL",
-    COMPUTER_STAND = "COMPUTER_STAND",
-    RECEPTION_DESK = "RECEPTION_DESK"}
+
+  DOOR_PASS = "DOOR_PASS",
+  WALL = "WALL",
+  COMPUTER_STAND = "COMPUTER_STAND",
+  RECEPTION_DESK = "RECEPTION_DESK",
+  BASE = "BASE",
+}
 
 
 // Customer status enum
@@ -40,7 +43,8 @@ export enum CustomerStatus {
   ACTIVE = 'ACTIVE',
   NOTICE_GIVEN = 'NOTICE_GIVEN',
   EXITED = 'EXITED',
-  PENDING = 'PENDING'
+  PENDING = 'PENDING',
+  CREATED = 'CREATED'
 }
 
 // Exit reason enum
@@ -112,7 +116,7 @@ export interface Customer {
   id?: ID;
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   idNumber: string;
   businessName: string;
   businessType: string;

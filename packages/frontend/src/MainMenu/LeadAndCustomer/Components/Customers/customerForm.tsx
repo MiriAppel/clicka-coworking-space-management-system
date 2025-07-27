@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useMemo} from "react";
 import { useForm } from 'react-hook-form';
 import { PaymentMethodType, WorkspaceType } from "shared-types";
 import { z } from "zod";
@@ -8,7 +8,7 @@ import { FileInputField } from "../../../../Common/Components/BaseComponents/Fil
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
-import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
+import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; 
 
 //האם להכניס עוד שדות שקשורים לחוזה????
 
@@ -137,12 +137,12 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
     // }, [lead, methods]);
 
 
-    const stepFieldNames = [
-        ["name", "phone", "email", "idNumber", "businessName", "businessType", "notes", "ProfilePicture"] as const,
-        ["currentWorkspaceType", "workspaceCount", "contractSignDate", "contractStartDate", "billingStartDate", "contractDocuments"] as const,
-        ["paymentMethodType", "invoiceName", "creditCardNumber", "creditCardExpiry", "creditCardHolderIdNumber", "creditCardHolderPhone"] as const,
+const stepFieldNames = useMemo(() => [
+    ["name", "phone", "email", "idNumber", "businessName", "businessType", "notes", "ProfilePicture"] as const,
+    ["currentWorkspaceType", "workspaceCount", "contractSignDate", "contractStartDate", "billingStartDate", "contractDocuments"] as const,
+    ["paymentMethodType", "invoiceName", "creditCardNumber", "creditCardExpiry", "creditCardHolderIdNumber", "creditCardHolderPhone"] as const,
+], []); // רשימת תלויות ריקה כי זה מערך סטטי
 
-    ];
     const paymentMethodType = methods.watch("paymentMethodType");
     const idNumber = methods.watch("idNumber");
     const phone = methods.watch("phone");
@@ -243,7 +243,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
         stepFieldNames[currentStep].forEach((field) => {
             methods.clearErrors(field as any);
         });
-    }, [currentStep]);
+    }, [currentStep,stepFieldNames,methods]);
 
 
     return <div className='interestedCustomerRegistration mx-auto max-w-4xl'>
