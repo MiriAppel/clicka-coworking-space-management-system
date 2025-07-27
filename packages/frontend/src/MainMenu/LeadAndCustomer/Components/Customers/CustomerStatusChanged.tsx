@@ -4,18 +4,15 @@ import React, { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CustomerStatus, ExitReason } from 'shared-types';
+import { CustomerStatus, ExitReason, StatusChangeRequest } from 'shared-types';
 import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
 import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { CheckboxField } from '../../../../Common/Components/BaseComponents/CheckBox';
 import { useCustomerFormData } from '../../Hooks/useCustomerFormData';
-import {
-  getCustomerById,
-  patchCustomer,
-  recordExitNotice,
-} from "../../../../Services/LeadAndCustomersService";
+import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
+import { useCustomerStore } from '../../../../Stores/LeadAndCustomer/customerStore';
 
 // interface Props {
 //   open: boolean;
@@ -69,6 +66,7 @@ const statusLabels: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: 'הודעת עזיבה',
   EXITED: 'עזב',
   PENDING: 'בהמתנה',
+  CREATED: ' נוצר'
 };
 
 const reasonLabels: Record<ExitReason, string> = {
@@ -84,7 +82,15 @@ const reasonLabels: Record<ExitReason, string> = {
 export const CustomerStatusChanged: React.FC = () => {
   const { customerId } = useParams<{ customerId: string }>();
   const navigate = useNavigate();
-  
+
+  const {
+    updateCustomer,
+    recordExitNotice,
+    fetchCustomerById,
+    changeCustomerStatus,
+    error,
+  } = useCustomerStore();
+
   //  if (!customerId) return null;
   const handleClose = () => navigate(-1);
 
@@ -106,21 +112,23 @@ export const CustomerStatusChanged: React.FC = () => {
   const selectedStatus = methods.watch('status');
 
   const fetchCustomerData = useCallback(async (id: string) => {
-      const customer = await getCustomerById(id);
-      const latestPeriod = customer.periods?.[0];
+    const customer = await fetchCustomerById(id);
 
-      return {
-        status: customer.status,
-        // effectiveDate: customer.billingStartDate ?? '',
-        notifyCustomer: false,
-        reason: '',
-        exitNoticeDate: latestPeriod?.exitNoticeDate ?? '',
-        plannedExitDate: latestPeriod?.exitDate ?? '',
-        exitReason: latestPeriod?.exitReason,
-        exitReasonDetails: latestPeriod?.exitReasonDetails ?? '',
-      };
-    },
-[]);
+    //במקום זה צריך לקבל מהשרת מהטבלה של תקופות
+    const latestPeriod = customer!.periods?.[0];
+
+    return {
+      status: customer!.status,
+      // effectiveDate: customer.billingStartDate ?? '',
+      notifyCustomer: false,
+      reason: '',
+      exitNoticeDate: latestPeriod?.exitNoticeDate ?? '',
+      plannedExitDate: latestPeriod?.exitDate ?? '',
+      exitReason: latestPeriod?.exitReason,
+      exitReasonDetails: latestPeriod?.exitReasonDetails ?? '',
+    };
+  },
+    []);
   useCustomerFormData({
     open: !!customerId,
     customerId: customerId ?? "",
@@ -129,12 +137,19 @@ export const CustomerStatusChanged: React.FC = () => {
     ,
   });
 
-    if (!customerId) return null;
+  if (!customerId) return null;
 
   const onSubmit = async (data: FormData) => {
     console.log("data in submit", data);
-    
-  try {
+
+    const changeStautsData: StatusChangeRequest = {
+      newStatus: data.status,
+      effectiveDate: new Date().toISOString(), // תאריך עדכון הסטטוס הוא התאריך הנוכחי
+      reason: data.reason,
+      notifyCustomer: data.notifyCustomer,
+      notes: data.exitReasonDetails,
+    }
+
     // 1. אם מדובר בעזיבה – קודם נקליט את פרטי העזיבה
     if (data.status === CustomerStatus.NOTICE_GIVEN) {
       await recordExitNotice(customerId, {
@@ -145,17 +160,30 @@ export const CustomerStatusChanged: React.FC = () => {
       });
     }
     // 2. שולחים את עדכון הלקוח
-    await patchCustomer(customerId, {
+    await updateCustomer(customerId, {
       status: data.status,
       notes: data.exitReasonDetails,
       ...(data.reason && { reason: data.reason }),
     });
-    // סגירה
-    navigate(-1);
-  } catch (error) {
-    console.error('שגיאה בעדכון לקוח:', error);
-  }
-};
+    try {
+      console.log("Changing customer status:", customerId, changeStautsData);
+      
+      await changeCustomerStatus(customerId, changeStautsData);
+    } catch (error: any) {
+      console.error("Error changing customer status:", error);
+      showAlert("שגיאה", `שגיאה בשליחת מייל:\n${error}`, "error");
+    }
+
+
+    const latestError = useCustomerStore.getState().error;
+    if (latestError) {
+      showAlert("שגיאה", `שגיאה בעדכון סטטוס:\n${error}`, "error");
+    } else {
+      showAlert("עדכון", "סטטוס עודכן בהצלחה!", "success");
+      navigate(-1);
+    }
+
+  };
 
   return (
     <div className="max-w-xl mx-auto mt-6">

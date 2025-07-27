@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 import * as tokenService from '../services/tokenService';
-import { LoginResponse } from "shared-types";
+import { LoginResponse, StatusChangeRequest } from "shared-types";
 import { HttpStatusCode } from 'axios';
 import { UserService } from '../services/user.service';
 import { UserTokenService } from '../services/userTokenService';
@@ -11,8 +11,10 @@ import bcrypt from 'bcrypt';
 import { saveUserTokens } from '../services/tokenService';
 const SALT_ROUNDS = 10; // מספר הסיבובים ל־bcrypt
 
+
 const userService = new UserService();
 const userTokenService = new UserTokenService();
+
 export const handleGoogleAuthCode = async (req: Request, res: Response<LoginResponse | { error: string }>) => {
   console.log('Received Google auth code:', req.body.code);
   try {
@@ -169,7 +171,10 @@ export const handleLoginWithPassword = async (req: Request, res: Response) => {
       message: 'התחברת בהצלחה.'
     };
     res.status(200).json(response);
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === 'Invalid password') {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
     console.error('Login failed:', error);
     res.status(401).json({ error: 'Login failed' });
   }

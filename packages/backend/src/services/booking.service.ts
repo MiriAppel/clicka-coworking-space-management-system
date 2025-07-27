@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { BookingModel } from "../models/booking.model";
-import type { ID } from "shared-types";
+import type { ID, Room } from "shared-types";
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -13,25 +13,52 @@ function logUserActivity(userId: string, action: string) {
 }
 
 export class BookingService {
+  
+   
   async createBooking(book: BookingModel): Promise<BookingModel | null> {
-    console.log('📦 Inserting booking:', book.toDatabaseFormat());
-    const { data, error } = await supabase
-      .from('booking')
-      .insert([book.toDatabaseFormat()])
-      .select()
-      .single();
-
-
-   if (error) {
-  console.log('❌ Supabase Insert Error:', error); // ✅ הוספתי הדפסה מפורטת
-throw new Error(`Failed to create booking: ${error.message}`);
-  }
-
-    const createdBook =   BookingModel.fromDatabaseFormat(data);
-    logUserActivity(book.id ?? book.roomName, 'book created');
-    return createdBook;
+    try {
+      // אם יש לקוח קיים - ננסה לשלוף את שמו
+      if (book.customerId) {
+        console.log('🔍 Trying to fetch customer name by ID:', book.customerId);
+  
+        const { data: customer, error: customerError } = await supabase
+          .from('customers')
+          .select('name')
+          .eq('id', book.customerId)
+          .single();
+  
+        if (customerError || !customer) {
+          console.warn('⚠️ לא נמצא שם לקוח, נמשיך בלי זה');
+        } else {
+          console.log('✅ Customer found:', customer.name);
+          book.customerName = customer.name;
+        }
+      }
+  
+      console.log('📦 Inserting booking:', book.toDatabaseFormat());
+  
+      const { data, error } = await supabase
+        .from('booking')
+        .insert([book.toDatabaseFormat()])
+        .select()
+        .single();
+  
+      if (error) {
+        console.log('❌ Supabase Insert Error:', error);
+        throw new Error(`Failed to create booking: ${error.message}`);
+      }
+  
+      const createdBook = BookingModel.fromDatabaseFormat(data);
+      logUserActivity(book.id ?? book.roomName, 'book created');
+      return createdBook;
+    } catch (err) {
+      console.error('❌ Error in createBooking:', err);
+      return null;
     }
-      async getAllBooking() {
+  }
+  
+
+  async getAllBooking() {
     try {
       const { data, error } = await supabase
         .from('booking') 
@@ -48,23 +75,27 @@ throw new Error(`Failed to create booking: ${error.message}`);
       return null;
     }
   }
-      async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
-      
-          const { data, error } = await supabase
-              .from('booking')
-              .update([updatedData.toDatabaseFormat()])
-              .eq('id', id)
-              .select()
-              .single();
-  
-          if (error) {
-              console.error('Error updating booking:', error);
-              return null;
-          }
-          const booking =  BookingModel.fromDatabaseFormat(data); // המרה לסוג UserModel
-          
-          return booking; 
+   static async updateBooking(id: string, updatedData: BookingModel): Promise<BookingModel | null> {
+  const formattedData = updatedData.toDatabaseFormat();
+  console.log(":rocket: Trying to update booking with ID:", id);
+  console.log(":memo: Data being sent:", formattedData);
+  const { data, error } = await supabase
+    .from('booking')
+    .update([formattedData])
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) {
+    console.error(':fire: Supabase update error:', error);
+    return null;
   }
+  if (!data) {
+    console.warn(':warning: No data returned. ID might not exist.');
+    return null;
+  }
+  console.log(":white_check_mark: Successfully updated booking:", data);
+  return BookingModel.fromDatabaseFormat(data);
+}
   //מחיקת פגישה
   async  deleteBooking(id:string) {
               const { error } = await supabase
@@ -82,12 +113,31 @@ throw new Error(`Failed to create booking: ${error.message}`);
           return true; 
   }
   
-  //קבלת  פגישה לפי ID
-  async  getBookingById(id:string) {
+   //קבלת  פגישה לפי ID
+  static async getBookingById(id?:string|null) {
            const { data, error } = await supabase
                   .from('booking')
                   .select('*')
                   .eq('id', id)
+                  .single();
+      
+              if (error) {
+                  console.error('Error fetching booking:', error);
+                  return null;
+              }
+      
+              const booking = BookingModel.fromDatabaseFormat(data); // המרה לסוג UserModel
+              // רישום פעילות המשתמש
+             // logUserActivity(feature.id? feature.id:feature.description, 'User fetched by ID');
+              // מחזיר את המשתמש שנמצא
+              return booking;
+  }
+  //googleeventIdקבלת  פגישה לפי ID
+  static async  getBookingByEventId(googleEventId:string) {
+           const { data, error } = await supabase
+                  .from('booking')
+                  .select('*')
+                  .eq('google_calendar_event_id', googleEventId)
                   .single();
       
               if (error) {

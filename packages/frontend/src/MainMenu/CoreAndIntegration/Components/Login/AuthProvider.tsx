@@ -1,9 +1,8 @@
 import { Children, ReactNode, useEffect } from "react";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
-import { axiosInstance } from "../../../../Services/Axios";
+import { axiosInstance } from "../../../../Service/Axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import GoogleOneTap from "./GoogleOneTap";
 import { useNavigate } from "react-router-dom";
 
 
@@ -13,58 +12,60 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { setUser, clearUser, setLoading, setSessionId, sessionId, user } = useAuthStore();
-  const navigate = useNavigate();
+  const navigate = useNavigate();  const verifyFunction = async () => {
+    try {
+      setLoading(true);
+      let res = await axiosInstance.get("/auth/verify");
+      if (res.status == 200) {
+        console.log("Authenticated successfully");
+        const data = res.data;
+        setUser(data.user);
+        setSessionId(data.sessionId);
+        return;
+      }
+      clearUser();
+        // navigate("/auth");
+    }
+    catch (err: any) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        const data = err.response.data;
+        if (data.error === 'TokenExpired') {
+          console.log(" Token expired, trying to refresh...");
+          try {
+            const refreshRes = await axiosInstance.post("/auth/refresh");
+            if (refreshRes.status === 200) {
+              console.log("Refresh token success");
+              const res = await axiosInstance.get("/auth/verify");
+              if (res.status === 200) {
+                const data = res.data;
+                setUser(data.user);
+                return;
+              }
+            }
+          } catch (refreshErr) {
+            console.warn(" Refresh token failed", refreshErr);
+              //redirect al login y despues a la de clika 
+          }
+        }
+      }
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        console.warn("Session ID mismatch - logging out.");
+        showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
+        clearUser();
+          //redirect al login y despues a la de clika 
+      }
+
+        clearUser();
+        // navigate("/auth");
+
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
-        setLoading(true);
-        let res = await axiosInstance.get("/auth/verify");
-        if (res.status == 200) {
-          console.log("Authenticated successfully");
-          const data = res.data;
-          setUser(data.user);
-          setSessionId(data.sessionId);
-          return;
-        }
-        clearUser();
-        // navigate("/auth");
-      }
-      catch (err: any) {
-        if (axios.isAxiosError(err) && err.response?.status === 401) {
-          const data = err.response.data;
-          if (data.error === 'TokenExpired') {
-            console.log(" Token expired, trying to refresh...");
-            try {
-              const refreshRes = await axiosInstance.post("/auth/refresh");
-              if (refreshRes.status === 200) {
-                console.log("Refresh token success");
-                const res = await axiosInstance.get("/auth/verify");
-                if (res.status === 200) {
-                  const data = res.data;
-                  setUser(data.user);
-                  return;
-                }
-              }
-            } catch (refreshErr) {
-              console.warn("❌ Refresh token failed", refreshErr);
-              //redirect al login y despues a la de clika 
-            }
-          }
-        }
-        if (axios.isAxiosError(err) && err.response?.status === 409) {
-          console.warn("Session ID mismatch - logging out.");
-          showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
-          clearUser();
-          //redirect al login y despues a la de clika 
-        }
-
-        clearUser();
-        // navigate("/auth");
-
-      } finally {
-        setLoading(false);
-      }
+      verifyFunction();
     };
     checkAuth();
   }, [setUser, clearUser, setLoading, setSessionId]);
@@ -73,18 +74,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     let interval: NodeJS.Timeout | undefined;
     if (user != null) {
       interval = setInterval(async () => {
-        try {
-          const res = await axiosInstance.get("/auth/verify");
-        } catch (err: any) {
-          if (axios.isAxiosError(err) && err.response?.status === 409) {
-            console.warn("Session ID mismatch - logging out.");
-            showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
-            //redirect al login y despues a la de clika 
-            clearUser();
-          }
-          console.error("Failed session check", err);
-          clearUser();
-        }
+        verifyFunction();
       }, 30000); // כל 30 שניות
     }
 

@@ -7,11 +7,3 @@ export const showAlert = (title: string, text: string, icon: 'success' | 'error'
     confirmButtonText: 'Accept',
   });
 };
- // <Button
-//   showAlertOnClick
-//   alertTitle="המחק!"
-//   alertText="נמחק בהצלחה"
-//   alertIcon="success"
-// >
-//   נמחק
-// </Button>

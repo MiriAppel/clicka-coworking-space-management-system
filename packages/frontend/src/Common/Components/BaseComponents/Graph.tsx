@@ -20,6 +20,7 @@ export interface ChartData {
 
 // טיפוס עבור פרופסים של קומפוננטת הגרף
 interface ChartDisplayProps {
+  
   type: 'line' | 'bar' | 'pie'; // סוג הגרף: קו / עמודות / עוגה
   data: ChartData[];            // הנתונים להצגה
   title?: string;               // כותרת אופציונלית לגרף
@@ -31,13 +32,15 @@ interface ChartDisplayProps {
 // קומפוננטת ChartDisplay – מציגה גרף לפי סוג שנבחר
 export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = true, onClickLabel }) => {
   const { theme: { colors } } = useTheme(); // שליפת צבעים מה־theme (צבעים אחידים לגרפים)
-
+  console.log(data);
+  
   // מערך צבעים לפרוסות גרף עוגה
   const COLORS = [colors.primary, colors.secondary, colors.accent];
 
   return (
     // עטיפת הגרף עם כיוון הטקסט בהתאם ל־RTL
-    <div dir={rtl ? 'rtl' : 'ltr'}>
+    
+    <div dir={rtl ? 'rtl' : 'ltr'} >
       {/* עטיפה רספונסיבית שתתאים את הגרף לגודל האלמנט ההורה */}
       <ResponsiveContainer width="100%" height={300}>
 
@@ -119,6 +122,7 @@ export const ChartDisplay: React.FC<ChartDisplayProps> = ({ type, data, rtl = tr
               outerRadius={100} // רדיוס פרוסות העוגה
               labelLine={false} // ביטול קו תוויות
               isAnimationActive={true} // הפעלת אנימציה
+              label// תווית פרוסה
               onClick={(entry: any) => {
                 if (onClickLabel && entry && entry.label) {
                   onClickLabel(entry.label);

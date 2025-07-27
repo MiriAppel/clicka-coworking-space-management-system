@@ -1,25 +1,29 @@
-// עמוד דוחות פיננסיים הכולל טופס, גרף, שתי טבלאות וכפתורי ייצוא  
+// קובץ React: FinancialReportsDashboard.tsx
+// כולל הסרה של האפשרות לבחור בדוח "הכנסות תפוסה" ללא שינוי ב־ReportType
 
-import React, { useEffect, useState, useRef } from 'react'; // שימוש ב־React ו־hooks
-import { useForm } from 'react-hook-form'; // ניהול טפסים עם ספריית react-hook-form
-import { z } from 'zod'; // ספריית סכימות ולידציה
-import { zodResolver } from '@hookform/resolvers/zod'; // שילוב בין zod ל־react-hook-form
-import { Form } from '../../../../Common/Components/BaseComponents/Form'; // קומפוננטת טופס מוכנה
-import { InputField } from '../../../../Common/Components/BaseComponents/Input'; // שדה טקסט
-import { Button } from '../../../../Common/Components/BaseComponents/Button'; // כפתור רגיל
-import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1'; // חיבור ל־store של דוחות
-import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types'; // טיפוסים משותפים
-import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph'; // קומפוננטת גרף
-import { Table } from '../../../../Common/Components/BaseComponents/Table'; 
-import axios from 'axios'; // ספריית קריאות HTTP
+import React, { useEffect, useState, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
+import { useTheme } from '../../../../Common/Components/themeConfig';
+
+import { Form } from '../../../../Common/Components/BaseComponents/Form';
+import { InputField } from '../../../../Common/Components/BaseComponents/Input';
+import { Button } from '../../../../Common/Components/BaseComponents/Button';
+import { ChartDisplay } from '../../../../Common/Components/BaseComponents/Graph';
 import { ExportButtons } from '../../../../Common/Components/BaseComponents/ExportButtons';
+import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
 
-// טיפוס המרחיב את פרמטרי הדוח וכולל מזהה ספק
+import { useFinancialReportsStore } from '../../../../Stores/Billing/financialReports1';
+import { ReportType, ReportParameters, ExpenseCategory } from 'shared-types';
+import { textAlign } from '@mui/system';
+
+// טיפוס כולל vendorId רק בצד הקליינט
 type ExtendedReportParameters = ReportParameters & {
   vendorId?: string;
 };
 
-// סכימת ולידציה לטופס עם zod
 const ReportFormSchema = z.object({
   dateRange: z.object({
     startDate: z.string().min(1, 'יש להזין תאריך התחלה'),
@@ -31,7 +35,6 @@ const ReportFormSchema = z.object({
   includeProjections: z.boolean().optional(),
 });
 
-// מיפוי קטגוריות הוצאה לתוויות בעברית
 const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   RENT: 'שכירות',
   UTILITIES: 'חשבונות',
@@ -52,238 +55,453 @@ const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   OTHER: 'אחר',
 };
 
-// הקומפוננטה הראשית
+const reportTypeLabels: Record<ReportType, string> = {
+  REVENUE: 'הכנסות',
+  EXPENSES: 'הוצאות',
+  PROFIT_LOSS: 'רווח והפסד',
+  CASH_FLOW: 'תזרים מזומנים',
+  CUSTOMER_AGING: '',
+  OCCUPANCY_REVENUE: 'הכנסות תפוסה',
+};
+
 export const FinancialReportsDashboard: React.FC = () => {
-  // אתחול טופס עם סכימה וערכי ברירת מחדל
   const methods = useForm<ExtendedReportParameters>({
-    resolver: zodResolver(ReportFormSchema),
+    // resolver: zodResolver(ReportFormSchema),
     defaultValues: {
       dateRange: { startDate: '', endDate: '' },
       categories: [],
       customerIds: [],
     },
   });
+  const { theme } = useTheme();  // גישה לנושא הצבעים
 
-  // משתני עיצוב פנימי לטבלה מותאמת
-  const thStyle: React.CSSProperties = {
-    border: '1px solid #ccc', padding: '8px', backgroundColor: '#f0f0f0', textAlign: 'left',
+  const fetchReport = useFinancialReportsStore((s) => s.fetchReport);
+  const reportData = useFinancialReportsStore((s) => s.reportData);
+  const loading = useFinancialReportsStore((s) => s.loading);
+  const error = useFinancialReportsStore((s) => s.error);
+  const [loadingReport, setLoadingReport] = useState(false);
+  const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE);
+  const [selectedChartType, setSelectedChartType] = useState<'bar' | 'pie' | 'line'>('bar');
+  const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]);
+  const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]);
+  const exportContentRef = useRef<HTMLDivElement>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // תרגום שמות עמודות בטבלה בלבד — לא משפיע על הגרף
+  const columnTranslations: Record<string, string> = {
+    // RevenueReportData.breakdown
+    date: 'תאריך',
+    totalRevenue: 'סה״כ הכנסות',
+    membershipRevenue: 'הכנסות ממנויים',
+    meetingRoomRevenue: 'הכנסות מחדרי ישיבות',
+    loungeRevenue: 'הכנסות מטרקלין',
+    otherRevenue: 'הכנסות נוספות',
+
+    // ExpenseReportData.monthlyTrend
+    month: 'חודש',
+    totalExpenses: 'סה״כ הוצאות',
+    'קטגוריה 1': 'קטגוריה 1',
+    'סכום 1': 'סכום 1',
+    'קטגוריה 2': 'קטגוריה 2',
+    'סכום 2': 'סכום 2',
+    'קטגוריה 3': 'קטגוריה 3',
+    'סכום 3': 'סכום 3',
+
+    // ProfitLossReportData.breakdown
+    revenue: 'הכנסות',
+    expenses: 'הוצאות',
+    profit: 'רווח',
+
+    // CashFlowReportData.breakdown
+    totalPayments: 'סה״כ תשלומים',
+
+    // OccupancyRevenueReportData.occupancyData
+    // totalSpaces: 'סה״כ מקומות',
+    // occupiedSpaces: 'מקומות תפוסים',
+    // openSpaceCount: 'עמדות Open Space',
+    // deskInRoomCount: 'שולחנות בחדרים',
+    // privateRoomCount: 'חדרים פרטיים',
+    // roomForThreeCount: 'חדר לשלושה',
+    // klikahCardCount: 'חברות קליקה',
+    // occupancyRate: 'אחוז תפוסה',
+    // revenue: 'הכנסה מתפוסה',
+
+    // מידע כללי
+    name: 'שם',
+    percentOfTotal: 'אחוז מהסך הכולל',
   };
-  const tdStyle: React.CSSProperties = { border: '1px solid #ccc', padding: '8px' };
-  const trStyle: React.CSSProperties = {};
+  const [color, setColor] = useState("#3498db"); // צבע התחלתי
 
-  const { fetchReport, reportData, loading, error } = useFinancialReportsStore(); // נתוני דוח מה־store
-  const [selectedType, setSelectedType] = useState<ReportType>(ReportType.REVENUE); // סוג דוח נבחר
-  const [selectedChartType, setSelectedChartType] = useState<'bar' | 'pie' | 'line'>('bar'); // סוג גרף
-  const [customers, setCustomers] = useState<{ id: string; name: string }[]>([]); // לקוחות
-  const [vendors, setVendors] = useState<{ id: string; name: string }[]>([]); // ספקים
-  const exportContentRef = useRef<HTMLDivElement>(null); // רפרנס לייצוא PDF
-
-  // שליפת לקוחות וספקים מהשרת בהעלאת הקומפוננטה
   useEffect(() => {
+    const interval = setInterval(() => {
+      setColor(prevColor => prevColor === "#3498db" ? "#e7ae3cff" : "#3498db");
+    }, 1000);
+
+
     async function fetchEntities() {
       try {
         const [customerRes, vendorRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/customers', { withCredentials: true }),
+          axios.get('http://localhost:3001/api/customers/page?page=1&limit=10000', { withCredentials: true }),
           axios.get('http://localhost:3001/vendor', { withCredentials: true }),
         ]);
         setCustomers(customerRes.data || []);
         setVendors(vendorRes.data || []);
-      } catch (err) {
-        console.error('שגיאה בטעינת נתונים:', err);
-      }
+      } catch { }
     }
     fetchEntities();
+    return () => clearInterval(interval);  // חשוב לנקות את ה-interval אחרי השימוש
+
   }, []);
 
-  // שליחת טופס
   const onSubmit = async (data: ExtendedReportParameters) => {
+    const { startDate, endDate } = data.dateRange || {};
+    const { groupBy } = data;
+
+    if (!startDate || !endDate || !groupBy) {
+      setFormError('יש למלא טווח תאריכים וקיבוץ לפי לפני יצירת הדוח');
+      return;
+    }
+    setFormError(null); // איפוס הודעת שגיאה אם הכל תקין
+    setLoadingReport(true);
     const transformed = {
       ...data,
-      vendorId: selectedType === 'EXPENSES' ? data.customerIds?.[0] : undefined,
+      vendorId: selectedType === ReportType.EXPENSES ? data.customerIds?.[0] : undefined,
     };
     await fetchReport(selectedType, transformed);
+    setLoadingReport(false);
   };
 
-  // טופס מלא + תצוגה וייצוא
-  return (
-    <Form<ExtendedReportParameters>
-      label="טופס דוחות פיננסיים"
-      schema={ReportFormSchema}
-      onSubmit={onSubmit}
-      methods={methods}
-    >
+  const getChartData = () => {
+    switch (selectedType) {
+      case ReportType.REVENUE:
+        return reportData?.revenueData?.breakdown?.map((i) => ({ label: i.date, value: i.totalRevenue })) || [];
+      case ReportType.EXPENSES:
+        return reportData?.expenseData?.monthlyTrend?.map((i) => ({ label: i.month, value: i.totalExpenses })) || [];
+      case ReportType.PROFIT_LOSS:
+        return reportData?.profitLossData?.breakdown?.map((i) => ({ label: i.date, value: i.profit })) || [];
+      case ReportType.CASH_FLOW:
+        return reportData?.cashFlowData?.breakdown?.map((i) => ({ label: i.date, value: i.totalPayments })) || [];
+      default:
+        return [];
+    }
+  };
+
+  const getReportTitle = (): string => {
+    const values = methods.getValues();
+    const typeLabel = reportTypeLabels[selectedType];
+    const from = values.dateRange?.startDate;
+    const to = values.dateRange?.endDate;
+
+    const parts: string[] = [];
+    if (from && to) parts.push(`בתקופה ${from} עד ${to}`);
+
+    const customerIds = values.customerIds ?? [];
+    if (selectedType === ReportType.REVENUE && customerIds.length) {
+      const selectedNames = customers.filter((c) => customerIds.includes(c.id)).map((c) => c.name);
+      parts.push(`ללקוחות: ${selectedNames.join(', ')}`);
+    }
+
+    if (selectedType === ReportType.EXPENSES) {
+      const vendorIds = values.customerIds ?? [];
+      if (vendorIds.length) {
+        const vendorNames = vendors.filter((v) => vendorIds.includes(v.id)).map((v) => v.name);
+        parts.push(`עבור ספקים: ${vendorNames.join(', ')}`);
+      }
+      if (values.categories?.length) {
+        const categoryNames = values.categories.map((cat) => expenseCategoryLabels[cat as ExpenseCategory]);
+        parts.push(`סוגי הוצאה: ${categoryNames.join(', ')}`);
+      }
+    }
+
+    return `דוח ${typeLabel} ${parts.length ? '— ' + parts.join(' | ') : ''}`;
+  };
+
+  const formatNumber = (value: number): string => (value < 0 ? `${Math.abs(value)}-` : value.toString());
+
+  const { data: fullTableData, columns: fullTableColumns } = (() => {
+    let data: any[] = [];
+    let columns: { header: string; accessor: string }[] = [];
+
+    if (!reportData) return { data, columns };
+
+    if (selectedType === ReportType.REVENUE && reportData.revenueData?.breakdown?.length) {
+      data = reportData.revenueData.breakdown;
+      columns = Object.keys(data[0]).map((key) => ({
+        header: columnTranslations[key] || key,
+        accessor: key,
+      }));
+
+    } else if (selectedType === ReportType.EXPENSES && reportData.expenseData?.monthlyTrend?.length) {
+      data = reportData.expenseData.monthlyTrend.map((item) => {
+        const top = item.topCategories || [];
+        return {
+          month: item.month,
+          totalExpenses: item.totalExpenses,
+          'קטגוריה 1': top[0]?.category || '',
+          'סכום 1': top[0]?.amount || '',
+          'קטגוריה 2': top[1]?.category || '',
+          'סכום 2': top[1]?.amount || '',
+          'קטגוריה 3': top[2]?.category || '',
+          'סכום 3': top[2]?.amount || '',
+        };
+      });
+      columns = Object.keys(data[0]).map((key) => ({
+        header: columnTranslations[key] || key,
+        accessor: key,
+      }));
+
+    } else if (selectedType === ReportType.PROFIT_LOSS && reportData.profitLossData?.breakdown?.length) {
+      data = reportData.profitLossData.breakdown;
+      columns = Object.keys(data[0]).map((key) => ({
+        header: columnTranslations[key] || key,
+        accessor: key,
+      }));
+    } else if (selectedType === ReportType.CASH_FLOW && reportData.cashFlowData?.breakdown?.length) {
+      data = reportData.cashFlowData.breakdown;
+      columns = Object.keys(data[0]).map((key) => ({
+        header: columnTranslations[key] || key,
+        accessor: key,
+      }));
+    }
+
+    return { data, columns };
+  })();
+
+  return (<>
+    <Form label="טופס דוחות פיננסיים" schema={ReportFormSchema} onSubmit={onSubmit} methods={methods}>
+
       <div className="flex flex-col gap-4">
-        {/* בחירת סוג דוח */}
         <select
           value={selectedType}
           onChange={(e) => setSelectedType(e.target.value as ReportType)}
           className="w-full px-2 py-1 border rounded"
         >
-          <option value="REVENUE">הכנסות</option>
-          <option value="EXPENSES">הוצאות</option>
+          {Object.values(ReportType)
+            .filter((type) => type !== ReportType.OCCUPANCY_REVENUE)
+            .map((type) =>
+              reportTypeLabels[type] ? (
+                <option key={type} value={type}>
+                  {reportTypeLabels[type]}
+                </option>
+              ) : null
+            )}
         </select>
 
-        {/* שדות תאריכים */}
-        <InputField name="dateRange.startDate" label="מתאריך (YYYY-MM-DD)" required />
-        <InputField name="dateRange.endDate" label="עד תאריך (YYYY-MM-DD)" required />
+        <InputField type="date" name="dateRange.startDate" label="מתאריך" required />
+        <InputField type="date" name="dateRange.endDate" label="עד תאריך" required />
 
-        {/* שדות מיוחדים לפי סוג הדוח */}
-        {selectedType === 'REVENUE' && (
-          <>
-          <label className="block mb-2">בחר קיבוץ לפי :</label>
-            <select  {...methods.register('groupBy')} className="w-full px-2 py-1 border rounded">
-              <option value="month">חודשי</option>
-              <option value="quarter">רבעוני</option>
-              <option value="year">שנתי</option>
-            </select>
-          <label className="block mb-2">בחר לקוחות :</label>
-            <select {...methods.register('customerIds')} multiple className="w-full px-2 py-1 border rounded">
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </>
+        <SelectField
+          name="groupBy"
+          label="בחר קיבוץ לפי"
+          options={[
+            { label: 'חודשי', value: 'month' },
+            { label: 'רבעוני', value: 'quarter' },
+            { label: 'שנתי', value: 'year' },
+          ]}
+        />
+
+        {selectedType === ReportType.REVENUE && (
+          <div>
+            <label className="font-medium mb-1 block">בחר לקוחות:</label>
+            <details className="w-full border rounded p-2">
+              <summary className="cursor-pointer select-none">בחר מרשימת הלקוחות</summary>
+              <div className="mt-2 flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+                {customers.map((c) => (
+                  <label key={c.id} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={methods.getValues('customerIds')?.includes(c.id)}
+                      value={c.id}
+                      {...methods.register('customerIds')}
+                      onChange={(e) => {
+                        const current = methods.getValues("customerIds") ?? [];
+                        methods.setValue("customerIds", [...current, c.id.toString()]);
+                      }}
+
+                      className="accent-blue-600"
+                    />
+                    {c.name}
+                  </label>
+                ))}
+              </div>
+            </details>
+          </div>
         )}
 
-        {selectedType === 'EXPENSES' && (
-          <>
-          <label className="block mb-2">בחר ספק :</label>
-            <select  {...methods.register('customerIds')} multiple className="w-full px-2 py-1 border rounded">
-              {vendors.map((v) => (
-                <option key={v.id} value={v.id}>{v.name}</option>
-              ))}
-            </select>
-            <label className="block mb-2">בחר סוג הוצאה :</label>
-            <select {...methods.register('categories')} multiple className="w-full px-2 py-1 border rounded">
-              {Object.values(ExpenseCategory).map((cat) => (
-                <option key={cat} value={cat}>{expenseCategoryLabels[cat]}</option>
-              ))}
-            </select>
-          </>
-        )}
 
-        {/* סוג גרף */}
-        <label className="block mb-2">בחר סוג גרף :</label>
+ {selectedType === ReportType.EXPENSES && (
+  <div className="flex flex-col gap-4">
+    {/* בחר ספק */}
+    <div>
+      <label className="font-medium mb-1 block">בחר ספק:</label>
+      <details className="w-full border rounded p-2">
+        <summary className="cursor-pointer select-none">בחר מרשימת הספקים</summary>
+        <div className="mt-2 flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+          {vendors.map((v) => (
+            <label key={v.id} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={methods.getValues('customerIds')?.includes(v.id)}
+                value={v.id}
+                {...methods.register('customerIds')}
+                onChange={(e) => {
+                  const current = methods.getValues('customerIds') ?? [];
+                  const newValue = e.target.checked
+                    ? [...current, v.id.toString()]
+                    : current.filter((id: string) => id !== v.id.toString());
+                  methods.setValue('customerIds', newValue);
+                }}
+                className="accent-blue-600"
+              />
+              {v.name}
+            </label>
+          ))}
+        </div>
+      </details>
+    </div>
+
+    {/* בחר סוג הוצאה */}
+    <div>
+      <label className="font-medium mb-1 block">בחר סוג הוצאה:</label>
+      <details className="w-full border rounded p-2">
+        <summary className="cursor-pointer select-none">בחר מתוך הקטגוריות</summary>
+        <div className="mt-2 flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+          {Object.values(ExpenseCategory).map((cat) => (
+            <label key={cat} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={methods.getValues('categories')?.includes(cat)}
+                value={cat}
+                {...methods.register('categories')}
+                onChange={(e) => {
+                  const current = methods.getValues('categories') ?? [];
+                  const newValue = e.target.checked
+                    ? [...current, cat]
+                    : current.filter((c: string) => c !== cat);
+                  methods.setValue('categories', newValue);
+                }}
+                className="accent-blue-600"
+              />
+              {expenseCategoryLabels[cat]}
+            </label>
+          ))}
+        </div>
+      </details>
+    </div>
+  </div>
+)}
+
+<div style={{textAlign: 'center'}}>
+        <Button type="submit"  disabled={loading} className="w-full">
+          {loading ? 'טוען...' : 'צור דוח'}
+        </Button>
+        </div>
+        {formError && <p className="text-red-600 mt-2">{formError}</p>}
+        <div>
+          {/* הצגת הודעת טעינה רק כשיש טעינה */}
+          {loadingReport && (
+            <div
+              style={{
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                width: '100%',
+                height: '100%',
+                backgroundColor: 'rgba(0, 0, 0, 0.3)', // רקע כהה
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 9999,
+              }}
+            >
+              <div
+                style={{
+                  backgroundColor: '#fff',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                }}
+              >
+                {/* אנימציה של סיבוב */}
+                <div
+                  style={{
+                    border: '8px solid #f3f3f3',
+                    borderTop: `8px solid ${color}`, // השפעת הצבע על הסיבוב
+                    borderRadius: '50%',
+                    width: '40px',
+                    height: '40px',
+                    animation: 'spin 2s linear infinite',
+                    marginBottom: '10px',
+                  }}
+                ></div>
+
+                {/* טקסט עם שינוי צבעים */}
+                <p
+                  style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: color,  // הצגת הצבע המשתנה
+                    animation: 'colorChange 2s infinite alternate',  // אנימציה לשינוי צבע
+                  }}
+                >
+                  יצירת הדוח... אנא המתן
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {error && <p className="text-red-600">{error.message}</p>}
+
+        <label>בחר סוג גרף:</label>
         <select
           value={selectedChartType}
           onChange={(e) => setSelectedChartType(e.target.value as 'bar' | 'pie' | 'line')}
           className="w-full px-2 py-1 border rounded"
         >
           <option value="bar">גרף עמודות</option>
-          <option value="pie">גרף עוגה</option>
+          {selectedType !== ReportType.PROFIT_LOSS && (
+            <option value="pie">גרף עוגה</option>
+          )}
           <option value="line">גרף קו</option>
         </select>
 
-        <Button type="submit" disabled={loading}>{loading ? 'טוען...' : 'צור דוח'}</Button>
-        {error && <p className="text-red-600">{error.message}</p>}
-      </div>
+        {reportData && (
+          <div ref={exportContentRef} className="mt-8 space-y-4">
+            <h2 className="text-lg font-semibold text-gray-800">{getReportTitle()}</h2>
+            <ChartDisplay type={selectedChartType} data={getChartData()} />
+            <ExportButtons refContent={exportContentRef} exportData={fullTableData} title={`דוח_${selectedType}`} />
 
-      {/* תצוגת גרף, טבלה וייצוא */}
-      {reportData && (
-        <div className="flex flex-col gap-8 mt-8" ref={exportContentRef}>
-          {/* גרף */}
-          {selectedType === 'REVENUE' && reportData.revenueData && (
-            <ChartDisplay
-              type={selectedChartType}
-              data={reportData.revenueData.breakdown.map((item) => ({
-                label: item.date,
-                value: item.totalRevenue,
-              }))}
-              title="דוח הכנסות"
-            />
-          )}
-          {selectedType === 'EXPENSES' && reportData.expenseData && (
-            <ChartDisplay
-              type={selectedChartType}
-              data={reportData.expenseData.monthlyTrend.map((item) => ({
-                label: item.month,
-                value: item.totalExpenses,
-              }))}
-              title="דוח הוצאות"
-            />
-          )}
-
-          {/* טבלה פשוטה */}
-          <Table
-            columns={[
-              { header: 'תאריך', accessor: 'date' },
-              { header: 'סכום כולל', accessor: 'total' },
-            ]}
-            data={
-              selectedType === 'REVENUE'
-                ? reportData.revenueData.breakdown.map((item) => ({
-                    date: item.date,
-                    total: item.totalRevenue,
-                  }))
-                : reportData.expenseData.monthlyTrend.map((item) => ({
-                    date: item.month,
-                    total: item.totalExpenses,
-                  }))
-            }
-          />
-
-          {/* טבלת עיצוב מותאמת */}
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                {selectedType === 'REVENUE' ? (
-                  <>
-                    <th style={thStyle}>תאריך</th>
-                    <th style={thStyle}>סה״כ הכנסות</th>
-                    <th style={thStyle}>חברות</th>
-                    <th style={thStyle}>ישיבות</th>
-                    <th style={thStyle}>לאונג׳</th>
-                    <th style={thStyle}>אחר</th>
-                  </>
-                ) : (
-                  <>
-                    <th style={thStyle}>חודש</th>
-                    <th style={thStyle}>סה״כ הוצאות</th>
-                    <th style={thStyle}>קטגוריה 1</th>
-                    <th style={thStyle}>סכום 1</th>
-                    <th style={thStyle}>קטגוריה 2</th>
-                    <th style={thStyle}>סכום 2</th>
-                    <th style={thStyle}>קטגוריה 3</th>
-                    <th style={thStyle}>סכום 3</th>
-                  </>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {selectedType === 'REVENUE'
-                ? reportData.revenueData.breakdown.map((item, i) => (
-                    <tr key={i} style={trStyle}>
-                      <td style={tdStyle}>{item.date}</td>
-                      <td style={tdStyle}>{item.totalRevenue}</td>
-                      <td style={tdStyle}>{item.membershipRevenue}</td>
-                      <td style={tdStyle}>{item.meetingRoomRevenue}</td>
-                      <td style={tdStyle}>{item.loungeRevenue}</td>
-                      <td style={tdStyle}>{item.totalRevenue - item.membershipRevenue - item.meetingRoomRevenue - item.loungeRevenue}</td>
-                    </tr>
-                  ))
-                : reportData.expenseData.monthlyTrend.map((item, i) => (
-                    <tr key={i} style={trStyle}>
-                      <td style={tdStyle}>{item.month}</td>
-                      <td style={tdStyle}>{item.totalExpenses}</td>
-                      <td style={tdStyle}>{item.topCategories[0]?.category || ''}</td>
-                      <td style={tdStyle}>{item.topCategories[0]?.amount || ''}</td>
-                      <td style={tdStyle}>{item.topCategories[1]?.category || ''}</td>
-                      <td style={tdStyle}>{item.topCategories[1]?.amount || ''}</td>
-                      <td style={tdStyle}>{item.topCategories[2]?.category || ''}</td>
-                      <td style={tdStyle}>{item.topCategories[2]?.amount || ''}</td>
+            <div className="mt-4">
+              <table className="table-auto border border-gray-300 text-sm w-full">
+                <thead className="bg-gray-100">
+                  <tr>
+                    {fullTableColumns.map((col, idx) => (
+                      <th key={idx} className="border px-4 py-2 font-semibold text-right">
+                        {col.header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {fullTableData.map((row, rowIdx) => (
+                    <tr key={rowIdx} className="hover:bg-gray-50">
+                      {fullTableColumns.map((col, colIdx) => (
+                        <td key={colIdx} className="border px-4 py-2 text-right">
+                          {typeof row[col.accessor] === 'number'
+                            ? formatNumber(row[col.accessor])
+                            : String(row[col.accessor] ?? '')}
+                        </td>
+                      ))}
                     </tr>
                   ))}
-            </tbody>
-          </table>
-
-          {/* כפתורי ייצוא */}
-          <ExportButtons
-            title={selectedType === 'REVENUE' ? 'דוח הכנסות' : 'דוח הוצאות'}
-            refContent={exportContentRef}
-            exportData={[] /* ניתן להרחיב לפי צורך */}
-          />
-        </div>
-      )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     </Form>
+    </>
   );
 };

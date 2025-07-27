@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
-import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
-import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
-import { ProtectedRoute } from './MainMenu/CoreAndIntegration/Components/Login/ProtectedRoute';
-import { Routing } from './routing';
+import MainLayout from './layout/MainLayout';
 import { useAuthStore } from './Stores/CoreAndIntegration/useAuthStore';
 
 function App() {
-  const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
+  const [healthStatus, setHealthStatus] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuthStore();
@@ -34,61 +31,41 @@ function App() {
       })
       .catch((err) => {
         console.error('Error fetching API health:', err);
-        setError('Could not connect to API server. Make sure it is running.');
+        // setError('Could not connect to API server. Make sure it is running.');
         setLoading(false);
       });
   }, []);
 
-  // useEffect(() => {
-  //   if (!isAuthenticated && location.pathname !== '/auth') {
-  //     navigate('/auth');
-  //   }
-  //   if (isAuthenticated && location.pathname === '/auth') {
-  //     navigate('/', { replace: true });
-  //   }
-  // }, [isAuthenticated, location.pathname, navigate]);
-useEffect(() => {
-  if (!isAuthenticated && location.pathname !== '/auth') {
-    navigate('/auth', { replace: true });
-  } else if (isAuthenticated && location.pathname === '/auth') {
-    navigate('/', { replace: true });
-  }
-  // לא מוסיפים location.pathname לתלות כדי לא להפעיל את זה על כל שינוי נתיב
-}, [isAuthenticated, navigate]);
+  useEffect(() => {
+    if (!isAuthenticated && location.pathname !== '/auth') {
+      navigate('/auth', { replace: true });
+    } else if (isAuthenticated && location.pathname === '/auth') {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]); 
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  const showLandingHeader = location.pathname === "/";
+
   return (
-    <AuthProvider>
-      <Routes>
-        {/* Ruta pública para login */}
-        <Route path="/auth" element={<AuthenticationScreen />} />
+    <div className="App">
+      <MainLayout /> 
 
-        {/* Ruta protegida para toda la app */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <div className="App">
-                <header className="App-header">
-                  <h3>Welcome to our world</h3>
-                  <h1>Clicka</h1>
-                  <h2>Co-working Space Management System</h2>
-                </header>
+      {showLandingHeader && (
+        <>
+          <header className="App-header">
+            <h3>Welcome to our world</h3>
+            <h1>Clicka</h1>
+            <h2>Co-working Space Management System</h2>
+          </header>
+          <div className="menu" style={{ backgroundColor: 'black' }}></div>
+        </>
+      )}
 
-                <div className="menu" style={{ backgroundColor: 'black' }}></div>
-
-                <Accesibility />
-
-                {/* Aquí se cargan todas las rutas internas */}
-                <Routing />
-              </div>
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </AuthProvider>
+      <Accesibility />
+    </div>
   );
 }
 
