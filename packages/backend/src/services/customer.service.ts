@@ -29,6 +29,7 @@ import { token } from "morgan";
 import { UserTokenService } from "./userTokenService";
 import { promises } from "node:dns";
 import { getDocumentById } from "./document.service";
+import { deleteFileFromDrive } from "./drive-service";
 export class customerService extends baseService<CustomerModel> {
   constructor() {
     super("customer");
@@ -37,7 +38,10 @@ export class customerService extends baseService<CustomerModel> {
   // const serviceDocument = new documentSer
 
   getAllCustomers = async (): Promise<CustomerModel[] | null> => {
+    console.log('getAllCustomers called');
     const customers = await this.getAll();
+    console.log('Raw customers from getAll():', customers);
+    console.log('Number of customers:', customers?.length || 0);
 
     const customersWithPayments = await Promise.all(
       customers.map(async (customer) => {
@@ -50,7 +54,10 @@ export class customerService extends baseService<CustomerModel> {
       }),
     );
 
-    return CustomerModel.fromDatabaseFormatArray(customersWithPayments); // המרה לסוג UserModel
+    const result = CustomerModel.fromDatabaseFormatArray(customersWithPayments);
+    console.log('Final result:', result);
+    console.log('Final result length:', result?.length || 0);
+    return result;
   };
   //מחזיר את כל הסטטוסים של הלקוח
   getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
@@ -135,7 +142,7 @@ export class customerService extends baseService<CustomerModel> {
         renewalTerms: "",
         terminationNotice: 0,
       },
-      documents: newCustomer.contractDocuments || [],
+      documents: [], // מערך ריק של מזהי מסמכים
       //   signedBy?: string;
       //   witnessedBy?: string;
       createdAt: new Date().toISOString(),
@@ -161,8 +168,10 @@ export class customerService extends baseService<CustomerModel> {
 
     const contract = await serviceContract.post(newContract);
 
-    console.log("new contract in customer service");
-    console.log(contract);
+    console.log("📄 New contract created in customer service:");
+    console.log("Contract ID:", contract.id);
+    console.log("Customer ID:", contract.customerId);
+    console.log("Contract terms:", contract.terms);
 
     //create customer payment method
     if (newCustomer.paymentMethodType == PaymentMethodType.CREDIT_CARD) {
@@ -416,7 +425,6 @@ export class customerService extends baseService<CustomerModel> {
       }
       
       customerToUpdate.email = email;
-      customerToUpdate.status = CustomerStatus.ACTIVE;
       console.log('✅ Customer updated with email:', email);
 
       await this.patch(customerToUpdate, id);
@@ -424,7 +432,7 @@ export class customerService extends baseService<CustomerModel> {
 
       try {
         const response = await fetch(
-          "http://localhost:3001/api/customer/" + id + "/status-change",
+          `${process.env.API_URL}/api/customers/${id}/status-change`,
           {
             method: "POST",
             headers: {
@@ -444,25 +452,28 @@ export class customerService extends baseService<CustomerModel> {
       try {
         const serviceContract = new contractService();
         console.log('📄 Getting contracts for customer ID:', customerToUpdate.id);
+        // Get only the most recent contract
         const contracts = customerToUpdate.id ? await serviceContract.getAllContractsByCustomerId(customerToUpdate.id) : null;
         if (contracts && contracts.length > 0) {
+          const latestContract = contracts[contracts.length - 1]; // Get most recent contract
           const urls: string[] = [];
-          contracts.forEach(contract => {
-            if (contract.documents && Array.isArray(contract.documents)) {
-              contract.documents.forEach(doc => {
-                if (doc.url) {
-                  urls.push(doc.url);
-                }
-              });
+          
+          // Check if latest contract has documents
+          if (latestContract.documents && Array.isArray(latestContract.documents)) {
+            for (const doc of latestContract.documents) {
+              const document = await getDocumentById(doc);
+              if (document?.url) {
+                urls.push(document.url);
+              }
             }
-          });
+          }          
           
           if (urls.length > 0) {
             console.log('📧 Sending contract email with', urls.length, 'URLs');
             await this.sendEmailWithContract(customerToUpdate, urls.join('\n'));
             console.log('✅ Contract email sent');
           } else {
-            console.warn('⚠️ No contract URLs found');
+            console.warn('⚠️ No contract URLs found in latest contract');
           }
         } else {
           console.warn('⚠️ No contracts found for customer');
@@ -693,20 +704,24 @@ export class customerService extends baseService<CustomerModel> {
   serviceUserToken = new UserTokenService();
 
   sendEmailWithContract = async (customer: CustomerModel, link: string) => {
+    console.log('📧 Starting sendEmailWithContract for:', customer.name, customer.email);
+    
     const token = await this.serviceUserToken.getSystemAccessToken();
+    if (!token) {
+      console.error("❌ Token not available for contract email");
+      return;
+    }
+    console.log('✅ Token obtained for contract email');
+
     const template = await this.emailService.getTemplateByName(
       "שליחת חוזה ללקוח",
     );
-
-    if (!token) {
-      console.warn("the token is wrong");
-      return;
-    }
-
     if (!template) {
-      console.warn("contract email template not found");
+      console.error("❌ Contract email template not found");
       return;
     }
+    console.log('✅ Contract email template found:', template.subject);
+
     const renderedHtml = await this.emailService.renderTemplate(
       template.bodyHtml,
       {
@@ -714,18 +729,96 @@ export class customerService extends baseService<CustomerModel> {
         "link": link,
       },
     );
+    console.log('✅ Contract email template rendered');
 
-    await sendEmail(
-      "me",
-      {
-        to: [customer.email ?? ""],
-        subject: encodeSubject(template.subject),
-        body: renderedHtml,
-        isHtml: true,
-      },
-      token,
-    );
-    console.log(template.subject);
+    try {
+      await sendEmail(
+        "me",
+        {
+          to: [customer.email ?? ""],
+          subject: encodeSubject(template.subject),
+          body: renderedHtml,
+          isHtml: true,
+        },
+        token,
+      );
+      console.log('✅ Contract email sent successfully to:', customer.email);
+    } catch (error) {
+      console.error('❌ Failed to send contract email:', error);
+    }
+  };
+
+
+  // מחיקת לקוח עם כל הנתונים הקשורים אליו כולל קבצים בדרייב
+  deleteCustomerCompletely = async (customerId: ID): Promise<void> => {
+    try {
+      console.log('🗑️ Starting complete customer deletion for ID:', customerId);
+      
+      const token = await this.serviceUserToken.getSystemAccessToken();
+      if (!token) {
+        console.warn('⚠️ No token available for Drive operations');
+      }
+
+      // 1. קבלת כל המסמכים הקשורים ללקוח
+      const serviceContract = new contractService();
+      const contracts = await serviceContract.getAllContractsByCustomerId(customerId);
+      const documentIds: string[] = [];
+      
+      for (const contract of contracts) {
+        if (contract.documents && Array.isArray(contract.documents)) {
+          documentIds.push(...contract.documents);
+        }
+      }
+
+      // 2. מחיקת קבצים מדרייב
+      if (token && documentIds.length > 0) {
+        const { data: documents } = await supabase
+          .from('document')
+          .select('google_drive_id')
+          .in('id', documentIds)
+          .not('google_drive_id', 'is', null);
+        
+        if (documents) {
+          for (const doc of documents) {
+            try {
+              await deleteFileFromDrive(doc.google_drive_id, token);
+              console.log('✅ Deleted file from Drive:', doc.google_drive_id);
+            } catch (error) {
+              console.warn('⚠️ Failed to delete file from Drive:', doc.google_drive_id, error);
+            }
+          }
+        }
+      }
+
+      // 3. מחיקת מסמכים
+      if (documentIds.length > 0) {
+        await supabase.from('document').delete().in('id', documentIds);
+        console.log('✅ Deleted documents:', documentIds.length);
+      }
+
+      // 4. מחיקת חוזים
+      for (const contract of contracts) {
+        await serviceContract.delete(contract.id!);
+        console.log('✅ Deleted contract:', contract.id);
+      }
+
+      // 5. מחיקת תקופות לקוח
+      await supabase.from('customer_period').delete().eq('customer_id', customerId);
+      console.log('✅ Deleted customer periods');
+
+      // 6. מחיקת שיטות תשלום
+      await serviceCustomerPaymentMethod.deleteByCustomerId(customerId);
+      console.log('✅ Deleted payment methods');
+
+      // 7. מחיקת הלקוח עצמו
+      await this.delete(customerId);
+      console.log('✅ Deleted customer');
+
+      console.log('🎯 Customer deletion completed successfully');
+    } catch (error) {
+      console.error('❌ Error in complete customer deletion:', error);
+      throw error;
+    }
   };
 
   sendWellcomeMessageForEveryMember = async (name: string) => {
@@ -791,6 +884,8 @@ export class customerService extends baseService<CustomerModel> {
       throw error;
     }
   };
+
+  
 }
 
 const serviceCustomer = new customerService();

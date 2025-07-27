@@ -9,6 +9,7 @@ import { Form } from '../../../../Common/Components/BaseComponents/Form';
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select'; // מייבאים את הקומפוננטה
+import FileUploader from '../../../../Common/Components/BaseComponents/FileUploader';
 
 //האם להכניס עוד שדות שקשורים לחוזה????
 
@@ -49,6 +50,7 @@ const schema = z.object({
     creditCardHolderPhone: z.string().optional(),
     contractDocuments: z.array(z.any()).optional(),
     ProfilePicture: z.any().optional(),
+    requireEmailVerification: z.boolean().optional(),
 }).superRefine((data, ctx) => {
     if (data.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
         if (!data.creditCardNumber || !/^\d{16}$/.test(data.creditCardNumber)) {
@@ -107,7 +109,6 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
         defaultValues: { ...defaultValues, workspaceCount: 1, notes: defaultValues?.notes || "" }
     });
 
-
     //אם רואים שלא מתעדכן הערכים עבור מתעניין חדש יש לשים את זה
     // useEffect(() => {
     //     methods.reset({
@@ -134,17 +135,16 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
     //     });
     // }, [lead, methods]);
 
-
     const stepFieldNames = [
         ["name", "phone", "email", "idNumber", "businessName", "businessType", "notes", "ProfilePicture"] as const,
         ["currentWorkspaceType", "workspaceCount", "contractSignDate", "contractStartDate", "billingStartDate", "contractDocuments"] as const,
         ["paymentMethodType", "invoiceName", "creditCardNumber", "creditCardExpiry", "creditCardHolderIdNumber", "creditCardHolderPhone"] as const,
-
     ];
+
     const paymentMethodType = methods.watch("paymentMethodType");
     const idNumber = methods.watch("idNumber");
     const phone = methods.watch("phone");
-
+    const email = methods.watch("email");
 
     const steps = [
         {
@@ -155,6 +155,14 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                     <FileInputField name="ProfilePicture" label="תמונת פרופיל" />
                     <InputField name="phone" label="טלפון" required />
                     <InputField name="email" label="אימייל" required />
+                    <div className="flex items-center">
+                        <input
+                            type="checkbox"
+                            {...methods.register("requireEmailVerification")}
+                            className="ml-2"
+                        />
+                        <label className="text-sm text-gray-700">דרוש אימות מייל</label>
+                    </div>
                     <InputField name="idNumber" label="תעודת זהות" required />
                     <InputField name="notes" label="הערות" />
                     <InputField name="businessName" label="שם העסק" required />
@@ -184,6 +192,13 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                     <InputField name="contractStartDate" label="תאריך תחילת חוזה" required type="date" />
                     <InputField name="billingStartDate" label="תאריך תחילת חיוב" required type="date" />
                     <FileInputField name="contractDocuments" label="מסמכי חוזה" multiple />
+                    <FileUploader
+                        folderPath={`לקוחות/${email}/חוזים`}
+                        onFilesUploaded={(files) => {
+                            console.log("קבצים הועלו:", files);
+                            // אפשר להוסיף לוגיקת הצלחה
+                        }}
+                    />
                 </>
             )
         }]),

@@ -37,7 +37,7 @@ export const LeadInteractionDetails = () => {
   const handleSaveInteraction = async () => {
     if (editingInteraction && selectedLead?.id) {
       try {
-        const response = await fetch(`http://localhost:3001/api/interaction/${editingInteraction.id}`, {
+        const response = await fetch(`${process.env.API_URL}/interaction/${editingInteraction.id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

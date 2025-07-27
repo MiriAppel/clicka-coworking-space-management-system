@@ -73,7 +73,7 @@ export const LeadInteractions = () => {
       setIsSearching(true);
       useLeadsStore.setState({ leads: filtered });
     } else {
-      fetch(`http://localhost:3001/api/leads/search?q=${term}`)
+      fetch(`${process.env.API_URL}/leads/search?q=${term}`)
         .then((res) => res.json())
         .then((data: Lead[]) => {
           setIsSearching(true);

@@ -49,25 +49,22 @@ export const useInvoiceStore = create<InvoiceState>()(
 
         fetchInvoices: async () => {
           set({ loading: true, error: null });
-          set({
-            invoices: [
-              {
-                id: '1',
-                invoice_number: '1001',
-                customer_id: 'c1',
-                customer_name: 'לקוח א',
-                status: InvoiceStatus.ISSUED,
-                issue_date: '2024-06-01',
-                due_date: '2024-06-30',
-                items: [],
-                subtotal: 100,
-                taxtotal: 17,
-                createdAt: '2024-06-01',
-                updatedAt: '2024-06-01'
-              }
-            ],
-            loading: false
-          });
+          try {
+            const response = await axios.get('http://localhost:3001/api/invoices');
+            const invoicesData = Array.isArray(response.data.invoices) ? response.data.invoices : [];
+            set({
+              invoices: invoicesData,
+              loading: false
+            });
+          } catch (error) {
+            console.error('Error fetching invoices:', error);
+            set({
+              error: 'Error fetching invoices',
+              loading: false,
+              invoices: []
+            });
+            throw error;
+          }
         },
 
         getAllInvoices: async () => {

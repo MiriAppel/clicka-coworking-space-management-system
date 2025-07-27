@@ -1,5 +1,6 @@
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
+// import {DocumentModel} from '../backend/src/models/document.model';
 
 export enum TimelineEventType {
   LEAD_CREATED = 'LEAD_CREATED',
@@ -86,7 +87,7 @@ export interface Contract {
   startDate?: DateISO;
   endDate?: DateISO;
   terms?: ContractTerms;
-  documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
+  documents: ID[]; // מזהי מסמכים ששמורים בטבלת document 
   signedBy?: string;
   witnessedBy?: string;
   createdAt: DateISO;
@@ -156,6 +157,7 @@ export interface CreateCustomerRequest {
   };
   paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
+  requireEmailVerification?: boolean;
 }
 
 // Update customer request

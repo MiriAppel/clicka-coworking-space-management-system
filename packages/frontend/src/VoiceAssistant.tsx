@@ -149,23 +149,20 @@ const handleCommand = (text: string) => {
     keywords.some((kw) => input.includes(kw));
 
   if (matches(lower, newCustomerKeywords)) {
-    window.location.href =
-      "http://localhost:3000/leadAndCustomer/customers/new";
+    window.location.href = `${process.env.REACT_APP_BASE_URL}/leadAndCustomer/customers/new`;
   } else if (matches(lower, customersListKeywords)) {
-    window.location.href = "http://localhost:3000/leadAndCustomer/customers";
-  } else if (matches(lower, newLead))
-    window.location.href =
-      "http://localhost:3000/leadAndCustomer/leads/interestedCustomerRegistration";
-  else if (matches(lower, leadsList))
-    window.location.href = "http://localhost:3000/leadAndCustomer/leads";
-  else if (matches(lower, contractList))
-    window.location.href = "http://localhost:3000/leadAndCustomer/contracts";
-  else if (matches(lower, sourcesGraph))
-    window.location.href =
-      "http://localhost:3000/leadAndCustomer/leads/LeadSourcesPieChart";
-  else if (matches(lower, history))
-    window.location.href = "http://localhost:3000/customerHistory";
-  else {
+    window.location.href = `${process.env.REACT_APP_BASE_URL}/leadAndCustomer/customers`;
+  } else if (matches(lower, newLead)) {
+    window.location.href = `${process.env.REACT_APP_BASE_URL}/leadAndCustomer/leads/interestedCustomerRegistration`;
+  } else if (matches(lower, leadsList)) {
+    window.location.href = `${process.env.REACT_APP_BASE_URL}/leadAndCustomer/leads`;
+  } else if (matches(lower, contractList)) {
+    window.location.href = `${process.env.REACT_APP_BASE_URL}/leadAndCustomer/contracts`;
+  } else if (matches(lower, sourcesGraph)) {
+    window.location.href = `${process.env.REACT_APP_BASE_URL}/leadAndCustomer/leads/LeadSourcesPieChart`;
+  } else if (matches(lower, history)) {
+    window.location.href = `${process.env.REACT_APP_BASE_URL}/customerHistory`;
+  } else {
     alert("לא הבנתי את הפקודה... 😕 נסי שוב בבקשה");
   }
 };

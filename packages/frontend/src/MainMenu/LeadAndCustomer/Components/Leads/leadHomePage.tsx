@@ -24,7 +24,7 @@ import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { LeadsTable } from "./LeadsTable"; // 💡 ודאי שהשמות תואמים
-import { deleteLead } from "../../Service/LeadAndCustomersService";
+// import { deleteLead } from "../../Service/LeadAndCustomersService";
 
 export const LeadsHomePage = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export const LeadsHomePage = () => {
 
   const fetchLeads = async (page: number, limit: number = 50) => {
     try {
-      const { data } = await axios.get("http://localhost:3001/api/leads/by-page", {
+      const { data } = await axios.get(`${process.env.API_URL}/api/leads/by-page`, {
         params: { page, limit },
       });
 
@@ -90,7 +90,7 @@ export const LeadsHomePage = () => {
     } else {
       // חיפוש בשרת - אם אין תוצאות גם מהשרת, נציג מערך ריק במקום להציג את כל הרשימה
       axios
-        .get("http://localhost:3001/api/leads/search", {
+        .get(`${process.env.API_URL}/leads/search`, {
           params: { q: term },
         })
         .then((res) => {

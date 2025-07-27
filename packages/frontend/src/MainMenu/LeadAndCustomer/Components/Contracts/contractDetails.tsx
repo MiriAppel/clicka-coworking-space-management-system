@@ -151,11 +151,9 @@ export const ContractDetails = () => {
                   <h4 className="font-semibold text-gray-700 mb-2">מסמכים</h4>
                   {(contract.documents ?? []).length > 0 ? (
                     <ul className="list-disc pr-5 space-y-1 text-blue-700">
-                      {contract.documents.map((doc: FileReference) => (
-                        <li key={doc.id}>
-                          <a href={doc.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-500">
-                            {doc.name}
-                          </a> – {Math.round(doc.size / 1024)} KB
+                      {contract.documents.map((docId: string) => (
+                        <li key={docId}>
+                          <span className="text-blue-700">מסמך: {docId}</span>
                         </li>
                       ))}
                     </ul>

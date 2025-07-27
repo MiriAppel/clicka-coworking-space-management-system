@@ -15,11 +15,11 @@ import MainLayout from './layout/MainLayout';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
 import { ExpenseDetails } from './MainMenu/Billing/Components/expenseManagementSystem/expenseDetails';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
-import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+// import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
-import { Billing } from './MainMenu/Billing/Components/billing';
+// import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
@@ -30,6 +30,8 @@ import { ExpensesPage } from './MainMenu/Billing/Components/expenseManagementSys
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
+import ClientSearchAndSelect from './MainMenu/LeadAndCustomer/Components/upload';
+import DocumentUpload from './MainMenu/CoreAndIntegration/Components/DocumentUpload';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -63,17 +65,16 @@ export const Routing = () => {
         <Route path="expenses" element={<ExpenseList />} />
         <Route path="expenses/expense-form" element={<CreateExpenseForm />} />
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
-        <Route path="/workspaceMap" element={<WorkspaceMap />} />
-        <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        {/* <Route path="/workspaceMap" element={<WorkspaceMap />} /> */}
         <Route path="assignmentForm" element={<AssignmentForm />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
         <Route path="payment" element={<PaymentForm />} />
         <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
-        <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} />
+        {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
         <Route path="expense-form" element={<CreateExpenseForm />} />
-        <Route path="billing/*" element={<Billing />} />
+        {/* <Route path="billing/*" element={<Billing />} /> */}
         <Route path="users" element={< UserTable />} />
         <Route path="meetingRooms" element={<RoomReservations />} />
         <Route path="UserActions" element={< AuditLogTable />} />
@@ -85,6 +86,7 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/documentUpload" element={< DocumentUpload />} />
       </Route>
     </Routes>
   );

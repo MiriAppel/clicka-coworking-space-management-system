@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { customerService } from "../services/customer.service";
-import { CreateCustomerRequest, ID, StatusChangeRequest } from "shared-types";
+import {
+  CreateCustomerRequest,
+  CustomerStatus,
+  ID,
+  StatusChangeRequest,
+} from "shared-types";
 import { contractService } from "../services/contract.service";
 import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.service";
 import { UserTokenService } from "../services/userTokenService";
@@ -15,7 +20,7 @@ const emailService = new EmailTemplateService();
 
 export const sendContractEmail = async (req: Request, res: Response) => {
   try {
-    const  customer: CustomerModel  = req.body;
+    const customer: CustomerModel = req.body;
     const link = req.params.link; // assuming the link is passed as a route param
 
     if (!customer) {
@@ -45,50 +50,96 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 export const postCustomer = async (req: Request, res: Response) => {
   try {
     const newCustomer: CreateCustomerRequest = req.body;
+    const requireEmailVerification = req.body.requireEmailVerification || false;
 
-    // console.log("in controller");
-    // console.log(newCustomer);
     const email = newCustomer.email;
-
     const customer = await serviceCustomer.createCustomer(newCustomer);
-
     const token = await userTokenService.getSystemAccessToken();
-
-    const template = await emailService.getTemplateByName(
-      "אימות לקוח",
-    );
-    if (!template) {
-      console.warn("Team email template not found");
-      return;
-    }
-    // const renderedHtml = await emailService.renderTemplate(
-    //   template.bodyHtml,
-    //   {
-    //     "שם": customer.name,
-    //     "סטטוס": status,
-    //     "תאריך": formattedDate,
-    //     "סיבה": detailsForChangeStatus.reason || "ללא סיבה מצוינת",
-    //   },
-    // );
 
     if (!email || !token) {
       res.status(401).json("its have a problam on email or token");
+      return;
     }
 
-    // sendEmail( "me",
-    //       {
-    //         to: [email ?? ""],
-    //         subject: template.subject,
-    //         body: renderedHtml,
-    //         isHtml: true,
-    //       },
-    //       token,)
-    console.log("in controller");
-    console.log(customer);
+    if (!requireEmailVerification) {
+      // שליחת מייל אימות - המייל לא נשמר בDB עד לאימות
+      await serviceCustomer.patch({ email: email }, customer.id!);
+      await serviceCustomer.sendWellcomeMessageForEveryMember(customer.name);
+      await serviceCustomer.patch({
+        email: email,
+        status: CustomerStatus.ACTIVE,
+      }, customer.id!);
+      try {
+        // שליחת מייל ברוכה הבאה
+        await serviceCustomer.sendWellcomeMessageForEveryMember(customer.name);
 
-    res.status(200).json(customer);
+        // שליחת מייל חוזה
+        const contracts = await serviceContract.getAllContractsByCustomerId(
+          customer.id!,
+        );
+        console.log("📄 Contracts found:", contracts?.length || 0);
+
+        if (contracts && contracts.length > 0) {
+          const latestContract = contracts[contracts.length - 1];
+          console.log(
+            "📄 Latest contract:",
+            latestContract.id,
+            "Documents:",
+            latestContract.documents?.length || 0,
+          );
+
+          // תמיד שולח מייל חוזה, גם אם אין מסמכים
+          let contractContent =
+            `שלום ${customer.name},\n\nבצורף פרטי החוזה שלך:\nמספר חוזה: ${latestContract.id}\nסוג חלל: ${
+              latestContract.terms?.workspaceType || "לא צוין"
+            }\nכמות: ${
+              latestContract.terms?.workspaceCount || 1
+            }\n\nבברכה,\nצוות קליקה`;
+
+          if (
+            latestContract.documents &&
+            Array.isArray(latestContract.documents) &&
+            latestContract.documents.length > 0
+          ) {
+            const urls: string[] = [];
+            for (const doc of latestContract.documents) {
+              try {
+                const { getDocumentById } = await import(
+                  "../services/document.service"
+                );
+                const document = await getDocumentById(doc);
+                if (document?.url) {
+                  urls.push(document.url);
+                }
+              } catch (error) {
+                console.error("שגיאה בקבלת מסמך:", doc, error);
+              }
+            }
+
+            if (urls.length > 0) {
+              contractContent += `\n\nקישורים למסמכים:\n${urls.join("\n")}`;
+            }
+          }
+
+          console.log("📧 Sending contract email to:", customer.email);
+          await serviceCustomer.sendEmailWithContract(
+            customer,
+            contractContent,
+          );
+        } else {
+          console.warn("⚠️ No contracts found for customer:", customer.id);
+        }
+      } catch (error) {
+        console.error("שגיאה בשליחת מיילים:", error);
+      }
+    }
+
+    // שמירת המייל בDB ועדכון סטטוס לפעיל
+
+    // קריאה לפונקציות מתוך confirmEmail
   } catch (error) {
-    res.status(500).json({ message: "Error fetching customers", error });
+    console.error("Error creating customer:", error);
+    res.status(500).json({ message: "Failed to create customer", error });
   }
 };
 
@@ -140,10 +191,12 @@ export const getAllCustomerStatus = async (req: Request, res: Response) => {
 export const deleteCustomer = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const statuses = await serviceCustomer.delete(id);
-    res.status(200).json(statuses);
+    await serviceCustomer.deleteCustomerCompletely(id);
+    res.status(200).json({
+      message: "Customer and all related data deleted successfully",
+    });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching all statuses", error });
+    res.status(500).json({ message: "Error deleting customer", error });
   }
 };
 

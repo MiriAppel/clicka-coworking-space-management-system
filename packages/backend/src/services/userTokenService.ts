@@ -9,6 +9,16 @@ import { UserService } from "./user.service";
 
 
 export class UserTokenService {
+    async saveSessionId(userId: string, sessionId: string) {
+        const { error } = await supabase
+            .from('user_token')
+            .update({ active_session_id: sessionId })
+            .eq('user_id', userId);
+        if (error) {
+            console.error('Error saving session ID:', error);
+            throw new Error('Failed to save session ID');
+        }
+    }
 
     async saveTokens(userId: string, refreshToken: string, access_token: string, sessionId?: string): Promise<string> {
         // Encrypt the refresh token before saving
@@ -150,11 +160,19 @@ export class UserTokenService {
     async getSystemAccessToken(): Promise<string | null> {
         try {
             const systemEmail = process.env.SYSTEM_EMAIL || '';
+            console.log('Looking for system user with email:', systemEmail);
+            
             const userService = new UserService();
             const system = await userService.getUserByEmail(systemEmail);
+            console.log('System user found:', system ? 'Yes' : 'No');
+            
             if (system) {
+                console.log('System user ID:', system.id || system.googleId);
                 const systemAccessToken = await this.getAccessTokenByUserId(system.id || system.googleId);
+                console.log('System access token found:', systemAccessToken ? 'Yes' : 'No');
                 return systemAccessToken;
+            } else {
+                console.error('System user not found with email:', systemEmail);
             }
         } catch (error) {
             console.error('Error fetching system access token:', error);

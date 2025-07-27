@@ -1,6 +1,5 @@
 import type { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
-import { sendEmailToConfrim } from "./gmail-service";
 
 export class baseService<T> {
   // בשביל שם המחלקה
@@ -89,15 +88,6 @@ export class baseService<T> {
       console.log(dataForInsert);
     }
 
-    // אם זה הוספת לקוח לא מוסיפים לו מייל עד שמאמתים את הלקוח והמייל נוסף רק בצורת עדכון אחרי שהשלקוח נוצר
-    let emailToSave: string | undefined;
-
-    if (this.tableName === "customer") {
-      const { email, ...rest } = dataForInsert as any;
-      emailToSave = email; // שומרת את המייל במשתנה
-      dataForInsert = rest; // dataForInsert בלי המייל
-    }
-
     const { data, error } = await supabase
       .from(this.tableName)
       .insert([dataForInsert])
@@ -105,12 +95,6 @@ export class baseService<T> {
 
     console.log("added");
     console.log(data);
-
-    const createdRecord = data?.[0];
-
-    if (this.tableName === "customer") {
-      sendEmailToConfrim(emailToSave, createdRecord.id);
-    }
 
     if (error) {
       console.log("enter to log", error);

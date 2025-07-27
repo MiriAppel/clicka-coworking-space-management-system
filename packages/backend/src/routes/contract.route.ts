@@ -23,6 +23,10 @@ routerContract.post('documents', contractControler.postContractDocument);
 //  (PATCH)
 routerContract.patch('/:contractId', contractControler.updateContract);
 
+routerContract.put('/:contractId/document', contractControler.updateContractDocument);
+
+routerContract.post('/customer/:customerId/document', contractControler.createOrUpdateContractWithDocument);
+
 //  (DELETE)
 routerContract.delete('documents/:customerId', contractControler.deleteContractDocument); 
 routerContract.delete('/:contractId', contractControler.deleteContract); 

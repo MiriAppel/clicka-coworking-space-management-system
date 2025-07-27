@@ -19,21 +19,6 @@ export const InterestedCustomerRegistration: React.FC = () => {
   const { handleUpdateLead } = useLeadsStore();
 
   const onSubmit = async (data: any) => {
-    //איך לשמור את התמונת פרופיל ואיפה ואם לא הכניסו אז לשים ברירת מחדל
-
-    //צריך להמיר את הטפסים שהתקבלו ל
-    // export interface FileReference {
-    //     id: ID;
-    //     name: string;
-    //     path: string;
-    //     mimeType: string;
-    //     size: number;
-    //     url: string;
-    //     googleDriveId?: string;
-    //     createdAt: DateISO;
-    //     updatedAt: DateISO;
-    // }
-
     JSON.stringify(data, null, 2);
     const customerRequest: CreateCustomerRequest = {
       name: data.name,
@@ -59,7 +44,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
               creditCardHolderPhone: data.creditCardHolderPhone,
             }
           : undefined,
-      contractDocuments: data.contractDocuments, // אם יש שדה כזה
+      contractDocuments: data.contractDocuments,
+      requireEmailVerification: data.requireEmailVerification || false,
     };
 
     console.log(customerRequest);
@@ -67,7 +53,11 @@ export const InterestedCustomerRegistration: React.FC = () => {
     try {
       await createCustomer(customerRequest);
 
-      showAlert("", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
+      const successMessage = data.requireEmailVerification 
+        ? "להשלמת התהליך יש לאמת את הלקוח במייל"
+        : "הלקוח נוסף בהצלחה!";
+      
+      showAlert("", successMessage, "success");
 
       await handleUpdateLead(lead!.id!, { status: LeadStatus.CONVERTED });
 
