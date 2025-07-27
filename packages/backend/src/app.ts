@@ -23,7 +23,6 @@ import featureRouter from './routes/roomFaeature.route';
 import spaceRouter from './routes/spaceAssignmemt.route';
 import roomRouter from './routes/room.route';
 import occupancyrouter from './routes/occupancyTrend.route';
-// import userRouter from './routes/user.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
@@ -37,7 +36,6 @@ import driveRoutes from './routes/drive-route';
 import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
 import auditLogRouter from './routes/auditLog.route';
-import driveRouter from './routes/drive-route';
 import { file } from 'googleapis/build/src/apis/file';
 
 // import cookieParser from "cookie-parser";
@@ -63,8 +61,6 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(json());
-app.use(urlencoded({ extended: true }));
 app.use(globalAuditMiddleware);
 app.use('/api/users', userRouter); // User routes
 app.use('/api/audit-logs', auditLogRouter);
@@ -74,17 +70,12 @@ app.use('/api/book', bookRouter);
 app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
 app.use('/api/space', spaceRouter);
-// app.use('/api/map',routerMap);
- // User routes
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/pricing', routerPricing);
 app.use('/api/emailTemplate', emailTemplateRouter);
-// app.use('/api/drive', driveRouter);
-
-
 app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
@@ -95,12 +86,7 @@ app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 app.use('/api/interaction', interactionRouter)
 app.use(urlencoded({ extended: true }));
-app.use('/api/customers', routerCustomer);
-app.use('/api/leads', routerLead);
-app.use('/api/contract', routerContract);
-app.use('/api/payment', routerPayment);
 app.use('/api/document', documentRouter);
-app.use('/api/invoices', invoiceRouter);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/emailTemplate', emailTemplateRouter);
 app.use('/api/drive', driveRoutes);

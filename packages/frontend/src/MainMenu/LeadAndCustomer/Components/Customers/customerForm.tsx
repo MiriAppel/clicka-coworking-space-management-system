@@ -155,13 +155,14 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                     <FileInputField name="ProfilePicture" label="תמונת פרופיל" />
                     <InputField name="phone" label="טלפון" required />
                     <InputField name="email" label="אימייל" required />
-                    <div className="flex items-center">
+                    <div className="flex items-center col-span-2">
                         <input
                             type="checkbox"
                             {...methods.register("requireEmailVerification")}
                             className="ml-2"
+                            id="requireEmailVerification"
                         />
-                        <label className="text-sm text-gray-700">דרוש אימות מייל</label>
+                        <label htmlFor="requireEmailVerification" className="text-sm text-gray-700">דרוש אימות מייל</label>
                     </div>
                     <InputField name="idNumber" label="תעודת זהות" required />
                     <InputField name="notes" label="הערות" />

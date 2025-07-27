@@ -1,5 +1,6 @@
 import type { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
+import { sendEmailToConfrim } from "./gmail-service";
 
 export class baseService<T> {
   // בשביל שם המחלקה
@@ -25,11 +26,16 @@ export class baseService<T> {
   };
 
   getAll = async (): Promise<T[]> => {
-    // console.log("🧾 טבלה:", this.tableName);
+    console.log("🧾 טבלה:", this.tableName);
 
-    const { data, error } = await supabase
-      .from(this.tableName)
-      .select("*");
+    let query = supabase.from(this.tableName).select("*");
+    
+    // אם זה טבלת customer, נוסיף מיון לפי created_at
+    if (this.tableName === 'customer') {
+      query = query.order('created_at', { ascending: false });
+    }
+
+    const { data, error } = await query;
 
     console.log(data);
 
@@ -83,9 +89,18 @@ export class baseService<T> {
     let dataForInsert = dataToAdd;
     console.log("tableName:", this.tableName);
 
-    if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
+   if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
       dataForInsert = (dataToAdd as any).toDatabaseFormat();
       console.log(dataForInsert);
+    }
+
+    // אם זה הוספת לקוח לא מוסיפים לו מייל עד שמאמתים את הלקוח והמייל נוסף רק בצורת עדכון אחרי שהשלקוח נוצר
+    let emailToSave: string | undefined;
+
+    if (this.tableName === "customer") {
+      const { email, ...rest } = dataForInsert as any;
+      emailToSave = email; // שומרת את המייל במשתנה
+      dataForInsert = rest; // dataForInsert בלי המייל
     }
 
     const { data, error } = await supabase
@@ -95,6 +110,14 @@ export class baseService<T> {
 
     console.log("added");
     console.log(data);
+
+    const createdRecord = data?.[0];
+    console.log("customer created :" , dataForInsert);
+    
+
+    if (this.tableName === "customer") {
+      sendEmailToConfrim(emailToSave, createdRecord.id );
+    }
 
     if (error) {
       console.log("enter to log", error);

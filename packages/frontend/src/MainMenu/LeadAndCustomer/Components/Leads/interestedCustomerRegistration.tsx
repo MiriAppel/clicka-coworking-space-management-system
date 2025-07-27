@@ -19,7 +19,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
   const { handleUpdateLead } = useLeadsStore();
 
   const onSubmit = async (data: any) => {
-    JSON.stringify(data, null, 2);
+    console.log('📧 Form data requireEmailVerification:', data.requireEmailVerification);
+    
     const customerRequest: CreateCustomerRequest = {
       name: data.name,
       phone: data.phone,
@@ -45,17 +46,16 @@ export const InterestedCustomerRegistration: React.FC = () => {
             }
           : undefined,
       contractDocuments: data.contractDocuments,
-      requireEmailVerification: data.requireEmailVerification || false,
+      requireEmailVerification: data.requireEmailVerification === true,
     };
 
-    console.log(customerRequest);
+    console.log('📧 Customer request requireEmailVerification:', customerRequest.requireEmailVerification);
 
     try {
       await createCustomer(customerRequest);
 
-      const successMessage = data.requireEmailVerification 
-        ? "להשלמת התהליך יש לאמת את הלקוח במייל"
-        : "הלקוח נוסף בהצלחה!";
+      const successMessage = "להשלמת התהליך יש לאמת את הלקוח במייל"
+   
       
       showAlert("", successMessage, "success");
 
