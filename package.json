@@ -2,6 +2,7 @@
   "name": "clicka-project",
   "version": "1.0.0",
   "main": "index.js",
+  "packageManager": "yarn@1.22.19",
   "private": true,
   "scripts": {
     "start:backend": "yarn workspace clicka-backend dev",
