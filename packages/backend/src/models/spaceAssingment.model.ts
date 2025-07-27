@@ -1,17 +1,30 @@
-export class SpaceAssignmentModel {
+import { AssignmentStatus, SpaceAssign } from "shared-types/spaceAssignment";
+
+export class SpaceAssignmentModel implements SpaceAssign {
     id?: string;
     workspaceId: string;
     customerId: string;
-    assignedDate: string;
-    unassignedDate?: string;
+    assignedDate: Date;
+    unassignedDate?: Date;
     notes?: string;
     assignedBy: string;
-    status: string;
-    createdAt?: string;
-    updatedAt?: string;
-
-    constructor(params: any) {
-        this.id = params.id;
+    status: AssignmentStatus;
+    createdAt: Date;
+    updatedAt: Date;
+  
+    constructor(params: {
+        id: string;
+        workspaceId: string;
+        customerId: string;
+        assignedDate: Date;
+        unassignedDate?: Date;
+        notes?: string;
+        assignedBy: string;
+        status: AssignmentStatus;
+        createdAt: Date;
+        updatedAt: Date;
+    }) {
+        this.id = params.id || undefined;
         this.workspaceId = params.workspaceId;
         this.customerId = params.customerId;
         this.assignedDate = params.assignedDate;
@@ -19,12 +32,12 @@ export class SpaceAssignmentModel {
         this.notes = params.notes;
         this.assignedBy = params.assignedBy;
         this.status = params.status;
-        this.createdAt = params.createdAt || params.created_at;
-        this.updatedAt = params.updatedAt || params.updated_at;
+        this.createdAt = params.createdAt;
+        this.updatedAt = params.updatedAt;
     }
 
     toDatabaseFormat() {
-        const data: any = {
+        return {
             workspace_id: this.workspaceId,
             customer_id: this.customerId,
             assigned_date: this.assignedDate,
@@ -35,27 +48,22 @@ export class SpaceAssignmentModel {
             created_at: this.createdAt,
             updated_at: this.updatedAt,
         };
-
-        // רק אם יש id - הוסף אותו
-        if (this.id) {
-            data.id = this.id;
-        }
-
-        return data;
     }
-
-    static fromDatabaseFormat(data: any): SpaceAssignmentModel {
+         static fromDatabaseFormat(dbData: any): SpaceAssignmentModel {
         return new SpaceAssignmentModel({
-            id: data.id,
-            workspaceId: data.workspace_id,
-            customerId: data.customer_id,
-            assignedDate: data.assigned_date,
-            unassignedDate: data.unassigned_date,
-            notes: data.notes,
-            assignedBy: data.assigned_by,
-            status: data.status,
-            createdAt: data.created_at,
-            updatedAt: data.updated_at,
+               id: dbData.id,
+    workspaceId: dbData.workspace_id,
+    customerId: dbData.customer_id,
+    assignedDate: dbData.assigned_date,
+    unassignedDate: dbData.unassigned_date,    
+    notes: dbData.notes,
+    assignedBy: dbData.assigned_by,
+    status: dbData.status,
+    createdAt: dbData.created_at,
+    updatedAt: dbData.updated_at,
         });
+    }
+    static fromDatabaseFormatArray(dbDataArray: any[] ): SpaceAssignmentModel[] {
+        return dbDataArray.map(dbData => SpaceAssignmentModel.fromDatabaseFormat(dbData));
     }
 }

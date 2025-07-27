@@ -8,6 +8,7 @@ import { SelectField } from "../../../Common/Components/BaseComponents/Select";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
 import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
 import { useFeatureStore } from "../../../Stores/Workspace/featureStore";
+import {useRoomStore} from "../../../Stores/Workspace/roomStore";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../../../Service/supabaseClient";
 import "../Css/roomReservations.css";
@@ -15,6 +16,8 @@ import { log } from "console";
 //יבוא מהספריה של ZOD ולולידציה
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+// import { Room } from 'shared-types/booking';
+
 
 
 export enum BookingStatus {
@@ -154,7 +157,9 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       resolver: zodResolver(bookingSchema),
     });
 
-    const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail, getAllRooms } = useBookingStore();
+    const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail} = useBookingStore();
+    const {getAllRooms} = useRoomStore();
+  
     const customers = useCustomerStore((s) => s.customers);
     const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
     const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
@@ -186,6 +191,13 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         setRooms(data);
       });
     }, []);
+    // useEffect(() => {
+    //   getAllRooms().then(() => {
+    //     const updatedRooms = useRoomStore.getState().rooms;
+    //     setRooms(updatedRooms);
+    //   });
+    // }, []);
+    
     //הבאת כל הלקוחות
     useEffect(() => {
       fetchCustomers();
@@ -198,6 +210,11 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           }))
         );
       });
+      // getAllRooms().then(() => {
+      //   const updatedRooms = useRoomStore.getState().rooms;
+      //   setRooms(updatedRooms);
+      // });
+      
     }, []);
     const customerId = useWatch({ control: methods.control, name: "customerId" });
     useEffect(() => {
@@ -241,6 +258,11 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           setSelectedRoomFeatures(selectedFullRoom?.features ?? []);
           console.log("room", selectedFullRoom);
         });
+        // getAllRooms().then(() => {
+        //   const updatedRooms = useRoomStore.getState().rooms;
+        //   setRooms(updatedRooms);
+        // });
+        
       } else {
         setSelectedRoomFeatures([]);
       }

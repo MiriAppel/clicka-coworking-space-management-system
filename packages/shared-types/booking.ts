@@ -43,6 +43,7 @@ export interface Room {
   type: RoomType;
   status: RoomStatus;
   capacity: number;
+  // features:ID[],
   hourlyRate: number;
   discountedHourlyRate: number; // For 4+ hours
   googleCalendarId?: string;

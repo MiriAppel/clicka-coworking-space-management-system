@@ -18,6 +18,7 @@ export class RoomModel implements Room{
   positionY: number;
   width: number;
   height: number;
+
   MinimumBookingMinutes: number;
   MaximumBookingMinutes: number;
   RequiredApproval: boolean;

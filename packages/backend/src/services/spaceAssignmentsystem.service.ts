@@ -29,22 +29,22 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
 }
 //קבלת כל המרחבים
 //החזרת כל המרחבים מהמסד נתונים
-      async getAllSpaces() {
-    try {
-      const { data, error } = await supabase
-        .from('space_assignment') // שם הטבלה שלך ב-Supabase
-        .select('*');
-      if (error) {
-        console.error('Supabase error:', error.message);
-        return null;
-      }
- const createdspace = SpaceAssignmentModel.fromDatabaseFormat(data)
-      return createdspace;
-    } catch (err) {
-      console.error('Unexpected error:', err);
+async getAllSpaces() {
+  try {
+    const { data, error } = await supabase
+      .from('space_assignment') // שם הטבלה שלך ב-Supabase
+      .select('*');
+    if (error) {
+      console.error('Supabase error:', error.message);
       return null;
     }
+const createdspace = SpaceAssignmentModel.fromDatabaseFormatArray(data)
+    return createdspace;
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    return null;
   }
+}
 //עדכון מרחב
       async updateSpace(id: string, updatedData: SpaceAssignmentModel): Promise<SpaceAssignmentModel | null> {
         const { data, error } = await supabase

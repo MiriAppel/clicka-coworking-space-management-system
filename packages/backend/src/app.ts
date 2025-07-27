@@ -63,7 +63,6 @@ app.use('/api/rooms', roomRouter);
 app.use('/api/features', featureRouter);
 app.use('/api/space', spaceRouter);
 app.use('/api/map',routerMap);
- // User routes
 app.use('/api/workspace', workspaceRouter);
 app.use('/api/occupancy', occupancyrouter);
 app.use('/api/leads', routerLead);
@@ -75,7 +74,6 @@ app.use('/vendor', (req, res, next) => {
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
-// app.use('/api/translate', translationRouter);
 app.use('/api/auth', routerAuth);
 app.use('/api', router);
 app.use('/api/expenses', expenseRouter);
@@ -86,21 +84,15 @@ app.use('/api/customers', routerCustomer);
 app.use('/api/leads', routerLead);
 app.use('/api/contract', routerContract);
 app.use('/api/payment', routerPayment);
-// app.use('/api/translate', translationRouter);
-// app.use('/api/leadInteraction', routerCstomer);
 app.use('/api/layout',routerLayout);
 app.use('/api/calendar-sync',routerCalendarSync)
 app.use('/api',router)
 app.use('/api/book', bookRouter);
 app.use('/api/payment', routerPayment);
-
-
-// Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-// app.use('/translations', translationRouter);
-// Error handling middleware
+
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
   res.status(err.status || 500).json({
@@ -112,9 +104,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     }
   });
 });
-// Placeholder for routes
-// TODO: Add routers for different resources
-// Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
   console.log(req);
