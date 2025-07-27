@@ -82,7 +82,7 @@ export const EditContract = () => {
       })
       .catch(() => showAlert("טעינת חוזה", "שגיאה בטעינת חוזה", "error"))
       .finally(() => setLoading(false));
-  }, [contractId, formMethods]);
+  }, [contractId, formMethods,fetchContractDetails]);
 
   // שליחה
   const handleSubmit = async (data: ContractFormData) => {

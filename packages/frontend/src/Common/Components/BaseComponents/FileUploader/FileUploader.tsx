@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Typography, Card, CardContent, LinearProgress, IconButton, Chip } from '@mui/material';
-import { Upload, X, CheckCircle, AlertCircle, File, Image, FileText, ExternalLink, Copy, CloudUpload, Share } from 'lucide-react';
-import { LoginResponse } from 'shared-types';
+import { Upload, X, CheckCircle, AlertCircle, File, Image, FileText, ExternalLink, Copy, CloudUpload } from 'lucide-react';
 import axios from 'axios';
-import { useAuthStore } from '../../../../Stores/CoreAndIntegration/useAuthStore';
-import { useGoogleLogin } from '@react-oauth/google';
 import { Button as CustomButton } from '../Button';
 import { showAlert } from '../../BaseComponents/ShowAlert';
 import { useTheme } from '../../themeConfig';
+import axiosInstance from '../../../../Service/Axios';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_FILE_TYPES = [
@@ -17,10 +15,6 @@ const ALLOWED_FILE_TYPES = [
   'text/plain', 'application/zip'
 ];
 
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3001',
-  withCredentials: true,
-});
 
 export interface FileUploaderProps {
   folderPath?: string;
@@ -69,7 +63,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const { theme } = useTheme();
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
-  const { setUser, setSessionId } = useAuthStore();
+  // const { setUser, setSessionId } = useAuthStore();
 
   const effectiveDir = dir || theme.direction;
 
@@ -145,15 +139,17 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     if (folderId) formData.append('folderId', folderId);
     if (description) formData.append('description', description);
     if (folderPath) formData.append('folderPath', folderPath);
+    const token = localStorage.getItem('accessToken') || '';
 
     try {
-      const res = await axios.post(
-        'http://localhost:3001/api/drive/upload',
+      const res = await axiosInstance.post(
+        '/drive/upload',
         formData,
         {
           withCredentials: true,
           timeout: 120000,
           headers: {
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
           onUploadProgress: (event) => {
@@ -640,7 +636,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               backgroundColor: theme.colors.neutral[0]
             }}>
               <CustomButton
-               
                 variant="secondary"
                 size="md"
                 disabled={files.filter(f => f.status === 'pending' || f.status === 'error').length === 0}

@@ -20,15 +20,20 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const lang = localStorage.getItem('language') || 'he';
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+  }, []);
+  useEffect(() => {
     fetch('http://localhost:3001/api/health')
       .then((response) => {
         if (!response.ok) throw new Error('API server not responding');
         return response.json();
       })
-      .then((data) => {
-        setHealthStatus(data);
-        setLoading(false);
-      })
+      // .then((data) => {
+      //   // setHealthStatus(data);
+      //   // setLoading(false);
+      // })
       .catch((err) => {
         console.error('Error fetching API health:', err);
         // setError('Could not connect to API server. Make sure it is running.');

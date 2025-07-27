@@ -1,7 +1,14 @@
 import { google } from 'googleapis';
+<<<<<<< HEAD
 import { FileReference } from 'shared-types';
 import { Readable } from 'stream';
 import { UserTokenService } from './userTokenService';
+=======
+import { FileReference, ID } from 'shared-types';
+import { Readable } from 'stream';
+import { UserTokenService } from './userTokenService';
+import { DocumentModel } from '../models/document.model';
+>>>>>>> origin/main
 
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();
@@ -244,6 +251,48 @@ export async function getOrCreateFolderByPath(
   return await uploadFileToDrive(file, token, folderId);
 }
  
+<<<<<<< HEAD
+=======
+const tokenService = new UserTokenService();
+//פונקציה שמחזירה אובייקט FileReference
+export async function uploadFileAndReturnReference(
+  file: Express.Multer.File,
+  folderPath: string,
+  vendorId?: ID
+): Promise<DocumentModel> {
+//קבלת הטוקן מפונקציה
+const token= await tokenService.getSystemAccessToken();
+if (!token) {
+  throw new Error('Missing system token');
+}
+if (!process.env.SYSTEM_EMAIL) {
+    throw new Error('SYSTEM_EMAIL env var is missing');
+}
+  // 1. קבלת או יצירת התיקייה לפי הנתיב
+  const folderId = await getOrCreateFolderByPath(folderPath, token??'');
+  // 2. העלאת הקובץ ל־Drive
+  const uploaded = await uploadFileToDrive(file, token??'', folderId);
+  // 3. שליפת המטא-דאטה של הקובץ
+  const metadata = await getFileMetadataFromDrive(uploaded.id!, token??'');
+  // 4. יצירת קישור ניווט נוח (לקובץ בתוך התיקייה)
+  const fileUrl = `https://drive.google.com/drive/u/0/folders/${folderId}`;
+  // 5. בניית אובייקט מסוג FileReference
+  const fileRef = new DocumentModel({
+  id: uploaded.id!,
+  name: metadata.name!,
+  path: folderPath,
+  mimeType: metadata.mimeType!,
+  size: Number(metadata.size),
+  url: fileUrl,
+  googleDriveId: uploaded.id!,
+  created_at: metadata.createdTime ?? new Date().toISOString(),
+  updated_at: metadata.modifiedTime ?? new Date().toISOString(),
+});
+console.log('File uploaded and reference created:', fileRef);
+// saveDocumentAndAttachToVendor('68c5904a-25e2-48aa-9483-ccf5dc0581fd', fileRef); // שמירת המסמך במסד הנתונים
+  return fileRef;
+}
+>>>>>>> origin/main
 
 
   

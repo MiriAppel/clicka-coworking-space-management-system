@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
 import { FileInputField } from "../../../../Common/Components/BaseComponents/FileInputFile";
+import { WorkspaceType } from "shared-types";
 
 // enums
 export enum ContractStatus {
@@ -19,14 +20,7 @@ export enum ContractStatus {
   TERMINATED = "TERMINATED",
 }
 
-export enum WorkspaceType {
-  PRIVATE_ROOM = "PRIVATE_ROOM",
-  DESK_IN_ROOM = "DESK_IN_ROOM",
-  OPEN_SPACE = "OPEN_SPACE",
-  KLIKAH_CARD = "KLIKAH_CARD",
-}
-
-// מיפויים לעברית
+// תוויות עבריות לסטטוס
 const statusLabels: Record<ContractStatus, string> = {
   [ContractStatus.DRAFT]: "טיוטה",
   [ContractStatus.PENDING_SIGNATURE]: "ממתין לחתימה",
@@ -36,14 +30,22 @@ const statusLabels: Record<ContractStatus, string> = {
   [ContractStatus.TERMINATED]: "הסתיים",
 };
 
+// תוויות עבריות לסוגי עמדות
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
-  [WorkspaceType.PRIVATE_ROOM]: "חדר פרטי",
+  [WorkspaceType.PRIVATE_ROOM1]: "חדר פרטי 1",
+  // [WorkspaceType.PRIVATE_ROOM2]: "חדר פרטי 2",
+  // [WorkspaceType.PRIVATE_ROOM3]: "חדר פרטי 3",
   [WorkspaceType.DESK_IN_ROOM]: "שולחן בחדר",
   [WorkspaceType.OPEN_SPACE]: "אופן ספייס",
-  [WorkspaceType.KLIKAH_CARD]: "כרטיס קליקה"
+  [WorkspaceType.KLIKAH_CARD]: "כרטיס קליקה",
+  [WorkspaceType.DOOR_PASS]: "מעבר דלת",
+  [WorkspaceType.WALL]: "קיר",
+  [WorkspaceType.COMPUTER_STAND]: "עמדת מחשב",
+  [WorkspaceType.RECEPTION_DESK]: "דלפק קבלה",
+  [WorkspaceType.BASE]: "בסיס",
 };
 
-// סכימה לטופס (Zod)
+// סכימת אימות (Zod)
 const contractSchema = z.object({
   customerId: z.string().nonempty("שדה חובה"),
   status: z.nativeEnum(ContractStatus),
@@ -69,10 +71,10 @@ export const AddContract = () => {
   const handleSubmit = async (data: ContractFormData) => {
     setLoading(true);
     const now = new Date().toISOString();
-    // פיצול התנאים המיוחדים למערך
     const specialConditions = data.specialConditions
       ? data.specialConditions.split(",").map((s) => s.trim())
       : [];
+
     const payload = {
       customer_id: data.customerId,
       status: data.status,
@@ -102,13 +104,12 @@ export const AddContract = () => {
       await handleCreateContract(payload);
       showAlert("הוספה", "החוזה נוסף בהצלחה", "success");
       navigate("/leadAndCustomer/contracts/");
-      setLoading(false);
     } catch (err) {
       console.error(err);
       showAlert("הוספה", "שגיאה בהוספת חוזה", "error");
+    } finally {
       setLoading(false);
-      return;
-    } 
+    }
   };
 
   return (

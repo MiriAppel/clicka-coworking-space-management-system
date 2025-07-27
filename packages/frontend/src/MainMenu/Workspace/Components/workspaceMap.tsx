@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import '../Css/workspaceMap.css';
-import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 'shared-types';
+import { Room, Space, SpaceStatus, WorkspaceType } from 'shared-types';
 import { Button } from '@mui/material';
 // import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
 import { useNavigate } from 'react-router-dom';
@@ -11,47 +11,7 @@ import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
 
 export const WorkspaceMap = () => {
 
-
-
-    const rrr: Room[] = [
-        {
-            id: "space-002",
-            name: "לאונז'",
-            type: "LOUNGE" as RoomType,
-            status: RoomStatus.AVAILABLE,
-            positionX: 100,
-            positionY: 460,
-            hourlyRate: 1,
-            capacity: 10,
-            workspaceMapId: "space-002",
-            discountedHourlyRate: 1,
-            description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-            width: 600,
-            height: 500,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
-        },
-        {
-            id: "space-002",
-            name: "חדר ישיבות",
-            type: "MEETING_ROOM" as RoomType,
-            status: RoomStatus.AVAILABLE,
-            positionX: 1420,
-            positionY: 60,
-            hourlyRate: 1,
-            discountedHourlyRate: 1,
-            capacity: 10,
-            workspaceMapId: "space-002",
-            description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-            width: 450,
-            height: 335,
-            createdAt: "2024-01-01T08:00:00Z",
-            updatedAt: "2024-01-01T08:00:00Z"
-        },
-
-
-    ]
-    const { workSpaces, rooms, getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
+    const { workSpaces, rooms, getAllWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
     const uniqueStatus = Object.values(SpaceStatus);
     const uniqueType = Object.values(WorkspaceType);
     const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
@@ -75,32 +35,32 @@ export const WorkspaceMap = () => {
         y: 0,
         content: ''
     });
-    const [details, setDetails] = useState({
-        name: "",
-        description: "",
-        type: "",
-        status: "",
-        workspaceMapId: "",
-        // room: "",
-        currentCustomerId: "",
-        currentCustomerName: "",
-        positionX: 0,
-        positionY: 0,
-        width: 0,
-        height: 0,
-        createdAt: "",
-        updatedAt: ""
-    });
-    const [roomDetails, setRoomDetails] = useState({
+    // const [details, setDetails] = useState({
+    //     name: "",
+    //     description: "",
+    //     type: "",
+    //     status: "",
+    //     workspaceMapId: "",
+    //     // room: "",
+    //     currentCustomerId: "",
+    //     currentCustomerName: "",
+    //     positionX: 0,
+    //     positionY: 0,
+    //     width: 0,
+    //     height: 0,
+    //     createdAt: "",
+    //     updatedAt: ""
+    // });
+    // const [roomDetails, setRoomDetails] = useState({
 
-    });
+    // });
     const navigate = useNavigate()
     const [zoom, setZoom] = useState(3);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [initialScale, setInitialScale] = useState(1);
-    const [signal, setSignal] = useState(1);
+    // const [initialScale, setInitialScale] = useState(1);
+    // const [signal, setSignal] = useState(1);
 
     useEffect(() => {
         getAllWorkspace();
@@ -113,10 +73,10 @@ export const WorkspaceMap = () => {
         updateSize();
         window.addEventListener("resize", updateSize);
         return () => window.removeEventListener("resize", updateSize);
-    }, [])
+    }, [getAllWorkspace])
     useEffect(() => {
         getAllWorkspace();
-    }, [signal]);
+    }, [getAllWorkspace]);
     useEffect(() => {
         if (selectedStatus !== "" && selectedStatus !== "PLACEHOLDER") {
             setActiveStatusSearch(true);
@@ -216,7 +176,7 @@ export const WorkspaceMap = () => {
             getAllWorkspace();
         else {
             // המרה לפורמט YYYY-MM-DD לפני השליחה
-            const formattedDate = d.toISOString().split('T')[0];
+            // const formattedDate = d.toISOString().split('T')[0];
             getWorkspaceHistory(d);
         }
         // ?
@@ -253,21 +213,21 @@ export const WorkspaceMap = () => {
         return room.status;
     };
 
-    const getPanBounds = () => {
-        const scaledWidth = mapDimensions.width * scale * zoom;
-        const scaledHeight = mapDimensions.height * scale * zoom;
+    // const getPanBounds = () => {
+    //     const scaledWidth = mapDimensions.width * scale * zoom;
+    //     const scaledHeight = mapDimensions.height * scale * zoom;
 
-        return {
-            minX: containerSize.width - scaledWidth,
-            maxX: 0,
-            minY: containerSize.height - scaledHeight,
-            maxY: 0
-        };
-    };
+    //     return {
+    //         minX: containerSize.width - scaledWidth,
+    //         maxX: 0,
+    //         minY: containerSize.height - scaledHeight,
+    //         maxY: 0
+    //     };
+    // };
 
     const applyPan = (newPan: { x: number; y: number }) => {
-        const scaledWidth = mapDimensions.width * initialScale * zoom;
-        const scaledHeight = mapDimensions.height * initialScale * zoom;
+        const scaledWidth = mapDimensions.width * 1 * zoom;
+        const scaledHeight = mapDimensions.height * 1 * zoom;
 
         let minX, maxX, minY, maxY;
 
@@ -503,21 +463,6 @@ export const WorkspaceMap = () => {
                                                             y: rect.top - 10,
                                                             content: `${w.name} - ${w.status}`
                                                         });
-                                                        setDetails({
-                                                            name: w.name,
-                                                            description: w.description || "",
-                                                            type: w.type,
-                                                            status: w.status,
-                                                            workspaceMapId: w.workspaceMapId || "",
-                                                            currentCustomerId: w.currentCustomerId || "",
-                                                            currentCustomerName: w.currentCustomerName || "",
-                                                            positionX: w.positionX,
-                                                            positionY: w.positionY,
-                                                            width: w.width,
-                                                            height: w.height,
-                                                            createdAt: w.createdAt,
-                                                            updatedAt: w.updatedAt
-                                                        });
                                                     }}
                                                     onMouseLeave={() => setTooltip(prev => ({ ...prev, visible: false }))}
                                                     onClick={() => {
@@ -569,21 +514,6 @@ export const WorkspaceMap = () => {
                                                             content: ['door', 'wall', 'bathroom', 'kitchen', 'INACTIVE'].includes(getSpaceClass(w))
                                                                 ? w.name
                                                                 : `${w.name} - ${w.status} ${w.currentCustomerName ? `${w.currentCustomerName}` : ""},`
-                                                        });
-                                                        setDetails({
-                                                            name: w.name,
-                                                            description: w.description || "",
-                                                            type: w.type,
-                                                            status: w.status,
-                                                            workspaceMapId: w.workspaceMapId || "",
-                                                            currentCustomerId: w.currentCustomerId || "",
-                                                            currentCustomerName: w.currentCustomerName || "",
-                                                            positionX: w.positionX,
-                                                            positionY: w.positionY,
-                                                            width: w.width,
-                                                            height: w.height,
-                                                            createdAt: w.createdAt,
-                                                            updatedAt: w.updatedAt
                                                         });
                                                     }}
                                                     onMouseLeave={() => {
@@ -652,11 +582,11 @@ export const WorkspaceMap = () => {
                                         </g>
                                     );
                                 })}
-                        {rrr.length > 0 && rrr.map((r) => {
-                            const hasActiveSearch = activeStatusSearch || activeTypeSearch;
-                            const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
-                            const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
-                            const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
+                        {rooms.length > 0 && rooms.map((r) => {
+                            // const hasActiveSearch = activeStatusSearch || activeTypeSearch;
+                            // const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
+                            // const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
+                            // const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
 
 
                             return (

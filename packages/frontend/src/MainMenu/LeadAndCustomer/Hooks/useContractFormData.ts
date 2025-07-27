@@ -20,7 +20,7 @@ export const getContractFormData  = (contract: Contract | null): ContractFormDat
     startDate: contract?.startDate?.slice(0, 10) ?? "",
     endDate: contract?.endDate?.slice(0, 10),
     signDate: contract?.signDate?.slice(0, 10),
-    workspaceType: (terms as any)?.workspaceType ?? WorkspaceType.PRIVATE_ROOM,
+    workspaceType: (terms as any)?.workspaceType ?? WorkspaceType.PRIVATE_ROOM1,
     workspaceCount: (terms as any)?.workspaceCount ?? 1,
     monthlyRate: (terms as any)?.monthlyRate ?? 0,
     duration: (terms as any)?.duration ?? 1,

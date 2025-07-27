@@ -140,7 +140,11 @@ export class ExpenseService extends baseService<ExpenseModel> {
     }
   }
   async updateExpense(id: string, updateData: UpdateExpenseRequest) {
-    try {
+   const expense = await this.getExpenseById(id);
+    if(updateData.status === 'PAID' && expense.status !== 'PAID') {
+      //send email if have invoice
+    }
+      try {
       const { data, error } = await supabase
         .from('expense')
         .update(updateData)
@@ -198,4 +202,28 @@ export class ExpenseService extends baseService<ExpenseModel> {
     }
   }
 
+<<<<<<< HEAD
 }
+=======
+
+async getPettyCashExpenses() {
+  try {
+    const { data, error } = await supabase
+      .from('expense')
+      .select('*')
+      .eq('category', 'PETTY_CASH'); // משתמש בערך מתוך ה-enum
+
+    if (error) {
+      console.error('Error fetching petty cash expenses:', error);
+      return null;
+    }
+
+    return data;
+  } catch (err) {
+    console.error('Unexpected error in getPettyCashExpenses:', err);
+    return null;
+  }
+}
+
+}
+>>>>>>> origin/main

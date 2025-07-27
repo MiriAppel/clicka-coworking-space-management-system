@@ -35,9 +35,7 @@ export const globalAuditMiddleware = async (
 
 async function logAuditAsync(req: AuthenticatedRequest, res: Response, responseData: any) {
   try {
-    console.log(responseData);
     const auditService = new AuditLogService();
-    console.log("req", req);
 
     // זיהוי הפונקציה מה-URL
     const functionName = extractFunctionFromUrl(req.baseUrl, req.method);
@@ -63,7 +61,7 @@ async function logAuditAsync(req: AuthenticatedRequest, res: Response, responseD
       }
     }
 
-    // שימוש בפונקציה המעודכנת של AuditLogService
+    // שימוש בפונקציה של AuditLogService
     await auditService.createAuditLog(req, {
       timestamp: new Date().toISOString(),
       action: req.method as 'POST' | 'PUT' | 'DELETE' | 'PATCH',
@@ -82,8 +80,6 @@ function extractFunctionFromUrl(path: string, method: string): string {
   // דוגמאות:
   // POST /api/users -> createUser
   // PUT /api/users/123 -> updateUser
-  // DELETE /api/users/123 -> deleteUser
-  // POST /api/vendors -> createVendor
   console.log(path);
 
   const parts = path.split('/').filter(p => p && p !== 'api');

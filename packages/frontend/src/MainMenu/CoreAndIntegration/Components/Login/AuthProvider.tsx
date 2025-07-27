@@ -1,4 +1,4 @@
-import { Children, ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useCallback } from "react";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
 import { axiosInstance } from "../../../../Service/Axios";
@@ -68,8 +68,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       verifyFunction();
     };
     checkAuth();
-  }, [setUser, clearUser, setLoading, setSessionId]);
-  //check session every 30 seconds to check if the session is still valid and same as the one in the store
+  }, [verifyFunction]);
+
+  // Check session every 30 seconds to see if the session is still valid and matches the one in the store
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
     if (user != null) {
@@ -77,17 +78,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         verifyFunction();
       }, 30000); // כל 30 שניות
     }
-
     return () => {
-      if (interval) clearInterval(interval); // ניקוי כאשר הקומפוננטה מוסרת
+      if (interval) clearInterval(interval); // cleanup when component unmounts
     };
-  }, [user, clearUser]);
+  }, [user, verifyFunction]);
 
-  // if(isLoading){
-  //     return <div className="auth-loading"> מאמת זהות...</div>
-  // }
-  return <>
-    {/* {user == null && <GoogleOneTap />} */}
-    {children}</>
+  return (
+    <>
+      {/* {user == null && <GoogleOneTap />} */}
+      {children}
+    </>
+  )
 
 }
