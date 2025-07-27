@@ -116,7 +116,7 @@ export default function VendorSummary({ vendor }: VendorSummaryProps) {
             vendorName={vendor.name || ""}       
             documentCategory={fileCategory}
             onPathReady={(path) => {
-              setFolderPath(path);                {/* מעדכנים את נתיב התיקייה בסטייט */}
+              setFolderPath(path);     /* מעדכנים את נתיב התיקייה בסטייט */
             }}
           />
 

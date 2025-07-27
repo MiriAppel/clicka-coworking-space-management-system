@@ -6,8 +6,8 @@ import { CustomerDashboard } from "./Customers/customerDashboard";
 import { LeadsHomePage } from "./Leads/leadHomePage";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { UpdateCustomer } from "./Customers/updateCustomer";
+import { CustomersList } from "./Customers/customersList";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";
-import { CustomersList } from "./Customers/customersList"
 import { LeadInteractions } from "./Interactions/leadIntersection";
 import { InteractionForm } from "./Interactions/interactionForm";
 // import { addInteraction } from "./Interactions/leadInteractionDetails";
@@ -46,8 +46,8 @@ export const LeadAndCustomerRouting = () => {
             <Route path="leads/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
             <Route path="leads/intersections" element={<LeadInteractions />} />
             <Route path="leads/intersections/interestedCustomerRegistration" element={<InterestedCustomerRegistration />} />
-            <Route path="leads/intersections/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => handleCreateInteraction(lead)} onCancel={() => {
-                nav('/leadAndCustomer/leads/intersections')
+            <Route path="leads/:leadId/addInteraction" element={<InteractionForm onSubmit={(lead: Lead) => handleCreateInteraction(lead)} onCancel={() => {
+                nav('/leadAndCustomer/leads')
             }} />} />
         </Routes>
     );

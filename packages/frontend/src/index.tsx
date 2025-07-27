@@ -24,7 +24,6 @@ function Root() {
                 <div className="flex items-center gap-4">
                   {/* כפתור חזרה */}
                   <BackButton />
-                  {/* כפתורי שפה מעוצבים */}
                   <div className="gap-2 bg-gray-100 rounded-full p-1 shadow-inner w-fit">
                     {["he", "en"].map((l) => (
                       <button
@@ -45,6 +44,7 @@ function Root() {
                     ))}
                   </div>
                 </div>
+
                 {/* הראוטינג עצמו */}
                 <Routing />
               </div>
