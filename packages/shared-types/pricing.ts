@@ -11,6 +11,8 @@ export interface PricingTier {
   year2Price: number;
   year3Price: number;
   year4Price: number;
+  twoDaysFromOfficePrice: number;      
+  threeDaysFromOfficePrice: number;     
   active: boolean;
   effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
   createdAt: DateISO; // שינוי: תוקן ל-DateISO
@@ -64,7 +66,7 @@ export interface GetCurrentPricingResponse {
     eveningRate: number;
     memberDiscountRate: number;
   };
-  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  effectiveDate: DateISO; 
 }
 
 // Update pricing tier request
@@ -74,7 +76,9 @@ export interface UpdatePricingTierRequest {
   year2Price: number;
   year3Price: number;
   year4Price: number;
-  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  twoDaysFromOfficePrice: number;      
+  threeDaysFromOfficePrice: number;
+  effectiveDate: DateISO; 
 }
 
 // Update meeting room pricing request
@@ -82,27 +86,27 @@ export interface UpdateMeetingRoomPricingRequest {
   hourlyRate: number;
   discountedHourlyRate: number;
   freeHoursKlikahCard: number;
-  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  effectiveDate: DateISO; 
 }
 
 // Update lounge pricing request
 export interface UpdateLoungePricingRequest {
   eveningRate: number;
   memberDiscountRate: number;
-  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  effectiveDate: DateISO; 
 }
 
 // Get pricing history request
 export interface GetPricingHistoryRequest {
   workspaceType?: WorkspaceType;
-  startDate?: DateISO; // שינוי: תוקן ל-DateISO
-  endDate?: DateISO; // שינוי: תוקן ל-DateISO
+  startDate?: DateISO; 
+  endDate?: DateISO; 
 }
 
 // Get pricing history response
 export interface GetPricingHistoryResponse {
   pricingHistory: {
-    effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+    effectiveDate: DateISO; 
     pricingData: {
       workspaceType: WorkspaceType;
       year1Price: number;
@@ -121,12 +125,13 @@ export interface GetPricingHistoryResponse {
     };
   }[];
 }
-
 export interface PricingTierCreateRequest {
   workspaceType: WorkspaceType;
   year1Price: number;
   year2Price: number;
   year3Price: number;
   year4Price: number;
-  effectiveDate: DateISO; // שינוי: תוקן ל-DateISO
+  twoDaysFromOfficePrice: number;    
+  threeDaysFromOfficePrice: number;   
+  effectiveDate: DateISO;
 }

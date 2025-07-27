@@ -5,13 +5,17 @@ import { InputField } from '../../../../Common/Components/BaseComponents/Input';
 import { NumberInputField } from '../../../../Common/Components/BaseComponents/InputNumber';
 import { SelectField } from '../../../../Common/Components/BaseComponents/Select';
 import FileUploader from '../FileUploader';
-import { ExpenseCategory, ExpenseStatus, Vendor } from 'shared-types';
-import { getAllVendors } from '../../../../Api/vendor-api';
+import { Expense, ExpenseCategory, ExpenseStatus } from 'shared-types';
 import { useParams } from "react-router-dom";
+import { useVendorsStore } from '../../../../Stores/Billing/vendorsStore';
+import axiosInstance from '../../../../Service/Axios'; // נתיב בהתאם
 
-// --------------------------------------------------
+interface CreateExpenseFormProps {
+  fixedCategory?: ExpenseCategory;
+  onSave?: (newExpense: Expense) => void;
+}
+
 // מילונים
-// --------------------------------------------------
 const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   RENT: 'שכירות',
   UTILITIES: 'חשבונות',
@@ -32,9 +36,7 @@ const expenseCategoryLabels: Record<ExpenseCategory, string> = {
   OTHER: 'אחר',
 };
 
-// --------------------------------------------------
 // סכימת אימות
-// --------------------------------------------------
 const schema = z.object({
   vendorId: z.string().min(1, 'יש לבחור ספק'),
   category: z.nativeEnum(ExpenseCategory),
@@ -48,15 +50,12 @@ const schema = z.object({
 });
 type ExpenseFormValues = z.infer<typeof schema>;
 
-// --------------------------------------------------
-// קומפוננטת יצירת/עריכת הוצאה
-// --------------------------------------------------
-export const CreateExpenseForm: React.FC = () => {
+export const CreateExpenseForm: React.FC<CreateExpenseFormProps> = ({ fixedCategory, onSave }) => {
   const { id } = useParams<{ id: string }>();
   const [defaultValues, setDefaultValues] = useState<Partial<ExpenseFormValues>>({});
   const [loadingExpense, setLoadingExpense] = useState(!!id);
-  const [vendors, setVendors] = useState<Vendor[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const { vendors, fetchVendors, loading } = useVendorsStore();
 
   const expenseStatusLabels: Record<ExpenseStatus, string> = {
     PENDING: 'ממתין',
@@ -66,25 +65,15 @@ export const CreateExpenseForm: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchVendors = async () => {
-      try {
-        const data = await getAllVendors();
-        setVendors(data);
-      } catch (error) {
-        console.error('❌ שגיאה בשליפת ספקים:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchVendors();
-  }, []);
+  }, [fetchVendors]);
 
   useEffect(() => {
     if (id) {
       setLoadingExpense(true);
-      fetch(`${process.env.REACT_APP_API_BASE ?? 'http://localhost:3001'}/api/expenses/getExpenseById/${id}`)
-        .then(res => res.json())
-        .then(data => {
+      axiosInstance.get(`/expenses/getExpenseById/${id}`)
+        .then(res => {
+          const data = res.data;
           setDefaultValues({
             vendorId: data.vendor_id,
             category: data.category,
@@ -96,6 +85,10 @@ export const CreateExpenseForm: React.FC = () => {
             notes: data.notes ?? "",
             receiptUrl: data.receipt_file?.url ?? "",
           });
+        })
+        .catch((error) => {
+          console.error("שגיאה בטעינת הוצאה:", error);
+          setDefaultValues({});
         })
         .finally(() => setLoadingExpense(false));
     }
@@ -119,23 +112,19 @@ export const CreateExpenseForm: React.FC = () => {
     };
 
     try {
-      const url = `${process.env.REACT_APP_API_BASE ?? 'http://localhost:3001'}/api/expenses/${id ? `updateExpense/${id}` : 'createExpense'}`;
-      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/expenses/updateExpense/${id}` : '/expenses/createExpense';
+      const method = id ? 'put' : 'post';
 
-      const response = await fetch(url, {
+      const response = await axiosInstance.request({
+        url,
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        data: payload,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
-      }
-
       alert(id ? 'ההוצאה עודכנה בהצלחה!' : 'ההוצאה נשמרה בהצלחה!');
+      if (onSave) onSave(response.data);
     } catch (error: any) {
-      alert('שגיאה בשמירת ההוצאה: ' + error.message);
+      alert('שגיאה בשמירת ההוצאה: ' + (error.message || error));
     }
   };
 
@@ -187,7 +176,10 @@ export const CreateExpenseForm: React.FC = () => {
       />
       <InputField name="receiptUrl" label="קישור לקבלה" />
       <InputField name="notes" label="הערות" />
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      <button
+        type="submit"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
         שמור הוצאה
       </button>
     </Form>

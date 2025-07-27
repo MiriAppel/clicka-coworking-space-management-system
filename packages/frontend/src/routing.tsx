@@ -7,7 +7,6 @@ import VendorsList from './MainMenu/Billing/Components/Vendor-management/Vendors
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
-import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import MainLayout from './layout/MainLayout';
@@ -29,30 +28,10 @@ import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLo
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
+import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 export const Routing = () => {
-  // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
-  const [vendors, setVendors] = useState<Vendor[]>([]);
-  // משתנה שמייצג האם הנתונים עוד בטעינה
-  const [loading, setLoading] = useState(true);
-  // useEffect - רץ פעם אחת לאחר טעינת הקומפוננטה
-  useEffect(() => {
-    const fetchVendors = async () => {
-      try {
-        // קריאה לפונקציה שמביאה את רשימת הספקים מהשרת (API)
-        const data = await getAllVendors();
-        setVendors(data); // שומר את הנתונים ב-state
-      } catch (err) {
-        console.error("שגיאה בשליפת ספקים:", err); // הדפסת שגיאה אם השליפה נכשלה
-      } finally {
-        setLoading(false); // מסמן שהטעינה הסתיימה (בין אם הצליחה או נכשלה)
-      }
-    };
-    fetchVendors(); // מפעיל את הפונקציה
-  }, []); // [] אומר שה־useEffect ירוץ רק בפעם הראשונה
-  // אם עדיין טוען – מציג הודעת טעינה למשתמש
-  if (loading) return <div>טוען נתונים...</div>;
-  // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
+    const [vendors, setVendors] = useState<Vendor[]>([]);
   return (
     <Routes>
       <Route element={<MainLayout />}>
@@ -67,8 +46,8 @@ export const Routing = () => {
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="assignmentForm" element={<AssignmentForm />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
-        <Route path="payment" element={<PaymentForm />} />
-        <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
+        <Route path="payments" element={<PaymentForm />} />
+        <Route path="vendor" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
@@ -85,6 +64,8 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/petty-cash" element={<PettyCashPage />} />
+
       </Route>
     </Routes>
   );

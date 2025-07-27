@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import React, { useRef, useState, useEffect } from "react";
 import { Payment } from "shared-types";
-import axios from "axios";
 import debounce from "lodash/debounce";
 import {
   Table,
@@ -22,13 +21,6 @@ interface ValuesToTable {
   date: string;
 }
 
-// const statusLabels: Record<CustomerStatus, string> = {
-//   ACTIVE: "פעיל",
-//   NOTICE_GIVEN: "הודעת עזיבה",
-//   EXITED: "עזב",
-//   PENDING: "בהמתנה",
-// };
-
 export const PaymentList = () => {
   const navigate = useNavigate();
   const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -48,12 +40,9 @@ export const PaymentList = () => {
   ) => {
     try {
       setIsLoading(true);
-      const response = await axios.get(
-        `${axiosInstance}/payment/by-page`,
-        {
-          params: { page, limit },
-        }
-      );
+      const response = await axiosInstance.get('/payment/by-page', {
+        params: { page, limit },
+      });
 
       const data: Payment[] = response.data;
 
@@ -69,7 +58,7 @@ export const PaymentList = () => {
     }
   };
 
-useEffect(() => {
+  useEffect(() => {
     fetchPayment(page, 20, searchTerm).then(() => {
       console.log(
         "✅ אחרי fetchPayment - כמות לקוחות ב־allPayment:",
@@ -91,75 +80,29 @@ useEffect(() => {
     return () => observer.disconnect();
   }, [isSearching]);
 
-
-  // useEffect(() => {
-  //   fetchCustomers();
-  //   // האזנה לשינויים בטבלת customers
-  //   const channel = supabase
-  //     .channel('public:customer')
-  //     .on(
-  //       'postgres_changes',
-  //       { event: '*', schema: 'public', table: 'customers' },
-  //       (payload) => {
-  //         // כל שינוי (הוספה, עדכון, מחיקה) יגרום לרענון הרשימה
-  //         fetchCustomers();
-  //       }
-  //     )
-  //     .subscribe();
-
-  //   // ניקוי מאזין כשיוצאים מהקומפוננטה
-  //   return () => {
-  //     supabase.removeChannel(channel);
-  //   };
-  // }, []);
-
-  useEffect(() => {
-    if (!loaderRef.current || isSearching) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setPage((prev) => prev + 1);
-      }
-    });
-    observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [isSearching]);
-
-  //   const handleDeleteCustomer = (id: string) => {
-  //     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
-  //     setAllCustomers((prev) => prev.filter((customer) => customer.id !== id)); // גם מהמאגר הכללי
-  //   };
-
   const handleSearch = (term: string) => {
-  setTerm(term);
-  setSearchTerm(term);
+    setTerm(term);
+    setSearchTerm(term);
 
-  if (!term.trim()) {
-    // אם ריק, מחזירים לתצוגה רגילה
-    setIsSearching(false);
-    fetchPayment(page, 20, "");
-    return;
-  }
+    if (!term.trim()) {
+      setIsSearching(false);
+      fetchPayment(page, 20, "");
+      return;
+    }
 
-  setIsSearching(true);
-  const lower = term.toLowerCase();
+    setIsSearching(true);
+    const lower = term.toLowerCase();
 
-const filtered = allPaymentsRef.current.filter(
-  (c) =>
-    c.customer_name?.toLowerCase().includes(lower) ||
-    c.customer_id?.toLowerCase().includes(lower) ||
-    c.invoice_number?.toLowerCase().includes(lower) ||
-    c.amount?.toString().toLowerCase().includes(lower)
-);
+    const filtered = allPaymentsRef.current.filter(
+      (c) =>
+        c.customer_name?.toLowerCase().includes(lower) ||
+        c.customer_id?.toLowerCase().includes(lower) ||
+        c.invoice_number?.toLowerCase().includes(lower) ||
+        c.amount?.toString().toLowerCase().includes(lower)
+    );
 
-
-  setPayment(filtered);
-};
-
-
-  //   const handleDeleteCustomer = (id: string) => {
-  //     setCustomers((prev) => prev.filter((customer) => customer.id !== id));
-  //     setAllCustomers((prev) => prev.filter((customer) => customer.id !== id)); // גם מהמאגר הכללי
-  //   };
+    setPayment(filtered);
+  };
 
   const getValuseToTable = (): ValuesToTable[] => {
     return payment
@@ -229,8 +172,8 @@ const filtered = allPaymentsRef.current.filter(
                 ) {
                   console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
 
-                  axios
-                    .get("http://localhost:3001/api/payment/search", {
+                  axiosInstance
+                    .get("/payment/search", {
                       params: { text: searchTerm },
                     })
                     .then((response) => {
@@ -267,7 +210,6 @@ const filtered = allPaymentsRef.current.filter(
                 >
                   לוח בקרה
                 </NavLink>
-              
               </>
             )}
           />{" "}
@@ -286,13 +228,10 @@ const filtered = allPaymentsRef.current.filter(
           </Button>
           <Button
             variant="secondary"
-            // disabled={!hasMore}
             onClick={() => {
-              // if (hasMore) {
               const nextPage = page + 1;
               setPage(nextPage);
               fetchPayment(nextPage, 20, "");
-              // }
             }}
           >
             דף הבא
