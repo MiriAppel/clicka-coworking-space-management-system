@@ -23,7 +23,7 @@ export const VoiceCommand = () => {
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      // const wakeWord = "מירי";
+      const wakeWord = "מירי";
 
       
       console.log("הפקודה שהתקבלה:", transcript);
@@ -63,48 +63,10 @@ export const VoiceCommand = () => {
 const handleCommand = (text: string) => {
   const lower = text.toLocaleLowerCase();
 
-  const newCustomerKeywords = [
-    "לקוח חדש",
-    "הוספת לקוח",
-    "פתיחת לקוח חדש",
-    "תוסיפי לקוח",
-    "תפתחי לקוח",
-    "לפתוח לקוח",
-    "הוסף לקוח",
-    "הכנסת לקוח",
-    "צור לקוח",
-    "קליטה של לקוח",
-    "אני רוצה להוסיף לקוח",
-    "אני צריכה לקוח חדש",
-    "פתחי כרטיס לקוח",
-    "חדש לקוח",
-  ];
-
-  const customersListKeywords = [
-    "לקוחות",
-    "כל הלקוחות",
-    "רשימת לקוחות",
-    "תראי לי לקוחות",
-    "אני רוצה לראות את הלקוחות",
-    "תפתחי את דף הלקוחות",
-    "דף לקוחות",
-    "תציגי את הלקוחות",
-    "כל כרטיסי הלקוחות",
-    "הכרטיסים של הלקוחות",
-    "כרטיסי לקוח",
-    "לקוחות קיימים",
-    "עיון בלקוחות",
-  ];
-
-  const matches = (input: string, keywords: string[]) =>
-    keywords.some((kw) => input.includes(kw));
-
-  if (matches(lower, newCustomerKeywords)) {
-    window.location.href = "http://localhost:3000/leadAndCustomer/customers/new";
-  } else if (matches(lower, customersListKeywords)) {
-    window.location.href = "http://localhost:3000/leadAndCustomer/customers";
-  } else {
-    alert("לא הבנתי את הפקודה... 😕 נסי שוב בבקשה");
+  if (lower.includes("לקוח חדש") || lower.includes("הוספת לקוח"))
+    window.location.href =
+      "http://localhost:3000/leadAndCustomer/customers/new";
+  else {
+    alert("לא הבנתי את הפקודה... 😕");
   }
 };
-

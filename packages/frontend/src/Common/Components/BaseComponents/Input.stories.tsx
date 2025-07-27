@@ -22,8 +22,8 @@ export const Default: Story = {
   render: (args) => {
     const methods = useForm();
     return (
-      <FormProvider {...methods}>
-        <InputField {...args} />
+      <FormProvider {...methods}>  {/* מקיף את הקומפוננטה ב־FormProvider */}
+        <InputField {...args} />  {/* שולח את ה־props (כולל שם השדה, תווית וכו') */}
       </FormProvider>
     );
   },

@@ -104,7 +104,7 @@ export const SendEmail = () => {
     mode: 'onSubmit',
   });
 
-  const { register } = methods;
+  const { register, handleSubmit } = methods;
 
   useEffect(() => {
     getEmailTemplates();

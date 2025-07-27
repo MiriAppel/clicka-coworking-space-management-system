@@ -1,4 +1,5 @@
-import { ReportData, ReportParameters, ReportType } from 'shared-types';
+import { log } from 'console';
+import { ReportData, ReportParameters, ReportType, ExpenseCategory } from 'shared-types';
 /**
  * פונקציה כללית לשליחת בקשה לשרת לקבלת דוח
  * @param type - סוג הדוח (REVENUE / EXPENSES)
@@ -26,9 +27,9 @@ export async function fetchReportData(
       throw new Error(`Failed to fetch report: ${response.status} ${response.statusText}`);
     }
 
-    const data: ReportData = await response.json();
-    console.log("✅ Raw response from server:", data); // ← זו השורה שמוסיפה בדיקה
-    return data;
+const data: ReportData = await response.json();
+console.log("✅ Raw response from server:", data); // ← זו השורה שמוסיפה בדיקה
+return data;
 
   } catch (error: unknown) {
     console.error('Error fetching report:', error);

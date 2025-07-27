@@ -2,10 +2,11 @@ import { z } from "zod";
 import React, { useEffect } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
-import { Lead } from "shared-types";
+import { AddLeadInteractionRequest, Lead } from "shared-types";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -35,7 +36,7 @@ export const InteractionForm: React.FC<InteractionFormProps> = ({
     if (!selectedLead && leadId)
       // טען את הליד מהשרת ועדכן ב-store
       handleSelectLead(leadId)
-  }, [selectedLead, leadId, handleSelectLead]);
+  }, [selectedLead, leadId, handleSelectLead, handleSelectLead]);
 
   const nav = useNavigate()
   return (

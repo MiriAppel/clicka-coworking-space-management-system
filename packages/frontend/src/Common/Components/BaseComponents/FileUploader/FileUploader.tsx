@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Typography, Card, CardContent, LinearProgress, IconButton, Chip } from '@mui/material';
-import { Upload, X, CheckCircle, AlertCircle, File, Image, FileText, ExternalLink, Copy, CloudUpload } from 'lucide-react';
+import { Upload, X, CheckCircle, AlertCircle, File, Image, FileText, ExternalLink, Copy, CloudUpload, Share } from 'lucide-react';
+import { LoginResponse } from 'shared-types';
 import axios from 'axios';
+import { useAuthStore } from '../../../../Stores/CoreAndIntegration/useAuthStore';
+import { useGoogleLogin } from '@react-oauth/google';
 import { Button as CustomButton } from '../Button';
 import { showAlert } from '../../BaseComponents/ShowAlert';
 import { useTheme } from '../../themeConfig';
@@ -14,6 +17,10 @@ const ALLOWED_FILE_TYPES = [
   'text/plain', 'application/zip'
 ];
 
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:3001',
+  withCredentials: true,
+});
 
 export interface FileUploaderProps {
   folderPath?: string;
@@ -62,7 +69,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const { theme } = useTheme();
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
-  // const { setUser, setSessionId } = useAuthStore();
+  const { setUser, setSessionId } = useAuthStore();
 
   const effectiveDir = dir || theme.direction;
 

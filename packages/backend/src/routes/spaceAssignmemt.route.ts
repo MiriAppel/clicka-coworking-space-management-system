@@ -10,6 +10,4 @@ spaceRouter.post("/createSpace", spaceController.createSpace.bind(spaceControlle
 spaceRouter.put("/updateSpace/:id", spaceController.updateSpace.bind(spaceController));
 spaceRouter.delete("/deleteSpace/:id", spaceController.deleteSpace.bind(spaceController));
 spaceRouter.post("/checkConflicts", spaceController.checkConflicts.bind(spaceController));
-spaceRouter.get('/getHistory/:date',spaceController.getHistory.bind(spaceController));
-
 export default spaceRouter;

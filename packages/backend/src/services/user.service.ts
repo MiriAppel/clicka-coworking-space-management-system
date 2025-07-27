@@ -1,17 +1,23 @@
+import { createClient } from '@supabase/supabase-js';
 import { UserModel } from '../models/user.model'; // נניח שהמודל User נמצא באותו תיק
 import { logUserActivity } from '../utils/logger';
 import dotenv from 'dotenv';
+import { LoginResponse, UserRole } from 'shared-types';
+import { Response } from 'express';
 import { supabase } from '../db/supabaseClient';
+//טוען את משתני הסביבה מהקובץ .env
+dotenv.config();
 
 export class UserService {
+
 
     async createUser(user: UserModel): Promise<UserModel | null> {
         try {
             if (await this.getUserByEmail(user.email)) {
                 throw new Error(`User with email ${user.email} already exists`);
             }
-            const { data } = await supabase
-                .from('users')
+            const { data, error } = await supabase
+                .from('users') // שם הטבלה ב-Supabase
                 .insert([user.toDatabaseFormat()])
                 .select()
                 .single();
@@ -21,10 +27,11 @@ export class UserService {
         }
         catch (error) {
             console.error('Error creating user:', error);
-            throw error;
+            throw error; 
         }
     }
 
+    // פונקציה לקבל את כל המשתמשים
     async getAllUsers(): Promise<UserModel[] | null> {
 
         const { data, error } = await supabase
@@ -35,10 +42,10 @@ export class UserService {
             console.error('Error fetching user:', error);
             return null;
         }
-        //convert the data to UserModel array
-        const createdUser = UserModel.fromDatabaseFormatArray(data)
-
+        const createdUser = UserModel.fromDatabaseFormatArray(data) // המרה לסוג UserModel
+        // מחזיר את כל המשתמשים שנמצאו
         return createdUser;
+
     }
 
     // פונקציה לקרוא משתמש לפי ID
@@ -89,26 +96,7 @@ export class UserService {
             throw error; // זריקת השגיאה כדי לטפל בה במקום אחר
         }
     }
-    async updatePassword(userId: string, hashedPassword: string): Promise<UserModel | null> {
-        try {
-            const { data, error } = await supabase
-                .from('users')
-                .update({ password: hashedPassword })
-                .eq('id', userId)
-                .select()
-                .single();
 
-            if (error) {
-                console.error('Error updating user password:', error);
-                return null;
-            }
-
-            return UserModel.fromDatabaseFormat(data);
-        } catch (error) {
-            console.error('Error updating user password:', error);
-            throw error;
-        }
-    }
     async updateGoogleIdUser(id: string, googleId: string): Promise<UserModel | null> {
         try {
             const { data, error } = await supabase
@@ -202,5 +190,21 @@ export class UserService {
     }
 
 
-
+    createRoleCookies(res: Response<LoginResponse | { error: string }>, roleUser: UserRole): void{
+        // שליפת ה-role מתוך ה-resulte
+        const role = roleUser;
+        // הגדרת cookie עם ה-role
+        res.cookie('role', role, {
+            httpOnly: true ,// httpOnly כדי למנוע גישה דרך JavaScript
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
+    }
+    clearRoleCookie = (res: Response): void => {
+    res.clearCookie('role', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    });
+};
 }

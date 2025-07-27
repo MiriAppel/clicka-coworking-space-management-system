@@ -11,14 +11,13 @@ function getAbsolutePath(value: string): any {
 }
 const config: StorybookConfig = {
   "stories": [
-    "../src/**/*.mdx",
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+    "../*.mdx",
+  "../src/**/*.stories.@(js|jsx|mjs|ts|tsx|mdx)"
   ],
   "addons": [
-    getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/preset-create-react-app'),
-    getAbsolutePath('@storybook/addon-onboarding'),
-    getAbsolutePath('@storybook/addon-interactions')
+    getAbsolutePath('@storybook/addon-docs'),
+    getAbsolutePath('@storybook/addon-onboarding')
   ],
   "framework": {
     "name": getAbsolutePath('@storybook/react-webpack5'),

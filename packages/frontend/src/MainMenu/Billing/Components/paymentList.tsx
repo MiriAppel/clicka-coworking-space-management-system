@@ -11,7 +11,6 @@ import { NavLink } from "react-router";
 
 import { Stack, TextField } from "@mui/material";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
-import axiosInstance from "../../../Service/Axios";
 
 interface ValuesToTable {
   id: string;
@@ -49,7 +48,7 @@ export const PaymentList = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `${axiosInstance}/payment/by-page`,
+        "http://localhost:3001/api/payment/by-page",
         {
           params: { page, limit },
         }

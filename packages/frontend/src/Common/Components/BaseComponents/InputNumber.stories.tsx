@@ -25,8 +25,8 @@ export const Default: Story = {
   render: (args) => {
     const methods = useForm();
     return (
-      <FormProvider {...methods}>
-        <NumberInputField {...args} />
+      <FormProvider {...methods}> {/* מקיף את הקומפוננטה ב-FormProvider */}
+        <NumberInputField {...args} /> {/* שולח את ה-args ל-NumberInputField */}
       </FormProvider>
     );
   },

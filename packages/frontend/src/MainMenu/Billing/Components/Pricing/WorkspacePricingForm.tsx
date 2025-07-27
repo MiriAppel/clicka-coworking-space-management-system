@@ -98,14 +98,14 @@ const WorkspacePricingForm: React.FC<Props> = ({ workspaceType, initialData, onS
       }
     }
   };
-// const onSubmit2 = async (data: UpdatePricingTierRequest & { id?: string }) => {
-//     // ...
-//     const dataToSend = { ...data, workspaceType };
-//     // כאן, אל תשים את ה-ID בתוך dataToSend
-//     // אלא שלח אותו כפרמטר נפרד ל-save:
-//     await save(dataToSend, initialData?.id); // <--- שלח את ה-ID כפרמטר שני!
-//     // ...
-// };
+const onSubmit2 = async (data: UpdatePricingTierRequest & { id?: string }) => {
+    // ...
+    const dataToSend = { ...data, workspaceType };
+    // כאן, אל תשים את ה-ID בתוך dataToSend
+    // אלא שלח אותו כפרמטר נפרד ל-save:
+    await save(dataToSend, initialData?.id); // <--- שלח את ה-ID כפרמטר שני!
+    // ...
+};
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="grid gap-4 p-4 border rounded-lg bg-white shadow-sm">

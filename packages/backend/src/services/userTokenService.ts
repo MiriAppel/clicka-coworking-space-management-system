@@ -9,16 +9,6 @@ import { UserService } from "./user.service";
 
 
 export class UserTokenService {
-    async saveSessionId(userId: string, sessionId: string) {
-        const { error } = await supabase
-            .from('user_token')
-            .update({ active_session_id: sessionId })
-            .eq('user_id', userId);
-        if (error) {
-            console.error('Error saving session ID:', error);
-            throw new Error('Failed to save session ID');
-        }
-    }
 
     async saveTokens(userId: string, refreshToken: string, access_token: string, sessionId?: string): Promise<string> {
         // Encrypt the refresh token before saving

@@ -352,7 +352,7 @@ h1 ::after{
   min-width: 250px;
 }
 .clearSearchBtn,.backBtn {
- margin-top: 20px;
+ margin-top: 40px;
   background-color: #007BFF !important;
   color: white !important;
   border-color: #6c757d !important;
@@ -418,6 +418,7 @@ h1 ::after{
 .room-workstation.MAINTENANCE {
     --space-fill: #fff3cd;
     fill: #fff3cd;
+}
 
 .room-space.NONE,
 .room-workstation.NONE {
@@ -441,4 +442,4 @@ h1 ::after{
 position: absolute;
 right: 30px;
 top: 90px;
-}}
+}

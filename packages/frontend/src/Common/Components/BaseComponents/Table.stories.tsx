@@ -30,8 +30,8 @@ export const Default: Story = {
       { id: 2, name: 'Jane Doe', email: 'jane@example.com' },
     ],
     // פונקציה שתופעל כאשר נלחץ כפתור "עדכון" עבור שורה
-    onUpdate: (row: any) => console.log('Updating row', row),
+    onUpdate: (row) => console.log('Updating row', row),
     // פונקציה שתופעל כאשר נלחץ כפתור "מחיקה" עבור שורה
-    onDelete: (row: any) => console.log('Deleting row', row),
+    onDelete: (row) => console.log('Deleting row', row),
   },
 };

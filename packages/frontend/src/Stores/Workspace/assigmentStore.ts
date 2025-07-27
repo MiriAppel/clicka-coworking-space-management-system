@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import axios, { AxiosError } from 'axios';
 import { Space } from 'shared-types/workspace'; // ייבוא הטייפ הנכון
+import { WorkspaceType } from 'shared-types';
 // הגדרת בסיס URL לAPI
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 

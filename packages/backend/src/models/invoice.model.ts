@@ -15,8 +15,8 @@ export class InvoiceModel implements Invoice {
     taxtotal: number;
     payment_due_reminder?: boolean | undefined;
     payment_dueReminder_sentAt?: any;
-    created_at: DateISO;  
-    updated_at: DateISO; 
+    createdAt: DateISO;  
+    updatedAt: DateISO; 
 
     constructor(
         id: ID,
@@ -31,8 +31,8 @@ export class InvoiceModel implements Invoice {
         tax_total: number,
         payment_due_reminder?: boolean | undefined,
         payment_dueReminder_sentAt?: any,
-        created_at?: DateISO, 
-        updated_at?: DateISO   
+        createdAt?: DateISO, 
+        updatedAt?: DateISO   
     ) {
         this.id = id;
         this.invoice_number = invoice_number;
@@ -46,8 +46,8 @@ export class InvoiceModel implements Invoice {
         this.tax_total = tax_total;
         this.payment_due_reminder = payment_due_reminder;
         this.payment_dueReminder_sentAt = payment_dueReminder_sentAt;
-        this.created_at = created_at ?? new Date().toISOString();  
-        this.updated_at = updated_at ?? new Date().toISOString(); 
+        this.createdAt = createdAt ?? new Date().toISOString();  
+        this.updatedAt = updatedAt ?? new Date().toISOString(); 
         this.taxtotal = 0;
     }
 
@@ -63,8 +63,8 @@ export class InvoiceModel implements Invoice {
             tax_total: this.tax_total,
             payment_due_reminder: this.payment_due_reminder,
             payment_dueReminder_sentAt: this.payment_dueReminder_sentAt,
-            createdAt: this.created_at,
-            updatedAt: this.updated_at 
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt 
         }
     }
 }

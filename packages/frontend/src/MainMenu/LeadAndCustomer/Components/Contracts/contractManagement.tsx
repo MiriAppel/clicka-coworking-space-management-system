@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
+import {
+  getAllContracts,
+  deleteContract,
+} from "../../Service/LeadAndCustomersService";
 import { Table , TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { Contract, ContractStatus, ID } from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
 import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
+
 interface ValuesToTable {
   id: ID;
   customerId: ID;
@@ -15,6 +20,7 @@ interface ValuesToTable {
   endDate: string;
   workspaceCount: number;
 }
+
 const statusLabels: Record<ContractStatus, string> = {
   [ContractStatus.DRAFT]: "טיוטה",
   [ContractStatus.PENDING_SIGNATURE]: "ממתין לחתימה",
@@ -207,6 +213,7 @@ export const ContractManagement = () => {
           הוספת חוזה חדש
         </Button>
       </div>
+
       <div className="flex gap-4 border-b mb-6">
         <button
           className={`px-4 py-2 font-semibold ${
@@ -235,6 +242,7 @@ export const ContractManagement = () => {
           חוזים שתוקפם יסתיים בקרוב
         </button>
       </div>
+
       <Table<ValuesToTable>
         data={valuesToTable}
         columns={[
