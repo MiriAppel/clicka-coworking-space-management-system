@@ -33,9 +33,6 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = (props) => {
     customerName: customerNameFromState,
     workspaceType: workspaceTypeFromState,
   } = location.state || {};
-
-  console.log('Location state:', location.state); // :white_check_mark: debug
-  
   // :white_check_mark: שילוב בין props ובין location.state
   const customerId = props.customerId || customerIdFromState;
   const customerName = props.customerName || customerNameFromState;
@@ -107,35 +104,38 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = (props) => {
   }, []);
 
   // בדיקת קונפליקטים בזמן אמת
-  useEffect(() => {
-    const checkForConflicts = async () => {
-      const daysOfWeekForConflicts =
-        Array.isArray(watchedDaysOfWeek)
-          ? watchedDaysOfWeek.map(Number) 
-          : typeof watchedDaysOfWeek === "string"
-            ? [Number(watchedDaysOfWeek)]
-            : [];
-      if (watchedWorkspaceId && watchedAssignedDate) {
-        setIsCheckingConflicts(true);
-        try {
-          await checkConflicts(
-            watchedWorkspaceId,
-            watchedAssignedDate,
-            watchedUnassignedDate || undefined,
-            undefined,
-            daysOfWeekForConflicts
-          );
-        } catch (error) {
-          console.error('Error checking conflicts:', error);
-        } finally {
-          setIsCheckingConflicts(false);
-        }
-      }
-    };
+useEffect(() => {
+  const checkForConflicts = async () => {
+    const daysOfWeekForConflicts = (
+      Array.isArray(watchedDaysOfWeek)
+        ? watchedDaysOfWeek
+        : watchedDaysOfWeek
+          ? [watchedDaysOfWeek]
+          : []
+    ).map(Number).filter(n => !isNaN(n));
 
-    const timeoutId = setTimeout(checkForConflicts, 500);
-    return () => clearTimeout(timeoutId);
-  }, [watchedWorkspaceId, watchedAssignedDate, watchedUnassignedDate, watchedDaysOfWeek, checkConflicts]); const filteredSpaces = React.useMemo(() => {
+    if (watchedWorkspaceId && watchedAssignedDate) {
+      setIsCheckingConflicts(true);
+      try {
+        await checkConflicts(
+          watchedWorkspaceId,
+          watchedAssignedDate,
+          watchedUnassignedDate || undefined,
+          undefined,
+          daysOfWeekForConflicts
+        );
+      } catch (error) {
+        console.error('Error checking conflicts:', error);
+      } finally {
+        setIsCheckingConflicts(false);
+      }
+    }
+  };
+
+  const timeoutId = setTimeout(checkForConflicts, 500);
+  return () => clearTimeout(timeoutId);
+}, [watchedWorkspaceId, watchedAssignedDate, watchedUnassignedDate, watchedDaysOfWeek, checkConflicts]);
+ const filteredSpaces = React.useMemo(() => {
     if (!workspaceType) {
       return spaces;
     }

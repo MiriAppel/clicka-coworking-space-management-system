@@ -1,23 +1,36 @@
 import { Request, Response } from "express";
 import { customerService } from "../services/customer.service";
-import {
-  CreateCustomerRequest,
-  ID,
-  StatusChangeRequest,
-
-} from "shared-types";
+import { CreateCustomerRequest, ID, StatusChangeRequest } from "shared-types";
 import { contractService } from "../services/contract.service";
 import { serviceCustomerPaymentMethod } from "../services/customerPaymentMethod.service";
 import { UserTokenService } from "../services/userTokenService";
 import { sendEmail } from "../services/gmail-service";
 import { EmailTemplateService } from "../services/emailTemplate.service";
 import { th } from "date-fns/locale";
+import { CustomerModel } from "../models/customer.model";
 
 const serviceCustomer = new customerService();
 const serviceContract = new contractService();
 const userTokenService = new UserTokenService();
 const emailService = new EmailTemplateService();
 
+export const sendContractEmail = async (req: Request, res: Response) => {
+  try {
+    const  customer: CustomerModel  = req.body;
+    const link = req.params.link; // assuming the link is passed as a route param
+
+    if (!customer) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    await serviceCustomer.sendEmailWithContract(customer, link);
+
+    res.status(200).json({ message: "Contract email sent successfully" });
+  } catch (error) {
+    console.error("Error sending contract email:", error);
+    res.status(500).json({ message: "Failed to send contract email" });
+  }
+};
 
 export const getAllCustomers = async (req: Request, res: Response) => {
   try {
@@ -49,10 +62,9 @@ export const postCustomer = async (req: Request, res: Response) => {
     console.error("Error creating customer:", error);
     return res.status(500).json({ message: 'Error fetching customers', error });
   }
-}
+};
 
 export const getCustomerById = async (req: Request, res: Response) => {
-
   const { id } = req.params;
   console.log("in getCustomerById", id);
 
@@ -153,8 +165,9 @@ export const getCustomersByPage = async (req: Request, res: Response) => {
 
     console.log("Filters passed to service:", filtersForService);
 
-    const customer =
-      await serviceCustomer.getCustomersByPage(filtersForService);
+    const customer = await serviceCustomer.getCustomersByPage(
+      filtersForService,
+    );
 
     if (customer.length > 0) {
       res.status(200).json(customer);
@@ -193,15 +206,23 @@ export const patchCustomer = async (req: Request, res: Response) => {
   }
 };
 
-export const getCustomerPaymentMethods = async (req: Request, res: Response) => {
+export const getCustomerPaymentMethods = async (
+  req: Request,
+  res: Response,
+) => {
   const { id } = req.params;
   try {
-    const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(id);
+    const paymentMethods = await serviceCustomerPaymentMethod.getByCustomerId(
+      id,
+    );
     res.status(200).json(paymentMethods);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching customer payment methods", error });
+    res.status(500).json({
+      message: "Error fetching customer payment methods",
+      error,
+    });
   }
-}
+};
 
 // לשאול את שולמית לגבי זה
 
@@ -235,23 +256,22 @@ export const confirmEmail = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   if (!email || !id) {
-    return res.status(400).send(createHtmlMessage("שגיאה: אימייל או מזהה חסרים"));
+    return res.status(400).send(
+      createHtmlMessage("שגיאה: אימייל או מזהה חסרים"),
+    );
   }
 
   try {
     await serviceCustomer.confirmEmail(email, id);
     res.send(createHtmlMessage("האימות הצליח! תודה שהצטרפת אלינו."));
-
   } catch (error: any) {
     console.error("שגיאה באימות:", error);
-
     // כל שגיאה אחרת
     res
       .status(500)
       .send(createHtmlMessage("\nאירעה שגיאה במהלך האימות." + error.details));
   }
 };
-
 
 function createHtmlMessage(message: string) {
   return `
@@ -284,14 +304,12 @@ function createHtmlMessage(message: string) {
   `;
 }
 
-
-
 export const changeCustomerStatus = async (req: Request, res: Response) => {
   try {
     console.log("changeCustomerStatus called with params:", req.params);
     const userTokenService = new UserTokenService();
     const id = req.params.id; // מזהה הלקוח מהנתיב (או body לפי איך מוגדר)
-    const statusChangeData : StatusChangeRequest = req.body; // פרטים לשינוי הסטטוס
+    const statusChangeData: StatusChangeRequest = req.body; // פרטים לשינוי הסטטוס
 
     const token = await userTokenService.getSystemAccessToken();
     console.log("changeCustomerStatus called with token:", token);
@@ -311,7 +329,7 @@ export const changeCustomerStatus = async (req: Request, res: Response) => {
     await serviceCustomer.sendStatusChangeEmails(
       statusChangeData,
       id,
-      token
+      token,
     );
 
     res

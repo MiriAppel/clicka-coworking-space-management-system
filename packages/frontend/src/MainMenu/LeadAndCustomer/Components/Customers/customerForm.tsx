@@ -207,7 +207,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                         options={PaymentMethodTypeOptions}
                         required
                     />
-                    <InputField name="invoiceName" label="שם לחשבונית" />
+                    <InputField name="invoiceName" label='חשבונית ע"ש' />
                     <div className="col-span-2 mt-4 mb-2">
                         <h3 className="text-lg font-semibold text-gray-700 pb-1">פרטי אשראי</h3>
                     </div>
