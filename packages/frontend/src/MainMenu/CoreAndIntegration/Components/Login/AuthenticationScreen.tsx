@@ -60,6 +60,7 @@ export const AuthenticationScreen = () => {
                 <div className="w-full">
                   <LoginWithPassword />
                 </div>
+                
               </div>
             </div>
           )}

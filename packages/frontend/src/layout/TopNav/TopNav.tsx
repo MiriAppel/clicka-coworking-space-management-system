@@ -17,6 +17,7 @@ const TopNav = () => {
   const navigate = useNavigate();
   const [clickedMenuKey, setClickedMenuKey] = useState<string>('');
   const { user, clearUser } = useAuthStore();
+  console.log('user: ',user)
 
   const isMenuOpen = (menu: string) =>
     openMenu === menu || (hoveredMenu === menu && !openMenu);

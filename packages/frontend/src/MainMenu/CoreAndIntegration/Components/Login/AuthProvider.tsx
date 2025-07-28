@@ -20,8 +20,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (res.status == 200) {
         console.log("Authenticated successfully");
         const data = res.data;
-        setUser(data.user);
-        setSessionId(data.sessionId);
+        console.log("User data in authProvider:", data);
+        setUser(data.user.user);
+        setSessionId(data.user.sessionId);
         return;
       }
       clearUser();
@@ -39,7 +40,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               const res = await axiosInstance.get("/auth/verify");
               if (res.status === 200) {
                 const data = res.data;
-                setUser(data.user);
+                setUser(data.user.user);
                 return;
               }
             }
@@ -62,7 +63,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -83,9 +84,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, [user, verifyFunction]);
 
-  if(isLoading){
-      return null;
-  }
   return <>
     {/* {user == null && <GoogleOneTap />} */}
     {children}</>

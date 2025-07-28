@@ -92,7 +92,7 @@ export const Routing = () => {
       </Route>
 
     
-      <Route path="*" element={<div>404 - Página no encontrada</div>} />
+      <Route path="*" element={<div>404 - page not found</div>} />
     </Routes>
   );
 };

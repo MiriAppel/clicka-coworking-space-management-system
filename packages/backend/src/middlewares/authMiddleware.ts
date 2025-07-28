@@ -35,9 +35,7 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
     const user: User = result;
     (req as any).user = { payload, user, sessionId };// Store the user object in the request object for further use;
     //------------------------------------------------------------
-    // (req as any).user = { payload, firstName: "aaaa", sessionId };
-    console.log(sessionId);
-    (req as any).sessionId = { sessionId };
+    // (req as any).sessionId = { sessionId };
 
     next();
   } catch (err: any) {

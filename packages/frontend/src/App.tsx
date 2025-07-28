@@ -6,6 +6,8 @@ import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/L
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 import MainLayout from './layout/MainLayout';
 import { useAuthStore } from './Stores/CoreAndIntegration/useAuthStore';
+import { VoiceCommand } from './VoiceAssistant';
+import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 
 function App() {
   const [healthStatus, setHealthStatus] = useState(null);
@@ -49,7 +51,7 @@ function App() {
     } else if (isAuthenticated && location.pathname === '/auth') {
       navigate('/', { replace: true });
     }
-  }, [isAuthenticated, navigate]); 
+  }, [isAuthenticated, navigate]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -60,7 +62,7 @@ function App() {
   return (
     <div className="App">
       <MainLayout /> 
-
+      
       {showLandingHeader && (
         <>
           <header className="App-header">
@@ -71,29 +73,12 @@ function App() {
           <div className="menu" style={{ backgroundColor: 'black' }}></div>
         </>
       )}
-
+      <VoiceCommand />
       <Accesibility />
-    </div>
-        <div className="App">
-
-      <VoiceCommand/>
-      
-      <header className="App-header">
-        <h3>welcome to our world</h3>
-        <h1>Clicka</h1>
-        <h2>Co-working Space Management System</h2>
-      </header>
-
-      <div className='menu' style={{ backgroundColor: 'black' }}>
-      </div>
-     
-      <Accesibility></Accesibility>
-       <Routes>
-          <Route path="/pricing" element={<PricingConfigurationPage />} />
-          {/* אפשר להוסיף כאן ראוטים נוספים */}
-        </Routes>
-        <AuthenticationScreen />
-        
+      <Routes>
+        <Route path="/pricing" element={<PricingConfigurationPage />} />
+        {/* אפשר להוסיף כאן ראוטים נוספים */}
+      </Routes>        
 
       </div>
   );

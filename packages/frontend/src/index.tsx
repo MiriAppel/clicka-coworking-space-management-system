@@ -16,30 +16,32 @@ function Root() {
   return (
     <React.StrictMode>
       <ThemeProvider>
-        <LangContext.Provider value={lang}>
-          <AuthProvider>
-            <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID!}>
-              <BrowserRouter>
+        <LangContext.Provider value={lang=== "HE" ? "he" : "en"}>
+          <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID!}>
+            <BrowserRouter>
+              <AuthProvider>
+
                 <div className="p-4 gap-4 items-start">
                   {/* כפתורי שפה מעוצבים */}
-                  <div className="fixed top-20 left-4 z-200">
-                    <button
-                      onClick={() => {
-                        const nextLang = lang === "HE" ? "EN" : "HE";
-                        setLang(nextLang);
-                        console.log("Language switched to:", nextLang);
-                      }}
-                      className="px-4 py-1 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-gradient-to-b from-white to-gray-100 shadow-sm hover:shadow-md transition"
-                    >
-                      {lang === "HE" ? "EN" : "HE"}
-                    </button>
+                  <div className="fixed bottom-20 right-4 z-5">
+                      <button
+                       className="px-4 py-1 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-gradient-to-b from-white to-gray-100 shadow-sm hover:shadow-md transition"
+                        onClick={() => {
+                          const nextLang = lang === "HE" ? "EN" : "HE";
+                          setLang(nextLang);
+                          console.log("Language switched to:", nextLang);
+                        }}
+                      >
+                        {lang === "HE" ? "HE" : "EN"}
+                      </button>
                   </div>
                   {/* הראוטינג עצמו */}
                   <Routing />
                 </div>
-              </BrowserRouter>
-            </GoogleOAuthProvider>
-          </AuthProvider>
+              </AuthProvider>
+
+            </BrowserRouter>
+          </GoogleOAuthProvider>
         </LangContext.Provider>
       </ThemeProvider>
     </React.StrictMode>
