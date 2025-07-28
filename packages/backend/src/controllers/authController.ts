@@ -7,7 +7,7 @@ import { UserService } from '../services/user.service';
 import { UserTokenService } from '../services/userTokenService';
 import { getGoogleWithoutCode } from '../services/googleAuthService';
 import { randomUUID } from 'crypto';
-import * as bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { saveUserTokens } from '../services/tokenService';
 const SALT_ROUNDS = 10; // מספר הסיבובים ל־bcrypt
 
@@ -196,4 +196,3 @@ export const registerUser = async (req: Request, res: Response) => {
   }
   return res.status(200).json(user);
 }
-

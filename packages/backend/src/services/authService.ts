@@ -4,7 +4,8 @@ import jwt from 'jsonwebtoken';
 import { saveUserTokens } from './tokenService';
 import { randomUUID } from 'crypto';
 import { UserService } from "./user.service";
-import * as bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
+
 
 const userService = new UserService();
 const JWT_SECRET = process.env.JWT_SECRET!;
