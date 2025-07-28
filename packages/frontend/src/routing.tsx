@@ -36,6 +36,8 @@ import { Report } from './MainMenu/Workspace/Components/report';
 import { AssigmentTable } from './MainMenu/Workspace/Components/assigenmentTable';
 import { UpdateAssigenment } from './MainMenu/Workspace/Components/updateAssigenment';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
+import { RoomManager } from './MainMenu/Workspace/Components/RoomManager';
+
 export const Routing = () => {
     const [vendors, setVendors] = useState<Vendor[]>([]);
   return (
@@ -76,6 +78,7 @@ export const Routing = () => {
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
         <Route path="/occupancyReports" element={<Report  />} />
         <Route path="/billing/collection" element={< Collection />} />
+                <Route path="/rooms" element={<RoomManager />} />
         <Route path="/petty-cash" element={<PettyCashPage />} />
       </Route>
     </Routes>
