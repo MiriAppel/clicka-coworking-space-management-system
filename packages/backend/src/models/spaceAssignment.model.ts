@@ -11,7 +11,7 @@ export class SpaceAssignmentModel implements SpaceAssign {
     status: AssignmentStatus;
     createdAt: Date;
     updatedAt: Date;
-
+  
     constructor(params: {
         id: string;
         workspaceId: string;
