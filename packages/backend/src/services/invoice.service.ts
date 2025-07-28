@@ -4,487 +4,222 @@ import dotenv from 'dotenv';
 import { InvoiceItemModel, InvoiceModel } from "../models/invoice.model";
 
 import { UUID } from "crypto";
-import { supabase } from "../db/supabaseClient";
-import { EmailTemplateService } from "./emailTemplate.service";
 import { sendEmail } from "./gmail-service";
-import { id } from "date-fns/locale";
-// טוען את משתני הסביבה מקובץ .env
-
-// const supabaseUrl = process.env.SUPABASE_URL || 'https://htpiqwpvvydffoapkmzk.supabase.co'; // החלף עם ה-URL של פרויקט ה-Supabase שלך
-// const supabaseAnonKey = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJp'; // החלף עם ה-Anon Key שלך
-// const supabase = createClient(supabaseUrl, supabaseAnonKey);
-//////////////////
+import { EmailTemplateService } from "./emailTemplate.service";
 dotenv.config();
-// const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
-
-////////////////
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 //crud functions
 // יצירת חשבונית חדשה 
 
-// export async function serviceCreateInvoice(data: Partial<InvoiceModel>): Promise<InvoiceModel> {
-//     const { data: invoiceData, error } = await supabase
-//         .from('invoice')
-//         .insert([{
-//             invoice_number: data.invoice_number || '',
-//             customer_id: data.customer_id || '',
-//             customer_name: data.customer_name || '',
-//             status: data.status || 'DRAFT',
-//             issue_date: data.issue_date || new Date().toISOString(),
-//             due_date: data.due_date || new Date().toISOString(),
-//             items: data.items || [],
-//             subtotal: data.subtotal || 0,
-//             tax_total: data.tax_total || 0,
-//             payment_due_reminder: data.payment_due_reminder,
-//             payment_dueReminder_sentAt: data.payment_dueReminder_sentAt,
-//             createdAt: new Date().toISOString(),
-//             updatedAt: new Date().toISOString()
-//         }])
-//         .select()
-//         .single();
-
-//     if(error) {
-//         throw new Error(error.message);
-//     }
-
-//     return invoiceData as InvoiceModel;
-// }
-
 export async function serviceCreateInvoice(data: Partial<InvoiceModel>): Promise<InvoiceModel> {
-    const { data: invoiceData, error } = await supabase
-        .from('invoice')
-        .insert([{
-            invoice_number: data.invoice_number || '',
-            customer_id: data.customer_id || '',
-            customer_name: data.customer_name || '',
-            status: data.status || 'DRAFT',
-            issue_date: data.issue_date || new Date().toISOString(),
-            due_date: data.due_date || new Date().toISOString(),
-            subtotal: data.subtotal || 0,
-            tax_total: data.tax_total || 0,
-            payment_due_reminder: data.payment_due_reminder,
-            payment_due_reminder_sent_at: data.payment_dueReminder_sentAt, // ← השתמש בשם מה-Model
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        }])
-        .select()
-        .single();
+  const { data: invoiceData, error } = await supabase
+    .from('invoice')
+    .insert([{
+      invoice_number: data.invoice_number || '',
+      customer_id: data.customer_id || '',
+      customer_name: data.customer_name || '',
+      status: data.status || 'DRAFT',
+      issue_date: data.issue_date || new Date().toISOString(),
+      due_date: data.due_date || new Date().toISOString(),
+      subtotal: data.subtotal || 0,
+      tax_total: data.tax_total || 0,
+      payment_due_reminder: data.payment_due_reminder,
+      payment_due_reminder_sent_at: data.payment_dueReminder_sentAt, // ← השתמש בשם מה-Model
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }])
+    .select()
+    .single();
 
-    if (error) {
-        throw new Error(error.message);
-    }
+  if (error) {
+    throw new Error(error.message);
+  }
 
-    return invoiceData as InvoiceModel;
+  return invoiceData as InvoiceModel;
 }
 
 // קבלת כל החשבוניות
+
 export async function serviceGetAllInvoices(): Promise<InvoiceModel[]> {
-    const { data: invoices, error } = await supabase.from('invoice').select('*');
-    if (error)
-        throw new Error(error.message);
-    const invoicesArray = invoices as InvoiceModel[];
-    return invoicesArray;
-    // return getAllInvoices();
+  const { data: invoices, error } = await supabase.from('invoice').select('*');
+  if (error)
+    throw new Error(error.message);
+  const invoicesArray = invoices as InvoiceModel[];
+  return invoicesArray;
 }
+
 
 export async function serviceGetAllInvoiceItems(invoice_id: UUID): Promise<InvoiceItemModel[]> {
-    console.log('serviceGetAllInvoiceItems');
-    const { data: invoices, error } = await supabase.from('invoice_item').select('*').eq('invoice_id', invoice_id);
-    console.log("invoices ++++", invoices);
-    
-    if (error)
-        throw new Error(error.message+"jjjjj");
-    const invoicesArray = invoices as InvoiceItemModel[];
-    console.log("vvvv");
-    return invoicesArray;
+  const { data: invoices, error } = await supabase.from('invoice_item').select('*').eq('invoice_id', invoice_id);
+  if (error)
+    throw new Error(error.message);
+  const invoicesArray = invoices as InvoiceItemModel[];
+  return invoicesArray;
 
 }
 
-// קבלת כל החשבוניות עם JOIN
-// export async function serviceGetAllInvoices(): Promise<InvoiceModel[]> {
-//     console.log('🔍 בודק את מבנה הטבלאות...');
-//     console.log('=== SERVICE START ===');
-//     const { data, error } = await supabase
-//         .from('invoice')
-//         .select(`
-//             *,
-//             invoice_item (*)
-//         `)
-//         .order('created_at', { ascending: false });
 
-//     console.log('=== DATA ===', data);
-//     console.log('=== ERROR ===', error);
+export async function serviceGetInvoiceById(id: string) {
+  const { data: invoiceData, error } = await supabase
+    .from('invoice')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (error || !invoiceData) throw new Error('חשבונית לא נמצאה');
 
-//     if (error) {
-//         console.error('❌ שגיאה בשליפת חשבוניות:', error);
-//         throw new Error(error.message);
-//     }
+  const { data: items, error: itemsError } = await supabase
+    .from('invoice_item')
+    .select('*')
+    .eq('invoice_id', id);
 
-//     if (!data || data.length === 0) {
-//         console.log('📭 לא נמצאו חשבוניות');
-//         return [];
-//     }
+  if (itemsError) throw new Error('שגיאה בשליפת פרטי חיוב');
 
-//     // המרה לפורמט הנכון
-//     const invoicesWithItems = data.map(invoice => {
-//         console.log('🔄 מעבד חשבונית:', invoice.invoice_number);
-//         console.log('📋 פריטים גולמיים:', invoice.invoice_item);
-
-//         return {
-//             ...invoice,
-//             items: Array.isArray(invoice.invoice_item) ? invoice.invoice_item : []
-//         };
-//     }) as InvoiceModel[];
-
-//     console.log('=== FINAL RESULT ===');
-//     console.log('📊 מספר חשבוניות:', invoicesWithItems.length);
-//     if (invoicesWithItems.length > 0) {
-//         console.log('🧾 חשבונית ראשונה:', JSON.stringify(invoicesWithItems[0], null, 2));
-//     }
-
-//     return invoicesWithItems;
-// }
-
-export async function serviceGetInvoiceById(id: ID): Promise<InvoiceModel | null> {
-    const { data: invoice, error } = await supabase
-        .from('invoice')
-        .select(`
-            *,
-            invoice_item (*)
-        `)
-        .eq('id', id)
-        .single();
-
-    if (error) {
-        if (error.code === 'PGRST116') { // No rows found
-            return null;
-        }
-        throw new Error(error.message);
-    }
-
-    // המרה לפורמט הרצוי
-    const invoiceWithItems = {
-        ...invoice,
-        items: invoice.invoice_item || []
-    } as InvoiceModel;
-
-    return invoiceWithItems;
+  return {
+    ...invoiceData,
+    items
+  };
 }
-
-
-
-
-// קבלת חשבונית לפי מזהה
-// export async function serviceGetInvoiceById(id: ID): Promise<InvoiceModel | null> {
-//     const { data: invoice, error } = await supabase.from('invoice').select('*').eq('id', id).single();
-
-//     if (error) {
-//         // בעיה: אם לא נמצא רשומה, זה לא שגיאה - צריך להחזיר null
-//         if (error.code === 'PGRST116') { // No rows found
-//             return null;
-//         }
-//         throw new Error(error.message);
-//     }
-
-//     return invoice as InvoiceModel;
-// }
-
 
 // עדכון חשבונית
-export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceModel>): Promise<InvoiceModel | null> {
-    const dataToUpdate: any = {
-        updated_at: new Date().toISOString()
-    };
-    if (updateData.invoice_number !== undefined) dataToUpdate.invoice_number = updateData.invoice_number;
-    if (updateData.customer_id !== undefined) dataToUpdate.customer_id = updateData.customer_id;
-    if (updateData.customer_name !== undefined) dataToUpdate.customer_name = updateData.customer_name;
-    if (updateData.status !== undefined) dataToUpdate.status = updateData.status;
-    if (updateData.issue_date !== undefined) dataToUpdate.issue_date = updateData.issue_date;
-    if (updateData.due_date !== undefined) dataToUpdate.due_date = updateData.due_date;
-    if (updateData.subtotal !== undefined) dataToUpdate.subtotal = updateData.subtotal;
-    if (updateData.tax_total !== undefined) dataToUpdate.tax_total = updateData.tax_total;
-    if (updateData.payment_due_reminder !== undefined) dataToUpdate.payment_due_reminder = updateData.payment_due_reminder;
-    if (updateData.payment_dueReminder_sentAt !== undefined) dataToUpdate.payment_due_reminder_sent_at = updateData.payment_dueReminder_sentAt;
 
-    const { data: invoice, error } = await supabase
-        .from('invoice')
-        .update(dataToUpdate)
-        .eq('invoice_number', id) 
-        .select()
-        .single();
-
-    if (error) {
-        console.error('Supabase error:', error);
-        throw new Error(error.message);
+export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceModel & { items?: any[] }>): Promise<any> {
+  const dataToUpdate: any = {
+    updated_at: new Date().toISOString()
+  };
+  if (updateData.invoice_number !== undefined) dataToUpdate.invoice_number = updateData.invoice_number;
+  if (updateData.customer_id !== undefined) dataToUpdate.customer_id = updateData.customer_id;
+  if (updateData.customer_name !== undefined) dataToUpdate.customer_name = updateData.customer_name;
+  if (updateData.status !== undefined) dataToUpdate.status = updateData.status;
+  if (updateData.issue_date !== undefined) dataToUpdate.issue_date = updateData.issue_date;
+  if (updateData.due_date !== undefined) dataToUpdate.due_date = updateData.due_date;
+  if (updateData.subtotal !== undefined) dataToUpdate.subtotal = updateData.subtotal;
+  if (updateData.tax_total !== undefined) dataToUpdate.tax_total = updateData.tax_total;
+  if (updateData.payment_due_reminder !== undefined) dataToUpdate.payment_due_reminder = updateData.payment_due_reminder;
+  if (updateData.payment_dueReminder_sentAt !== undefined) dataToUpdate.payment_due_reminder_sent_at = updateData.payment_dueReminder_sentAt;
+  const { data, error } = await supabase
+    .from('invoice')
+    .update(dataToUpdate)
+    .eq('id', id)
+    .select();
+  if (error) throw new Error(error.message);
+  if (!data || data.length === 0) return null;
+  if (updateData.items && Array.isArray(updateData.items)) {
+    for (const item of updateData.items) {
+      if (!item.id) continue;
+      const itemUpdate: any = {};
+      if (item.type !== undefined) itemUpdate.type = item.type;
+      if (item.description !== undefined) itemUpdate.description = item.description;
+      if (item.quantity !== undefined) itemUpdate.quantity = item.quantity;
+      if (item.unit_price !== undefined) itemUpdate.unit_price = item.unit_price;
+      if (Object.keys(itemUpdate).length > 0) {
+        const { error: itemError } = await supabase
+          .from('invoice_item')
+          .update(itemUpdate)
+          .eq('id', item.id);
+        if (itemError) {
+          throw new Error(`שגיאה בעדכון שורת חיוב ${item.id}: ${itemError.message}`);
+        }
+      }
     }
+  }
+  const { data: items, error: itemsError } = await supabase
+    .from('invoice_item')
+    .select('id, type, description, quantity, unit_price')
+    .eq('invoice_id', id);
 
-    return invoice as InvoiceModel;
+  if (itemsError) throw new Error(`שגיאה בשליפת פרטי חיוב: ${itemsError.message}`);
+
+  return {
+    ...data[0],
+    items
+  };
 }
-
-// export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceModel>): Promise<InvoiceModel | null> {
-//     const { data: invoice, error } = await supabase
-//         .from('invoice')
-//         .update({
-//             invoice_number: updateData.invoice_number,
-//             customer_id: updateData.customer_id,
-//             customer_name: updateData.customer_name,
-//             status: updateData.status,
-//             issue_date: updateData.issue_date,
-//             due_date: updateData.due_date,
-//             items: updateData.items,
-//             subtotal: updateData.subtotal,
-//             tax_total: updateData.tax_total,
-//             payment_due_reminder: updateData.payment_due_reminder,
-//             payment_dueReminder_sentAt: updateData.payment_dueReminder_sentAt,
-//             updated_at: new Date().toISOString() // ← תקן ל-updated_at
-//         })
-//         .eq('id', id)
-//         .select()
-//         .single();
-
-//     if(error) {
-//         throw new Error(error.message);
-//     }
-
-//     return invoice as InvoiceModel;
-// }
 
 
 // מחיקת חשבונית
 export async function serviceDeleteInvoice(id: ID): Promise<boolean> {
-    const { error } = await supabase.from('invoice').delete().eq('id', id);
-    if (error)
-        throw new Error(error.message);
-    return true;
+  const { error } = await supabase.from('invoice').delete().eq('id', id);
+  if (error)
+    throw new Error(error.message);
+  return true;
 
-    //return deleteInvoice(id);
 }
 
-/**
- * יוצרת חשבונית חדשה – ידנית או אוטומטית – בהתבסס על פרטי הבקשה שסופקו.
- *
- * @param request - נתוני החשבונית כולל לקוח, טווח חיוב, פריטים ושדות אופציונליים
- * @param options - פרמטרים נוספים (כגון האם החשבונית נוצרת אוטומטית)
- * @returns אובייקט חשבונית מוכן לאחסון או לעיבוד
- */
+// קבלת כל פרטי הגבייה
 
-// export const createInvoice = async (
-//   request: CreateInvoiceRequest,
-//   options: { auto?: boolean } = {}
-// ): Promise<Invoice> => {
-//   // שלב 1: הפקת מזהים ותאריכים
-//   const id = generateId(); // מזהה ייחודי לחשבונית
-//   const invoiceNumber = generateInvoiceNumber(); // מספר חשבונית רציף וייחודי
-//   const createdAt = new Date().toISOString(); // חותמת זמן יצירה
-//   const invoiceDate = createdAt;
+export async function serviceGetCustomersCollection() {
+  const { data, error } = await supabase
+    .from('customer')
+    .select(`
+    name,
+    email,
+    business_name,
+    customer_payment_method (
+      credit_card_holder_id_number,
+      credit_card_expiry,
+      credit_card_holder_phone,
+      credit_card_number
+    ),
+    invoice (
+      subtotal,
+      issue_date
+    )
+  `);
+  if (error) throw new Error(error.message);
+  return data;
+}
 
-//   // שלב 2: בדיקות תקינות על טווח חיוב ותאריך יעד
-//   if (new Date(request.billingPeriod.startDate) > new Date(request.billingPeriod.endDate)) {
-//     throw new Error("תאריך התחלה של טווח החיוב חייב להיות לפני תאריך הסיום");
-//   }
 
-//   if (new Date(request.dueDate) < new Date(invoiceDate)) {
-//     throw new Error("תאריך יעד לתשלום חייב להיות אחרי תאריך החשבונית");
-//   }
-
-//   // שלב 3: שליפת נתוני הלקוח
-//   const customerName = await getCustomerName(request.customerId);
-
-//   // שלב 4: עיבוד פריטים לחשבונית
-//   const items: InvoiceItem[] = request.items.map((item) => {
-//     if (item.quantity <= 0 || item.unitPrice < 0) {
-//       throw new Error("כמות ומחיר ליחידה חייבים להיות חיוביים");
-//     }
-
-//     const lineTotal = item.quantity * item.unitPrice;
-
-//     return {
-//       id: generateId(),
-//       type: item.type,
-//       description: item.description,
-//       quantity: item.quantity,
-//       unitPrice: item.unitPrice,
-//       lineTotal,
-//       period: item.period,
-//       workspaceId: item.workspaceId,
-//       orderId: item.orderId,
-//     };
-//   });
-
-//   // שלב 5: חישוב סכומים
-//   const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
-//   const taxRate = 0.17;
-//   const taxAmount = subtotal * taxRate;
-//   const total = subtotal + taxAmount;
-
-//   // שלב 6: בניית אובייקט החשבונית הסופי
-//   const invoice: Invoice = {
-//     id,
-//     invoiceNumber,
-//     customerId: request.customerId,
-//     customerName,
-//     invoiceDate,
-//     dueDate: request.dueDate,
-//     billingPeriod: request.billingPeriod,
-//     items,
-//     subtotal,
-//     taxAmount,
-//     taxRate,
-//     total,
-//     status: "טיוטה",
-//     paymentDate: request.paymentDate,
-//     paymentAmount: request.paymentAmount,
-//     notes: options.auto
-//       ? (request.notes || "נוצרה אוטומטית על ידי המערכת")
-//       : request.notes,
-//     templateId: request.templateId,
-//     documentFile: undefined,
-//     createdAt,
-//     updatedAt: createdAt,
-//   };
-
-//   // שלב 7: החזרת החשבונית המלאה
-//   return invoice;
-// };
-
-//  //יצירת חשבונית ידנית - רחל יכולה להזין את כל השדות בעצמה
-// export const createManualInvoice = (manualInvoice: Invoice): Invoice => {
-//   return manualInvoice;
-// };
-
-//  //התאמה אישית של תבנית החשבונית - נחמה יכולה לעדכן תבנית עיצובית
-// export const customizeInvoiceTemplate = (
-//   invoice: Invoice,
-//   customTemplateId: string
-// ): Invoice => {
-//   return {
-//     ...invoice,
-//    // templateId: customTemplateId,
-//   };
-// };
-
-// // יוצרת חשבונית מס תקינה לפי דרישות החוק.
-// export const createTaxInvoice = async (
-//   request: CreateInvoiceRequest,
-//   options?: { auto?: boolean }
-// ): Promise<Invoice> => {
-//   throw new Error("Not implemented yet");
-// };
-
-// //מפיקה מסמך פיננסי תקני (חשבונית מס, קבלה, תעודת זיכוי וכו') לפי דרישות החוק.
-// export const generateFinancialDocument = async (
-//   documentType: DocumentType,
-//   entityId: ID,
-//   variables: Record<string, any>
-// ): Promise<GeneratedDocument> => {
-//   throw new Error("Not implemented yet");
-// };
 //שליחת מייל
-   const emailService= new EmailTemplateService();
-
-export const sendStatusChangeEmails = async ( 
-    customerName: string, amount: number, invoiceNumber: string,
-    token: any,
-  ): Promise<void> => {
-    
-    const emailPromises: Promise<any>[] = [];
-    function encodeSubject(subject: string): string {
-      return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
-    }
-    // פונקציה לשליחת מייל ללקוח
-    const sendCustomerEmail = async () => {
-      try {
-        const template = await emailService.getTemplateByName(
-          "אישור תשלום",
-        );
-        if (!template) {
-          console.warn("Team email template not found");
-          return;
-        }
-        const renderedHtml = await emailService.renderTemplate(
-          template.bodyHtml,
-          {
-            "customerName": customerName,
-            "amount": amount.toString(),
-            "invoiceNumber": invoiceNumber,
-          },
-        );
-        const response = await sendEmail(
-          "me",
-          {
-            to: ["ettylax@gmail.com"],
-            subject: encodeSubject(template.subject),
-            body: renderedHtml,
-            isHtml: true,
-          },
-          token,
-        );
-        console.log(template.subject);
-        console.log("HTML before sending:\n", renderedHtml);
-        
-        console.log("Team email sent successfully:", response);
-      } catch (err) {
-        console.error("שגיאה בשליחת מייל לצוות:", err);
+const emailService = new EmailTemplateService();
+export const sendStatusChangeEmails = async (
+  customerName: string, amount: number, invoiceNumber: string,
+  token: any,
+): Promise<void> => {
+  const emailPromises: Promise<any>[] = [];
+  function encodeSubject(subject: string): string {
+    return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+  }
+  // פונקציה לשליחת מייל ללקוח
+  const sendCustomerEmail = async () => {
+    try {
+      const template = await emailService.getTemplateByName(
+        "אישור תשלום",
+      );
+      if (!template) {
+        console.warn("Team email template not found");
+        return;
       }
-    };
-    // פונקציה לשליחת מייל ללקוח
-    // const sendCustomerEmail = async () => {
-    //   const template = await this.emailService.getTemplateByName(
-    //     "שינוי סטטוס - לקוח",
-    //   );
-    //   if (!template) {
-    //     console.warn("Customer email template not found");
-    //     return;
-    //   }
-    //   const renderedHtml = await this.emailService.renderTemplate(
-    //     template.bodyHtml,
-    //     {
-    //       "שם": customer.name,
-    //       "סטטוס": status,
-    //       "תאריך": formattedDate,
-    //     },
-    //   );
-    //   console.log("HTML before sending:\n", renderedHtml);
-    //   console.log(
-    //     customer.name,
-    //     detailsForChangeStatus.newStatus,
-    //     detailsForChangeStatus.effectiveDate,
-    //   );
-    //   return sendEmail(
-    //     "me",
-    //     {
-    //       to: [customer.email],
-    //       subject: encodeSubject(template.subject),
-    //       body: renderedHtml,
-    //       isHtml: true,
-    //     },
-    //     token,
-    //   );
-    // };
-    //מוסיף למערך הפרומיסים רק אם זה הצליח
-    // if (shouldNotifyTeam) {
-    //   emailPromises.push(
-    //     sendTeamEmail().catch((err) => {
-    //       console.error("שגיאה בשליחת מייל לצוות", err);
-    //     }),
-    //   );
-    // }
-    // if (shouldNotifyCustomer) {
-    //   emailPromises.push(
-    //     sendCustomerEmail().catch((err) => {
-    //       console.error("שגיאה בשליחת מייל ללקוח", err);
-    //     }),
-    //   );
-    // }
-    //אם פרומיס אחד נכשל זה לא מפעיל את השליחה
-    emailPromises.push(
-      sendCustomerEmail().catch((err) => {
-        console.error("שגיאה בשליחת מייל ללקוח", err);
-      }),
-    );
-    await Promise.all(emailPromises);
+      const renderedHtml = await emailService.renderTemplate(
+        template.bodyHtml,
+        {
+          "customerName": customerName,
+          "amount": amount.toString(),
+          "invoiceNumber": invoiceNumber,
+        },
+      );
+      const response = await sendEmail(
+        "me",
+        {
+          to: ["ettylax@gmail.com"],
+          subject: encodeSubject(template.subject),
+          body: renderedHtml,
+          isHtml: true,
+        },
+        token,
+      );
+      console.log(template.subject);
+      console.log("HTML before sending:\n", renderedHtml);
+      console.log("Team email sent successfully:", response);
+    } catch (err) {
+      console.error("שגיאה בשליחת מייל לצוות:", err);
+    }
   };
-
-
-
-
-
+  //אם פרומיס אחד נכשל זה לא מפעיל את השליחה
+  emailPromises.push(
+    sendCustomerEmail().catch((err) => {
+      console.error("שגיאה בשליחת מייל ללקוח", err);
+    }),
+  );
+  await Promise.all(emailPromises);
+};
