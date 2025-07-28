@@ -43,6 +43,7 @@ export const menus: Menu[] = [
     title: 'חללים',
     icon: <Map size={18} style={{ marginLeft: 8 }} />,
     items: [
+      {label: 'ניהול חדרים', path: '/rooms' },
       { label: 'מפה', path: '/workspaceMap' },
       { label: 'הקצאות', path: '/assignmentForm' },
       { label: 'ישיבות', path: '/bookingCalendar' },

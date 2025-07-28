@@ -30,6 +30,7 @@ import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSec
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
 import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
+import { RoomManager } from './MainMenu/Workspace/Components/RoomManager';
 export const Routing = () => {
     const [vendors, setVendors] = useState<Vendor[]>([]);
   return (
@@ -64,6 +65,7 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/rooms" element={<RoomManager />} />
         <Route path="/petty-cash" element={<PettyCashPage />} />
 
       </Route>

@@ -1,7 +1,5 @@
 // booking-types.d.ts
-
 import { ID, DateISO, ApiResponse, PaginatedResponse } from './core';
-
 // Room type enum
 export enum RoomType {
   MEETING_ROOM = 'MEETING_ROOM',
@@ -19,7 +17,6 @@ export enum RoomStatus {
   MAINTENANCE = 'MAINTENANCE',
   INACTIVE = 'INACTIVE'
 }
-
 // Booking status enum
 export enum BookingStatus {
   PENDING = 'PENDING',
@@ -34,7 +31,6 @@ export interface RoomFeature {
   IsIncluded: boolean;
   additionalCost: number;
 }
-
 // Room model
 export interface Room {
   id?: ID;
@@ -43,6 +39,7 @@ export interface Room {
   type: RoomType;
   status: RoomStatus;
   capacity: number;
+  features?:ID[],
   hourlyRate: number;
   discountedHourlyRate: number; // For 4+ hours
   googleCalendarId?: string;
@@ -62,15 +59,13 @@ export interface BookingRules {
   RequiredApproval: boolean;
   FreeHoursForKlikcaCard: number;
 }
-
-
 // Booking model
 export interface Booking {
   id?: ID;
   roomId: ID;
   roomName: string;
   customerId?: ID|null;
-  customerName?: string|null;
+  customerName?: string |null;
   externalUserName?: string|null;
   externalUserEmail?: string|null;
   externalUserPhone?: string|null;
@@ -88,7 +83,6 @@ export interface Booking {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
-
 // Create room request
 export interface CreateRoomRequest {
   name: string;
@@ -99,7 +93,6 @@ export interface CreateRoomRequest {
   discountedHourlyRate: number;
   googleCalendarId?: string;
 }
-
 // Update room request
 export interface UpdateRoomRequest {
   name?: string;
@@ -110,7 +103,6 @@ export interface UpdateRoomRequest {
   discountedHourlyRate?: number;
   googleCalendarId?: string;
 }
-
 // Get rooms request
 export interface GetRoomsRequest {
   type?: RoomType[];
@@ -118,7 +110,6 @@ export interface GetRoomsRequest {
   page?: number;
   limit?: number;
 }
-
 // Create booking request
 export interface CreateBookingRequest {
   roomId: ID;
@@ -130,14 +121,12 @@ export interface CreateBookingRequest {
   endTime: DateISO;
   notes?: string;
 }
-
 // Update booking request
 export interface UpdateBookingRequest {
   startTime?: DateISO;
   endTime?: DateISO;
   notes?: string;
 }
-
 // Get bookings request
 export interface GetBookingsRequest {
   roomId?: ID;
@@ -148,42 +137,35 @@ export interface GetBookingsRequest {
   page?: number;
   limit?: number;
 }
-
 // Approve booking request
 export interface ApproveBookingRequest {
   notes?: string;
 }
-
 // Reject booking request
 export interface RejectBookingRequest {
   reason: string;
 }
-
 // Cancel booking request
 export interface CancelBookingRequest {
   reason: string;
 }
-
 // Check room availability request
 export interface CheckRoomAvailabilityRequest {
   roomId: ID;
   startTime: DateISO;
   endTime: DateISO;
 }
-
 // Check room availability response
 export interface CheckRoomAvailabilityResponse {
   isAvailable: boolean;
   conflictingBookings?: Booking[];
 }
-
 // Sync bookings with Google request
 export interface SyncBookingsWithGoogleRequest {
   roomId?: ID;
   startDate?: DateISO;
   endDate?: DateISO;
 }
-
 // Sync bookings with Google response
 export interface SyncBookingsWithGoogleResponse {
   addedBookings: number;

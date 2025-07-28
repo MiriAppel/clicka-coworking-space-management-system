@@ -1,89 +1,60 @@
-import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from 'shared-types/booking';
-import { ID, DateISO } from 'shared-types/core';
+import { RoomFeature, RoomType, RoomStatus, Room } from "shared-types/booking";
+import { ID, DateISO } from "shared-types/core";
 
-export class RoomModel implements Room{
+export class RoomModel implements Room {
   id?: ID;
   name: string;
   description?: string;
   type: RoomType;
   status: RoomStatus;
   capacity: number;
-  features?: RoomFeature[];
+  features: ID[];
   hourlyRate: number;
   discountedHourlyRate: number;
   googleCalendarId?: string;
-  // location: string;
-  equipment?: string[];
+  location: string;
+  equipment: string[];
   positionX: number;
   positionY: number;
   width: number;
   height: number;
-  // BookingRules fields INLINED:
   MinimumBookingMinutes: number;
   MaximumBookingMinutes: number;
   RequiredApproval: boolean;
   FreeHoursForKlikcaCard: number;
-
   nextMaintenanceDate?: DateISO;
-  workspaceMapId: string; // Assuming this is a reference to a WorkspaceMap
+  workspaceMapId: string;
   createdAt: DateISO;
   updatedAt: DateISO;
 
-   constructor(params: {
-     id?: ID;
-     name: string;
-     description?: string;
-     type: RoomType;
-     status: RoomStatus;
-     capacity: number;
-     features: RoomFeature[];
-     hourlyRate: number;
-     discountedHourlyRate: number;
-     googleCalendarId?: string;
-     location: string;
-     equipment: string[];
+  constructor(params: any) {
+    this.id = params.id ?? crypto.randomUUID();
+    this.name = params.name ?? '';
+    this.description = params.description ?? params.description_text ?? '';
+    this.type = params.type ?? params.room_type;
+    this.status = params.status ?? params.room_status;
+    this.capacity = params.capacity ?? params.room_capacity ?? 1;
+    this.features = params.features ?? [];
+    this.hourlyRate = params.hourlyRate ?? params.hourly_rate ?? 0;
+    this.discountedHourlyRate = params.discountedHourlyRate ?? params.discounted_hourly_rate ?? 0;
+    this.googleCalendarId = params.googleCalendarId ?? params.google_calendar_id;
+    this.location = params.location ?? '';
+    this.equipment = params.equipment ?? [];
+    this.MinimumBookingMinutes = params.MinimumBookingMinutes ?? params.minimum_booking_minutes ?? 30;
+    this.MaximumBookingMinutes = params.MaximumBookingMinutes ?? params.maximum_booking_minutes ?? 120;
+    this.RequiredApproval = params.RequiredApproval ?? params.required_approval ?? false;
+    this.FreeHoursForKlikcaCard = params.FreeHoursForKlikcaCard ?? params.free_hours_for_klikca_card ?? 0;
+    this.nextMaintenanceDate = params.nextMaintenanceDate ?? params.next_maintenance_date;
+    this.workspaceMapId = params.workspaceMapId ?? params.workspace_map_id;
+    this.positionX = params.positionX ?? params.position_x ?? 0;
+    this.positionY = params.positionY ?? params.position_y ?? 0;
+    this.width = params.width ?? 1;
+    this.height = params.height ?? 1;
+    this.createdAt = params.createdAt ?? params.createdat ?? new Date().toISOString();
+    this.updatedAt = params.updatedAt ?? params.updatedat ?? new Date().toISOString();
+  }
 
-     // BookingRules fields:
-     MinimumBookingMinutes: number;
-     MaximumBookingMinutes: number;
-     RequiredApproval: boolean;
-     FreeHoursForKlikcaCard: number;
-  positionX: number;
-  positionY: number;
-  // ממדי סביבת העבודה
-  width: number;
-  height: number;
-     nextMaintenanceDate?: DateISO;
-     workspaceMapId: ID; // Reference to a WorkspaceMap
-     createdAt?: DateISO;
-     updatedAt?: DateISO;
-   }) {
-    this.id = params.id ?? crypto.randomUUID(); // Generate a unique ID if not provided
-    this.name = params.name;  
-    this.description = params.description;
-    this.type = params.type;
-    this.status = params.status;
-    this.capacity = params.capacity;
-    this.features = params.features;
-    this.hourlyRate = params.hourlyRate;  
-    this.discountedHourlyRate = params.discountedHourlyRate;
-    this.googleCalendarId = params.googleCalendarId;
-    // this.location = params.location;
-    this.equipment = params.equipment;
-    this.MinimumBookingMinutes = params.MinimumBookingMinutes;
-    this.MaximumBookingMinutes = params.MaximumBookingMinutes;
-    this.RequiredApproval = params.RequiredApproval;
-    this.FreeHoursForKlikcaCard = params.FreeHoursForKlikcaCard;
-    this.nextMaintenanceDate = params.nextMaintenanceDate;
-    this.workspaceMapId = params.workspaceMapId; // Reference to a WorkspaceMap
-    this.positionX = params.positionX;
-    this.positionY = params.positionY;
-    this.width = params.width;
-    this.height = params.height;
-    this.createdAt = params.createdAt ?? new Date().toISOString(); 
-    this.updatedAt = params.updatedAt ?? new Date().toISOString(); 
-   }
-toDatabaseFormat() {
+  toDatabaseFormat() {
     return {
       id: this.id,
       name: this.name,
@@ -95,48 +66,28 @@ toDatabaseFormat() {
       hourly_rate: this.hourlyRate,
       discounted_hourly_rate: this.discountedHourlyRate,
       google_calendar_id: this.googleCalendarId,
-      // location: this.location,
+      location: this.location,
       equipment: this.equipment,
-
-      // BookingRules fields:
       minimum_booking_minutes: this.MinimumBookingMinutes,
       maximum_booking_minutes: this.MaximumBookingMinutes,
       required_approval: this.RequiredApproval,
       free_hours_for_klikca_card: this.FreeHoursForKlikcaCard,
-
       next_maintenance_date: this.nextMaintenanceDate,
-      workspace_map_id:this.workspaceMapId, // Reference to a WorkspaceMap
-       createdat: this.createdAt,
-       updatedat: this.updatedAt
+      workspace_map_id: this.workspaceMapId,
+      createdat: this.createdAt,
+      updatedat: this.updatedAt,
+      position_x: this.positionX,
+      position_y: this.positionY,
+      width: this.width,
+      height: this.height,
     };
   }
-       static fromDatabaseFormat(dbData: any): RoomModel {
-        return new RoomModel({
-            id: dbData.id,
-            name: dbData.name,
-            description: dbData.description,
-            type: dbData.type,
-            status: dbData.status,
-            capacity: dbData.capacity,
-            features: dbData.features,
-            hourlyRate: dbData.hourly_rate,
-            discountedHourlyRate: dbData.discounted_hourly_rate,
-            googleCalendarId: dbData.google_calendar_id,
-            location: dbData.location,
-            equipment: dbData.equipment,
-            MinimumBookingMinutes: dbData.minimum_booking_minutes,
-            MaximumBookingMinutes: dbData.maximum_booking_minutes,
-            RequiredApproval: dbData.required_approval,
-            FreeHoursForKlikcaCard: dbData.free_hours_for_klikca_card,
-            nextMaintenanceDate: dbData.next_maintenance_date,
-            positionX: dbData.position_x,
-            positionY: dbData.position_y,
-            width: dbData.width,
-            height: dbData.height,
-            workspaceMapId: dbData.workspace_map_id, // Reference to a WorkspaceMap
-        });
-    }
-    static fromDatabaseFormatArray(dbDataArray: any[] ): RoomModel[] {
-        return dbDataArray.map(dbData => RoomModel.fromDatabaseFormat(dbData));
-    }
+
+  static fromDatabaseFormat(dbData: any): RoomModel {
+    return new RoomModel(dbData);
+  }
+
+  static fromDatabaseFormatArray(dbDataArray: any[]): RoomModel[] {
+    return dbDataArray.map((dbData) => RoomModel.fromDatabaseFormat(dbData));
+  }
 }

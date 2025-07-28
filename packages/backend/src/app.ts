@@ -13,7 +13,7 @@ import expenseRouter from './routes/expense.route';
 import routerPayment from './routes/payment.route';
 
 import interactionRouter from './routes/leadInteraction.route';
-import routerAuth from './routes/auth';;
+import routerAuth from './routes/auth';
 import cookieParser from 'cookie-parser';
 import bookRouter from './routes/booking.route';
 import workspaceRouter from './routes/workspace.route';
