@@ -30,7 +30,7 @@ export const UserTable = () => {
   };
 
   const handleDelete = async (user: User) => {
-    if (window.confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
+    if (window.confirm(`${user.firstName} ${user.lastName}האם אתה בטוח שברצונך למחוק את המשתמש?`)) {
       try {
         await removeUser(user.id as string);
         showAlert("", "המשתמש נמחק בהצלחה", "success");
@@ -52,17 +52,17 @@ export const UserTable = () => {
   };
 
   const handleUserUpdated = () => {
-    getAllUsers(); // רענון הרשימה
+    getAllUsers(); 
     handleCloseModals();
   };
 
   const userColumns: TableColumn<User>[] = [
-    { header: "First Name", accessor: "firstName" },
-    { header: "Last Name", accessor: "lastName" },
-    { header: "Email", accessor: "email" },
-    { header: "Role", accessor: "role" },
+    { header: "שם פרטי", accessor: "firstName" },
+    { header: "שם משפחה", accessor: "lastName" },
+    { header: "אמייל", accessor: "email" },
+    { header: "תפקיד", accessor: "role" },
     {
-      header: "Active",
+      header: "פעילות",
       accessor: "active",
       render: (value: boolean) => (
         <span className={`px-3 py-1 rounded-full text-xs font-medium ${value
@@ -93,7 +93,7 @@ export const UserTable = () => {
     );
   }
 
-  // אם מציגים טופס הוספה או עדכון
+  // If you are displaying an add or update form
   if (showAddUser) {
     return (
       <AddUser
@@ -117,23 +117,23 @@ export const UserTable = () => {
     <div className="p-6">
       {/* כותרת וכפתור הוספה */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Users Management</h2>
+        <h2 className="text-2xl font-bold">ניהול משתמשים</h2>
         <Button
           variant="primary"
           onClick={handleAddUser}
           className="flex items-center gap-2"
         >
           <span>+</span>
-          Add New User
+          הוספת משתמש
         </Button>
       </div>
 
       {/* סטטיסטיקות */}
       <div className="mb-4 p-4 bg-gray-50 rounded-lg">
         <div className="text-sm text-gray-600">
-          Total Users: <span className="font-semibold">{users.length}</span>
+          סה"כ משתמשים: <span className="font-semibold">{users.length}</span>
           {" | "}
-          Active Users: <span className="font-semibold">
+          משתמשים פעילים: <span className="font-semibold">
             {users.filter(user => user.active).length}
           </span>
         </div>

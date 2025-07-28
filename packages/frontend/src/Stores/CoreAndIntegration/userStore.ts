@@ -24,7 +24,6 @@ export const useUserStore = create<UserState>((set, get) => ({
   loading: false,
   error: null,
 
-  // פונקציה זו מחזירה את כל המשתמשים מהשרת
   getAllUsers: async () => {
     set({ loading: true, error: null });
     try {
@@ -40,7 +39,6 @@ export const useUserStore = create<UserState>((set, get) => ({
     }
   },
 
-  // פונקציה זו מחזירה את המשתמש לפי ה-ID שלו
   getUserById: async (id: string | undefined): Promise<User | null> => {
     if (!id) {
       set({ error: 'User ID is required' });
@@ -62,14 +60,13 @@ export const useUserStore = create<UserState>((set, get) => ({
     }
   },
 
-  // פונקציה זו יוצרת משתמש חדש
   createUser: async (user: User): Promise<User | null> => {
     set({ loading: true, error: null });
     try {
       const response = await axiosInstance.post('/users/createUser', user);
       const newUser = response.data;
       
-      // עדכון רשימת המשתמשים
+      //update the users list
       set(state => ({ 
         users: [...state.users, newUser],
         loading: false 

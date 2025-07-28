@@ -13,13 +13,12 @@ export const globalAuditMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  // רק עבור פעולות שמשנות נתונים
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
 
     const originalSend = res.send;
 
     res.send = function (data) {
-      // בדיקה שהבקשה הצליחה
+      // checks that the request was successful.
       if (res.statusCode >= 200 && res.statusCode < 300) {
         setImmediate(() => {
           logAuditAsync(req, res, data);
@@ -29,15 +28,13 @@ export const globalAuditMiddleware = async (
       return originalSend.call(this, data);
     };
   }
-
   next();
 };
 
 async function logAuditAsync(req: AuthenticatedRequest, res: Response, responseData: any) {
   try {
     const auditService = new AuditLogService();
-
-    // זיהוי הפונקציה מה-URL
+    // Identifying the function from the URL
     const functionName = extractFunctionFromUrl(req.baseUrl, req.method);
 
     let targetInfo = "";
@@ -61,7 +58,6 @@ async function logAuditAsync(req: AuthenticatedRequest, res: Response, responseD
       }
     }
 
-    // שימוש בפונקציה של AuditLogService
     await auditService.createAuditLog(req, {
       timestamp: new Date().toISOString(),
       action: req.method as 'POST' | 'PUT' | 'DELETE' | 'PATCH',
@@ -77,7 +73,7 @@ async function logAuditAsync(req: AuthenticatedRequest, res: Response, responseD
 }
 
 function extractFunctionFromUrl(path: string, method: string): string {
-  // דוגמאות:
+  // Examples
   // POST /api/users -> createUser
   // PUT /api/users/123 -> updateUser
   console.log(path);
