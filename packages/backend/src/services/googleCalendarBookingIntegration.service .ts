@@ -23,40 +23,42 @@ const supabaseAnonKey = process.env.SUPABASE_KEY || ''; // החלף עם ה-Anon
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 //נחמי קוזיץ getAll עבור event שליפת כל האירועים והמרת לאובייקט  
 export const getGoogleCalendarEvents = async (calendarId: string, token: string): Promise<Event[] | null> => {
-    //שליפת כל האירועים לפי לוח
     const events = await getEvents(calendarId, token);
 
-
-    // המרת האירועים לאובייקטים מסוג GoogleCalendarEvent
     const newEvents: Event[] = await Promise.all(events.map(async event => {
         console.log("event in the getGoogleCalendarEvents\n", event);
-        console.log(event.id, "event.id in the getGoogleCalendarEvents\n", event.id);
+        console.log(event.id, "event.id in the getGoogleCalendarEvents\n");
 
-        const booking = await BookingService.getBookingByEventId(event.id!);
-        console.log(booking, "booking in the getGoogleCalendarEvents\n");
+        let booking = null;
+        try {
+            booking = await BookingService.getBookingByEventId(event.id!);
+        } catch (error) {
+            console.error('Error fetching booking:', error);
+        }
 
-        console.log(booking?.status, "booking?.status in the getGoogleCalendarEvents\n", booking?.status);
+        if (!booking) {
+            console.warn(`⚠️ No booking found for event ID ${event.id}, skipping or applying defaults.`);
+        }
 
         return {
-            id: event.id || '',  // או זרוק שגיאה אם id לא קיים
+            id: event.id || '',
             calendarId: calendarId,
             summary: event.summary || '',
             description: event.description || '',
             location: event.location || '',
             start: {
-                dateTime: event.start?.dateTime || '',
-                timeZone: event.start?.timeZone || '',
+                dateTime: event.start?.dateTime || event.start?.date || '',
+                timeZone: event.start?.timeZone || 'Asia/Jerusalem',
             },
             end: {
-                dateTime: event.end?.dateTime || '',
-                timeZone: event.end?.timeZone || '',
+                dateTime: event.end?.dateTime || event.end?.date || '',
+                timeZone: event.end?.timeZone || 'Asia/Jerusalem',
             },
-            attendees: event.attendees ? event.attendees.map(attendee => ({
+            attendees: event.attendees?.map(attendee => ({
                 email: attendee.email || '',
                 displayName: attendee.displayName || '',
-
-            })) : [],
-            status: booking!.status,
+            })) || [],
+            status: booking?.status ?? BookingStatus.CONFIRMED, // הגנה מפני קריסה
             created: event.created || '',
             updated: event.updated || '',
             htmlLink: event.htmlLink || '',
@@ -65,6 +67,7 @@ export const getGoogleCalendarEvents = async (calendarId: string, token: string)
 
     return newEvents;
 }
+
 //יצירת אובייקט סינכרון כרגע לא רלוונטי
 export const createCalendarSync = async (sync: CalendarSyncModel): Promise<CalendarSyncModel | null> => {
     const { data, error } = await supabase
