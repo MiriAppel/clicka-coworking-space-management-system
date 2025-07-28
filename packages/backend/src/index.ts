@@ -26,7 +26,7 @@ app.listen(PORT, () => {
 });
 
 
-// תריץ כל שבוע (יום ראשון ב-03:00)
-cron.schedule('0 3 * * 0', async () => {
-  await renewGoogleWebhook();
-});
+// '0 3 * * 0'תריץ כל שבוע (יום ראשון ב-03:00)
+// cron.schedule('* * * * *', async () => {
+//   await renewGoogleWebhook();
+// });

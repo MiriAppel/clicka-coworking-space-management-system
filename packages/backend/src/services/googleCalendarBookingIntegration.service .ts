@@ -312,8 +312,8 @@ async function getRecentEvents(calendarId: string, token: string) {
 export async function processCalendarWebhook(headers: any): Promise<void> {
     const channelId = headers['x-goog-channel-id'];
 
-    const calendarId = process.env.CALENDAR_ID;
-    const token = process.env.GOOGLE_API_TOKEN;
+    const calendarId = process.env.SYSTEM_EMAIL;
+    const token = await userTokenService.getSystemAccessToken();
 
     // שלב 2 – משיכת אירועים מגוגל
     const events = await getGoogleCalendarEvents(calendarId!, token!);
