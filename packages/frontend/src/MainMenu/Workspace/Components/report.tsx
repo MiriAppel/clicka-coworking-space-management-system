@@ -135,7 +135,8 @@ useEffect(() => {
   if (report && report.length > 0) {
     prepareChartData();
   }
-},[report, occupancyRate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+},[]);
 
   //const watchedValues = useWatch({ control: methods.control });
  

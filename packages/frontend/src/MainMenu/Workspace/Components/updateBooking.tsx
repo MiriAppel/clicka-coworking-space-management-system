@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
 import { useBookingStore } from "../../../Stores/Workspace/bookingStore";
 import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
+import { useRoomStore } from "../../../Stores/Workspace/roomStore";
 type BookingUpdateData = z.infer<typeof bookingUpdateSchema>;
 // פונקציה לבדיקת רבעי שעות
 const isQuarter = (time: string) => {
@@ -59,21 +60,24 @@ export const UpdateBooking = () => {
   const [customerStatus, setCustomerStatus] = useState<'external' | 'customer'>(
     booking?.customerId ? 'customer' : 'external');
   const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
-  const { updateBooking, getAllRooms } = useBookingStore();
+  const { updateBooking } = useBookingStore();
+  const {rooms,getAllRooms}  = useRoomStore()
   const customers = useCustomerStore((s) => s.customers);
   const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
   // טעינת נתונים ראשונית
   useEffect(() => {
     fetchCustomers();
-    getAllRooms().then((rooms: any[]) => {
-      setRoomOptions(
-        rooms.map((room) => ({
-          label: room.name,
-          value: room.id,
-        }))
-      );
-    });
-  }, []);
+    getAllRooms()
+      setRoomOptions(rooms.map((r)=>(
+        {
+          label:r.name,
+          value:r.name
+        }
+  
+      )))
+      },[fetchCustomers,getAllRooms,setRoomOptions,rooms]);
+  
+
 // useEffect(() => {
 //     if (booking  && roomOptions.length > 0) {
 //       setFormKey(prev => prev + 1); // 🎯 זה יאלץ רה-רנדר מלא
