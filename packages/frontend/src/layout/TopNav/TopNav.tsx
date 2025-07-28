@@ -8,6 +8,7 @@ import { T } from '../../Common/Service/T';
 import logo from '../Assets/Klika Logo.jpg'; 
 import { useAuthStore } from '../../Stores/CoreAndIntegration/useAuthStore';
 import { LogOut } from 'lucide-react';
+import { LogoutButton } from '../../MainMenu/CoreAndIntegration/Components/Login/LogoutButton';
 
 
 const TopNav = () => {
@@ -123,21 +124,8 @@ const TopNav = () => {
               {user.firstName} {user.lastName}
             </span>
           </div>
+<LogoutButton></LogoutButton>
 
-          <button
-            onClick={handleLogout}
-            style={{
-              // backgroundColor: '#2f35e3ff',
-              // color: 'white',
-              border: 'none',
-              padding: '4px 4px',
-              borderRadius: 4,
-              cursor: 'pointer',
-              fontWeight: 'bold',
-            }}
-          >
-      <LogOut size={24} />
-          </button>
         </div>
       )}
     </nav>

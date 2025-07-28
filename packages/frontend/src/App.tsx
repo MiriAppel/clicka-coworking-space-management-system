@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Routes, Route } from 'react-router-dom';
-import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 import MainLayout from './layout/MainLayout';
 import { useAuthStore } from './Stores/CoreAndIntegration/useAuthStore';
@@ -10,9 +9,9 @@ import { VoiceCommand } from './VoiceAssistant';
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
 
 function App() {
-  const [healthStatus, setHealthStatus] = useState(null);
+  const [, setHealthStatus] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuthStore();
@@ -51,7 +50,7 @@ function App() {
     } else if (isAuthenticated && location.pathname === '/auth') {
       navigate('/', { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  },[isAuthenticated, navigate, location.pathname]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

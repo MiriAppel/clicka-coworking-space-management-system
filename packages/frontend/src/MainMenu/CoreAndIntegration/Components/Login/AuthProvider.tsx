@@ -3,7 +3,6 @@ import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore
 import axios from "axios";
 import { axiosInstance } from "../../../../Service/Axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import { useNavigate } from "react-router-dom";
 
 
 interface AuthProviderProps {
@@ -11,13 +10,12 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const navigate = useNavigate();
-  const { setUser, clearUser, setLoading, setSessionId, user, isLoading } = useAuthStore();
+  const { setUser, clearUser, setLoading, setSessionId, user } = useAuthStore();
   const verifyFunction = useCallback(async () => {
     try {
       setLoading(true);
       let res = await axiosInstance.get("/auth/verify");
-      if (res.status == 200) {
+      if (res.status === 200) {
         console.log("Authenticated successfully");
         const data = res.data;
         console.log("User data in authProvider:", data);
@@ -63,7 +61,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setUser, setLoading, clearUser, setSessionId]);
 
   useEffect(() => {
     const checkAuth = async () => {
