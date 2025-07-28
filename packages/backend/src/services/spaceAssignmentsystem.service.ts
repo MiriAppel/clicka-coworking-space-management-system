@@ -28,7 +28,7 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
         return createdspace;
 }
 //קבלת כל ההקצאות
-      async getAllSpaces() {
+ async getAllSpaces() {
     try {
       const { data, error } = await supabase
         .from('space_assignment') // שם הטבלה שלך ב-Supabase
@@ -39,11 +39,12 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
       }
  const createdspace = SpaceAssignmentModel.fromDatabaseFormatArray(data)
       return createdspace;
-    } catch (err) {
+    } 
+   catch (err) {
       console.error('Unexpected error:', err);
       return null;
     }
-  }
+
 //עדכון הקצאה
       async updateSpace(id: string, updatedData: SpaceAssignmentModel): Promise<SpaceAssignmentModel | null> {
         const { data, error } = await supabase

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-
-// import { CreateExpenseModal } from './expenseForm';
-
+import { CreateExpenseForm } from './expenseForm';
 
 export const ExpensesPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -12,9 +10,7 @@ export const ExpensesPage = () => {
         הוספת הוצאה
       </button>
 
-
-      {/* <CreateExpenseModal open={showModal} onClose={() => setShowModal(false)} /> */}
-
+      <CreateExpenseForm />
     </>
   );
 };
