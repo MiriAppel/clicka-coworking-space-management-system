@@ -34,7 +34,7 @@ export const menus: Menu[] = [
       { label: 'מתעניינים', path: '/leadAndCustomer/leads' },
       { label: 'לקוחות', path: '/leadAndCustomer/customers' },
       { label: 'חוזים', path: '/leadAndCustomer/contracts' },
-          { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
+      { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
       { label: 'היסטוריית לקוח', path: '/customerHistory' }
     ]
   },
@@ -45,9 +45,10 @@ export const menus: Menu[] = [
     items: [
       {label: 'ניהול חדרים', path: '/rooms' },
       { label: 'מפה', path: '/workspaceMap' },
-      { label: 'הקצאות', path: '/assignmentForm' },
+      { label: 'הקצאות', path: '/assignmentTable' },
       { label: 'ישיבות', path: '/bookingCalendar' },
-      { label: 'ניהול', path: '/managementWorkspace' }
+      { label: 'ניהול', path: '/managementWorkspace' },
+      { label: 'הזמנות', path: '/bookings' }
     ]
   },
   {
@@ -56,10 +57,10 @@ export const menus: Menu[] = [
     icon: <FileText size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'חשבוניות', path: '/billing/invoiceManagement' },
+      { label: 'גבייה', path: '/billing/collection' },
       { label: 'תשלומים', path: '/payments' },
       { label: 'הוצאות', path: '/expenses' },
-      { label: 'תמחור', path: '/pricing' } // הוספתי כאן
-
+      { label: 'תמחור', path: '/pricing' }
     ]
   },
   {

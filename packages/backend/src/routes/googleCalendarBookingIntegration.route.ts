@@ -8,6 +8,6 @@ routerSync.get('/get/:id', calendarSyncController.getCalendarSyncById.bind(calen
 routerSync.post('/add/:calendarId', calendarSyncController.createCalendarEvent.bind(calendarSyncController));
 // routerSync.patch('/update/:id', calendarSyncController.updateCalendarSync.bind(calendarSyncController))
 routerSync.delete('/delete/:id', calendarSyncController.deleteCalendarSyncByEventId.bind(calendarSyncController))
-
+routerSync.post("/webhook", calendarSyncController.handleGoogleCalendarWebhook.bind(calendarSyncController));
 
 export default routerSync

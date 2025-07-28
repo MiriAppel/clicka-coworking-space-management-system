@@ -200,6 +200,13 @@ h1 ::after{
   margin-right: 40px;
 }
 
+.room-space {
+    fill: #b0c4de !important; /* צבע כחול-אפור לדוגמה */
+    stroke: #333;
+    stroke-width: 2;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
 .mapContent {
 /* width: 100%;
@@ -402,17 +409,17 @@ h1 ::after{
 }
 
 /* סטטוסים לחדרים - זהה לחללים */
-.room-space.AVAILABLE,
+/* .room-space.AVAILABLE,
 .room-workstation.AVAILABLE {
     --space-fill: #d4edda;
     fill: #d4edda;
-}
+} */
 
-.room-space.OCCUPIED,
+/* .room-space.OCCUPIED,
 .room-workstation.OCCUPIED {
     --space-fill: #f8d7da;
     fill: #f8d7da;
-}
+} */
 
 .room-space.MAINTENANCE,
 .room-workstation.MAINTENANCE {
