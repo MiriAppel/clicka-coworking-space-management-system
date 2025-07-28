@@ -1,5 +1,5 @@
 // ייבוא React ורפרנס לתפיסת אלמנט מה-DOMAdd commentMore actions
-import React from 'react';
+import React, { useRef } from 'react';
 // ייבוא כפתור מעוצב מקומפוננטה פנימית
 import { Button } from './Button';
 // ייבוא ספרייה לצילום תוכן HTML לתמונה
@@ -8,6 +8,7 @@ import html2canvas from 'html2canvas'; // משמשת לצילום אזור DOM �
 import jsPDF from 'jspdf'; // מאפשרת יצירת PDF והוספת תוכן כ־Image
 // ייבוא כלים לעבודה עם קבצי Excel (xlsx)
 import { utils, writeFile } from 'xlsx'; // utils: המרת JSON ל־sheet, writeFile: שמירה לקובץ
+
 /**
  * טיפוס עבור פרופסים של הקומפוננטה
  * - title: שם הדוח (משמש כשם לקובץ)
@@ -19,6 +20,7 @@ interface ExportButtonsProps {
   exportData?: Record<string, any>[]; // מערך אובייקטים שמיועדים לייצוא כ־Excel
  refContent: React.RefObject<HTMLDivElement | null>; // רפרנס לתוכן שיומר לתמונה לצורך PDF
 }
+
 /**
  * קומפוננטת כפתורי ייצוא: מייצרת כפתורי ייצוא CSV + PDF
  */
@@ -35,6 +37,7 @@ export const ExportButtons = ({
     utils.book_append_sheet(workbook, worksheet, 'Report'); // מוסיף את הגיליון לחוברת
     writeFile(workbook, `${title}.xlsx`); // שומר את הקובץ בשם שמבוסס על כותרת הדוח
   };
+
   // פונקציה לייצוא PDF מתוך refContent
   const exportPDF = async () => {
     if (!refContent.current) return; // אם אין רפרנס תקף – יציאה
@@ -48,6 +51,7 @@ export const ExportButtons = ({
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height); // הוספת התמונה כעמוד PDF
     pdf.save(`${title}.pdf`); // שמירת הקובץ בשם שמבוסס על כותרת הדוח
   };
+
   // JSX – החזרת רכיבי UI
   return (
     <div className="flex gap-2"> {/* עיטוף כפתורים עם מרווח בין כפתורים */}
@@ -67,5 +71,4 @@ export const ExportButtons = ({
       </Button>
     </div>
   );
-
 };
