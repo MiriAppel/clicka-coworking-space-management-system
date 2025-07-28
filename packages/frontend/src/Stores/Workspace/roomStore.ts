@@ -1,6 +1,6 @@
 import {create} from "zustand";
 import axios from "axios";
-import {ID, Room} from "shared-types";
+import {Room} from "shared-types";
 interface RoomState {
   rooms: Room[];
   getAllRooms: () => Promise<void>;
