@@ -30,6 +30,7 @@ import { UserTokenService } from "./userTokenService";
 import { promises } from "node:dns";
 import { getDocumentById } from "./document.service";
 import { deleteFileFromDrive } from "./drive-service";
+import { ca } from "date-fns/locale";
 export class customerService extends baseService<CustomerModel> {
   constructor() {
     super("customer");
@@ -122,8 +123,8 @@ export class customerService extends baseService<CustomerModel> {
     console.log("in servise");
 
     console.log(customerData);
-
-    const customer = await this.post(customerData);
+    let customer = await this.post(customerData);
+    customer = CustomerModel.fromDatabaseFormat(customer);
 
     const newContract: ContractModel = {
       customerId: customer.id!,
@@ -168,10 +169,10 @@ export class customerService extends baseService<CustomerModel> {
 
     const contract = await serviceContract.post(newContract);
 
-    console.log("📄 New contract created in customer service:");
-    console.log("Contract ID:", contract.id);
-    console.log("Customer ID:", contract.customerId);
-    console.log("Contract terms:", contract.terms);
+    console.log("📄 New contract created in customer service:", contract);
+    // console.log("Contract ID:", contract.id);
+    // console.log("Customer ID:", contract.customerId);
+    // console.log("Contract terms:", contract.terms);
 
     //create customer payment method
     if (newCustomer.paymentMethodType == PaymentMethodType.CREDIT_CARD) {
@@ -207,7 +208,10 @@ export class customerService extends baseService<CustomerModel> {
       console.log(paymentMethod);
     }
 
-    return customerData;
+    console.log("📧 Customer created successfully:", customer);
+    
+
+    return customer;
   };
 
   updateCustomer = async (dataToUpdate: any, id: ID) => {

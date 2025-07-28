@@ -52,11 +52,12 @@ export const postCustomer = async (req: Request, res: Response) => {
   try {
     
     const newCustomer = req.body; 
-    await serviceCustomer.createCustomer(newCustomer)
+    const customer = await serviceCustomer.createCustomer(newCustomer);
+    res.status(200).json(customer);
   }
-  catch (error) {
+  catch (error: any) {
     console.error("Error posting customer:", error);
-    res.status(500).json({ message: "Failed to post customer" });
+    res.status(500).json({ message: error.details || "Error creating customer" });
   }
 }
 

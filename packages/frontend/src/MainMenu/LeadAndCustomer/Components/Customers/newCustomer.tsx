@@ -5,6 +5,7 @@ import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAler
 import { useNavigate } from "react-router-dom";
 import { CreateCustomerRequest, PaymentMethodType } from "shared-types";
 import { ShowAlertWarn } from "../../../../Common/Components/BaseComponents/showAlertWarn";
+import { Customer } from "shared-types/customer";
 
 export const NewCustomerPage: React.FC = () => {
     const navigate = useNavigate();
@@ -56,13 +57,14 @@ export const NewCustomerPage: React.FC = () => {
         console.log(customerRequest);
 
         try {
-            await createCustomer(customerRequest);
+            const customer:Customer | undefined = await createCustomer(customerRequest);
+console.log("new customer created in newCustomer:", customer);
 
-            // const { error } = useCustomerStore.getState();
-            // if (error) {
-            //     // ה-store כבר טיפל בשגיאה והציג alert
-            //     return;
-            // }
+            let latestError = useCustomerStore.getState().error;
+            if (latestError) {
+                showAlert("שגיאה ביצירת לקוח", latestError, "error");
+                return;
+            }
             showAlert("הלקוח נוסף בהצלחה", "להשלמת התהליך יש לאמת את הלקוח במייל", "success");
             //המתנה של 2 שניות כדי שיספיקו לראות את ההודעה לפני ההודעה הבאה
             await new Promise(resolve => setTimeout(resolve, 3000));
@@ -70,9 +72,9 @@ export const NewCustomerPage: React.FC = () => {
             if (confirmed) {
                 navigate('/assignmentForm', {
                     state: {
-                        customerId: data.id,
-                        customerName: data.name,
-                        workspaceType: data.currentWorkspaceType,
+                        customerId: customer!.id,
+                        customerName: customer!.name,
+                        workspaceType: customer!.currentWorkspaceType,
                     }
                 });
             }

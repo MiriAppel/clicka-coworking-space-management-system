@@ -20,7 +20,7 @@ interface CustomerStore {
     searchCustomersByText: (searchTerm: string) => Promise<void>;
     searchCustomersInPage: (searchTerm: string) => Promise<void>;
     fetchCustomerById: (id: string) => Promise<Customer | null>;
-    createCustomer: (customer: CreateCustomerRequest) => Promise<void>;
+    createCustomer: (customer: CreateCustomerRequest) => Promise<Customer | undefined>;
     updateCustomer: (id: string, customer: Partial<Customer>) => Promise<void>;
     deleteCustomer: (id: string) => Promise<void>;
     resetSelectedCustomer: () => void;
@@ -185,14 +185,10 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
                 console.log(errorMsg);
                 throw new Error(errorMsg);
             }
-            try {
-                await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות
+            const newCustomer: Customer = await response.json();
+            await useCustomerStore.getState().fetchCustomersByPage(); // עדכן את הלקוחות
+            return newCustomer; // מחזירים את הלקוח החדש
 
-            }
-            catch (error: any) {
-                console.error("Error fetching customers after creation:", error);
-                set({ error: "שגיאה בעדכון הלקוחות לאחר יצירת לקוח", loading: false });
-            }
         } catch (error: any) {
             // showAlert("שגיאה ביצירת לקוח", error, "error");
             set({ error: error.message || "שגיאה ביצירת לקוח", loading: false });

@@ -4,6 +4,7 @@ import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   CreateCustomerRequest,
+  Customer,
   Lead,
   LeadStatus,
   PaymentMethodType,
@@ -21,7 +22,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
   const onSubmit = async (data: any) => {
     console.log('📧 Form data requireEmailVerification:', data.requireEmailVerification);
-    
+
     const customerRequest: CreateCustomerRequest = {
       name: data.name,
       phone: data.phone,
@@ -54,7 +55,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
 
 
     try {
-      await createCustomer(customerRequest);
+      const customer: Customer | undefined = await createCustomer(customerRequest);
+      console.log("new customer created in interestedCustomerRegistration:", customer);
       let latestError = useCustomerStore.getState().error;
       if (latestError) {
         showAlert("שגיאה ביצירת לקוח", latestError, "error");
@@ -71,14 +73,14 @@ export const InterestedCustomerRegistration: React.FC = () => {
         );
 
       }
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const confirmed = await ShowAlertWarn(`האם ברוצנך לבחור חלל עכשיו?`, "תוכל לבחור חלל מאוחר יותר דרך הקצאות במפת החללים", "question");
       if (confirmed) {
         navigate('/assignmentForm', {
           state: {
-            customerId: data.id,
-            customerName: data.name,
-            workspaceType: data.currentWorkspaceType,
+            customerId: customer!.id,
+            customerName: customer!.name,
+            workspaceType: customer!.currentWorkspaceType,
           }
         });
       }

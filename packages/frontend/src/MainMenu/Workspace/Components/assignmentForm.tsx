@@ -34,10 +34,13 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = (props) => {
     customerName: customerNameFromState,
     workspaceType: workspaceTypeFromState,
   } = location.state || {};
+
+  console.log('📍 Location state:', location.state);
+  
   // :white_check_mark: שילוב בין props ובין location.state
-  const customerId = props.customerId || customerIdFromState;
-  const customerName = props.customerName || customerNameFromState;
-  const workspaceType = props.workspaceType || workspaceTypeFromState;
+  const customerId = customerIdFromState;
+  const customerName = customerNameFromState;
+  const workspaceType = workspaceTypeFromState;
   const workspaceId = props.workspaceId;
   const workspaceName = props.workspaceName;
   const assignedDate = props.assignedDate;

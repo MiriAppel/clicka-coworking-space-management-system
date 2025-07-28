@@ -1,6 +1,7 @@
 import type { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 import { sendEmailToConfrim } from "./gmail-service";
+import { ca } from "date-fns/locale";
 
 export class baseService<T> {
   // בשביל שם המחלקה
@@ -122,7 +123,14 @@ export class baseService<T> {
     const createdRecord = data?.[0];
 
     if (this.tableName === "customer") {
-      sendEmailToConfrim(emailToSave, createdRecord.id);
+      try{
+      await sendEmailToConfrim(emailToSave, createdRecord.id);
+console.log("📧 after send email Confirmation email sent to:", emailToSave);
+
+      }
+      catch (error) {
+        console.error("שגיאה בשליחת מייל אימות:", error);
+      }
     }
 
 
