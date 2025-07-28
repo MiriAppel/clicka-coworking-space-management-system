@@ -15,6 +15,7 @@ export const LogoutButton = () => {
     } catch (error) {
       console.error('Logout failed:', error);
     }
+    //vuelve a la pagina de login 
   };
 
   return <button onClick={handleLogout}>התנתק</button>;

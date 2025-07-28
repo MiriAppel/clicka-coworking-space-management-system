@@ -6,6 +6,9 @@ import { useMediaQuery } from 'react-responsive';
 import { menus } from '../menuData';
 import { T } from '../../Common/Service/T';
 import logo from '../Assets/Klika Logo.jpg'; 
+import { useAuthStore } from '../../Stores/CoreAndIntegration/useAuthStore';
+import { LogOut } from 'lucide-react';
+
 
 const TopNav = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -13,12 +16,17 @@ const TopNav = () => {
   const navRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [clickedMenuKey, setClickedMenuKey] = useState<string>('');
+  const { user, clearUser } = useAuthStore();
 
   const isMenuOpen = (menu: string) =>
     openMenu === menu || (hoveredMenu === menu && !openMenu);
 
   const toggleMenu = (menu: string) => {
     setOpenMenu(prev => (prev === menu ? null : menu));
+  };
+   const handleLogout = () => {
+    clearUser();
+    navigate('/auth');
   };
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -94,8 +102,47 @@ const TopNav = () => {
           ))}
         </ul>
       )}
+     {user && (
+        <div
+          style={{
+            marginLeft: 'auto',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            paddingRight: '16px',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <img
+              src="/user.png"
+              alt="avatar"
+              style={{ width: 25, height: 25, borderRadius: '10%', objectFit: 'cover' }}
+            />
+            <span style={{ fontSize: 14, color: '#000', marginTop: 4 }}>
+              {user.firstName} {user.lastName}
+            </span>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            style={{
+              // backgroundColor: '#2f35e3ff',
+              // color: 'white',
+              border: 'none',
+              padding: '4px 4px',
+              borderRadius: 4,
+              cursor: 'pointer',
+              fontWeight: 'bold',
+            }}
+          >
+      <LogOut size={24} />
+          </button>
+        </div>
+      )}
     </nav>
+
   );
+  
 };
 
 export default TopNav;

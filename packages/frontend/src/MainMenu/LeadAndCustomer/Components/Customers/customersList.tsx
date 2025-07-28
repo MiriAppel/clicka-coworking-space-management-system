@@ -65,7 +65,6 @@ export const CustomersList = () => {
   } = useCustomerStore();
 
 
-
   useEffect(() => {
     fetchCustomersByPage()
   }, [fetchCustomersByPage]);

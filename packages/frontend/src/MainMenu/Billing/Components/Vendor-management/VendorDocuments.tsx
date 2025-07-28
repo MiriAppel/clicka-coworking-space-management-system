@@ -52,7 +52,6 @@ export default function VendorDocuments({ vendorId }: VendorDocumentsProps) {
           updated_at:     d.updated_at,
           type:           d.type,
         }));
-
         setDocuments(data);
       } catch (error) {
         console.error('Error fetching documents:', error);
@@ -60,11 +59,12 @@ export default function VendorDocuments({ vendorId }: VendorDocumentsProps) {
         setTimeout(() => setMessage(null), 4000);
       }
     }
-
     fetchDocuments();
   }, [vendorId]);
 
+  // פונקציית העלאה של מסמך לשרת
   const uploadDocument = async () => {
+    // קבלת סוג המסמך מתוך הטופס
     const docType = methods.getValues('documentType');
     const file = fileInput.current?.files?.[0];
     if (!file) return;
@@ -107,8 +107,10 @@ export default function VendorDocuments({ vendorId }: VendorDocumentsProps) {
 
   return (
     <div className="max-w-3xl mx-auto p-4" dir="rtl">
+      {/* כותרת */}
       <h3 className="text-xl font-semibold mb-4">מסמכים</h3>
 
+      {/* טופס לבחירת סוג מסמך והעלאת קובץ */}
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(() => {})} className="mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
@@ -124,6 +126,7 @@ export default function VendorDocuments({ vendorId }: VendorDocumentsProps) {
               ]}
             />
 
+            {/* העלאת קובץ */}
             <input
               type="file"
               ref={fileInput}

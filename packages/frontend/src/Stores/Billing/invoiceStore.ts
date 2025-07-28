@@ -93,7 +93,6 @@ export const useInvoiceStore = create<InvoiceState>()(
             throw error;
           }
         },
-
         updateInvoice: async (invoiceId, updates) => {
           try {
             console.log('Store - Invoice Number:', invoiceId);

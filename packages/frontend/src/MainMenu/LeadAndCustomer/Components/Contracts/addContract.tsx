@@ -100,7 +100,6 @@ export const AddContract = () => {
         special_conditions: specialConditions,
       },
     };
-
     try {
       await handleCreateContract(payload);
       showAlert("הוספה", "החוזה נוסף בהצלחה", "success");

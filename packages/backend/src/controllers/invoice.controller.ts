@@ -49,7 +49,6 @@ export const getAllInvoices = async (_req: Request, res: Response) => {
     res.status(500).json({ message: (error as Error).message });
   }
 };
-
 export const getAllInvoiceItems = async (req: Request, res: Response) => {
   console.log('=== getAllInvoiceItems CALLED ===*****');
   console.log('Full URL:', req.url);

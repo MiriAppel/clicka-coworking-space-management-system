@@ -5,6 +5,7 @@ import { Button } from "../../../../Common/Components/BaseComponents/Button"
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod"
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import axiosInstance from "../../../../Service/Axios";
@@ -12,9 +13,11 @@ const schema = z.object({
     email: z.string().min(1, "Email required").email("Invalid Email").nonempty("EMAIL"),
     password: z.string().min(1, "Password required").nonempty("PASSWORD"),
 });
+
 type FormSchema = z.infer<typeof schema>;
 export const LoginWithPassword = () => {
     const { setUser, setSessionId } = useAuthStore();
+    const navigate = useNavigate();
 
     const methods = useForm<FormSchema>({
         resolver: zodResolver(schema),
@@ -27,6 +30,7 @@ export const LoginWithPassword = () => {
             console.log(" success", response.data);
             setUser(response.data.user);
             setSessionId(response.data.sessionId);
+            navigate("/");
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.data.error === 'Invalid email or password') {
                 console.error("Invalid password", error.response?.data);

@@ -3,18 +3,21 @@ import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore
 import axios from "axios";
 import { axiosInstance } from "../../../../Service/Axios";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { useNavigate } from "react-router-dom";
+
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const navigate = useNavigate();
   const { setUser, clearUser, setLoading, setSessionId, user, isLoading } = useAuthStore();
   const verifyFunction = useCallback(async () => {
     try {
       setLoading(true);
       let res = await axiosInstance.get("/auth/verify");
-      if (res.status === 200) {
+      if (res.status == 200) {
         console.log("Authenticated successfully");
         const data = res.data;
         setUser(data.user);
@@ -22,6 +25,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
       clearUser();
+        // navigate("/auth");
     }
     catch (err: any) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
@@ -41,6 +45,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
           } catch (refreshErr) {
             console.warn(" Refresh token failed", refreshErr);
+              //redirect al login y despues a la de clika 
           }
         }
       }
@@ -48,12 +53,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.warn("Session ID mismatch - logging out.");
         showAlert("", "התחברת ממכשיר אחר , אנא התחבר שוב!", "error");
         clearUser();
+          //redirect al login y despues a la de clika 
       }
-      clearUser();
+
+        clearUser();
+        // navigate("/auth");
+
     } finally {
       setLoading(false);
     }
-  }, [setUser, clearUser, setLoading, setSessionId]);
+  }
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -67,7 +76,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (user != null) {
       interval = setInterval(async () => {
         verifyFunction();
-      }, 30000); // every 30 seconds
+      }, 30000); // כל 30 שניות
     }
     return () => {
       if (interval) clearInterval(interval); // cleanup when component unmounts

@@ -164,7 +164,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           }
         }
       );
-
       console.log('📥 Response data:', res.data);
       const fileUrl = `https://drive.google.com/file/d/${res.data.id}/view`;
       console.log('🔗 קישור לקובץ בדרייב:', fileUrl);
@@ -636,7 +635,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               backgroundColor: theme.colors.neutral[0]
             }}>
               <CustomButton
-
                 variant="secondary"
                 size="md"
                 disabled={files.filter(f => f.status === 'pending' || f.status === 'error').length === 0}
