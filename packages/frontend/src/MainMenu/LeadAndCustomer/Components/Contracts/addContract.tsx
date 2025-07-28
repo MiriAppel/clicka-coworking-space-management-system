@@ -32,9 +32,9 @@ const statusLabels: Record<ContractStatus, string> = {
 
 // תוויות עבריות לסוגי עמדות
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
-  [WorkspaceType.PRIVATE_ROOM1]: "חדר פרטי 1",
-  // [WorkspaceType.PRIVATE_ROOM2]: "חדר פרטי 2",
-  // [WorkspaceType.PRIVATE_ROOM3]: "חדר פרטי 3",
+  [WorkspaceType.PRIVATE_ROOM1]: "חדר פרטי",
+  [WorkspaceType.PRIVATE_ROOM2]: "חדר של 2",
+  [WorkspaceType.PRIVATE_ROOM3]: "חדר של 3",
   [WorkspaceType.DESK_IN_ROOM]: "שולחן בחדר",
   [WorkspaceType.OPEN_SPACE]: "אופן ספייס",
   [WorkspaceType.KLIKAH_CARD]: "כרטיס קליקה",

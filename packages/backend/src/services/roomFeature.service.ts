@@ -14,7 +14,7 @@ function logUserActivity(userId: string, action: string) {
 }
 //יצירת פיצ'ר
 export class RoomFeatureService {
-async  CreateFeature(feature: RoomFeatureModel): Promise<RoomFeatureModel | null> {
+async  createFeature(feature: RoomFeatureModel): Promise<RoomFeatureModel | null> {
         console.log('📦 Inserting feature:', feature.toDatabaseFormat());
         const { data, error } = await supabase
           .from('room_feature')
@@ -55,7 +55,7 @@ async  CreateFeature(feature: RoomFeatureModel): Promise<RoomFeatureModel | null
 //ב-Controller לעדכון תכונות / ציוד: לפני שמוחקים — לבדוק אם יש Booking.
 //בשמשנים discountedHourlyRate או hourlyRate צריך לשמור את המחיר בזמן ההזמנה ולהזמנות קימות לא לשנות מחיר אוטומטי
 
-      async UpdateFeature(id: string, updatedData: RoomFeatureModel): Promise<RoomFeatureModel | null> {
+      async updateFeature(id: string, updatedData: RoomFeatureModel): Promise<RoomFeatureModel | null> {
     
         const { data, error } = await supabase
             .from('room_feature')
@@ -75,7 +75,7 @@ async  CreateFeature(feature: RoomFeatureModel): Promise<RoomFeatureModel | null
         return feature; 
 }
 //קבלת פיצ'ר לפי ID
-async  GetFeatureById(id: string): Promise<RoomFeatureModel | null>  
+async  getFeatureById(id: string): Promise<RoomFeatureModel | null>  
 {
      const { data, error } = await supabase
             .from('room_feature')
@@ -113,4 +113,5 @@ async  GetFeatureById(id: string): Promise<RoomFeatureModel | null>
 
 
 }
+
 }

@@ -8,6 +8,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ThemeProvider } from './Common/Components/themeConfig';
 import { LangContext } from './Common/Service/langContext';
 import clsx from 'clsx';
+import BackButton from './Common/Components/BaseComponents/BackButton';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 
 function Root() {

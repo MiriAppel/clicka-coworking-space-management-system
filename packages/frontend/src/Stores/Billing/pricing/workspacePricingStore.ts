@@ -5,7 +5,7 @@ import { create } from 'zustand';
 
 // ייבוא של פונקציות שירות מהשכבת service
 import { 
-  getCurrentPricingTier,                  // שליפת התמחור הנוכחי לפי סוג סביבת עבודה              // לא בשימוש בקובץ הזה (אפשר למחוק אם לא צריך)
+  getCurrentPricingTier,                  // שליפת התמחור הנוכחי לפי סוג סביבת עבודה
   createPricingTierWithHistory,           // יצירת תמחור חדש עם היסטוריה
   updatePricingTierPricing,               // עדכון תמחור קיים
   deleteLoungePricing                     // מחיקת רשומת תמחור מסוג לאונג'
