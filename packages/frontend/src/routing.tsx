@@ -28,6 +28,7 @@ import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLo
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
+import { Collection } from './MainMenu/Billing/Components/invoice-generation-engine/collection';
 import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 export const Routing = () => {
@@ -64,8 +65,8 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/billing/collection" element={< Collection />} />
         <Route path="/petty-cash" element={<PettyCashPage />} />
-
       </Route>
     </Routes>
   );

@@ -110,6 +110,8 @@ export interface CustomerPaymentMethod {
   updatedAt: DateISO;
 }
 
+
+
 // Customer model
 export interface Customer {
   id?: ID;
@@ -134,6 +136,7 @@ export interface Customer {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
+
 
 // Create customer request
 
