@@ -26,7 +26,7 @@ const MeetingRoomPricingForm: React.FC<Props> = ({ initialData, onSuccess }) => 
     },
   });
 
-  const { save, loading, error } = useMeetingRoomPricingStore();
+  const { save, loading } = useMeetingRoomPricingStore();
 
   // ----------------------
   // עדכון ערכי ברירת מחדל אם התקבלו נתונים לעריכה
