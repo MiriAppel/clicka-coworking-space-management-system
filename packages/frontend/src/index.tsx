@@ -8,6 +8,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ThemeProvider } from './Common/Components/themeConfig';
 import { LangContext } from './Common/Service/langContext';
 import clsx from 'clsx';
+import BackButton from './Common/Components/BaseComponents/BackButton';
 
 function Root() {
   const [lang, setLang] = useState<"he" | "en">("he");
@@ -19,25 +20,29 @@ function Root() {
           <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID!}>
             <BrowserRouter>
               <div className="p-4 gap-4 items-start">
-                {/* כפתורי שפה מעוצבים */}
-                <div className="gap-2 bg-gray-100 rounded-full p-1 shadow-inner w-fit">
-                  {["he", "en"].map((l) => (
-                    <button
-                      key={l}
-                      onClick={() => {
-                        setLang(l as "he" | "en");
-                        console.log("Current language:", l);
-                      }}
-                      className={clsx(
-                        "px-4 py-1 text-sm font-medium rounded-full transition",
-                        lang === l
-                          ? "bg-blue-600 text-white shadow"
-                          : "text-gray-700 hover:bg-gray-200"
-                      )}
-                    >
-                      {l === "he" ? "עברית" : "English"}
-                    </button>
-                  ))}
+                {/* קונטיינר אופקי (שורה) עבור כפתורי שפה + חזרה */}
+                <div className="flex items-center gap-4">
+                  {/* כפתור חזרה */}
+                  <BackButton />
+                  <div className="gap-2 bg-gray-100 rounded-full p-1 shadow-inner w-fit">
+                    {["he", "en"].map((l) => (
+                      <button
+                        key={l}
+                        onClick={() => {
+                          setLang(l as "he" | "en");
+                          console.log("Current language:", l);
+                        }}
+                        className={clsx(
+                          "px-4 py-1 text-sm font-medium rounded-full transition",
+                          lang === l
+                            ? "bg-blue-600 text-white shadow"
+                            : "text-gray-700 hover:bg-gray-200"
+                        )}
+                      >
+                        {l === "he" ? "עברית" : "English"}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* הראוטינג עצמו */}

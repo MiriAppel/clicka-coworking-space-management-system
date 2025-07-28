@@ -127,8 +127,7 @@ export const CustomerStatusChanged: React.FC = () => {
       exitReason: latestPeriod?.exitReason,
       exitReasonDetails: latestPeriod?.exitReasonDetails ?? '',
     };
-  },
-    []);
+  },[fetchCustomerById]);
   useCustomerFormData({
     open: !!customerId,
     customerId: customerId ?? "",

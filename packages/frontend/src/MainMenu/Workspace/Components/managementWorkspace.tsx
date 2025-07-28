@@ -16,7 +16,7 @@ export const ManagementWorkspace = () => {
     defaultValues: {
       name: '',
       description: '',
-      type: WorkspaceType.PRIVATE_ROOM,
+      type: WorkspaceType.PRIVATE_ROOM1,
       status: SpaceStatus.AVAILABLE,
       positionX: 0,
       positionY: 0,
@@ -35,7 +35,7 @@ export const ManagementWorkspace = () => {
     methods.reset({
       name: '',
       description: '',
-      type: WorkspaceType.PRIVATE_ROOM,
+      type: WorkspaceType.PRIVATE_ROOM1,
       status: SpaceStatus.AVAILABLE,
       positionX: 0,
       positionY: 0,
@@ -175,7 +175,7 @@ export const ManagementWorkspace = () => {
   const locationOptions = workSpaces
     .filter(space =>
       space.type === WorkspaceType.OPEN_SPACE ||
-      space.type === WorkspaceType.PRIVATE_ROOM
+      space.type === WorkspaceType.PRIVATE_ROOM1
     )
     .map(space => ({
       value: space.id || '',

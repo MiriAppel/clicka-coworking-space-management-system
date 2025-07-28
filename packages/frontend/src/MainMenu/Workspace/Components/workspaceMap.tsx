@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import '../Css/workspaceMap.css';
-import { Room, RoomStatus, RoomType, Space, SpaceStatus, WorkspaceType } from 'shared-types';
+import { Room, Space, SpaceStatus, WorkspaceType } from 'shared-types';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -82,8 +82,8 @@ export const WorkspaceMap = () => {
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [initialScale, setInitialScale] = useState(1);
-    const [signal, setSignal] = useState(1);
+    // const [initialScale, setInitialScale] = useState(1);
+    // const [signal, setSignal] = useState(1);
 
     useEffect(() => {
         getAllWorkspace();
@@ -97,11 +97,11 @@ export const WorkspaceMap = () => {
         updateSize();
         window.addEventListener("resize", updateSize);
         return () => window.removeEventListener("resize", updateSize);
-    }, [])
-    useEffect(() => {
-        getAllWorkspace();
-        getAllRooms();
-    }, [signal]);
+    }, [getAllWorkspace])
+    // useEffect(() => {
+    //     getAllWorkspace();
+    //     getAllRooms();
+    // }, [signal]);
     useEffect(() => {
         if (selectedStatus !== "" && selectedStatus !== "PLACEHOLDER") {
             setActiveStatusSearch(true);
@@ -233,21 +233,21 @@ export const WorkspaceMap = () => {
         return room.status;
     };
 
-    const getPanBounds = () => {
-        const scaledWidth = mapDimensions.width * scale * zoom;
-        const scaledHeight = mapDimensions.height * scale * zoom;
+    // const getPanBounds = () => {
+    //     const scaledWidth = mapDimensions.width * scale * zoom;
+    //     const scaledHeight = mapDimensions.height * scale * zoom;
 
-        return {
-            minX: containerSize.width - scaledWidth,
-            maxX: 0,
-            minY: containerSize.height - scaledHeight,
-            maxY: 0
-        };
-    };
+    //     return {
+    //         minX: containerSize.width - scaledWidth,
+    //         maxX: 0,
+    //         minY: containerSize.height - scaledHeight,
+    //         maxY: 0
+    //     };
+    // };
 
     const applyPan = (newPan: { x: number; y: number }) => {
-        const scaledWidth = mapDimensions.width * initialScale * zoom;
-        const scaledHeight = mapDimensions.height * initialScale * zoom;
+        const scaledWidth = mapDimensions.width * 1 * zoom;
+        const scaledHeight = mapDimensions.height * 1 * zoom;
 
         let minX, maxX, minY, maxY;
 
@@ -468,7 +468,7 @@ export const WorkspaceMap = () => {
                                                     onMouseLeave={() => setTooltip(prev => ({ ...prev, visible: false }))}
                                                     onClick={() => {
                                                         if (w.status === SpaceStatus.AVAILABLE) {
-                                                            if (w.type === WorkspaceType.PRIVATE_ROOM || w.type === WorkspaceType.DESK_IN_ROOM || w.type === WorkspaceType.COMPUTER_STAND) {
+                                                            if (w.type === WorkspaceType.PRIVATE_ROOM1 || w.type === WorkspaceType.DESK_IN_ROOM || w.type === WorkspaceType.COMPUTER_STAND) {
                                                                 navigate('/assignmentForm', { state: { space: w, displayDate } });
                                                             }
                                                             else {
@@ -515,7 +515,7 @@ export const WorkspaceMap = () => {
                                                     }}
                                                     onClick={() => {
                                                         if (w.status === SpaceStatus.AVAILABLE) {
-                                                            if (w.type === WorkspaceType.PRIVATE_ROOM) {
+                                                            if (w.type === WorkspaceType.PRIVATE_ROOM1 || w.type === WorkspaceType.PRIVATE_ROOM2 || w.type === WorkspaceType.PRIVATE_ROOM3) {
                                                                 navigate('/assignmentForm', { state: { space: w, displayDate } });
                                                             }
                                                         }

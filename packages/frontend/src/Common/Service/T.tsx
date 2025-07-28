@@ -1,7 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import { fetchTranslations } from "./translationLoader";
 import { LangContext } from "./langContext";
-import { log } from "console";
 
 const cache: Record<string, string> = {};
 const pending: Record<string, Promise<void>> = {};
@@ -12,8 +11,6 @@ export function T({ k }: { k: string }) {
 
  useEffect(() => {
   const key = `${lang}.${k}`;
-  console.log('incoming');
-  
   if (cache[key]) {
     setText(cache[key]);
     return;
@@ -21,7 +18,6 @@ export function T({ k }: { k: string }) {
   if (!pending[key]) {
   
     pending[key] = fetchTranslations([k], lang).then((result) => {
-      console.log('fetchTranslations result:', result);
       Object.entries(result).forEach(([subKey, value]) => {
         cache[`${lang}.${subKey}`] = value;
       });

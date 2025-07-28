@@ -23,7 +23,9 @@ export enum ContractStatus {
 
 // Workspace type enum
 export enum WorkspaceType {
-  PRIVATE_ROOM = 'PRIVATE_ROOM',
+  PRIVATE_ROOM1 = 'PRIVATE_ROOM1',
+  PRIVATE_ROOM2 = 'PRIVATE_ROOM2',
+  PRIVATE_ROOM3 = 'PRIVATE_ROOM3',
   DESK_IN_ROOM = 'DESK_IN_ROOM',
   OPEN_SPACE = 'OPEN_SPACE',
   KLIKAH_CARD = 'KLIKAH_CARD',

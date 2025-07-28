@@ -19,7 +19,7 @@ export const DetailsOfTheLead = () => {
         email: 'yossi@example.com',
         businessType: 'סטארטאפ',
         interestedIn: [
-            WorkspaceType.PRIVATE_ROOM,
+            WorkspaceType.PRIVATE_ROOM1,
             WorkspaceType.DESK_IN_ROOM
         ],
         source: LeadSource.WEBSITE,

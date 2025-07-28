@@ -1,5 +1,5 @@
 import { ID } from "shared-types";
-import { WorkspaceType } from "shared-types";
+import { WorkspaceType } from "shared-types/customer";
 import { Space, SpaceStatus } from "shared-types/workspace";
 export class WorkspaceModel implements Space {
   id?: ID;

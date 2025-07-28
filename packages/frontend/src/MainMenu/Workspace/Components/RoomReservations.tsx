@@ -61,8 +61,6 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
 
 
-
-
     const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
 
     const status = useWatch({ control: methods.control, name: "customerStatus" });

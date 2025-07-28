@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import axiosInstance from "../../Service/Axios";
 import { ID, Space, SpaceStatus } from "shared-types";
 
 //הצהרות
@@ -21,7 +22,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
     //get all spaces
     getAllWorkspace: async () => {
         try {
-            const response = await axios.get('api/workspace/getAllWorkspace');
+            const response = await axiosInstance.get('/workspace/getAllWorkspace');
             set({ workSpaces: response.data });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
