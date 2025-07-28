@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { showAlert } from "./Common/Components/BaseComponents/ShowAlert";
 
 declare global {
   interface Window {
@@ -163,6 +164,6 @@ const handleCommand = (text: string) => {
   } else if (matches(lower, history)) {
     window.location.href = `${process.env.REACT_APP_BASE_URL}/customerHistory`;
   } else {
-    alert("לא הבנתי את הפקודה... 😕 נסי שוב בבקשה");
+    showAlert("","לא הבנתי את הפקודה... 😕 נסי שוב בבקשה","warning");
   }
 };

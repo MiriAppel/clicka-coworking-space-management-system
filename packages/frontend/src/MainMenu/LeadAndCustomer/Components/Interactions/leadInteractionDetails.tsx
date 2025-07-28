@@ -233,17 +233,7 @@ export const LeadInteractionDetails = () => {
         )}
 
         <div className="flex gap-2 mt-6">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() =>
-              navigate("/leadAndCustomer/leads/interestedCustomerRegistration", {
-                state: { data: selectedLead },
-              })
-            }
-          >
-            לטופס רישום ללקוח
-          </Button>
+   
           <Button
             variant="accent"
             size="sm"

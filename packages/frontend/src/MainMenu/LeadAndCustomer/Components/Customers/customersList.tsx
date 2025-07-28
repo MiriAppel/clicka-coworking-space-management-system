@@ -174,7 +174,7 @@ export const CustomersList = () => {
           value={searchTerm}
           onChange={handleChange}
           onKeyDown={searchInApi}
-          placeholder="חפש לקוחות לפי שם, טלפון, אימייל, סטטוס, שם עסק או סוג עסק"
+          placeholder="חפש לקוחות לפי שם, טלפון, אימייל, שם עסק או סוג עסק"
         />
       </Stack>
 

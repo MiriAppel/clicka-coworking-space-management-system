@@ -9,10 +9,8 @@ import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
-
 export const LeadInteractions = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>("name");
@@ -23,7 +21,6 @@ export const LeadInteractions = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [status, setStatus] = useState("");//הוספה
 const navigate = useNavigate();
-
   const allLeadsRef = useRef<Lead[]>([]);
   const {
     leads,
@@ -32,9 +29,7 @@ const navigate = useNavigate();
     handleSelectLead,
     resetSelectedLead,
   } = useLeadsStore();
-
   const selectedLead = useLeadsStore((state) => state.selectedLead);
-
   useEffect(() => {
     fetchLeads().then(() => {
       allLeadsRef.current = useLeadsStore.getState().leads;
@@ -49,50 +44,52 @@ const navigate = useNavigate();
         setPage((prevPage) => prevPage + 1); // יגרום ל־useEffect לעיל לקרוא שוב ל־fetchLeads
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isSearching]);
-
   const handleRegistration = (lead: Lead | undefined) => {
     if (lead) {
       navigate("interestedCustomerRegistration", { state: { data: lead } });
     }
   };
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setPage(1);
-    if (!term.trim()) {
-      setIsSearching(false);
-      useLeadsStore.setState({ leads: allLeadsRef.current });
-      return;
-    }
-
-    const filtered = allLeadsRef.current.filter(
-      (l) =>
+  const handleSearch = (term: string, status: string = "") => {
+  setSearchTerm(term);
+  setStatus(status);
+  setPage(1);
+  // אין טקסט ואין סטטוס => החזר הכל
+  if (!term.trim() && !status.trim()) {
+    setIsSearching(false);
+    useLeadsStore.setState({ leads: allLeadsRef.current });
+    return;
+  }
+  // :white_check_mark: אם כל הלידים טעונים (לא פונים לשרת בכלל)
+  if (allLeadsRef.current.length > 0) {
+    const filtered = allLeadsRef.current.filter((l) => {
+      const matchesTerm =
+        !term.trim() ||
         l.name?.toLowerCase().includes(term.toLowerCase()) ||
         l.phone?.includes(term) ||
-        l.email?.toLowerCase().includes(term.toLowerCase())
-    );
-
-  if (filtered.length > 0) {
+        l.email?.toLowerCase().includes(term.toLowerCase());
+      const matchesStatus = !status.trim() ||
+        l.status?.toLowerCase().trim() === status.toLowerCase().trim();
+      return matchesTerm && matchesStatus;
+    });
     setIsSearching(true);
     useLeadsStore.setState({ leads: filtered });
-  } else {
-    fetch(`${process.env.REACT_APP_API_UR}/leads/search?q=${term}`)
-      .then((res) => res.json())
-      .then((data: Lead[]) => {
-        setIsSearching(true);
-        useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
-      })
-      .catch((err) => {
-        console.error("שגיאה בחיפוש מהשרת:", err);
-        useLeadsStore.setState({ leads: [] });
-      });
+    return;
   }
+  // :white_check_mark: אם אין את כל הלידים טעונים => fallback לשרת
+  fetch(`http://localhost:3001/api/leads/search?q=${term}&status=${status}`)
+    .then((res) => res.json())
+    .then((data: Lead[]) => {
+      setIsSearching(true);
+      useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
+    })
+    .catch((err) => {
+      console.error("שגיאה בחיפוש מהשרת:", err);
+      useLeadsStore.setState({ leads: [] });
+    });
 };
-
   const isAlert = (lead: Lead): boolean => {
     switch (alertCriterion) {
       case "noRecentInteraction":
@@ -110,7 +107,6 @@ const navigate = useNavigate();
         return false;
     }
   };
-
   const getSortValue = (lead: Lead): string | number | Date => {
     switch (sortField) {
       case "name":
@@ -128,7 +124,6 @@ const navigate = useNavigate();
         return "";
     }
   };
-
   const sortedLeads = [...leads].sort((a, b) => {
     const aVal = getSortValue(a);
     const bVal = getSortValue(b);
@@ -136,19 +131,16 @@ const navigate = useNavigate();
     if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
-
   return (
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
       <SearchLeads
         term={searchTerm}
         setTerm={setSearchTerm}
-        status={status}        // ✅ הוספה
-        setStatus={setStatus}  // ✅ הוספה
+        status={status}        // :white_check_mark: הוספה
+        setStatus={setStatus}  // :white_check_mark: הוספה
         onSearch={handleSearch}
       />
-
-
       <div className="flex flex-wrap justify-center gap-4 mb-6 mt-4">
         <div className="flex flex-col items-start">
           <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
@@ -170,7 +162,7 @@ const navigate = useNavigate();
             onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
             className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl shadow transition"
           >
-            {sortOrder === "asc" ? "⬆️ עולה" : "⬇️ יורד"}
+            {sortOrder === "asc" ? ":arrow_up: עולה" : ":arrow_down: יורד"}
             <span className="hidden sm:inline">
               ({sortOrder === "asc" ? "מהקטן לגדול" : "מהגדול לקטן"})
             </span>
@@ -196,7 +188,6 @@ const navigate = useNavigate();
           הוספת מתעניין חדש
         </Button>
       </div>
-
       {sortedLeads.map((lead) => (
         <LeadCard
           key={lead.id}
@@ -214,7 +205,6 @@ const navigate = useNavigate();
           }
         />
       ))}
-
       <Button
         onClick={() => navigate("/leadAndCustomer/leads/LeadSourcesPieChart")}
         variant="primary"
@@ -236,7 +226,6 @@ const navigate = useNavigate();
     </div>
   );
 };
-
 // LeadCard Component (עיצוב בלבד)
 const LeadCard = ({
   lead,
@@ -257,7 +246,6 @@ const LeadCard = ({
 }) => {
   const [open, setOpen] = useState(false);
   const initials = lead.name?.charAt(0).toUpperCase() || "?";
-
   return (
     <div
       className={`rounded-xl border shadow p-5 mb-4 bg-white transition-all duration-300 cursor-pointer ${
@@ -278,7 +266,6 @@ const LeadCard = ({
         </div>
         {open ? <ChevronUp /> : <ChevronDown />}
       </div>
-
       {open && (
         <div className="mt-4 space-y-2 text-sm text-gray-700">
           <div className="flex gap-2 items-center"><Phone size={16} /> {lead.phone}</div>
@@ -289,7 +276,7 @@ const LeadCard = ({
           <div className="flex gap-2 items-center"><ScrollText size={16} /> מזהה: {lead.id}</div>
           <div className="flex gap-4 mt-2">
             <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); onRegister(); }}>
-              לטופס רישום
+             לטופס המרה ללקוח
             </Button>
             <button
               onClick={(e) => {
