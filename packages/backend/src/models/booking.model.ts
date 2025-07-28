@@ -1,5 +1,4 @@
-import type { DateISO, ID } from "shared-types/core";
-import { Booking, BookingStatus } from 'shared-types/booking'
+import { Booking, BookingStatus, DateISO, ID } from "shared-types";
 
 export class BookingModel implements Booking {
   id?: ID;
@@ -25,7 +24,7 @@ export class BookingModel implements Booking {
   updatedAt: DateISO;
 
   constructor(params: {
-    id: ID;
+    id?: ID;
     roomId: ID;
     roomName: string;
     startTime: DateISO;
@@ -69,10 +68,33 @@ export class BookingModel implements Booking {
     this.createdAt = params.createdAt ?? new Date().toISOString();
     this.updatedAt = params.updatedAt ?? new Date().toISOString();
   }
+  static fromGoogleEvent(event: any): BookingModel {
+    return new BookingModel({
+      roomId: "unknown-room-id", // אם אין לך מזהה חדר, שימי זמני
+      roomName: event.location || "לא ידוע",
+      startTime: event.start?.dateTime || event.start?.date,
+      endTime: event.end?.dateTime || event.end?.date,
+      status: BookingStatus.COMPLETED, 
+      totalHours: 0,
+      chargeableHours: 0,
+      totalCharge: 0,
+      isPaid: false,
+      customerId: undefined,
+      customerName: undefined,
+      externalUserName: event.creator?.displayName || undefined,
+      externalUserEmail: event.creator?.email || undefined,
+      notes: event.description || undefined,
+      googleCalendarEventId: event.id,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+
 
   toDatabaseFormat() {
     return {
-      id: this.id, 
+      id: this.id,
       room_id: this.roomId,
       room_name: this.roomName,
       customer_id: this.customerId,
