@@ -365,12 +365,8 @@ export async function generateOccupancyRevenueData(parameters: ReportParameters)
   const occupiedSpaces = allWorkspaces.filter((ws) => ws.currentCustomerId).length;
   const openSpaceCount = totalSpaces - occupiedSpaces;
   const deskInRoomCount = allWorkspaces.filter((ws) => ws.type === WorkspaceType.DESK_IN_ROOM).length;
-<<<<<<< HEAD
-  const privateRoomCount = allWorkspaces.filter((ws) => ws.type === WorkspaceType.PRIVATE_ROOM).length;
-=======
   const privateRoomCount = allWorkspaces.filter((ws) => ws.type === WorkspaceType.PRIVATE_ROOM1).length;
   
->>>>>>> origin/main
   const klikahCardCount = allWorkspaces.filter((ws) => ws.type === WorkspaceType.KLIKAH_CARD).length;
 
   console.log('Workspaces info:', {

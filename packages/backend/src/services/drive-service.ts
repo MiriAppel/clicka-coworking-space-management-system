@@ -1,14 +1,8 @@
 import { google } from 'googleapis';
-<<<<<<< HEAD
-import { FileReference } from 'shared-types';
-import { Readable } from 'stream';
-import { UserTokenService } from './userTokenService';
-=======
 import { FileReference, ID } from 'shared-types';
 import { Readable } from 'stream';
 import { UserTokenService } from './userTokenService';
 import { DocumentModel } from '../models/document.model';
->>>>>>> origin/main
 
 function getAuth(token: string) {
   const auth = new google.auth.OAuth2();
@@ -251,8 +245,6 @@ export async function getOrCreateFolderByPath(
   return await uploadFileToDrive(file, token, folderId);
 }
  
-<<<<<<< HEAD
-=======
 const tokenService = new UserTokenService();
 //פונקציה שמחזירה אובייקט FileReference
 export async function uploadFileAndReturnReference(
@@ -292,7 +284,6 @@ console.log('File uploaded and reference created:', fileRef);
 // saveDocumentAndAttachToVendor('68c5904a-25e2-48aa-9483-ccf5dc0581fd', fileRef); // שמירת המסמך במסד הנתונים
   return fileRef;
 }
->>>>>>> origin/main
 
 
   

@@ -202,9 +202,6 @@ export class ExpenseService extends baseService<ExpenseModel> {
     }
   }
 
-<<<<<<< HEAD
-}
-=======
 
 async getPettyCashExpenses() {
   try {
@@ -226,4 +223,3 @@ async getPettyCashExpenses() {
 }
 
 }
->>>>>>> origin/main

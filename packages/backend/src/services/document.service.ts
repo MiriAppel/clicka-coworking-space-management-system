@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import { supabase } from '../db/supabaseClient';
-import { DocumentModel } from '../models/document.model';
-=======
 import { DocumentModel } from '../models/document.model';
 import { supabase } from '../db/supabaseClient';
 import { uploadFileAndReturnReference } from './drive-service';
->>>>>>> origin/main
 
 // יצירת מסמך ושמירתו בטבלת vendor (שדה document_ids)
 // 1. הוספה לטבלת documents
@@ -125,9 +120,6 @@ export const getDocumentById = async (documentId: string) => {
   if (!data || data.length === 0) throw new Error('Document not found');
 
   return data[0];  // מחזיר את המסמך היחיד
-<<<<<<< HEAD
-};
-=======
 };
 // export async function uploadVendorDocument(
 //   file: Express.Multer.File,
@@ -167,4 +159,3 @@ export const getDocumentById = async (documentId: string) => {
 
 //   return data; // או document אם את רוצה להחזיר את המידע
 // }
->>>>>>> origin/main

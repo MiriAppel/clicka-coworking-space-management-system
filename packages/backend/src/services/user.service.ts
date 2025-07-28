@@ -9,23 +9,6 @@ dotenv.config();
 
 export class UserService {
 
-<<<<<<< HEAD
-    //         if (error || !data) {
-    //             console.error('Error fetching user password:', error || 'No user found');
-    //             return false;
-    //         }
-
-    //         const dcryptPassword = decrypt(data.password)
-    //         return dcryptPassword === password;
-    //     } catch (error) {
-    //         console.error('Error verifying user password:', error);
-    //         throw error;
-    //     }
-    // }
-
-
-=======
->>>>>>> origin/main
     async createUser(user: UserModel): Promise<UserModel | null> {
         try {
             if (await this.getUserByEmail(user.email)) {
@@ -42,11 +25,7 @@ export class UserService {
         }
         catch (error) {
             console.error('Error creating user:', error);
-<<<<<<< HEAD
-            throw error; 
-=======
             throw error;
->>>>>>> origin/main
         }
     }
 

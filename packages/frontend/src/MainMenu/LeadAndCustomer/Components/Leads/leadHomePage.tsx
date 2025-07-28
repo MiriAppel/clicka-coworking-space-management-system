@@ -17,22 +17,13 @@
 // }
 // //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
 
-<<<<<<< HEAD
-import { NavLink, useNavigate } from "react-router-dom";
-=======
 import { useNavigate } from "react-router-dom";
->>>>>>> origin/main
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { SearchLeads } from "./SearchLeads";
 import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-<<<<<<< HEAD
-import { LeadsTable } from "./LeadsTable"; // 💡 ודאי שהשמות תואמים
-import { deleteLead } from "../../Service/LeadAndCustomersService";
-=======
 import { LeadsTable } from "./LeadsTable";
->>>>>>> origin/main
 
 export const LeadsHomePage = () => {
   const navigate = useNavigate();

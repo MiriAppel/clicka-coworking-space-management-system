@@ -30,10 +30,10 @@ function App() {
         if (!response.ok) throw new Error('API server not responding');
         return response.json();
       })
-      // .then((data) => {
-      //   // setHealthStatus(data);
-      //   // setLoading(false);
-      // })
+      .then((data) => {
+        setHealthStatus(data);
+        setLoading(false);
+      })
       .catch((err) => {
         console.error('Error fetching API health:', err);
         // setError('Could not connect to API server. Make sure it is running.');

@@ -191,17 +191,9 @@ export async function serviceGetInvoiceById(id: ID): Promise<InvoiceModel | null
 
 // עדכון חשבונית
 export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceModel>): Promise<InvoiceModel | null> {
-<<<<<<< HEAD
-    // הכן את הנתונים לעדכון - רק שדות שקיימים
     const dataToUpdate: any = {
         updated_at: new Date().toISOString()
     };
-    // הוסף רק שדות שקיימים ב-updateData
-=======
-    const dataToUpdate: any = {
-        updated_at: new Date().toISOString()
-    };
->>>>>>> origin/main
     if (updateData.invoice_number !== undefined) dataToUpdate.invoice_number = updateData.invoice_number;
     if (updateData.customer_id !== undefined) dataToUpdate.customer_id = updateData.customer_id;
     if (updateData.customer_name !== undefined) dataToUpdate.customer_name = updateData.customer_name;
@@ -216,11 +208,7 @@ export async function serviceUpdateInvoice(id: ID, updateData: Partial<InvoiceMo
     const { data: invoice, error } = await supabase
         .from('invoice')
         .update(dataToUpdate)
-<<<<<<< HEAD
-        .eq('invoice_number', id) // השתמש ב-invoice_number במקום id
-=======
         .eq('invoice_number', id) 
->>>>>>> origin/main
         .select()
         .single();
 
@@ -495,7 +483,6 @@ export const sendStatusChangeEmails = async (
     );
     await Promise.all(emailPromises);
   };
-
 
 
 

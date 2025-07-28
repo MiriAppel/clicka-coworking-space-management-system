@@ -23,11 +23,7 @@ function encodeMessage(request: SendEmail): string {
     `To: ${request.to.join(", ")}`,
     request.cc?.length ? `Cc: ${request.cc.join(", ")}` : "",
     request.bcc?.length ? `Bcc: ${request.bcc.join(", ")}` : "",
-<<<<<<< HEAD
-    `Subject: ${request.subject}`,
-=======
     `Subject: ${encodeSubject(request.subject)}`,
->>>>>>> origin/main
     "MIME-Version: 1.0",
     `Content-Type: multipart/mixed; boundary="${boundaryMixed}"`,
   ].filter(Boolean).join("\n");

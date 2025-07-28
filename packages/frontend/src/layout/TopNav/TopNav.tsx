@@ -116,7 +116,7 @@ const TopNav = () => {
             <img
               src="/user.png"
               alt="avatar"
-              style={{ width: 40, height: 40, borderRadius: '10%', objectFit: 'cover' }}
+              style={{ width: 25, height: 25, borderRadius: '10%', objectFit: 'cover' }}
             />
             <span style={{ fontSize: 14, color: '#000', marginTop: 4 }}>
               {user.firstName} {user.lastName}
