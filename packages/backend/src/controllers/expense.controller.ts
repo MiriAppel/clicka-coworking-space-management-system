@@ -1,113 +1,150 @@
-// ייבוא טיפוסים עבור בקשות HTTP
 import { Request, Response } from "express";
-
-// ייבוא מחלקת השירות שמבצעת את הלוגיקה העסקית מול מסד הנתונים
 import { ExpenseService } from "../services/expense.services";
+import type {
+  CreateExpenseRequest,
+  UpdateExpenseRequest,
+  GetExpensesRequest,
+  MarkExpenseAsPaidRequest
+} from "shared-types";
 
-// ייבוא טיפוסים עבור מבנה הנתונים של הבקשות (ליצירה/עדכון/סינון הוצאות)
-import type { CreateExpenseRequest, UpdateExpenseRequest, GetExpensesRequest, MarkExpenseAsPaidRequest } from "shared-types";
-
-// הגדרת מחלקת ExpenseController - אחראית על טיפול בבקשות HTTP הקשורות להוצאות
 export class ExpenseController {
-    expenseService = new ExpenseService();
-async getAllExpenses1(req: Request, res: Response) {
-    const result = await this.expenseService.getExpenses1(); // קריאה בלי פילטרים בכלל
+  expenseService = new ExpenseService();
+
+  async getAllExpenses1(req: Request, res: Response) {
+    const result = await this.expenseService.getExpenses1();
     if (result) {
-        res.status(200).json(result); // הצלחה: החזרת כל ההוצאות
+      res.status(200).json(result);
     } else {
-        res.status(500).json({ error: "Failed to fetch expenses" }); // כשלון: החזרת שגיאה
+      res.status(500).json({ error: "Failed to fetch expenses" });
     }
-}
-    async createExpense(req: Request, res: Response) {
-        const expenseData: CreateExpenseRequest = req.body; // קריאת פרטי ההוצאה מתוך גוף הבקשה
-        console.log('Prepared expense data:', JSON.stringify(expenseData, null, 2)); // הדפסת נתוני ההוצאה ללוג
-
-        const result = await this.expenseService.createExpense(expenseData); // קריאה לשירות ליצירת הוצאה במסד
-
-        if (result) {
-            res.status(200).json(result); // הצלחה: החזרת ההוצאה שנוצרה
-        } else {
-            res.status(500).json({ error: "Failed to create expense" }); // כשלון: החזרת שגיאה
-        }
-    }
-    async getAllExpenses(req: Request, res: Response) {
-        const filters: GetExpensesRequest = req.query as unknown as GetExpensesRequest; // המרת query ל-GetExpensesRequest
-
-        const result = await this.expenseService.getExpenses(filters); // קריאה לשירות לשליפת ההוצאות
-
-        if (result) {
-            res.status(200).json(result); // הצלחה: החזרת רשימת ההוצאות
-        } else {
-            res.status(500).json({ error: "Failed to fetch expenses" }); // כשלון: החזרת שגיאה
-        }
-    }
-
-    async getExpenseById(req: Request, res: Response) {
-        const expenseId = req.params.id; // קריאת ה-ID מתוך פרמטרי הכתובת
-
-        const result = await this.expenseService.getExpenseById(expenseId); // קריאה לשירות לשליפת ההוצאה
-
-        if (result) {
-            res.status(200).json(result); // הצלחה: החזרת ההוצאה
-        } else {
-            res.status(404).json({ error: "Expense not found" }); // לא נמצא: החזרת 404
-        }
-    }
-
-    async updateExpense(req: Request, res: Response) {
-        const expenseId = req.params.id; // קריאת ה-ID מתוך ה-params
-        const updateData: UpdateExpenseRequest = req.body; // קריאת נתוני העדכון מתוך גוף הבקשה
-
-        console.log('Prepared update data:', JSON.stringify(updateData, null, 2)); // הדפסת נתוני העדכון ללוג
-
-        const result = await this.expenseService.updateExpense(expenseId, updateData); // קריאה לשירות לביצוע העדכון
-
-        if (result) {
-            res.status(200).json(result); // הצלחה: החזרת ההוצאה המעודכנת
-        } else {
-            res.status(500).json({ error: "Failed to update expense" }); // כשלון: החזרת שגיאה
-        }
-    }
-
-    async markExpenseAsPaid(req: Request, res: Response) {
-        const expenseId = req.params.id; // קריאת ה-ID מתוך ה-params
-        const paidData: MarkExpenseAsPaidRequest = req.body; // קריאת נתוני התשלום מתוך גוף הבקשה
-
-        const result = await this.expenseService.markExpenseAsPaid(expenseId, paidData); // קריאה לשירות לסימון ההוצאה כ-paid
-
-        if (result) {
-            res.status(200).json(result); // הצלחה: החזרת ההוצאה לאחר העדכון
-        } else {
-            res.status(500).json({ error: "Failed to mark expense as paid" }); // כשלון: החזרת שגיאה
-        }
-    }
-
-    async deleteExpense(req: Request, res: Response) {
-        const expenseId = req.params.id; // קריאת ה-ID מתוך ה-params
-
-        const result = await this.expenseService.deleteExpense(expenseId); // קריאה לשירות למחיקת ההוצאה
-
-        if (result) {
-            res.status(200).send(); // הצלחה: החזרת סטטוס 200 ללא תוכן
-        } else {
-            res.status(500).json({ error: "Failed to delete expense" }); // כשלון: החזרת שגיאה
-        }
-    }
-
-async getExpensesByVendorId(req: Request, res: Response) {
-  const { vendorId } = req.params;  // לשנות מ-query ל-params
-
-  try {
-    if (!vendorId) {
-      return res.status(400).json({ message: 'חסר מזהה ספק' });
-    }
-
-    const expenses = await this.expenseService.getExpensesByVendorId(vendorId as string);
-    res.status(200).json(expenses);
-  } 
-  catch (err) {
-    console.error('שגיאה בשליפת הוצאות:', err);
-    res.status(500).json({ message: 'שגיאה בשרת' });
   }
-}
+
+  async createExpense(req: Request, res: Response) {
+    const expenseData: CreateExpenseRequest = req.body;
+    console.log('Prepared expense data:', JSON.stringify(expenseData, null, 2));
+    const result = await this.expenseService.createExpense(expenseData);
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(500).json({ error: "Failed to create expense" });
+    }
+  }
+
+  async getAllExpenses(req: Request, res: Response) {
+    const filters: GetExpensesRequest = req.query as unknown as GetExpensesRequest;
+    const result = await this.expenseService.getExpenses(filters);
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(500).json({ error: "Failed to fetch expenses" });
+    }
+  }
+
+  async getExpenseById(req: Request, res: Response) {
+    const expenseId = req.params.id;
+    const result = await this.expenseService.getExpenseById(expenseId);
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(404).json({ error: "Expense not found" });
+    }
+  }
+
+  async updateExpense(req: Request, res: Response) {
+    const expenseId = req.params.id;
+    const updateData: UpdateExpenseRequest = req.body;
+    console.log('Prepared update data:', JSON.stringify(updateData, null, 2));
+    const result = await this.expenseService.updateExpense(expenseId, updateData);
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(500).json({ error: "Failed to update expense" });
+    }
+  }
+
+  async markExpenseAsPaid(req: Request, res: Response) {
+    const expenseId = req.params.id;
+    const paidData: MarkExpenseAsPaidRequest = req.body;
+    const result = await this.expenseService.markExpenseAsPaid(expenseId, paidData);
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(500).json({ error: "Failed to mark expense as paid" });
+    }
+  }
+
+  async deleteExpense(req: Request, res: Response) {
+    const expenseId = req.params.id;
+    const result = await this.expenseService.deleteExpense(expenseId);
+    if (result) {
+      res.status(200).send();
+    } else {
+      res.status(500).json({ error: "Failed to delete expense" });
+    }
+  }
+
+  async getExpensesByPage(req: Request, res: Response) {
+    console.log("getExpensesByPage called");
+    const filters = req.params;
+    console.log("Filters received:", filters);
+    const pageNum = Math.max(1, Number(filters.page) || 1);
+    const limitNum = Math.max(1, Number(filters.limit) || 50);
+    const filtersForService = {
+      page: pageNum,
+      limit: limitNum,
+    };
+
+    console.log("Filters passed to service:", filtersForService);
+
+    try {
+      const expenses = await this.expenseService.getExpensesByPage(filtersForService);
+      if (expenses.length > 0) {
+        res.status(200).json(expenses);
+      } else {
+        res.status(404).json({ message: "No expenses found" });
+      }
+    } catch (error: any) {
+      console.error("❌ Error in getExpensesByPage controller:");
+      if (error instanceof Error) {
+        console.error("🔴 Message:", error.message);
+        console.error("🟠 Stack:", error.stack);
+      } else {
+        console.error("🟡 Raw error object:", error);
+      }
+
+      res
+        .status(500)
+        .json({ message: "Server error", error: error?.message || error });
+    }
+
+    console.log("getExpensesByPage completed");
+  }
+
+  async getExpensesByFilter(req: Request, res: Response) {
+    const filters = req.query.id ? { id: req.query.id } : req.query;
+    try {
+      const expenses = await this.expenseService.getExpenseById(filters.toString());
+
+      if (expenses.length > 0) {
+        res.status(200).json(expenses);
+      } else {
+        res.status(404).json({ message: "No expenses found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Error filtering expenses", error });
+    }
+  }
+
+  async getPettyCashExpenses(req: Request, res: Response) {
+    try {
+      const expenses = await this.expenseService.getPettyCashExpenses();
+      if (!expenses || expenses.length === 0) {
+        return res.status(200).json([]);
+      }
+      return res.status(200).json(expenses);
+    } catch (error) {
+      console.error('Error in getPettyCashExpenses controller:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  }
 }

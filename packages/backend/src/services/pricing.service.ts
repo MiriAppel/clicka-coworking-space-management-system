@@ -9,119 +9,174 @@ import {
 } from "shared-types";
 import { WorkspaceType } from "shared-types";
 import type { ID } from "shared-types";
-
 import { supabase } from '../db/supabaseClient'; 
 import {
-    PricingTierModel,
+    
     MeetingRoomPricingModel,
-    LoungePricingModel
+    LoungePricingModel,
+    PricingTierModel
 } from '../models/pricing.model';
+import { SupabaseClient } from "@supabase/supabase-js";
 
 
 // בדיקה שמחירים אינם שליליים - פונקציה זו נשארת ללא שינוי
-function validatePrices(prices: number[]) {
+export function validatePrices(prices: number[]) {
   for (const price of prices) {
     if (price < 0) throw new Error("לא ניתן להזין מחירים שליליים");
   }
 }
+/*
 // בדיקה של חפיפות תאריכי התחולה בין שכבות פעילות באותה קטגוריה - מעודכנת לעבודה מול Supabase
-async function checkEffectiveDateConflict(
-  supabaseClient: typeof supabase, // קבלת לקוח Supabase כפרמטר
-  tableName: string, // קבלת שם הטבלה כפרמטר
+export async function checkEffectiveDateConflict(
+  supabaseClient: typeof supabase,
+  tableName: string,
   newEffectiveDate: string,
-  filterConditions: Record<string, any> = {}, // תנאים נוספים כמו workspace_type
-  idToExclude?: ID // אופציונלי - עבור עדכון פריט קיים
+  filterConditions: Record<string, any> = {},
+  idToExclude: ID | undefined = undefined // הגדרת ערך ברירת מחדל ל-undefined
 ) {
-  const newDate = new Date(newEffectiveDate);
+  const newDate = new Date(newEffectiveDate); // תאריך התחולה החדש שאותו בודקים
 
   let query = supabaseClient
     .from(tableName)
-    .select('id, effective_date') // שליפת השדות הנחוצים בלבד
-    .eq('active', true);
+    .select('id, effective_date')
+    .eq('effective_date', newDate.toISOString().split('T')[0]) // השוואת תאריך בלבד (YYYY-MM-DD)
+    .eq('active', true); // בודקים רק רשומות פעילות
 
-  // הוספת תנאי סינון נוספים (לדוגמה, workspace_type)
+  // הוספת תנאי סינון נוספים (לדוגמה, workspace_type, או כל פילטר אחר)
   for (const key in filterConditions) {
-    query = query.eq(key, filterConditions[key]);
-  }
-
-  if (idToExclude) {
-    query = query.neq('id', idToExclude); // אם יש ID להוציא מהבדיקה (בעדכון)
-  }
-
-  const { data: activeItems, error } = await query; // ביצוע שאילתה ל-DB
-
-  if (error) {
-    console.error(`Error checking effective date conflict in ${tableName}:`, error);
-    throw new Error('Failed to check for effective date conflicts');
-  }
-
-  if (activeItems) {
-    for (const item of activeItems) {
-      // שימו לב: item.effective_date יגיע ב-snake_case מה-DB
-      const existingDate = new Date(item.effective_date);
-      if (existingDate.getTime() === newDate.getTime()) {
-        throw new Error(
-          `תאריך התחולה ${newEffectiveDate} מתנגש עם שכבה קיימת (id: ${item.id})`
-        );
-      }
+    if (Object.prototype.hasOwnProperty.call(filterConditions, key)) { // ודא שזה מאפיין של האובייקט
+      query = query.eq(key, filterConditions[key]);
     }
   }
+
+  // אם נשלח ID להחרגה (במקרה של עדכון), מוסיפים את התנאי .neq()
+  if (idToExclude) {
+    query = query.neq('id', idToExclude);
+  }
+
+  // ביצוע השאילתה וציפייה לפריט יחיד או לא כלום
+  const { data: conflictingItem, error } = await query.maybeSingle();
+
+  // טיפול בשגיאות מה-Supabase (למעט שגיאת 'No rows found')
+  if (error && error.code !== 'PGRST116') {
+    console.error(`Error checking effective date conflict in ${tableName}:`, error);
+    throw new Error('Failed to check for effective date conflicts.');
+  }
+
+  // אם נמצא פריט מתנגש (שאינו הפריט המעודכן עצמו)
+  if (conflictingItem) {
+    throw new Error(
+      `תאריך התחולה ${newEffectiveDate} מתנגש עם שכבה קיימת (id: ${conflictingItem.id})`
+    );
+  }
+  // אם conflictingItem הוא null, אין התנגשות, והפונקציה מסתיימת בהצלחה.
+
 }
+  */
 // ========================
 // סביבת עבודה - מעודכן לעבודה מול Supabase
 // ========================
 
-export async function createPricingTier(
+export async function createPricingTierWithHistory(
   request: PricingTierCreateRequest,
-  createdBy: ID // createdBy יכול לשמש לשדה created_by ב-DB
 ): Promise<PricingTier> {
   try {
-    if (!request.workspaceType) throw new Error("חובה לבחור סוג סביבת עבודה");
+    const now = new Date();
+    const currentTimestamp = now.toISOString();
 
+    // שלב 1: מצא את המחיר ה"פעיל" הנוכחי (ש effective_date שלו הוא היום או בעבר)
+    // זהו המחיר שאותו אנחנו רוצים להפוך ל-active: false
+    const { data: currentActivePricing, error: fetchCurrentError } = await supabase
+      .from('pricing_tiers')
+      .select('id') // אנחנו צריכים רק את ה-ID שלו
+      .eq('active', true)
+      .lte('effective_date', currentTimestamp) // תאריך התחלה הוא היום או בעבר
+      .order('effective_date', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (fetchCurrentError && fetchCurrentError.code !== 'PGRST116') {
+      console.error('שגיאה באחזור תמחור חדר ישיבות פעיל נוכחי:', fetchCurrentError);
+      throw new Error('הפעולה לאחזור תמחור חדר ישיבות פעיל נוכחי נכשלה');
+    }
+
+    // שלב 2: אם נמצא מחיר פעיל נוכחי, השבת אותו (active: false)
+    if (currentActivePricing) {
+      const { error: updateError } = await supabase
+        .from('pricing_tiers')
+        .update({
+          active: false,
+          updated_at: new Date().toISOString(),
+          // updated_by: createdBy, // הוסף אם קיים שדה updated_by בטבלה
+        })
+        .eq('id', currentActivePricing.id); // <--- עדכן רק את הרשומה הספציפית הזו
+
+      if (updateError) {
+        console.error('שגיאה בנטרול תמחור חדר ישיבות פעיל קודם:', updateError);
+        throw new Error('הפעולה לנטרול תמחור חדר ישיבות פעיל קודם נכשלה');
+      }
+    }
+
+    // שלב 3: יצירת תמחור חדש (שיהיה active: true באופן אוטומטי כפי שראינו בפונקציה createMeetingRoomPricing)
+    return await createPricingTier(request );
+  } catch (e) {
+    console.error('חריגה בפונקציה createMeetingRoomPricingWithHistory:', e);
+    throw e;
+  }
+}
+export async function createPricingTier(
+  request: PricingTierCreateRequest
+): Promise<PricingTier> {
+  try {
+    if (!request.workspaceType) {
+      throw new Error("חובה לבחור סוג סביבת עבודה.");
+    }
     validatePrices([
       request.year1Price,
       request.year2Price,
       request.year3Price,
       request.year4Price,
+      request.twoDaysFromOfficePrice,
+      request.threeDaysFromOfficePrice,
     ]);
-
     const effectiveDate = new Date(request.effectiveDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (effectiveDate < today) {
-      throw new Error("תאריך התחולה חייב להיות היום או בעתיד");
+      throw new Error("תאריך התחולה חייב להיות היום או בעתיד.");
     }
 
     // בדיקת התנגשות תאריכים מול מסד הנתונים
-    await checkEffectiveDateConflict(supabase, 'pricing_tiers', request.effectiveDate, { workspace_type: request.workspaceType });
+    await checkEffectiveDateConflict(
+      supabase,
+      'pricing_tiers',
+      request.effectiveDate,
+      { workspace_type: request.workspaceType }
+    );
 
-    // יצירת מופע של המודל מהנתונים שהתקבלו בבקשה
+
     const newPricingTierModel = new PricingTierModel({
       workspaceType: request.workspaceType,
       year1Price: request.year1Price,
       year2Price: request.year2Price,
       year3Price: request.year3Price,
       year4Price: request.year4Price,
+      twoDaysFromOfficePrice: request.twoDaysFromOfficePrice,
+      threeDaysFromOfficePrice: request.threeDaysFromOfficePrice,
       effectiveDate: request.effectiveDate,
-      active: true, // מוגדר כ-true עבור שכבה חדשה
+      active: true, 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      // createdBy: createdBy, // הוסף אם קיים שדה created_by בטבלה
     });
-
-    // שליחת הנתונים ל-Supabase
     const { data, error } = await supabase
-      .from('pricing_tiers') // שם הטבלה במסד הנתונים
-      .insert(newPricingTierModel.toDatabaseFormat()) // שימוש ב-toDatabaseFormat()
-      .select() // חשוב: מבקש לקבל בחזרה את הרשומה שנוצרה
-      .single(); // חשוב: מצפה לרשומה יחידה
-
+      .from('pricing_tiers')
+      .insert(newPricingTierModel.toDatabaseFormat())
+      .select()
+      .single();
     if (error) {
-      console.error('Error creating pricing tier:', error);
-      throw new Error('Failed to create pricing tier');
+      console.error('שגיאה ביצירת שכבת תמחור:', error);
+      throw new Error('הפעולה ליצירת שכבת תמחור נכשלה.');
     }
-
-    // מיפוי נתונים חזרה למודל CamelCase כדי להתאים ל-PricingTier
     return new PricingTierModel({
       id: data.id,
       workspaceType: data.workspace_type,
@@ -129,49 +184,68 @@ export async function createPricingTier(
       year2Price: data.year2_price,
       year3Price: data.year3_price,
       year4Price: data.year4_price,
+      twoDaysFromOfficePrice: data.two_days_from_office_price,
+      threeDaysFromOfficePrice: data.three_days_from_office_price,
       effectiveDate: data.effective_date,
       active: data.active,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     });
   } catch (e) {
-    console.error('Exception in createPricingTier:', e);
+    console.error('חריגה בפונקציה createPricingTier:', e);
     throw e;
   }
 }
 
-export async function createPricingTierWithHistory(
-  request: PricingTierCreateRequest,
-  createdBy: ID
-): Promise<PricingTier> {
-  try {
-    // השבתת שכבות פעילות קודמות עבור סוג סביבת העבודה הזה ב-DB
-    const { error: updateError } = await supabase
-      .from('pricing_tiers')
-      .update({
-        active: false,
-        updated_at: new Date().toISOString(),
-        // updated_by: createdBy, // הוסף אם קיים שדה updated_by בטבלה
-      })
-      .eq('workspace_type', request.workspaceType)
-      .eq('active', true);
+// פונקציית העזר checkEffectiveDateConflict (כפי שתוקנה לאחרונה)
+// קודם כל, זו הפונקציה שעושה את בדיקת ההתנגשות
+export async function checkEffectiveDateConflict(
+  supabaseClient: typeof supabase,
+  tableName: string,
+  newEffectiveDate: string,
+  filterConditions: Record<string, any> = {},
+  idToExclude: ID | undefined = undefined // הגדרת ערך ברירת מחדל ל-undefined
+) {
+  const newDate = new Date(newEffectiveDate); // תאריך התחולה החדש שאותו בודקים
 
-    if (updateError) {
-      console.error('Error deactivating old pricing tiers:', updateError);
-      throw new Error('Failed to deactivate old pricing tiers');
+  let query = supabaseClient
+    .from(tableName)
+    .select('id, effective_date')
+    .eq('effective_date', newDate.toISOString().split('T')[0]) // השוואת תאריך בלבד (YYYY-MM-DD)
+    .eq('active', true); // בודקים רק רשומות פעילות
+
+  // הוספת תנאי סינון נוספים (לדוגמה, workspace_type, או כל פילטר אחר)
+  for (const key in filterConditions) {
+    if (Object.prototype.hasOwnProperty.call(filterConditions, key)) { // ודא שזה מאפיין של האובייקט
+      query = query.eq(key, filterConditions[key]);
     }
-
-    // יצירת שכבת תמחור חדשה
-    return await createPricingTier(request, createdBy);
-  } catch (e) {
-    console.error('Exception in createPricingTierWithHistory:', e);
-    throw e;
   }
+
+  // אם נשלח ID להחרגה (במקרה של עדכון), מוסיפים את התנאי .neq()
+  if (idToExclude) {
+    query = query.neq('id', idToExclude);
+  }
+
+  // ביצוע השאילתה וציפייה לפריט יחיד או לא כלום
+  const { data: conflictingItem, error } = await query.maybeSingle();
+
+  // טיפול בשגיאות מה-Supabase (למעט שגיאת 'No rows found')
+  if (error && error.code !== 'PGRST116') { // PGRST116 הוא "No rows found", וזה תקין
+    console.error(`Error checking effective date conflict in ${tableName}:`, error);
+    throw new Error('Failed to check for effective date conflicts.');
+  }
+
+  // אם נמצא פריט מתנגש (שאינו הפריט המעודכן עצמו)
+  if (conflictingItem) {
+    throw new Error(
+      `תאריך התחולה ${newEffectiveDate} מתנגש עם שכבה קיימת (id: ${conflictingItem.id})`
+    );
+  }
+  // אם conflictingItem הוא null, אין התנגשות, והפונקציה מסתיימת בהצלחה.
 }
+
 export async function getPricingHistory(workspaceType: WorkspaceType): Promise<PricingTier[]> {
   try {
-    console.log("📤 Sending request to Supabase with workspaceType:", workspaceType); // חשוב!
-
     const { data, error } = await supabase
       .from('pricing_tiers')
       .select('*')
@@ -179,58 +253,61 @@ export async function getPricingHistory(workspaceType: WorkspaceType): Promise<P
       .order('effective_date', { ascending: false });
 
     if (error) {
-      console.error('❌ Supabase returned an error:');
-      console.error('🔸 Message:', error.message);
-      console.error('🔹 Details:', error.details);
-      console.error('💡 Hint:', error.hint);
-
-      throw new Error(`Supabase error: ${error.message}`);
+      console.error('שגיאה באחזור היסטוריית תמחור סביבת עבודה:', error);
+      throw new Error(`שגיאת Supabase: ${error.message}`);
     }
 
     if (!data) {
-      console.warn("⚠️ Supabase returned no data at all.");
       return [];
     }
 
-    return data.map((item:any) => new PricingTierModel({
-      id: item.id,
-      workspaceType: item.workspace_type,
-      year1Price: item.year1_price,
-      year2Price: item.year2_price,
-      year3Price: item.year3_price,
-      year4Price: item.year4_price,
-      effectiveDate: item.effective_date,
-      active: item.active,
-      createdAt: item.created_at,
-      updatedAt: item.updated_at,
-    }));
+    return data.map(
+      (item) =>
+        new PricingTierModel({
+          id: item.id,
+          workspaceType: item.workspace_type,
+          year1Price: item.year1_price,
+          year2Price: item.year2_price,
+          year3Price: item.year3_price,
+          year4Price: item.year4_price,
+          twoDaysFromOfficePrice: item.two_days_from_office_price,
+          threeDaysFromOfficePrice: item.three_days_from_office_price,
+          effectiveDate: item.effective_date,
+          active: item.active,
+          createdAt: item.created_at,
+          updatedAt: item.updated_at,
+        })
+    );
   } catch (e) {
-    console.error('🔥 Exception in getPricingHistory:', e);
+    console.error('חריגה בפונקציה getPricingHistory:', e);
     throw e;
   }
 }
+
 
 export async function getCurrentPricingTier(
   workspaceType: WorkspaceType
 ): Promise<PricingTier | null> {
   try {
+    const now = new Date().toISOString();
+
     const { data, error } = await supabase
       .from('pricing_tiers')
       .select('*')
       .eq('workspace_type', workspaceType)
       .eq('active', true)
-      .order('effective_date', { ascending: false }) // מחיר עדכני הוא זה עם תאריך התחולה החדש ביותר
+      .lte('effective_date', now)
+      .order('effective_date', { ascending: false })
       .limit(1)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found (not an actual error)
-      console.error('Error fetching current pricing tier:', error);
-      throw new Error('Failed to fetch current pricing tier');
+    if (error && error.code !== 'PGRST116') {
+      console.error('שגיאה באחזור שכבת תמחור נוכחית:', error);
+      throw new Error('הפעולה לאחזור שכבת תמחור נוכחית נכשלה.');
     }
 
     if (!data) return null;
 
-    // מיפוי הנתונים מ-snake_case ל-CamelCase באמצעות המודל
     return new PricingTierModel({
       id: data.id,
       workspaceType: data.workspace_type,
@@ -238,13 +315,15 @@ export async function getCurrentPricingTier(
       year2Price: data.year2_price,
       year3Price: data.year3_price,
       year4Price: data.year4_price,
+      twoDaysFromOfficePrice: data.two_days_from_office_price,
+      threeDaysFromOfficePrice: data.three_days_from_office_price,
       effectiveDate: data.effective_date,
       active: data.active,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     });
   } catch (e) {
-    console.error('Exception in getCurrentPricingTier:', e);
+    console.error('חריגה בפונקציה getCurrentPricingTier:', e);
     throw e;
   }
 }
@@ -252,10 +331,9 @@ export async function getCurrentPricingTier(
 export async function updatePricingTier(
   id: ID,
   update: Partial<UpdatePricingTierRequest>,
-  updatedBy?: ID // הוסף אם קיים שדה updated_by בטבלה
+  updatedBy?: ID
 ): Promise<PricingTier> {
   try {
-    // שלב 1: שליפת הרשומה הקיימת כדי לקבל את כל השדות ולבצע ולידציות
     const { data: existingTier, error: fetchError } = await supabase
       .from('pricing_tiers')
       .select('*')
@@ -263,26 +341,25 @@ export async function updatePricingTier(
       .single();
 
     if (fetchError || !existingTier) {
-      console.error('Error fetching existing pricing tier:', fetchError);
-      throw new Error("שכבת תמחור לא נמצאה");
+      console.error('שגיאה באחזור שכבת תמחור קיימת:', fetchError);
+      throw new Error("שכבת תמחור לא נמצאה.");
     }
 
-    // חשוב: יש למפות את הנתונים הנכנסים מ-update (CamelCase)
-    // ואת existingTier (snake_case) לאובייקט בודד שמתאים למודל
     const updatedTierModel = new PricingTierModel({
-        id: existingTier.id,
-        workspaceType: update.workspaceType !== undefined ? update.workspaceType : existingTier.workspace_type,
-        year1Price: update.year1Price !== undefined ? update.year1Price : existingTier.year1_price,
-        year2Price: update.year2Price !== undefined ? update.year2Price : existingTier.year2_price,
-        year3Price: update.year3Price !== undefined ? update.year3Price : existingTier.year3_price,
-        year4Price: update.year4Price !== undefined ? update.year4Price : existingTier.year4_price,
-        effectiveDate: update.effectiveDate !== undefined ? update.effectiveDate : existingTier.effective_date,
-        active: existingTier.active, // <-- תיקון כאן: תמיד לוקח את הערך מ-existingTier
-        createdAt: existingTier.created_at, // לא משתנה
-        updatedAt: new Date().toISOString(), // תאריך עדכון נוכחי
+      id: existingTier.id,
+      workspaceType: update.workspaceType ?? existingTier.workspace_type,
+      year1Price: update.year1Price ?? existingTier.year1_price,
+      year2Price: update.year2Price ?? existingTier.year2_price,
+      year3Price: update.year3Price ?? existingTier.year3_price,
+      year4Price: update.year4Price ?? existingTier.year4_price,
+      twoDaysFromOfficePrice: update.twoDaysFromOfficePrice ?? existingTier.two_days_from_office_price,
+      threeDaysFromOfficePrice: update.threeDaysFromOfficePrice ?? existingTier.three_days_from_office_price,
+      effectiveDate: update.effectiveDate ?? existingTier.effective_date,
+      active: existingTier.active,
+      createdAt: existingTier.created_at,
+      updatedAt: new Date().toISOString(),
     });
 
-    // ולידציות
     if (
       update.year1Price !== undefined ||
       update.year2Price !== undefined ||
@@ -290,46 +367,60 @@ export async function updatePricingTier(
       update.year4Price !== undefined
     ) {
       validatePrices([
-        update.year1Price ?? updatedTierModel.year1Price,
-        update.year2Price ?? updatedTierModel.year2Price,
-        update.year3Price ?? updatedTierModel.year3Price,
-        update.year4Price ?? updatedTierModel.year4Price,
+        updatedTierModel.year1Price,
+        updatedTierModel.year2Price,
+        updatedTierModel.year3Price,
+        updatedTierModel.year4Price,
       ]);
     }
 
     if (update.effectiveDate) {
-      await checkEffectiveDateConflict(supabase, 'pricing_tiers', update.effectiveDate, { workspace_type: updatedTierModel.workspaceType }, id);
+      const todayStartOfDay = new Date();
+      todayStartOfDay.setHours(0, 0, 0, 0);
+
+      const newEffectiveDate = new Date(update.effectiveDate);
+      if (newEffectiveDate < todayStartOfDay) {
+        throw new Error("לא ניתן לעדכן תאריך תחילה לתאריך שכבר עבר.");
+      }
+
+      await checkEffectiveDateConflict(
+        supabase,
+        'pricing_tiers',
+        update.effectiveDate,
+        { workspace_type: updatedTierModel.workspaceType },
+        id
+      );
     }
 
-    // שלב 3: ביצוע העדכון במסד הנתונים
     const { data, error: updateError } = await supabase
       .from('pricing_tiers')
-      .update(updatedTierModel.toDatabaseFormat()) // שימוש ב-toDatabaseFormat()
+      .update(updatedTierModel.toDatabaseFormat())
       .eq('id', id)
       .select()
       .single();
 
     if (updateError) {
-      console.error('Error updating pricing tier:', updateError);
-      throw new Error('Failed to update pricing tier');
+      console.error('שגיאה בעדכון שכבת תמחור:', updateError);
+      throw new Error('הפעולה לעדכון שכבת תמחור נכשלה.');
     }
 
-    // מיפוי נתונים חזרה למודל CamelCase
     return new PricingTierModel({
-        id: data.id,
-        workspaceType: data.workspace_type,
-        year1Price: data.year1_price,
-        year2Price: data.year2_price,
-        year3Price: data.year3_price,
-        year4Price: data.year4_price,
-        effectiveDate: data.effective_date,
-        active: data.active,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
+      id: data.id,
+      workspaceType: data.workspace_type,
+      year1Price: data.year1_price,
+      year2Price: data.year2_price,
+      year3Price: data.year3_price,
+      year4Price: data.year4_price,
+      twoDaysFromOfficePrice: data.two_days_from_office_price,
+      threeDaysFromOfficePrice: data.three_days_from_office_price,
+      effectiveDate: data.effective_date,
+      active: data.active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
     });
 
   } catch (e) {
-    console.error('Exception in updatePricingTier:', e);
+    console.error('חריגה בפונקציה updatePricingTier:', e);
     throw e;
   }
 }
@@ -343,10 +434,9 @@ export async function bulkUpdatePricingTiers(
 
     for (const update of updates) {
       if (!update.workspaceType) {
-        throw new Error("חובה לציין סוג סביבת עבודה לעדכון");
+        throw new Error("חובה לציין סוג סביבת עבודה לעדכון.");
       }
 
-      // שליפת שכבת התמחור הפעילה הרלוונטית מה-DB
       const { data: tier, error: fetchError } = await supabase
         .from('pricing_tiers')
         .select('id')
@@ -355,40 +445,37 @@ export async function bulkUpdatePricingTiers(
         .single();
 
       if (fetchError || !tier) {
-        throw new Error(`לא נמצאה שכבת תמחור פעילה לסוג ${update.workspaceType}`);
+        throw new Error(`לא נמצאה שכבת תמחור פעילה לסוג ${update.workspaceType}.`);
       }
 
-      // קריאה לפונקציית העדכון עבור כל שכבה
       updatedTiersPromises.push(updatePricingTier(tier.id, update, updatedBy));
     }
 
     return Promise.all(updatedTiersPromises);
   } catch (e) {
-    console.error('Exception in bulkUpdatePricingTiers:', e);
+    console.error('חריגה בפונקציה bulkUpdatePricingTiers:', e);
     throw e;
   }
 }
 
 export async function deletePricingTier(id: ID): Promise<boolean> {
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('pricing_tiers')
-      .update({ active: false, updated_at: new Date().toISOString() })
+      .delete()
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting pricing tier:', error);
-      throw new Error("Failed to delete pricing tier");
+      console.error('שגיאה במחיקה פיזית של שכבת תמחור:', error);
+      throw new Error("הפעולה למחיקה פיזית של שכבת תמחור נכשלה.");
     }
 
-    console.log('Deleted pricing tier data:', data);
     return true;
   } catch (e) {
-    console.error('Exception in deletePricingTier:', e);
+    console.error('חריגה בפונקציה deletePricingTier:', e);
     throw e;
   }
 }
-
 // ========================
 // תמחור חדרי ישיבות - מעודכן לעבודה מול Supabase
 // ========================
@@ -397,29 +484,49 @@ export async function createMeetingRoomPricingWithHistory(
   request: UpdateMeetingRoomPricingRequest
 ): Promise<MeetingRoomPricing> {
   try {
-    // השבתת תמחורים פעילים קודמים ב-DB
-    const { error: updateError } = await supabase
-      .from('meeting_room_pricing')
-      .update({
-        active: false,
-        updated_at: new Date().toISOString(),
-        // updated_by: createdBy, // הוסף אם קיים שדה updated_by בטבלה
-      })
-      .eq('active', true);
+    const now = new Date();
+    const currentTimestamp = now.toISOString();
 
-    if (updateError) {
-      console.error('Error deactivating old meeting room pricings:', updateError);
-      throw new Error('Failed to deactivate old meeting room pricings');
+    // שלב 1: מצא את המחיר ה"פעיל" הנוכחי (ש effective_date שלו הוא היום או בעבר)
+    // זהו המחיר שאותו אנחנו רוצים להפוך ל-active: false
+    const { data: currentActivePricing, error: fetchCurrentError } = await supabase
+      .from('meeting_room_pricing')
+      .select('id') // אנחנו צריכים רק את ה-ID שלו
+      .eq('active', true)
+      .lte('effective_date', currentTimestamp) // תאריך התחלה הוא היום או בעבר
+      .order('effective_date', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (fetchCurrentError && fetchCurrentError.code !== 'PGRST116') {
+      console.error('שגיאה באחזור תמחור חדר ישיבות פעיל נוכחי:', fetchCurrentError);
+      throw new Error('הפעולה לאחזור תמחור חדר ישיבות פעיל נוכחי נכשלה');
     }
 
-    // יצירת תמחור חדש
+    // שלב 2: אם נמצא מחיר פעיל נוכחי, השבת אותו (active: false)
+    if (currentActivePricing) {
+      const { error: updateError } = await supabase
+        .from('meeting_room_pricing')
+        .update({
+          active: false,
+          updated_at: new Date().toISOString(),
+          // updated_by: createdBy, // הוסף אם קיים שדה updated_by בטבלה
+        })
+        .eq('id', currentActivePricing.id); // <--- עדכן רק את הרשומה הספציפית הזו
+
+      if (updateError) {
+        console.error('שגיאה בנטרול תמחור חדר ישיבות פעיל קודם:', updateError);
+        throw new Error('הפעולה לנטרול תמחור חדר ישיבות פעיל קודם נכשלה');
+      }
+    }
+
+    // שלב 3: יצירת תמחור חדש (שיהיה active: true באופן אוטומטי כפי שראינו בפונקציה createMeetingRoomPricing)
     return await createMeetingRoomPricing(request);
   } catch (e) {
-    console.error('Exception in createMeetingRoomPricingWithHistory:', e);
+    console.error('חריגה בפונקציה createMeetingRoomPricingWithHistory:', e);
     throw e;
   }
 }
-
 export async function createMeetingRoomPricing(
   request: UpdateMeetingRoomPricingRequest
 ): Promise<MeetingRoomPricing> {
@@ -479,7 +586,7 @@ export async function getMeetingRoomPricingHistory(): Promise<MeetingRoomPricing
       throw new Error('Failed to fetch meeting room pricing history');
     }
 
-    return data.map((item:any) => new MeetingRoomPricingModel({
+    return data.map(item => new MeetingRoomPricingModel({
       id: item.id,
       hourlyRate: item.hourly_rate,
       discountedHourlyRate: item.discounted_hourly_rate,
@@ -497,21 +604,23 @@ export async function getMeetingRoomPricingHistory(): Promise<MeetingRoomPricing
 
 export async function getCurrentMeetingRoomPricing(): Promise<MeetingRoomPricing | null> {
   try {
+    const now = new Date();
+    const currentTimestamp = now.toISOString();
     const { data, error } = await supabase
       .from('meeting_room_pricing')
       .select('*')
-      .eq('active', true)
-      .order('effective_date', { ascending: false })
-      .limit(1)
-      .single();
+      .eq('active', true) 
+      .lte('effective_date', currentTimestamp)
+      .order('effective_date', { ascending: false }) 
+      .limit(1) 
+      .single(); 
 
+    // טיפול בשגיאה של Supabase כאשר אין רשומות תואמות ('PGRST116')
     if (error && error.code !== 'PGRST116') {
       console.error('Error fetching current meeting room pricing:', error);
       throw new Error('Failed to fetch current meeting room pricing');
     }
-
     if (!data) return null;
-
     return new MeetingRoomPricingModel({
       id: data.id,
       hourlyRate: data.hourly_rate,
@@ -527,7 +636,6 @@ export async function getCurrentMeetingRoomPricing(): Promise<MeetingRoomPricing
     throw e;
   }
 }
-
 export async function updateMeetingRoomPricing(
   id: ID,
   update: Partial<UpdateMeetingRoomPricingRequest>,
@@ -604,14 +712,15 @@ export async function updateMeetingRoomPricing(
 
 export async function deleteMeetingRoomPricing(id: ID): Promise<boolean> {
   try {
+    // השתמש ב-.delete() כדי לבצע מחיקה פיזית
     const { error } = await supabase
-      .from('meeting_room_pricing')
-      .update({ active: false, updated_at: new Date().toISOString() })
+      .from('meeting_room_pricing') // ודאי ששם הטבלה נכון
+      .delete() // <--- השינוי העיקרי כאן!
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting meeting room pricing:', error);
-      throw new Error("Failed to delete meeting room pricing");
+      console.error('Error deleting meeting room pricing physically:', error);
+      throw new Error("Failed to physically delete meeting room pricing");
     }
 
     return true;
@@ -620,8 +729,31 @@ export async function deleteMeetingRoomPricing(id: ID): Promise<boolean> {
     throw e;
   }
 }
+// export async function getMeetingRoomPriceByDate(date: DateISO): Promise<number | null> {
+//   try {
+//     const { data, error } = await supabase
+//       .from('meeting_room_pricing')
+//       .select('*')
+//       .lte('effective_date', date)  // כל תאריך תחולה עד לתאריך המבוקש כולל
+//       .order('effective_date', { ascending: false })  // מיון מהתאריך הכי קרוב למעלה
+//       .limit(1)
+//       .single();
 
+//     if (error && error.code !== 'PGRST116') {
+//       console.error('Error fetching meeting room pricing by date:', error);
+//       throw new Error('Failed to fetch meeting room pricing by date');
+//     }
 
+//     if (!data) {
+//       return null; // אין תמחור תקף לתאריך זה או לפניו
+//     }
+
+//     return data.hourly_rate;
+//   } catch (e) {
+//     console.error('Exception in getMeetingRoomPriceByDate:', e);
+//     throw e;
+//   }
+// }
 // ========================
 // תמחור לאונג' - מעודכן לעבודה מול Supabase
 // ========================
@@ -632,17 +764,26 @@ export async function createLoungePricing(
   try {
     validatePrices([request.eveningRate, request.memberDiscountRate]);
 
-    if (request.eveningRate < request.memberDiscountRate) {
-      throw new Error("ההנחה לחברים לא יכולה להיות גבוהה מהמחיר הרגיל");
+    if (request.memberDiscountRate > request.eveningRate) { // תיקון: הנחה לא יכולה להיות גבוהה מהמחיר
+      throw new Error("הנחת חברים (memberDiscountRate) לא יכולה להיות גבוהה מהמחיר הרגיל (eveningRate).");
     }
 
+    const todayStartOfDay = new Date();
+    todayStartOfDay.setHours(0, 0, 0, 0); // מגדיר את היום הנוכחי לתחילתו (00:00:00)
+
+    const effectiveDate = new Date(request.effectiveDate);
+    if (effectiveDate < todayStartOfDay) {
+      throw new Error("לא ניתן להזין תאריך תחילה שכבר עבר.");
+    }
+
+    // בדיקה לקונפליקט תאריכים. פונקציה זו צריכה לוודא שאין תאריך effectiveDate זהה כבר קיים.
     await checkEffectiveDateConflict(supabase, 'lounge_pricing', request.effectiveDate);
 
     const newPricingModel = new LoungePricingModel({
       eveningRate: request.eveningRate,
       memberDiscountRate: request.memberDiscountRate,
       effectiveDate: request.effectiveDate,
-      active: true,
+      active: true, // <--- תמיד נוצר כ-active: true
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
@@ -655,7 +796,7 @@ export async function createLoungePricing(
 
     if (error) {
       console.error('Error creating lounge pricing:', error);
-      throw new Error('Failed to create lounge pricing');
+      throw new Error(error.message || 'שגיאה ביצירת תמחור לאונג׳');
     }
 
     return new LoungePricingModel({
@@ -677,34 +818,61 @@ export async function createLoungePricingWithHistory(
   request: UpdateLoungePricingRequest
 ): Promise<LoungePricing> {
   try {
-    const { error: updateError } = await supabase
-      .from('lounge_pricing')
-      .update({
-        active: false,
-        updated_at: new Date().toISOString(),
-        // updated_by: createdBy, // הוסף אם קיים שדה updated_by בטבלה
-      })
-      .eq('active', true);
+    const now = new Date();
+    const currentTimestamp = now.toISOString();
 
-    if (updateError) {
-      console.error('Error deactivating old lounge pricings:', updateError);
-      throw new Error('Failed to deactivate old lounge pricings');
+    // שלב 1: מצא את המחיר ה"פעיל" הנוכחי (זה שeffective_date שלו הוא היום או בעבר)
+    // זהו המחיר שאותו אנחנו רוצים להפוך ל-active: false
+    const { data: currentActivePricing, error: fetchCurrentError } = await supabase
+      .from('lounge_pricing')
+      .select('id') // אנחנו צריכים רק את ה-ID שלו
+      .eq('active', true) // רק מחיר שסומן כפעיל
+      .lte('effective_date', currentTimestamp) // תאריך התחלה הוא היום או בעבר
+      .order('effective_date', { ascending: false }) // הכי עדכני מבין הפעילים
+      .limit(1)
+      .single();
+
+    // טיפול בשגיאה שכיחה של Supabase כאשר אין רשומות תואמות ('PGRST116')
+    if (fetchCurrentError && fetchCurrentError.code !== 'PGRST116') {
+      console.error('שגיאה באחזור תמחור לאונג׳ פעיל נוכחי:', fetchCurrentError);
+      throw new Error('הפעולה לאחזור תמחור לאונג׳ פעיל נוכחי נכשלה');
     }
 
+    // שלב 2: אם נמצא מחיר פעיל נוכחי, השבת אותו (active: false)
+    if (currentActivePricing) {
+      const { error: updateError } = await supabase
+        .from('lounge_pricing')
+        .update({
+          active: false,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', currentActivePricing.id); // <--- עדכן רק את הרשומה הספציפית הזו
+
+      if (updateError) {
+        console.error('שגיאה בנטרול תמחור לאונג׳ פעיל קודם:', updateError);
+        throw new Error('הפעולה לנטרול תמחור לאונג׳ פעיל קודם נכשלה');
+      }
+    }
+
+    // שלב 3: יצירת תמחור חדש (שיהיה active: true באופן אוטומטי כפי שראינו בפונקציה createLoungePricing)
     return await createLoungePricing(request);
-  } catch (e) {
-    console.error('Exception in createLoungePricingWithHistory:', e);
-    throw e;
+  } catch (e: any) {
+    console.error('חריגה בפונקציה createLoungePricingWithHistory:', e);
+    throw new Error(e.message || 'שגיאה כללית ביצירת תמחור חדש');
   }
 }
 
 export async function getCurrentLoungePricing(): Promise<LoungePricing | null> {
   try {
+    const now = new Date();
+    const currentTimestamp = now.toISOString(); // <--- שינוי: כולל שעות ודקות להשוואה מדויקת
+
     const { data, error } = await supabase
       .from('lounge_pricing')
       .select('*')
-      .eq('active', true)
-      .order('effective_date', { ascending: false })
+      .eq('active', true) // <--- שינוי: מסנן רק מחירים פעילים
+      .lte('effective_date', currentTimestamp) // <= היום (כולל שעה)
+      .order('effective_date', { ascending: false }) // הכי עדכני
       .limit(1)
       .single();
 
@@ -719,8 +887,8 @@ export async function getCurrentLoungePricing(): Promise<LoungePricing | null> {
       id: data.id,
       eveningRate: data.evening_rate,
       memberDiscountRate: data.member_discount_rate,
-      effectiveDate: data.effective_date,
       active: data.active,
+      effectiveDate: data.effective_date,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     });
@@ -742,7 +910,7 @@ export async function getLoungePricingHistory(): Promise<LoungePricing[]> {
       throw new Error('Failed to fetch lounge pricing history');
     }
 
-    return data.map((item:any) => new LoungePricingModel({
+    return data.map(item => new LoungePricingModel({
       id: item.id,
       eveningRate: item.evening_rate,
       memberDiscountRate: item.member_discount_rate,
@@ -775,13 +943,13 @@ export async function updateLoungePricing(
     }
 
     const updatedPricingModel = new LoungePricingModel({
-        id: existingPricing.id,
-        eveningRate: update.eveningRate !== undefined ? update.eveningRate : existingPricing.evening_rate,
-        memberDiscountRate: update.memberDiscountRate !== undefined ? update.memberDiscountRate : existingPricing.member_discount_rate,
-        effectiveDate: update.effectiveDate !== undefined ? update.effectiveDate : existingPricing.effective_date,
-        active: existingPricing.active, // <-- תיקון כאן
-        createdAt: existingPricing.created_at,
-        updatedAt: new Date().toISOString(),
+      id: existingPricing.id,
+      eveningRate: update.eveningRate !== undefined ? update.eveningRate : existingPricing.evening_rate,
+      memberDiscountRate: update.memberDiscountRate !== undefined ? update.memberDiscountRate : existingPricing.member_discount_rate,
+      effectiveDate: update.effectiveDate !== undefined ? update.effectiveDate : existingPricing.effective_date,
+      active: existingPricing.active, // שומר על סטטוס ה-active הקיים
+      createdAt: existingPricing.created_at,
+      updatedAt: new Date().toISOString(),
     });
 
     if (
@@ -793,15 +961,25 @@ export async function updateLoungePricing(
         update.memberDiscountRate ?? updatedPricingModel.memberDiscountRate,
       ]);
 
-      if (
-        (update.eveningRate !== undefined ? update.eveningRate : updatedPricingModel.eveningRate) <
-        (update.memberDiscountRate !== undefined ? update.memberDiscountRate : updatedPricingModel.memberDiscountRate)
-      ) {
-        throw new Error("ההנחה לחברים לא יכולה להיות גבוהה מהמחיר הרגיל");
+      // ולידציה שוב על המחירים המעודכנים (או הקיימים אם לא עודכנו)
+      if (updatedPricingModel.memberDiscountRate > updatedPricingModel.eveningRate) { // תיקון כאן
+        throw new Error("הנחת חברים (memberDiscountRate) לא יכולה להיות גבוהה מהמחיר הרגיל (eveningRate).");
       }
     }
 
     if (update.effectiveDate) {
+      const todayStartOfDay = new Date();
+      todayStartOfDay.setHours(0, 0, 0, 0);
+
+      const newEffectiveDate = new Date(update.effectiveDate);
+      // מונע עדכון effectiveDate לתאריך שכבר עבר
+      // אם תאריך ה-effectiveDate הקיים הוא בעבר, וניסו לעדכן אותו לתאריך חדש שגם הוא בעבר, זה אמור להיכשל.
+      // אם תאריך ה-effectiveDate הקיים הוא בעבר, וניסו לעדכן אותו לתאריך עתידי, זה בסדר.
+      // אם תאריך ה-effectiveDate הקיים הוא בעתיד, וניסו לעדכן אותו לתאריך שעבר, זה אמור להיכשל.
+      if (newEffectiveDate < todayStartOfDay) {
+          throw new Error("לא ניתן לעדכן תאריך תחילה לתאריך שכבר עבר.");
+      }
+
       await checkEffectiveDateConflict(supabase, 'lounge_pricing', update.effectiveDate, {}, id);
     }
 
@@ -836,17 +1014,179 @@ export async function deleteLoungePricing(id: ID): Promise<boolean> {
   try {
     const { error } = await supabase
       .from('lounge_pricing')
-      .update({ active: false, updated_at: new Date().toISOString() })
+      .delete()
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting lounge pricing:', error);
-      throw new Error("Failed to delete lounge pricing");
+      console.error('Error deleting lounge pricing physically:', error);
+      throw new Error("Failed to physically delete lounge pricing");
     }
 
     return true;
   } catch (e) {
     console.error('Exception in deleteLoungePricing:', e);
+    throw e;
+  }
+}
+
+export async function createOrUpdatePricingTier(
+  request: PricingTierCreateRequest | (Partial<UpdatePricingTierRequest> & { id: ID }),
+  createdBy: ID
+): Promise<PricingTier> {
+  try {
+    // 1. ולידציות בסיסיות ולוודא ששדות קריטיים קיימים ומוגדרים נכון
+    if (!request.workspaceType) {
+      throw new Error("חובה לבחור סוג סביבת עבודה.");
+    }
+
+    if (request.effectiveDate === undefined) {
+      throw new Error("תאריך התחולה (effectiveDate) חייב להיות מוגדר.");
+    }
+    const effectiveDate = new Date(request.effectiveDate);
+
+    // בטיפול בשדות המחיר נכלול גם את השדות החדשים
+    const year1Price = request.year1Price!;
+    const year2Price = request.year2Price!;
+    const year3Price = request.year3Price!;
+    const year4Price = request.year4Price!;
+    const twoDaysFromOfficePrice = request.twoDaysFromOfficePrice!;
+    const threeDaysFromOfficePrice = request.threeDaysFromOfficePrice!;
+
+    validatePrices([
+      year1Price,
+      year2Price,
+      year3Price,
+      year4Price,
+      twoDaysFromOfficePrice,
+      threeDaysFromOfficePrice,
+    ]);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (effectiveDate < today) {
+      throw new Error("תאריך התחולה חייב להיות היום או בעתיד.");
+    }
+
+    let existingTier: PricingTier | null = null;
+    let isUpdate = false;
+    let excludeId: ID | undefined = undefined;
+
+    // 2. קביעה האם זו פעולת יצירה או עדכון
+    if ('id' in request && typeof request.id === 'string' && request.id !== '') {
+        isUpdate = true;
+        excludeId = request.id;
+
+        const { data, error } = await supabase
+            .from('pricing_tiers')
+            .select('*')
+            .eq('id', excludeId)
+            .single();
+
+        if (error || !data) {
+            console.error('שגיאה באחזור שכבת תמחור קיימת לעדכון:', error);
+            throw new Error("שכבת תמחור לעדכון לא נמצאה.");
+        }
+        existingTier = new PricingTierModel(data);
+    }
+
+    // 3. נטרול שכבות פעילות קודמות ביצירה חדשה בלבד
+    if (!isUpdate) {
+        const { error: deactivateError } = await supabase
+            .from('pricing_tiers')
+            .update({ active: false, updated_at: new Date().toISOString() })
+            .eq('workspace_type', request.workspaceType)
+            .eq('active', true);
+
+        if (deactivateError) {
+            console.error('שגיאה בנטרול שכבות תמחור פעילות קודמות לפני יצירה:', deactivateError);
+            throw new Error('הפעולה לנטרול שכבות תמחור פעילות קודמות נכשלה.');
+        }
+    }
+
+    // 4. בדיקת התנגשות תאריכים
+    await checkEffectiveDateConflict(
+      supabase,
+      'pricing_tiers',
+      request.effectiveDate,
+      { workspace_type: request.workspaceType },
+      excludeId
+    );
+
+    let resultData: any;
+    let resultError: any;
+
+    // 5. ביצוע פעולת Insert או Update
+    if (isUpdate && existingTier) {
+        const updatedFields = {
+            workspace_type: request.workspaceType,
+            year1_price: year1Price,
+            year2_price: year2Price,
+            year3_price: year3Price,
+            year4_price: year4Price,
+            two_days_from_office_price: twoDaysFromOfficePrice,
+            three_days_from_office_price: threeDaysFromOfficePrice,
+            effective_date: request.effectiveDate,
+            updated_at: new Date().toISOString(),
+            // active: request.active, // אם רלוונטי
+            // updated_by: createdBy, // אם יש שדה כזה במסד
+        };
+
+        const { data, error } = await supabase
+            .from('pricing_tiers')
+            .update(updatedFields)
+            .eq('id', excludeId!)
+            .select()
+            .single();
+
+        resultData = data;
+        resultError = error;
+    } else {
+        const newPricingTierModel = new PricingTierModel({
+            workspaceType: request.workspaceType,
+            year1Price,
+            year2Price,
+            year3Price,
+            year4Price,
+            twoDaysFromOfficePrice,
+            threeDaysFromOfficePrice,
+            effectiveDate: request.effectiveDate,
+            active: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        });
+
+        const { data, error } = await supabase
+            .from('pricing_tiers')
+            .insert(newPricingTierModel.toDatabaseFormat())
+            .select()
+            .single();
+
+        resultData = data;
+        resultError = error;
+    }
+
+    if (resultError) {
+      console.error('שגיאה בפעולת תמחור (יצירה/עדכון):', resultError);
+      throw new Error('הפעולה ליצירת/עדכון שכבת תמחור נכשלה.');
+    }
+
+    return new PricingTierModel({
+      id: resultData.id,
+      workspaceType: resultData.workspace_type,
+      year1Price: resultData.year1_price,
+      year2Price: resultData.year2_price,
+      year3Price: resultData.year3_price,
+      year4Price: resultData.year4_price,
+      twoDaysFromOfficePrice: resultData.two_days_from_office_price,
+      threeDaysFromOfficePrice: resultData.three_days_from_office_price,
+      effectiveDate: resultData.effective_date,
+      active: resultData.active,
+      createdAt: resultData.created_at,
+      updatedAt: resultData.updated_at,
+    });
+  } catch (e) {
+    console.error('חריגה בפונקציה createOrUpdatePricingTier:', e);
     throw e;
   }
 }

@@ -54,3 +54,18 @@ export const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
+// themeConfig.ts
+export const theme = {
+  direction: "rtl",
+  colors: {
+    primary: "#2563eb",      // כחול
+    secondary: "#6b7280",    // אפור
+    accent: "#dc2626",       // אדום למחיקה
+  },
+  typography: {
+    fontFamily: {
+      hebrew: "Assistant, sans-serif",
+      latin: "Arial, sans-serif",
+    },
+  },
+};

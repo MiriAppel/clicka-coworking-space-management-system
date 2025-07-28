@@ -1,4 +1,4 @@
-import { parseISO, format } from 'date-fns'; // ייבוא פונקציות עזר לטיפול בתאריכים
+import {parseISO,  format } from 'date-fns'; // ייבוא פונקציות עזר לטיפול בתאריכים
 
 /**
  * פונקציה לקיבוץ מערך נתונים לפי תקופה (חודש / רבעון / שנה)

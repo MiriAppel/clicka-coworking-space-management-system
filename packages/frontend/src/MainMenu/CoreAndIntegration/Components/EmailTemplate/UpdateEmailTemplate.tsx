@@ -86,8 +86,8 @@ export const UpdateEmailTemplate = ({ emailTemplate, onClose, onEmailTemplateUpd
     useEffect(() => {
         const currentLanguage = methods.watch("language");
         setTextDirection(currentLanguage === 'he' ? 'rtl' : 'ltr');
-    }, [methods.watch("language")]);
-
+    }, [methods]);
+    //methods.watch("language")
     return (
         <div className={`max-w-2xl mx-auto p-6`} style={{ direction: textDirection }}>
             <div className="flex justify-between items-center mb-6">

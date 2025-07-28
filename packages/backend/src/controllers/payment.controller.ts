@@ -1,73 +1,94 @@
-// payment.controller.ts
-import { Request, Response } from 'express';
-import { PaymentService } from '../services/payments.service';
-import type{ ID } from 'shared-types';
+import { Request, Response } from "express";
+import { PaymentService, sendPaymentProblemEmailInternal} from "../services/payments.service";
+import { UserTokenService } from "../services/userTokenService";
 
-export const payment = {
-  async recordPayment(req: Request, res: Response) {
-    try {
-      const payment = await PaymentService.recordPayment(req.body, req.body.user.id);
-      res.status(201).json(payment);
-    } catch (error:any) {
-      res.status(400).json({ error: error.message });
-    }
-  },
 
-  async getCustomerBalance(req: Request, res: Response) {
-    try {
-      const balance = await PaymentService.getCustomerBalance(req.params.customerId);
-      res.json(balance);
-    } catch (error:any) {
-      res.status(400).json({ error: error.message });
-    }
-  },
-
-  async getOverdueInvoices(req: Request, res: Response) {
-    try {
-      const overdue = await paymentService.getOverdueInvoices();
-      res.json(overdue);
-    } catch (error:any) {
-      res.status(400).json({ error: error.message });
-    }
-  },
-
-  async getPaymentHistory(req: Request, res: Response) {
-    try {
-      const payments = await paymentService.getPaymentHistory(req.params.customerId);
-      res.json(payments);
-    } catch (error:any) {
-      res.status(400).json({ error: error.message });
-    }
-  },
-
-  async matchPaymentsToInvoices(req: Request, res: Response) {
-    try {
-      await paymentService.matchPaymentsToInvoices(req.params.customerId, req.body);
-      res.status(200).json({ message: 'התשלומים הותאמו בהצלחה' });
-    } catch (error:any) {
-      res.status(400).json({ error: error.message });
-    }
-  },
-
-  async matchPaymentToInvoice(req: Request, res: Response) {
-    try {
-      await paymentService.matchPaymentsToInvoice(req.params.customerId, req.body.payment, req.body.invoice);
-      res.status(200).json({ message: 'התשלום שויך בהצלחה לחשבונית' });
-    } catch (error:any) {
-      res.status(400).json({ error: error.message });
-    }
-  }
-  
-};
-//לרחל
-const paymentService = new PaymentService();
-// תיעוד תשלום חדש
-export const recordPaymentController = (req: Request, res: Response) => {
+export async function getPaymentsByCustomer(req: Request, res: Response) {
   try {
-    const userId: ID = req.body.user?.id || "SYSTEM";
-    const payment = paymentService.recordAndApplyPayment(req.body, userId);
-    res.status(201).json(payment);
+    const { dateFrom, dateTo, customerIds } = req.body;
+
+    if (!dateFrom || !dateTo) {
+      return res.status(400).json({ error: "Missing required date range." });
+    }
+
+    const payments = await PaymentService.getPaymentByDateAndCIds({
+      dateFrom,
+      dateTo,
+      customerIds,
+    });
+
+    res.json(payments);
   } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
+    console.error("Controller Error:", error);
+    res.status(500).json({ error: "Failed to fetch payments" });
+  }
+}
+const paymentService = new PaymentService();
+export const sendPaymentReminder = async (req: Request, res: Response) => {
+  try {
+    console.log("sendPaymentReminder called with body:", req.body);
+
+    const userTokenService = new UserTokenService();
+    const token = await userTokenService.getSystemAccessToken();
+
+    const {
+      customerName,
+      amount,
+      invoiceNumber,
+      dueDate,
+    } = req.body;
+
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized: missing access token" });
+    }
+
+    if (!customerName || !amount || !invoiceNumber || !dueDate ) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    await paymentService.sendPaymentReminderEmail(
+      customerName,
+      amount,
+      invoiceNumber,
+      dueDate,
+      token
+    );
+
+    res.status(200).json({ message: "Payment reminder email sent successfully." });
+  } catch (error) {
+    console.error("Error in sendPaymentReminder:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
+//////////////////////////////////////////////////////////
+
+export const sendPaymentProblemEmail = async (req: Request, res: Response) => {
+  try {
+    const {
+      customerName,
+      invoiceNumber,
+      amount,
+      paymentStatus,
+      invoiceUrl,
+      customerEmail,
+    } = req.body;
+
+    const token = await new UserTokenService().getSystemAccessToken();
+
+    await sendPaymentProblemEmailInternal(
+      customerName,
+      invoiceNumber,
+      amount,
+      paymentStatus,
+      invoiceUrl,
+      customerEmail,
+      token
+    );
+
+    res.status(200).send("Email sent successfully");
+  } catch (error) {
+    console.error("Error sending payment problem email:", error);
+    res.status(500).send("Failed to send email");
+  }
+};
+
