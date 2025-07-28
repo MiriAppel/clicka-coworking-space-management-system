@@ -26,10 +26,10 @@ userRouter.put("/updateGoogleIdUser/:id", userController.updateGoogleIdUser.bind
 
 //put
 
-userRouter.put("/updateUser/:id", userController.updateUser.bind(userController));
+userRouter.put("/updateUser/:id", authorizeUser([UserRole.ADMIN]), userController.updateUser.bind(userController));
 
 //delete
 
-userRouter.delete("/deleteUser/:id", userController.deleteUser.bind(userController));
+userRouter.delete("/deleteUser/:id", authorizeUser([UserRole.ADMIN]), userController.deleteUser.bind(userController));
 
 export default userRouter;

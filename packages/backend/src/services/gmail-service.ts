@@ -1,81 +1,87 @@
-import { google } from 'googleapis';
-import { SendEmail, SendEmailRequest } from 'shared-types/google';
-import { UserTokenService } from './userTokenService';
-import { EmailTemplateService } from './emailTemplate.service';
-import { customerService } from './customer.service';
-import { ID } from 'shared-types';
+import { google } from "googleapis";
+import { SendEmail, SendEmailRequest } from "shared-types/google";
+import { UserTokenService } from "./userTokenService";
+import { EmailTemplateService } from "./emailTemplate.service";
+import { customerService } from "./customer.service";
+import { ID } from "shared-types";
 
 function getAuth(token: string) {
   const client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET
+    process.env.GOOGLE_CLIENT_SECRET,
   );
   client.setCredentials({ access_token: token });
   return client;
 }
 
 function encodeMessage(request: SendEmail): string {
-  const boundaryMixed = '__MIXED_BOUNDARY__';
-  const boundaryAlt = '__ALT_BOUNDARY__';
+  const boundaryMixed = "__MIXED_BOUNDARY__";
+  const boundaryAlt = "__ALT_BOUNDARY__";
 
   const headers = [
     `From: me`,
-    `To: ${request.to.join(', ')}`,
-    request.cc?.length ? `Cc: ${request.cc.join(', ')}` : '',
-    request.bcc?.length ? `Bcc: ${request.bcc.join(', ')}` : '',
-    `Subject: ${request.subject}`,
-    'MIME-Version: 1.0',
+    `To: ${request.to.join(", ")}`,
+    request.cc?.length ? `Cc: ${request.cc.join(", ")}` : "",
+    request.bcc?.length ? `Bcc: ${request.bcc.join(", ")}` : "",
+    `Subject: ${encodeSubject(request.subject)}`,
+    "MIME-Version: 1.0",
     `Content-Type: multipart/mixed; boundary="${boundaryMixed}"`,
-  ].filter(Boolean).join('\n');
+  ].filter(Boolean).join("\n");
 
-  const bodyPlain = request.isHtml ? 'This email requires an HTML viewer.' : request.body;
-  const bodyHtml = request.isHtml ? request.body : '';
+  const bodyPlain = request.isHtml
+    ? "This email requires an HTML viewer."
+    : request.body;
+  const bodyHtml = request.isHtml ? request.body : "";
 
   const altPart = [
     `--${boundaryMixed}`,
     `Content-Type: multipart/alternative; boundary="${boundaryAlt}"`,
-    '',
+    "",
     `--${boundaryAlt}`,
     'Content-Type: text/plain; charset="UTF-8"',
-    'Content-Transfer-Encoding: 7bit',
-    '',
+    "Content-Transfer-Encoding: 7bit",
+    "",
     bodyPlain,
     `--${boundaryAlt}`,
     'Content-Type: text/html; charset="UTF-8"',
-    'Content-Transfer-Encoding: 7bit',
-    '',
+    "Content-Transfer-Encoding: 7bit",
+    "",
     bodyHtml,
     `--${boundaryAlt}--`,
-  ].join('\n');
+  ].join("\n");
 
   const attachmentParts = request.attachments?.map((attachment) => {
-    const base64Content = typeof attachment.data === 'string'
+    const base64Content = typeof attachment.data === "string"
       ? attachment.data
-      : attachment.data.toString('base64');
+      : attachment.data.toString("base64");
 
     return [
       `--${boundaryMixed}`,
       `Content-Type: ${attachment.mimeType}; name="${attachment.filename}"`,
-      'Content-Transfer-Encoding: base64',
+      "Content-Transfer-Encoding: base64",
       `Content-Disposition: attachment; filename="${attachment.filename}"`,
-      '',
+      "",
       base64Content,
-    ].join('\n');
+    ].join("\n");
   }) || [];
 
   const fullMessage = [
     headers,
-    '',
+    "",
     altPart,
     ...attachmentParts,
     `--${boundaryMixed}--`,
-  ].join('\n');
+  ].join("\n");
 
   return Buffer.from(fullMessage)
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
+export function encodeSubject(subject: string): string {
+  return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
 }
 
 const MAX_BATCH_SIZE = 10; // כמות המיילים בכל קבוצה
@@ -83,7 +89,7 @@ const RETRY_LIMIT = 6;
 
 export async function sendEmailsInBatch(
   emails: SendEmail[],
-  accessToken: string
+  accessToken: string,
 ): Promise<void> {
   const auth = new google.auth.OAuth2();
   auth.setCredentials({ access_token: accessToken });
@@ -101,10 +107,10 @@ export async function sendEmailsInBatch(
 }
 async function sendSingleEmail(email: SendEmail, auth: any) {
   const raw = encodeMessage(email); // פונקציה שיוצרת מייל מקודד
-   const gmail = google.gmail({ version: 'v1', auth });
+  const gmail = google.gmail({ version: "v1", auth });
   await gmail.users.messages.send({
     auth,
-    userId: 'me',
+    userId: "me",
     requestBody: {
       raw,
     },
@@ -113,7 +119,10 @@ async function sendSingleEmail(email: SendEmail, auth: any) {
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-async function retryWithBackoff(fn: () => Promise<void>, retries = RETRY_LIMIT): Promise<void> {
+async function retryWithBackoff(
+  fn: () => Promise<void>,
+  retries = RETRY_LIMIT,
+): Promise<void> {
   let delayMs = 1000;
 
   for (let i = 0; i < retries; i++) {
@@ -135,8 +144,12 @@ async function retryWithBackoff(fn: () => Promise<void>, retries = RETRY_LIMIT):
   throw new Error(`שליחה נכשלה לאחר ${RETRY_LIMIT} ניסיונות`);
 }
 
-export async function sendEmail(userId: string, request: SendEmail, token: string) {
-  const gmail = google.gmail({ version: 'v1', auth: getAuth(token) });
+export async function sendEmail(
+  userId: string,
+  request: SendEmail,
+  token: string,
+) {
+  const gmail = google.gmail({ version: "v1", auth: getAuth(token) });
   const raw = encodeMessage(request);
   const res = await gmail.users.messages.send({ userId, requestBody: { raw } });
   return res.data;
@@ -197,8 +210,9 @@ export const sendEmailToConfrim = async (email: string | undefined, id: ID) => {
   const token = await userTokenService.getSystemAccessToken();
   const template = await emailService.getTemplateByName("אימות מייל");
   const customer = await customerservice.getById(id);
-  if (!token)
-    throw console.log("the token worng" ,token);
+  if (!token) {
+    throw console.log("the token worng", token);
+  }
   if (!template) {
     console.warn("email template not found", template);
     return;
@@ -207,18 +221,18 @@ export const sendEmailToConfrim = async (email: string | undefined, id: ID) => {
     template.bodyHtml,
     {
       "name": customer.name,
-      "link": `http://localhost:3001/api/customers/confirm-email/${id}/${email}`
+      "link":
+        `http://localhost:3001/api/customers/confirm-email/${id}/${email}`,
     },
   );
   await sendEmail(
     "me",
     {
       to: [email ?? ""],
-      subject: template.subject,
+      subject: encodeSubject(template.subject),
       body: renderedHtml,
       isHtml: true,
     },
     token,
   );
 };
-

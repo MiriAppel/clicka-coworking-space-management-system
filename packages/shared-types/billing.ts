@@ -11,6 +11,7 @@ export enum InvoiceStatus {
   PARTIALLY_PAID = 'PARTIALLY_PAID',
   OVERDUE = 'OVERDUE',
   CANCELED = 'CANCELED',
+  ///ע"פ הדוגמה צריך להוריד את sent
   SENT = 'SENT',
 }
 
@@ -48,12 +49,10 @@ export interface BillingItem {
   booking_id?: ID;
   createdAt: DateISO;
   updatedAt: DateISO;
-  
 }
-
 // Invoice model
 export interface Invoice {
-  id: ID;
+  id?: ID;
   invoice_number: string;
   customer_id: ID;
   customer_name: string;
@@ -62,22 +61,25 @@ export interface Invoice {
   due_date: DateISO;
   items: BillingItem[];
   subtotal: number;
-
-  taxtotal: number;
+  tax_total: number;
+  payment_due_reminder?: boolean;
+  payment_dueReminder_sent_at?: DateISO;
+    // //הוספת שדות במקום
+  // tax_amount:number
+  // tax_rate:number
   // total: number;
-  // amount_paid: number;
-
-  // balance: number;
+  // amountPaid: number;
+  //הוספת שדה
+  // paid_date: DateISO 
+  //balance: number;
   // notes?: string;
   // pdfFile?: FileReference;
-  payment_due_reminder?: boolean;
-  payment_dueReminder_sentAt?: DateISO;
   //הוספה שדות במקום 
   // billingPeriodStart :DateISO
   // billingPeriodEnd :DateISO
   // templateId:ID 
-  createdAt: DateISO;
-  updatedAt: DateISO;
+  created_at: DateISO;
+  updated_at: DateISO;
 }
 
 // Payment model
@@ -232,6 +234,6 @@ export enum PaymentStatus {
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
   CANCELED = 'CANCELED'
-
 }
+
 

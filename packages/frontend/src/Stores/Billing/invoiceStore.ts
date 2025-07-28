@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import axios from 'axios';
@@ -55,7 +54,6 @@ interface InvoiceState {
   clearError: () => void;
 }
 
-
 export const useInvoiceStore = create<InvoiceState>()(
   devtools(
     persist(
@@ -79,9 +77,9 @@ export const useInvoiceStore = create<InvoiceState>()(
                 due_date: '2024-06-30',
                 items: [],
                 subtotal: 100,
-                taxtotal: 17,
-                createdAt: '2024-06-01',
-                updatedAt: '2024-06-01'
+                tax_total: 17,
+                created_at: '2024-06-01',
+                updated_at: '2024-06-01'
               }
             ],
             loading: false
@@ -91,7 +89,7 @@ export const useInvoiceStore = create<InvoiceState>()(
         getAllInvoices: async () => {
           set({ loading: true, error: null });
           try {
-            const response = await axios.get('http://localhost:3001/api/invoices/');
+            const response = await axios.get('/api/invoices');
             // השרת מחזיר אובייקט עם message ו-invoices
             const invoicesData = Array.isArray(response.data.invoices) ? response.data.invoices : [];
             const processedInvoices = invoicesData.map((invoice: any) => {
@@ -112,13 +110,21 @@ export const useInvoiceStore = create<InvoiceState>()(
             throw error;
           }
         },
+        getAllInvoiceItems: async (invoiceId) => {
+          try {
+            const response = await axios.get(`/api/invoices/${invoiceId}/items`);
+            return response.data;
+          } catch (error) {
+            console.error('Error fetching invoice items:', error);
+            throw error;
+          }
+        },
         collection: [],
-
 
         getCustomersCollection: async () => {
           set({ loading: true, error: null });
-          try { 
-            const response = await axios.get('http://localhost:3001/api/invoices/getCustomersCollection');
+          try {
+            const response = await axios.get('/api/invoices/getCustomersCollection');
             const collectionData = Array.isArray(response.data.collectionDetails) ? response.data.collectionDetails : [];
             set({ collection: collectionData, loading: false });
 
@@ -139,14 +145,11 @@ export const useInvoiceStore = create<InvoiceState>()(
           }
         },
 
-
-
-
         // יצירת חשבונית חדשה
         createInvoice: async (newInvoice) => {
           set({ loading: true, error: null });
           try {
-            const response = await axios.post('http://localhost:3001/api/invoices', newInvoice);
+            const response = await axios.post('api/invoices', newInvoice);
             set((state) => ({
               invoices: Array.isArray(state.invoices) ? [...state.invoices, response.data] : [response.data],
               loading: false
@@ -158,21 +161,13 @@ export const useInvoiceStore = create<InvoiceState>()(
             throw error;
           }
         },
-        getAllInvoiceItems: async (invoiceId) => {
-          try {
-            const response = await axios.get(`http://localhost:3001/api/invoices/${invoiceId}/items`);
-            return response.data;
-          } catch (error) {
-            console.error('Error fetching invoice items:', error);
-            throw error;
-          }
-        },
-        // עדכון חשבונית קיימת
+
+      // עדכון חשבונית קיימת
         updateInvoice: async (invoiceId, updates) => {
           try {
             console.log('Store - Invoice Number:', invoiceId);
             console.log('Store - Updates:', JSON.stringify(updates, null, 2));
-            const response = await axios.put(`http://localhost:3001/api/invoices/${invoiceId}`, updates);
+            const response = await axios.put(`/api/invoices/${invoiceId}`, updates);
             console.log('Store - Response:', response.data);
             set((state) => ({
               invoices: state.invoices.map(invoice =>
@@ -193,9 +188,8 @@ export const useInvoiceStore = create<InvoiceState>()(
         deleteInvoice: async (id) => {
           try {
             console.log('מוחק חשבונית:', id);
-            console.log('URL:', `http://localhost:3001/api/invoices/${id}`);
-
-            const response = await axios.delete(`http://localhost:3001/api/invoices/${id}`);
+            console.log('URL:', `/api/invoices/${id}`);
+            const response = await axios.delete(`/api/invoices/${id}`);
             console.log('תגובה מהשרת:', response);
 
             set((state) => {
@@ -225,7 +219,7 @@ export const useInvoiceStore = create<InvoiceState>()(
         generateMonthlyInvoices: async () => {
           set({ loading: true, error: null });
           try {
-            const response = await axios.post('http://localhost:3001/api/invoices/generateMonthly');
+            const response = await axios.post('api/invoices/generateMonthly');
             set({ invoices: response.data, loading: false });
             return response.data;
           } catch (error) {
@@ -243,7 +237,7 @@ export const useInvoiceStore = create<InvoiceState>()(
         // שליחת חשבונית למייל הלקוח
         sendInvoiceByEmail: async (invoiceId, email) => {
           try {
-            await axios.post(`http://localhost:3001/api/invoices/${invoiceId}/send`, { email });
+            await axios.post(`api/invoices/${invoiceId}/send`, { email });
             await get().updateInvoiceStatus(invoiceId, InvoiceStatus.DRAFT);
           } catch (error) {
             set({ error: 'Error sending invoice by email' });

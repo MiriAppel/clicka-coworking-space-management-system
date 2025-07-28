@@ -18,5 +18,6 @@
     "skipLibCheck": true
   },
   // "include": [ "core.ts", "customer.ts", "google.ts", "language.ts", "mapCoordinates.ts", "occupancy.ts", "report.ts", "spaceAssignment.ts", "workspaceMap.ts"]
-  "include": ["./"]
+"include": ["*.ts"],
+"exclude": ["dist", "node_modules"]
 }

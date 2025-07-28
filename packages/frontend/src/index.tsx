@@ -19,7 +19,6 @@ function Root() {
           <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID!}>
             <BrowserRouter>
               <div className="p-4 gap-4 items-start">
-                {/* כפתורי שפה מעוצבים */}
                 <div className="gap-2 bg-gray-100 rounded-full p-1 shadow-inner w-fit">
                   {["he", "en"].map((l) => (
                     <button

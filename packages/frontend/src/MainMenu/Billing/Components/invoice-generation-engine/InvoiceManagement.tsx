@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useInvoiceStore } from '../../../../Stores/Billing/invoiceStore';
-import { InvoiceStatus, BillingItemType, CreateInvoiceRequest } from 'shared-types';
+import { BillingItemType, CreateInvoiceRequest } from 'shared-types';
 import { Table, TableColumn } from '../../../../Common/Components/BaseComponents/Table';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import Swal from 'sweetalert2';
@@ -10,27 +11,27 @@ import { UUID } from 'crypto';
 export const InvoiceManagement: React.FC = () => {
   const {
     invoices,
-    loading,
+    // loading,
     error,
     getAllInvoices,
     getAllInvoiceItems,
     createInvoice,
     updateInvoice,
-    updateInvoiceStatus,
+    // updateInvoiceStatus,
     deleteInvoice,
-    generateMonthlyInvoices,
-    sendInvoiceByEmail,
-    getOverdueInvoices,
-    getInvoicesByStatus,
-    calculateOpenInvoicesTotal,
+    // generateMonthlyInvoices,
+    // sendInvoiceByEmail,
+    // getOverdueInvoices,
+    // getInvoicesByStatus,
+    // calculateOpenInvoicesTotal,
     clearError
   } = useInvoiceStore();
 
   const [showForm, setShowForm] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus>(InvoiceStatus.DRAFT);
-  const [emailData, setEmailData] = useState({ invoiceId: '', email: '' });
+  // const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus>(InvoiceStatus.DRAFT);
+  // const [emailData, setEmailData] = useState({ invoiceId: '', email: '' });
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
-  const [invoiceItems, setInvoiceItems] = useState<any[]>([]);
+  // const [invoiceItems, setInvoiceItems] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     customerId: '',
     customerName: '',
@@ -57,7 +58,7 @@ export const InvoiceManagement: React.FC = () => {
         if (response.invoiceItems.length === 0) {
           Swal.fire('אין פרטי חיוב', 'לא נמצאו פרטי חיוב לחשבונית זו', 'info');
         } else {
-          setInvoiceItems(response.invoiceItems);
+          // setInvoiceItems(response.invoiceItems);
           Swal.fire({
             title: 'פריטי החשבונית',
             html: `
@@ -120,11 +121,10 @@ export const InvoiceManagement: React.FC = () => {
       issue_date: invoice.issue_date ? new Date(invoice.issue_date).toLocaleDateString('he-IL') : '',
       due_date: invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('he-IL') : '',
       subtotal: invoice.subtotal ? `₪${invoice.subtotal.toFixed(2)}` : '₪0.00',
-      tax_total: invoice.taxtotal ? `₪${invoice.taxtotal.toFixed(2)}` : '₪0.00',
+      tax_total: invoice.tax_total ? `₪${invoice.tax_total.toFixed(2)}` : '₪0.00',
       status: invoice.status ? invoice.status.replace('_', ' ') : '',
-      payment_due_reminder_sent_at: invoice.payment_dueReminder_sentAt ?
-        new Date(invoice.payment_dueReminder_sentAt).toLocaleDateString('he-IL') : 'לא נשלחה',
-
+      payment_due_reminder_sent_at: invoice.payment_dueReminder_sent_at ?
+        new Date(invoice.payment_dueReminder_sent_at).toLocaleDateString('he-IL') : 'לא נשלחה',
       createdAt,
       updatedAt
     };
@@ -368,24 +368,9 @@ export const InvoiceManagement: React.FC = () => {
   };
 
 
-
-  // const handleDelete = async (id: string) => {
-  //   console.log('מתחיל מחיקה של חשבונית עם ID:', id);
-  //   console.log('סוג המזהה:', typeof id);
-
-  //   if (!window.confirm(`האם אתה בטוח שברצונך למחוק את החשבונית?`)) {
-  //     return;
-  //   }
-
-  //   try {
-  //     await deleteInvoice(id);
-  //     console.log('חשבונית נמחקה בהצלחה');
-  //   } catch (error) {
-  //     console.error('שגיאה במחיקת חשבונית:', error);
-  //   }
-  // };
   const handleDelete = async (id: string) => {
     try {
+       console.log('ID למחיקה:', id); // בדקי מה יוצא כאן
       const result = await Swal.fire({
         title: 'מחיקת חשבונית',
         text: 'האם אתה בטוח שברצונך למחוק את החשבונית?',
@@ -396,18 +381,14 @@ export const InvoiceManagement: React.FC = () => {
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6'
       });
-
       if (!result.isConfirmed) return;
-
       await deleteInvoice(id);
-
       Swal.fire({
         title: 'הצלחה!',
         text: 'החשבונית נמחקה בהצלחה',
         icon: 'success',
         confirmButtonText: 'סגור'
       });
-
     } catch (error) {
       console.error('שגיאה במחיקת חשבונית:', error);
       Swal.fire({

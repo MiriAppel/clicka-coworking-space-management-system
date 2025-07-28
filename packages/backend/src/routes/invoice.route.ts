@@ -9,6 +9,8 @@ import {
   deleteInvoice,
   getCustomersCollection
 } from '../controllers/invoice.controller';
+import { sendInvoiceUpdateMail } from '../controllers/InvoiceUpdateMail';
+
 const invoiceRouter = Router();
 console.log('✅ invoice router loaded');
 
@@ -28,8 +30,6 @@ invoiceRouter.get('/health', (req: Request, res: Response) => {
     ]
   });
 });
-console.log('✅ invoice router loaded');
-
 // CREATE - יצירת חשבוניות
 invoiceRouter.post('/create', createInvoice);
 // יצירת חשבונית ידנית            // יצירת חשבוניות אוטומטיות

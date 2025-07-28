@@ -12,6 +12,7 @@ import {
 import { BillingItem, ID } from "shared-types";
 import { InvoiceModel } from '../models/invoice.model';
 import { UUID } from 'crypto';
+import { UserTokenService } from '../services/userTokenService';
 
 /**
  * בקר ליצירת חשבונית ידנית
@@ -35,6 +36,8 @@ export async function createInvoice(req: Request, res: Response): Promise<void> 
   }
 }
 
+
+
 // /**
 //  * בקר לקבלת כל החשבוניות
 //  */
@@ -51,20 +54,22 @@ export const getAllInvoices = async (_req: Request, res: Response) => {
     res.status(500).json({ message: (error as Error).message });
   }
 };
-
-
 //  * בקר לקבלת כל פרטי החשבוניות
 //  */
 
 export const getAllInvoiceItems = async (req: Request, res: Response) => {
+  console.log('=== getAllInvoiceItems CALLED ===*****');
+  console.log('Full URL:', req.url);
   try {
     const invoiceId = req.params.invoice_id as UUID;
     const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
+    //const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
     res.status(200).json({
       message: `נמצאו ${invoiceItems.length} חשבוניות`,
       invoiceItems
     });
   } catch (error) {
+    console.error(' CONTROLLER: שגיאה:', error);
     res.status(500).json({ message: (error as Error).message });
   }
 };
@@ -81,10 +86,12 @@ export const getInvoiceById = async (req: Request, res: Response): Promise<void>
   try {
     const id = req.params.id as ID;
     const invoice = await serviceGetInvoiceById(id);
+
     if (!invoice) {
       res.status(404).json({ message: "חשבונית לא נמצאה" });
       return;
     }
+
     res.status(200).json(invoice);
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
@@ -120,18 +127,27 @@ export const updateInvoice = async (req: Request, res: Response): Promise<void> 
  */
 export const deleteInvoice = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id = req.params.id as string;
+    const id = req.params.id; // זהו ה-ID שמתקבל מה-URL
+    console.log("ID שנשלח למחיקה:", id); // הדפס את ה-ID פה לשם בדיקה
+    if (!id) {
+      throw new Error("ID לא נמצא ב-params");
+    }
     const isDeleted = await serviceDeleteInvoice(id);
-
     if (!isDeleted) {
       res.status(404).json({ message: "חשבונית לא נמצאה" });
       return;
     }
+
     res.status(200).json({ message: "חשבונית נמחקה בהצלחה" });
   } catch (error) {
+    console.error("שגיאה במהלך מחיקת החשבונית:", error);
     res.status(500).json({ message: (error as Error).message });
   }
 };
+
+
+
+
 //בקר לקבלת פרטי הגבייה 
 
 export const getCustomersCollection = async (req: Request, res: Response): Promise<void> => {
