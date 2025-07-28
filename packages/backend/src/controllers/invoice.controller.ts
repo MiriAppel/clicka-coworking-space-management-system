@@ -6,7 +6,8 @@ import {
   serviceGetInvoiceById,
   serviceUpdateInvoice,
   serviceDeleteInvoice,
-  serviceGetCustomersCollection
+  serviceGetCustomersCollection,
+  sendStatusChangeEmails
   
 } from "../services/invoice.service";
 import { BillingItem, ID } from "shared-types";
@@ -162,3 +163,32 @@ export const getCustomersCollection = async (req: Request, res: Response): Promi
     });
   }
 }; 
+
+
+
+export const sendEmail = async (req: Request, res: Response) => {
+  try {
+    console.log("sendEmail called with params:", req.params);
+    const userTokenService = new UserTokenService();
+    const customerName = req.body.customerName;
+    const amount = req.body.amount;
+    const invoiceNumber = req.body.invoiceNumber;
+    const token = await userTokenService.getSystemAccessToken();
+    console.log("sendEmail called with token:", token);
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing access token" });
+    }
+    if (!customerName || !amount || !invoiceNumber) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+    await sendStatusChangeEmails(customerName, amount, invoiceNumber, token);
+    res
+      .status(200)
+      .json({ message: "Status change processed and emails sent." });
+  } catch (error) {
+    console.error("Error in sendEmail:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 import { InvoiceItemModel, InvoiceModel } from "../models/invoice.model";
 
 import { UUID } from "crypto";
-// טוען את משתני הסביבה מקובץ .env
+import { sendEmail } from "./gmail-service";
+import { EmailTemplateService } from "./emailTemplate.service";
 dotenv.config();
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 //crud functions
@@ -148,8 +149,8 @@ export async function serviceDeleteInvoice(id: ID): Promise<boolean> {
 
 export async function serviceGetCustomersCollection() {
   const { data, error } = await supabase
-  .from('customer')
-  .select(`
+    .from('customer')
+    .select(`
     name,
     email,
     business_name,
@@ -167,3 +168,58 @@ export async function serviceGetCustomersCollection() {
   if (error) throw new Error(error.message);
   return data;
 }
+
+
+//שליחת מייל
+const emailService = new EmailTemplateService();
+export const sendStatusChangeEmails = async (
+  customerName: string, amount: number, invoiceNumber: string,
+  token: any,
+): Promise<void> => {
+  const emailPromises: Promise<any>[] = [];
+  function encodeSubject(subject: string): string {
+    return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+  }
+  // פונקציה לשליחת מייל ללקוח
+  const sendCustomerEmail = async () => {
+    try {
+      const template = await emailService.getTemplateByName(
+        "אישור תשלום",
+      );
+      if (!template) {
+        console.warn("Team email template not found");
+        return;
+      }
+      const renderedHtml = await emailService.renderTemplate(
+        template.bodyHtml,
+        {
+          "customerName": customerName,
+          "amount": amount.toString(),
+          "invoiceNumber": invoiceNumber,
+        },
+      );
+      const response = await sendEmail(
+        "me",
+        {
+          to: ["ettylax@gmail.com"],
+          subject: encodeSubject(template.subject),
+          body: renderedHtml,
+          isHtml: true,
+        },
+        token,
+      );
+      console.log(template.subject);
+      console.log("HTML before sending:\n", renderedHtml);
+      console.log("Team email sent successfully:", response);
+    } catch (err) {
+      console.error("שגיאה בשליחת מייל לצוות:", err);
+    }
+  };
+  //אם פרומיס אחד נכשל זה לא מפעיל את השליחה
+  emailPromises.push(
+    sendCustomerEmail().catch((err) => {
+      console.error("שגיאה בשליחת מייל ללקוח", err);
+    }),
+  );
+  await Promise.all(emailPromises);
+};
