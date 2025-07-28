@@ -240,54 +240,54 @@ async getHistory(date: Date): Promise<Space[] | null> {
 
   return workspaces;
 }
+    
+   // קבלת דו"ח תפוסה על פי תאריך וסוג חלל
+async getOccupancyReport(type: string, startDate: string, endDate: string): Promise<{
+    count: number;           // סה"כ חללים מהסוג הזה
+   // data: SpaceAssignmentModel[];  // חללים תפוסים בתאריכים
+    occupancyRate: number;         // אחוז תפוסה
+}> {
+  debugger
+    let rate = 0;
+    const { count, error } = await supabase
+        .from('workspace')
+        .select('*', { count: 'exact', head: true })
+        .eq('type', type);
+
+    if (error) {
+        console.error('❌ Error counting spaces:', error);
     }
-    //קבלת דו"ח תפוסה על פי תאריך וסוג חלל
-// async getOccupancyReport(type: string, startDate: string, endDate: string): Promise<{
-//     count: number;           // סה"כ חללים מהסוג הזה
-//    // data: SpaceAssignmentModel[];  // חללים תפוסים בתאריכים
-//     occupancyRate: number;         // אחוז תפוסה
-// }> {
-//   debugger
-//     let rate = 0;
-//     const { count, error } = await supabase
-//         .from('workspace')
-//         .select('*', { count: 'exact', head: true })
-//         .eq('type', type);
+    console.log(`✅ Found ${count} total spaces of type ${type}`);
+    const { data, error: DataError } = await supabase
+        .from('space_assignment')
+        .select(`
+            *,
+            workspace_id (
+                id,
+                name,
+                type,
+                room,
+                current_customer_name
+            )
+        `)
+        .eq('workspace_id.type', type)
+        // .lte('assigned_date', startDate)
+        // .or(`unassigned_date.is.null,unassigned_date.gte.${endDate}`);
+    if (DataError) {
+        console.error('Error fetching occupancy report:', DataError);
+    }
+    const spaces = this.getAllSpaces()
+    console.log(`✅ Found ${spaces} occupied spaces of type ${type}`);
+    console.log(spaces);
 
-//     if (error) {
-//         console.error('❌ Error counting spaces:', error);
-//     }
-//     console.log(`✅ Found ${count} total spaces of type ${type}`);
-//     const { data, error: DataError } = await supabase
-//         .from('space_assignment')
-//         .select(`
-//             *,
-//             workspace_id (
-//                 id,
-//                 name,
-//                 type,
-//                 room,
-//                 current_customer_name
-//             )
-//         `)
-//         .eq('workspace_id.type', type)
-//         // .lte('assigned_date', startDate)
-//         // .or(`unassigned_date.is.null,unassigned_date.gte.${endDate}`);
-//     if (DataError) {
-//         console.error('Error fetching occupancy report:', DataError);
-//     }
-//     const spaces = this.getAllSpaces()
-//     console.log(`✅ Found ${spaces} occupied spaces of type ${type}`);
-//     console.log(spaces);
-
-//     // if (count !== null) {
-//     //     rate = spaces / count * 100 || 0;
-//     // }
-//  console.log(rate);
-//     return {
-//         count: count || 0,
-//         // data: spaces,
-//         occupancyRate: rate || 0,
-//     };
-// }
-// }
+    // if (count !== null) {
+    //     rate = spaces / count * 100 || 0;
+    // }
+ console.log(rate);
+    return {
+        count: count || 0,
+        // data: spaces,
+        occupancyRate: rate || 0,
+    };
+}
+}

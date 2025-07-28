@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import axios from "axios";
-import { DateRangeFilter, Space, WorkspaceType } from 'shared-types';
+import { DateRangeFilter, WorkspaceType } from 'shared-types';
 import { SpaceAssign } from 'shared-types/spaceAssignment';
 
 interface ReportState {

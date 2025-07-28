@@ -17,7 +17,6 @@ import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
-import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
@@ -34,6 +33,8 @@ import { BookingTable } from './MainMenu/Workspace/Components/bookingTable';
 import { UpdateBooking } from './MainMenu/Workspace/Components/updateBooking';
 import { Report } from './MainMenu/Workspace/Components/report';
 import { AssigmentTable } from './MainMenu/Workspace/Components/assigenmentTable';
+import { UpdateAssigenment } from './MainMenu/Workspace/Components/updateAssigenment';
+import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 export const Routing = () => {
   // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -69,7 +70,9 @@ export const Routing = () => {
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
         <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-        <Route path="assignmentForm" element={<AssigmentTable/>} />
+        <Route path="assignmentForm" element={<AssignmentForm/>} />
+        <Route path="assignmentTable" element={<AssigmentTable/>} />
+        <Route path="updateAssignment" element={<UpdateAssigenment/>} />
         <Route path="bookings" element={<BookingTable />} />
         <Route path="updateBooking" element={<UpdateBooking />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />

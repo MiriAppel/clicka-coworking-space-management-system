@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const server = process.env.REACT_APP_API_URL;
+const server = process.env.REACT_APP_API_URL_FE;
 
 //חיבור לשרת הAPI של המשתמשים
 export const axiosInstance = axios.create({

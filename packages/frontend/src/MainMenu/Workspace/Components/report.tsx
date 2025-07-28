@@ -60,7 +60,7 @@
 //   };
 
 //////////////////
-import { DateRangeFilter, ExportFormat } from "shared-types"
+import { DateRangeFilter } from "shared-types"
 import { WorkspaceType } from "shared-types"
 import { TimePeriod } from "shared-types"
 import { Button } from "../../../Common/Components/BaseComponents/Button";
@@ -72,11 +72,9 @@ import { ChartData, ChartDisplay } from "../../../Common/Components/BaseComponen
 import { useEffect, useState } from "react";
 import { useReportStore } from "../../../Stores/Workspace/reportStore";
 
-
 export const Report = () => {
   const timePeriod = Object.values(TimePeriod).map((v) => ({ label: v, value: v }));
   const workspaceType = Object.values(WorkspaceType).map((v) => ({ label: v, value: v }));
-  const exportFormat = Object.values(ExportFormat).map((v) => ({ label: v, value: v }));
   const {getOccupancyReport,report,count,occupancyRate} = useReportStore();
   const methods = useForm({
       mode: "onChange"
@@ -137,7 +135,7 @@ useEffect(() => {
   if (report && report.length > 0) {
     prepareChartData();
   }
-}, [report, occupancyRate]);
+},[report, occupancyRate]);
 
   //const watchedValues = useWatch({ control: methods.control });
  
@@ -323,7 +321,7 @@ const handleSubmit = () => {
     )}
   </div>
 );}
- {/* הצגת הגרפים */}
+ //{/* הצגת הגרפים */}
 //  {pieChartData && (
 //   <div className="mt-8 bg-white p-6 rounded-lg shadow">
 //     <h3 className="text-xl font-semibold mb-4">התפלגות סוגי חללים</h3>

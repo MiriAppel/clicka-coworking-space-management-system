@@ -62,18 +62,25 @@ const columns: TableColumn<Booking>[] = [
     )
   }
 ];
-
 useEffect(() => {
-  if (bookings.length === 0) {
-    setIsLoading(true);  
-     getAllBookings(); 
-     setIsLoading(false); }
-    console.log('bookings',bookings)
-  },[])
+  const fetchData = async () => {
+    if (bookings.length === 0) {
+      console.log("📢 calling getAllBookings");
+      setIsLoading(true);  
+      await getAllBookings(); 
+      setIsLoading(false);
+    }
+  };
+  fetchData();
+}, [getAllBookings,setIsLoading,bookings.length]);
+// const validBookings = bookings.filter(booking => 
+//   booking && 
+//   booking.id && 
+//   (booking.roomName || booking.customerName || booking.externalUserName)
+// );
 const validBookings = bookings.filter(booking => 
-  booking && 
-  booking.id && 
-  (booking.roomName || booking.customerName || booking.externalUserName)
+  booking?.id &&
+  (booking.roomName?.trim() || booking.customerName?.trim() || booking.externalUserName?.trim())
 );
 //מחיקת הזמנה 
   const handleDelete = async (booking: Booking) => {
@@ -131,7 +138,8 @@ const validBookings = bookings.filter(booking =>
     navigate(`/updateBooking`, { state: { booking } });
     console.log('Update booking:', booking);
   };
-
+console.log("bookings length:", bookings.length);
+console.log("validBookings length:", validBookings.length);
   
    return <div>{/* //טבלת הזמנות */}
 {/* {(!bookings || bookings.length === 0) && <h1 className="text-center text-gray-500">אין הזמנות זמינות</h1>} */}

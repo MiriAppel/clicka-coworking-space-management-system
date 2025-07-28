@@ -67,12 +67,15 @@ export class BookingService {
       const { data, error } = await supabase
         .from('booking') 
         .select('*');
+     
+        
 
       if (error) {
         console.error('Supabase error:', error.message);
         return null;
       }
- const booking = BookingModel.fromDatabaseFormatArray(data)
+ const booking = BookingModel.fromDatabaseFormatArray(data)  
+  console.log(booking);
       return booking;
     } catch (err) {
       console.error('Unexpected error:', err);
