@@ -15,7 +15,7 @@ export const LoginWithGoogle = () => {
                 console.log('Code received from Google:', codeResponse);
 
                 const response = await axiosInstance.post<LoginResponse>(
-                    '/api/auth/google',
+                    '/auth/google',
                     { code: codeResponse.code },
                     {
                         headers: {

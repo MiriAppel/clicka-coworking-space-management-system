@@ -1,7 +1,7 @@
 import { Table, TableColumn } from '../../../../Common/Components/BaseComponents/Table';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
-import { EmailTemplate } from 'shared-types';
+import { EmailTemplate } from '../../../../../../shared-types';
 import { useEffect, useState } from 'react';
 import { UpdateEmailTemplate } from './UpdateEmailTemplate';
 import { AddEmailTemplate } from './AddEmailTemplate';

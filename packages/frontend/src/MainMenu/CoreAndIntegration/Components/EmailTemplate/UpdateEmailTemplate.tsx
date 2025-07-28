@@ -91,7 +91,7 @@ export const UpdateEmailTemplate = ({ emailTemplate, onClose, onEmailTemplateUpd
     return (
         <div className={`max-w-2xl mx-auto p-6`} style={{ direction: textDirection }}>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">עדכון תבנית דוא"ל</h2>
+                {/* <h2 className="text-2xl font-bold">עדכון תבנית דוא"ל</h2> */}
                 {onClose && (
                     <Button variant="secondary" onClick={onClose}>
                         לבטל
@@ -100,7 +100,7 @@ export const UpdateEmailTemplate = ({ emailTemplate, onClose, onEmailTemplateUpd
             </div>
 
             <Form
-                label='עדכון מידע על תבנית דוא"ל'
+                label='עדכון תבנית דוא"ל'
                 schema={schema}
                 onSubmit={handleSubmit}
                 methods={methods}

@@ -82,7 +82,7 @@ export const AddEmailTemplate = ({ onClose, onEmailTemplateAdded }: AddEmailTemp
     return (
         <div className={`max-w-2xl mx-auto p-6`} style={{ direction: textDirection }}>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">הוסף תבנית דוא"ל חדשה</h2>
+                {/* <h2 className="text-2xl font-bold">הוספת תבנית דוא"ל חדשה</h2> */}
                 {onClose && (
                     <Button variant="secondary" onClick={onClose}>
                         לבטל
@@ -91,7 +91,7 @@ export const AddEmailTemplate = ({ onClose, onEmailTemplateAdded }: AddEmailTemp
             </div>
 
             <Form
-                label='מידע על תבנית דוא"ל'
+                label='הוספת תבנית דוא"ל חדשה'
                 schema={schema}
                 onSubmit={handleSubmit}
                 methods={methods}
