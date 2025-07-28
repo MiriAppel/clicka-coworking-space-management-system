@@ -8,12 +8,12 @@ export class RoomFeatureModel implements RoomFeature {
   additionalCost: number;
 
    constructor(params: {
-    id: ID;
+    id?:ID;
     description?: string;
     IsIncluded: boolean;
     additionalCost: number;
    }) {
-    this.id = params.id;
+    this.id = params.id?? crypto.randomUUID();;
     this.description = params.description;
     this.IsIncluded = params.IsIncluded;
     this.additionalCost = params.additionalCost; 

@@ -19,7 +19,7 @@ interface BookingState {
   setCurrentBooking: (booking: Booking | null) => void;
   clearError: () => void;
   getCustomerByPhoneOrEmail: (value: string) => Promise<any>;
-  getAllRooms: () => Promise<{ id: string; name: string }[]>;
+  
 }
 
 export const useBookingStore = create<BookingState>((set, get) => ({
@@ -54,17 +54,13 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   createBooking: async (booking: Booking) => {
     set({ loading: true, error: null });
-    
     try {
-      // מוודאים שה־payload נכון
       const response = await axiosInstance.post("/book", booking);
       const created = response.data;
-
       set(state => ({
         bookings: [...state.bookings, created],
         loading: false,
       }));
-
       return created;
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -75,14 +71,11 @@ export const useBookingStore = create<BookingState>((set, get) => ({
  createBookingInCalendar: async (booking: Booking, calendarId: string) => {
   console.log(booking,"booking in createBookingInCalendar??????????????????????????\n");
   
-    const googleAccessToken = localStorage.getItem('google_token'); // שיניתי כאן
+    const googleAccessToken = localStorage.getItem('google_token'); 
     console.log("Google Access Token:", googleAccessToken);
     
-  
     set({ loading: true, error: null });
     try {
-      // const x= BookingModel 
-      
       const response = await axiosInstance.post(`/calendar-sync/add/${calendarId}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +92,6 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
         bookings: [...state.bookings, created],
         loading: false,
       }));
-//return true;
       return created;
     } catch (error) {
       console.error('Error creating booking:', error);
@@ -159,23 +151,11 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
       const response = await axiosInstance.get(`/api/customers/getByPhoneOrEmail`, {
         params: { value },
       });
-      return response.data; // הלקוח עצמו (או null)
+      return response.data; 
     } catch (error) {
       console.error('שגיאה בשליפת לקוח לפי טלפון או מייל:', error);
       set({ error: 'שגיאה בשליפת לקוח לפי טלפון או מייל', loading: false });
       return null;
-    }
-  },
-  getAllRooms: async (): Promise<{ id: string; name: string }[]> => {
-    set({ loading: true, error: null });
-    try {
-      const response = await axiosInstance.get('rooms/getAllRooms');
-      console.log("🎯 rooms from server:", response.data); // חשוב!
-      return response.data;
-    } catch (error) {
-      console.error('שגיאה בשליפת רשימת חדרים:', error);
-      set({ error: 'שגיאה בשליפת רשימת חדרים', loading: false });
-      return [];
     }
   },
 

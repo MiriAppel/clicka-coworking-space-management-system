@@ -7,11 +7,13 @@ import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
+import { useRoomStore } from '../../../Stores/Workspace/roomStore';
 
 
 export const WorkspaceMap = () => {
 
     const { workSpaces, rooms, getAllWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
+    const {getAllRooms}=useRoomStore();
     const uniqueStatus = Object.values(SpaceStatus);
     const uniqueType = Object.values(WorkspaceType);
     const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
@@ -64,6 +66,7 @@ export const WorkspaceMap = () => {
 
     useEffect(() => {
         getAllWorkspace();
+        getAllRooms()
         const updateSize = () => {
             if (containerRef.current) {
                 const rect = containerRef.current.getBoundingClientRect();
@@ -89,8 +92,6 @@ export const WorkspaceMap = () => {
         }
         else setActiveTypeSearch(false);
     }, [selectedType]);
-    //קנה מידה של המפה
-    // הוסף אחרי ה-useEffect הקיימים
     useEffect(() => {
         const calculateScale = () => {
             const container = document.querySelector('.spaces');
@@ -113,7 +114,7 @@ export const WorkspaceMap = () => {
         setZoom(prev => Math.max(prev / 1.2, 3));
     };
     const handleResetZoom = () => {
-        setZoom(3); // איפוס ל-300%
+        setZoom(3);
         applyPan({ x: 0, y: 0 });
     };
     const getZoomStep = () => {
@@ -149,7 +150,6 @@ export const WorkspaceMap = () => {
         const clickX = e.clientX - rect.left;
         const clickY = e.clientY - rect.top;
 
-        // קנה מידה של המפה הממוזערת
         const scaleX = mapDimensions.width / rect.width;
         const scaleY = mapDimensions.height / rect.height;
 
@@ -171,7 +171,6 @@ export const WorkspaceMap = () => {
         setSelectedType("PLACEHOLDER");
     };
     const ocoupancy = (d: Date) => {
-        //בדיקה האם זה התאריך הנוכחי
         if (d.toDateString() === new Date().toDateString())
             getAllWorkspace();
         else {
@@ -179,7 +178,6 @@ export const WorkspaceMap = () => {
             // const formattedDate = d.toISOString().split('T')[0];
             getWorkspaceHistory(d);
         }
-        // ?
         setDisplayDate(d);
     }
 
@@ -232,31 +230,23 @@ export const WorkspaceMap = () => {
         let minX, maxX, minY, maxY;
 
         if (scaledWidth <= containerSize.width) {
-            // אם המפה קטנה מהקונטיינר - מרכז אותה
             const centerX = (containerSize.width - scaledWidth) / 2;
             minX = maxX = centerX;
         } else {
-            // אם המפה גדולה מהקונטיינר - אפשר גרירה בגבולות
-            maxX = 0; // הקצה השמאלי של המפה לא יעבור את השמאל של הקונטיינר
-            minX = containerSize.width - scaledWidth; // הקצה הימני של המפה לא יעבור את הימין של הקונטיינר
+            maxX = 0; 
+            minX = containerSize.width - scaledWidth; 
         }
-
         if (scaledHeight <= containerSize.height) {
-            // אם המפה קטנה מהקונטיינר - מרכז אותה
             const centerY = (containerSize.height - scaledHeight) / 2;
             minY = maxY = centerY;
         } else {
-            // אם המפה גדולה מהקונטיינר - אפשר גרירה בגבולות
-            maxY = 0; // הקצה העליון של המפה לא יעבור את העליון של הקונטיינר
-            minY = containerSize.height - scaledHeight; // הקצה התחתון של המפה לא יעבור את התחתון של הקונטיינר
+            maxY = 0; 
+            minY = containerSize.height - scaledHeight;
         }
-
         const clampedX = Math.max(Math.min(newPan.x, maxX), minX);
         const clampedY = Math.max(Math.min(newPan.y, maxY), minY);
-
         setPan({ x: clampedX, y: clampedY });
     };
-
     const getSpaceIcon = (space: Space) => {
         const name = space.name.toLowerCase();
 
@@ -267,7 +257,6 @@ export const WorkspaceMap = () => {
         if (name.includes('עמדה') && (space.type === 'COMPUTER_STAND' || space.type === 'DESK_IN_ROOM')) {
             return null;
         }
-
         if (name.includes('שירותים')) return '🚻';
         if (name.includes('מטבח')) return '🍽️';
         if (name.includes('מעלית')) return '🛗';
@@ -335,21 +324,18 @@ export const WorkspaceMap = () => {
             </g>
         );
     };
-
     const renderReceptionDesk = (space: Space) => {
         // if (space.type !== 'RECEPTION_DESK') return null;
         const centerX = space.positionX + space.width / 2;
         const centerY = space.positionY + space.height / 2;
         return (
             <g>
-                {/* שולחן חצי עיגול */}
                 <path
                     d={`M ${centerX - 18} ${centerY + 3} A 18 12 0 0 1 ${centerX + 18} ${centerY + 3} L ${centerX + 15} ${centerY + 8} L ${centerX - 15} ${centerY + 8} Z`}
                     fill="#8B4513"
                     stroke="#654321"
                     strokeWidth="1"
                 />
-                {/* משטח עליון */}
                 <ellipse
                     cx={centerX}
                     cy={centerY}
@@ -667,8 +653,6 @@ export const WorkspaceMap = () => {
             className="minimap"
             style={{
                 position: 'absolute',
-                // bottom: 10,
-                // right: 50,
                 top: 80,
                 left: 20,
                 width: 200,
@@ -699,7 +683,7 @@ export const WorkspaceMap = () => {
                     />
                 ))}
                 <rect
-                    x={-pan.x / (scale * zoom) /* ← משמר התאמה בין תצוגה לפאן */}
+                    x={-pan.x / (scale * zoom) }
                     y={-pan.y / (scale * zoom)}
                     width={containerSize.width / (scale * zoom)}
                     height={containerSize.height / (scale * zoom)}

@@ -1,17 +1,16 @@
 import { create } from 'zustand';
 import axios, { AxiosError } from 'axios';
 import { Space } from 'shared-types/workspace'; // ייבוא הטייפ הנכון
+import { WorkspaceType } from 'shared-types';
+import { SpaceAssign } from 'shared-types/spaceAssignment';
 // הגדרת בסיס URL לAPI
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-
-
 interface Customer {
   id: string | number;
   name: string;
   email?: string;
   phone?: string;
 }
-
 interface Assignment {
   id: string | number;
   workspaceId: string | number;
@@ -22,39 +21,33 @@ interface Assignment {
   assignedBy: string;
   status: 'ACTIVE' | 'SUSPENDED' | 'ENDED';
 }
-
 interface ConflictCheck {
   hasConflicts: boolean;
   conflicts: Assignment[];
   message: string;
 }
-
-
 interface AssignmentStoreState {
   // State
-  assignments: Assignment[];
+  assignments: SpaceAssign[];
   spaces: Space[];
   customers: Customer[];
   loading: boolean;
   error: string | null;
   selectedAssignment: Assignment | null;
   conflictCheck: ConflictCheck | null;
-
-
   // Actions
   getAllSpaces: () => Promise<Space[]>;
   getAllCustomers: () => Promise<Customer[]>;
-  createAssignment: (assignmentData: Omit<Assignment, 'id'>) => Promise<Assignment>;
-  getAssignments: () => Promise<Assignment[]>;
+  createAssignment: (assignmentData: Omit<SpaceAssign, 'id'>) => Promise<SpaceAssign>;
+  getAssignments: () => Promise<SpaceAssign[]>;
   getAssignmentById: (id: string | number) => Promise<Assignment>;
-  updateAssignment: (id: string | number, assignmentData: Partial<Assignment>) => Promise<Assignment>;
+  updateAssignment: (id: string | number, assignmentData: Partial<SpaceAssign>) => Promise<SpaceAssign>;
   deleteAssignment: (id: string | number) => Promise<void>;
   setSelectedAssignment: (assignment: Assignment | null) => void;
   checkConflicts: (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number) => Promise<ConflictCheck>;
   clearError: () => void;
   resetStore: () => void;
 }
-
 // יצירת instance של axios עם הגדרות בסיסיות
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -62,7 +55,6 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
 export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   // State - מצב התחלתי של הסטור
   assignments: [],
@@ -72,7 +64,6 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   error: null,
   selectedAssignment: null,
   conflictCheck: null,
-
   /**
    * מביא את כל הלקוחות מהשרת - לצורך הצגה בטופס
    */
@@ -83,14 +74,13 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       set({ customers: response.data, loading: false });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
     }
   },
-
   /**
    * מביא את כל חללי העבודה מהשרת - לצורך הצגה בטופס
    */
@@ -101,21 +91,20 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       set({ spaces: response.data, loading: false });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
     }
   },
-
   /**
    * יוצר הקצאה חדשה - משתמש ב-createSpace (שבעצם יוצר הקצאה)
    */
-  createAssignment: async (assignmentData: Omit<Assignment, 'id'>) => {
+  createAssignment: async (assignmentData: Omit<SpaceAssign, 'id'>) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.post<Assignment>('/space/createSpace', assignmentData);
+      const response = await api.post<SpaceAssign>('/space/createSpace', assignmentData);
       const newAssignment = response.data;
       set((state) => ({
         assignments: [...state.assignments, newAssignment],
@@ -123,33 +112,30 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       }));
       return newAssignment;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
     }
   },
-
-
   /**
    * מביא את כל ההקצאות - משתמש ב-getAllSpaces (שבעצם מביא הקצאות)
    */
   getAssignments: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await api.get<Assignment[]>('/space/getAllSpaces');
+      const response = await api.get<SpaceAssign[]>('/space/getAllSpaces');
       set({ assignments: response.data, loading: false });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
     }
   },
-
   /**
    * מביא הקצאה ספציפית לפי ID - משתמש ב-getSpaceById
    */
@@ -160,38 +146,36 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       set({ loading: false });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
     }
   },
-
   /**
    * מעדכן הקצאה קיימת - משתמש ב-updateSpace
    */
-  updateAssignment: async (id: string | number, assignmentData: Partial<Assignment>) => {
+  updateAssignment: async (id: string | number, assignmentData: Partial<SpaceAssign>) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.put<Assignment>(`/space/updateSpace/${id}`, assignmentData);
+      const response = await api.put<SpaceAssign>(`/space/updateSpace/${id}`, assignmentData);
       const updatedAssignment = response.data;
       set((state) => ({
-        assignments: state.assignments.map((assignment) => 
+        assignments: state.assignments.map((assignment) =>
           assignment.id === id ? updatedAssignment : assignment
         ),
         loading: false
       }));
       return updatedAssignment;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
     }
   },
-
   /**
    * מוחק הקצאה - משתמש ב-deleteSpace
    */
@@ -204,8 +188,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
         loading: false
       }));
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -222,32 +206,28 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
         unassignedDate,
         excludeId
       });
-      
       set({ conflictCheck: response.data });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage });
       throw error;
     }
   },
-
   /**
    * מגדיר הקצאה נבחרת ב-state
    */
   setSelectedAssignment: (assignment: Assignment | null) => {
     set({ selectedAssignment: assignment });
   },
-
   /**
    * מנקה שגיאות מה-state
    */
   clearError: () => {
     set({ error: null });
   },
-
   /**
    * מאפס את כל ה-state לערכי ברירת המחדל
    */
@@ -262,3 +242,6 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
     });
   },
 }));
+
+
+

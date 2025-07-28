@@ -42,7 +42,6 @@ export async function createInvoice(req: Request, res: Response): Promise<void> 
 // /**
 //  * בקר לקבלת כל החשבוניות
 //  */
-
 export const getAllInvoices = async (_req: Request, res: Response) => {
   try {
     const invoices = await serviceGetAllInvoices();
@@ -55,15 +54,14 @@ export const getAllInvoices = async (_req: Request, res: Response) => {
     res.status(500).json({ message: (error as Error).message });
   }
 };
+
 //  * בקר לקבלת כל פרטי החשבוניות
 //  */
-
 export const getAllInvoiceItems = async (req: Request, res: Response) => {
 
   try {
     const invoiceId = req.params.invoice_id as UUID;
     const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
-    //const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
     res.status(200).json({
       message: `נמצאו ${invoiceItems.length} חשבוניות`,
       invoiceItems

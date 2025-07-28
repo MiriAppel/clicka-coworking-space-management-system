@@ -36,6 +36,7 @@ import translationRouter from './routes/translation.route';
 import userRouter from './routes/user.route';
 import auditLogRouter from './routes/auditLog.route';
 import dotenv from 'dotenv';
+import syncRouter from './routes/googleCalendarBookingIntegration.route';
 
 
 // import cookieParser from "cookie-parser";
@@ -85,8 +86,9 @@ app.use('/api/occupancy', occupancyrouter);
 app.use('/api/map', routerMap);
 app.use('/api/reports', routerReport);
 app.use('/api/emailTemplate', emailTemplateRouter);
-
+app.use('api/google-calendar', syncRouter);
 app.use('/api/vendor', (req, res, next) => {
+
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
@@ -103,6 +105,9 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/emailTemplate', emailTemplateRouter);
 app.use('/api/drive', driveRoutes);
 // app.use('/api/leadInteraction', routerCstomer);
+app.use('/api/payment', routerPayment);
+app.use('/api/invoices', invoiceRouter);
+// app.use('/api/document', documentRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -3,7 +3,7 @@
     "types": ["node"],
     "declaration": true,
     "emitDeclarationOnly": false,
-    "rootDir": ".",  
+    "rootDir": ".",
     "outDir": "dist",
     "module": "CommonJS",
     "target": "ESNext",
@@ -21,3 +21,4 @@
 "include": ["*.ts"],
 "exclude": ["dist", "node_modules"]
 }
+

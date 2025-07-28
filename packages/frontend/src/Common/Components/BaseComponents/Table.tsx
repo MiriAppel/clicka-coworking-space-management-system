@@ -24,6 +24,7 @@ export interface TableProps<T> extends BaseComponentProps {
   onUpdate?: (row: T) => void;  //פונקציה לעידכון 
   onDelete?: (row: T) => void; //פונקציה למחיקה 
   renderActions?: (row: T) => React.ReactNode; // הוסף שורה זו
+  showActions?: boolean;  // אם לא נרצה להציג את עמודת הפעולות, נוכל להגדיר showActions כ-false
 }
 
 
@@ -35,7 +36,8 @@ export const Table = <T extends Record<string, any>>({
   "data-testid": testId,
   onUpdate,
   onDelete,
-  renderActions
+  renderActions,
+  showActions = true, // ✅ ברירת מחדל: כן להציג את העמודה
 }: TableProps<T>) => {
   const { theme } = useTheme();
   const effectiveDir = dir || theme.direction;
@@ -50,7 +52,7 @@ export const Table = <T extends Record<string, any>>({
           effectiveDir === "rtl" ? "text-right" : "text-left"
         )}
         style={{
-           tableLayout: "fixed", // Makes sure the table layout is fixed
+          tableLayout: "fixed", // Makes sure the table layout is fixed
           fontFamily:
             effectiveDir === "rtl"
               ? theme.typography.fontFamily.hebrew
@@ -77,13 +79,15 @@ export const Table = <T extends Record<string, any>>({
             ))}
 
             {/* //כאן מוסיפים עמודת פעולה חדשה */}
-            <th
-              scope="col" //כותרת לעמודת הפעולות
-              className="border px-4 py-2 font-semibold text-center"
-            >
-              Actions
-              {/* //כותרת לעמודת הכפתורים */}
-            </th>
+            {showActions && (
+              <th
+                scope="col" //כותרת לעמודת הפעולות
+                className="border px-4 py-2 font-semibold text-center"
+              >
+                Actions
+                {/* //כותרת לעמודת הכפתורים */}
+              </th>
+            )}
           </tr>
 
 
@@ -100,30 +104,32 @@ export const Table = <T extends Record<string, any>>({
                 </td>
                 // {/* //ניגש לכל מה שכתוב בעמודות לדוג אם ACCESOR=NAME אז מדפיס לי ROW[NAME] */}
               ))}
-
-              <td className="border-t px-4 py-2 flex gap-2 justify-center">
-                {typeof renderActions === "function" && renderActions(row)}
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="hover:scale-105 hover:brightness-110 transition"
-                  onClick={() => onUpdate && onUpdate(row)}
-                  aria-label="Update"
-                  title="Update"
-                >
-                  <Pencil size={16} />
-                </Button>
-                <Button
-                  variant="accent"
-                  size="sm"
-                  className="hover:scale-105 hover:brightness-125 transition"
-                  onClick={() => onDelete && onDelete(row)}
-                  aria-label="Delete"
-                  title="Delete"
-                >
-                  <Trash size={16} />
-                </Button>
-              </td>
+              {showActions && (
+                // אם showActions הוא true, אז נציג את עמודת הפעולות
+                <td className="border-t px-4 py-2 flex gap-2 justify-center">
+                  {typeof renderActions === "function" && renderActions(row)}
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="hover:scale-105 hover:brightness-110 transition"
+                    onClick={() => onUpdate && onUpdate(row)}
+                    aria-label="Update"
+                    title="Update"
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                  <Button
+                    variant="accent"
+                    size="sm"
+                    className="hover:scale-105 hover:brightness-125 transition"
+                    onClick={() => onDelete && onDelete(row)}
+                    aria-label="Delete"
+                    title="Delete"
+                  >
+                    <Trash size={16} />
+                  </Button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
