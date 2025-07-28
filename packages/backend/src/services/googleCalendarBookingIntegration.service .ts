@@ -1,10 +1,9 @@
-
 import type { CalendarEventInput, CreateGoogleCalendarEventRequest, DeleteGoogleCalendarEventRequest, GoogleCalendarEvent, ID, UpdateGoogleCalendarEventRequest } from "shared-types";
 import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "shared-types/calendarSync";
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv';
 import { CalendarSyncModel } from "../models/calendarSync.model";
-import { getEvents } from './calendar-service';
+import { getEvents, updateEvent } from './calendar-service';
 import { createEvent } from './calendar-service'
 import { BookingModel } from "../models/booking.model";
 import * as syncController from "../controllers/googleCalendarBookingIntegration.controller";
@@ -225,7 +224,7 @@ await BookingService.updateBooking(bookingModel.id!, bookingModel);
         if (error instanceof Error) {
             errorMessage = error.message; // אם error הוא אובייקט שגיאה
         } else if (typeof error === 'string') {
-            errorMessage = error; // אם error הוא מחרוזת
+               errorMessage = error; // אם error הוא מחרוזת
         }
 
     
@@ -244,11 +243,57 @@ export const deleteEnevt = async (enevt: DeleteGoogleCalendarEventRequest) => {
 
 
 
-export const updateEnevtOnChangeBooking = async (updateDetails: UpdateGoogleCalendarEventRequest): Promise<void> => {
+export const updateEnevtOnChangeBooking =  async (calendarId: string,
+    eventId : string,
+    booking: BookingModel,
+    token: string) => {
     // פונקציה זו תעדכן אירוע קיים בלוח השנה כאשר פרטי ההזמנה משתנים.
     // לאה שארר-updateGoogleCalendarEvent ע"י שליחה לפונקצית עדכון
     // המתאים calendarSync ותעדכן את ה 
-    //updateCalendarSync() ע"י מציאתו בפונקציה 
+    //updateCalendarSync() ע"י  מציאתו בפונקציה 
+    console.log('Booking object:', booking);
+    console.log('token object:', token);
+    console.log('calendarId object:', calendarId);
+    console.log("booking before the convert\n",booking);
+    const calendarEvent = await convertBookingToCalendarEvent(booking);
+    try {
+        const statusEvent = await updateEvent(calendarId,eventId, calendarEvent, token);
+        console.log("statusEvent\n", statusEvent);
+        
+        if (statusEvent.id != null) {
+            booking.googleCalendarEventId = statusEvent.id;
+        }
+        console.log("booking.googleCalendarEventId",booking.googleCalendarEventId);
+        
+
+        //לעדכן את נאווה שחייבים לשלוח id
+          if (!booking.id) {
+            throw new Error('Booking ID is required to update the booking.');
+          }
+          console.log('Type of updatedData:', booking.constructor.name);
+
+          console.log(booking, "booking in ??????????????????????????\n  ,",booking.id);
+          
+        const bookingModel = booking instanceof BookingModel
+  ? booking
+  : new BookingModel(booking);
+await BookingService.updateBooking(bookingModel.id!, bookingModel);
+
+       
+    } catch (error) {
+        console.log("checking the type of", error);
+
+        let errorMessage = 'An unknown error occurred'; // הודעת שגיאה ברירת מחדל
+
+        if (error instanceof Error) {
+            errorMessage = error.message; // אם error הוא אובייקט שגיאה
+        } else if (typeof error === 'string') {
+               errorMessage = error; // אם error הוא מחרוזת
+        }
+
+    
+    }
+
 }
 
 
@@ -267,4 +312,12 @@ export const manageCalendarPermissions = async (calendarId: string, email: strin
 export const shareCalendar = async (calendarId: string, email: string): Promise<void> => {
     // אפשר להשתמש ב-Google Calendar API כדי לשתף את לוח השנה עם כתובת המייל
 }
+
+
+
+
+
+
+
+
 

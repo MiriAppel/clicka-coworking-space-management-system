@@ -5,8 +5,7 @@ import { RoomFeatureModel } from "../models/roomFeature.model";
 export class RoomFeatureController {
     private roomFeatureService = new RoomFeatureService();
 
-       async CreateRoomFeature(req: Request, res: Response)  {
-         console.log('Received request to create feature:', req.body);
+       async createRoomFeature(req: Request, res: Response)  {
         try {
             console.log('Received request to create feature:', req.body);
             const featureData = req.body;
@@ -14,20 +13,24 @@ export class RoomFeatureController {
            
            const feature = new RoomFeatureModel(featureData);
            console.log('feature object created:', JSON.stringify(feature, null, 2));
-            const result = await this.roomFeatureService.CreateFeature(feature);
-
+            const result = await this.roomFeatureService.createFeature(feature);
+            console.log('BODY?', req.body);
+            console.log('HEADERS?', req.headers);
             if (result) {
                 res.status(200).json(result);
             } else {
                 res.status(500).json({ error: "Failed to create feature" });
             }
+            if (!req.body) {
+                return res.status(400).json({ error: 'Body is missing!' });
+              }
         } catch (error) {
             console.error("Error creating room:", error);
             res.status(500).json({ error: "Internal server error" });
         }
     }
 
- async GetAllFeatures(req: Request, res: Response){
+ async getAllFeatures(req: Request, res: Response){
    const result = await this.roomFeatureService.getAllFeatures();
         if (result) {
             res.status(200).json(result);
@@ -37,22 +40,22 @@ export class RoomFeatureController {
 }
 
 
- async UpdateFeature(req: Request, res: Response){
+ async updateFeature(req: Request, res: Response){
     console.log('Received request to update feature:', req.body);
     try{
         const featureData = req.body;
         const feature = new RoomFeatureModel(featureData);
         
-      const updateFeature=await this.roomFeatureService.UpdateFeature(req.params.id,feature);
+      const updateFeature=await this.roomFeatureService.updateFeature(req.params.id,feature);
       res.json(updateFeature);
     }
     catch(err){
        res.status(500).json({massage:'err.message'});
     }
 }
- async  GetFeatureById(req: Request, res: Response){
+ async  getFeatureById(req: Request, res: Response){
     try{
-        const getFeature=await this.roomFeatureService.GetFeatureById(req.params.id);
+        const getFeature=await this.roomFeatureService.getFeatureById(req.params.id);
         res.json(getFeature);
     }
     catch(err){
@@ -69,4 +72,4 @@ res.status(500).json({massage:'err.massage'});
       res.status(500).json({massage:'err.massage'});
     }
 }
- }
+}

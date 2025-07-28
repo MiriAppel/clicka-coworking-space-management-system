@@ -10,7 +10,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 function logUserActivity(userId: string, action: string) {
   console.log(`[Activity Log] ${userId}: ${action}`);
 }
-//יצירת מרחב
+//הקצאת מרחב
 export class SpaceAssignmentService {
 async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | null> {
         console.log(':package: Inserting space:', space.toDatabaseFormat());
@@ -27,9 +27,8 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
         //logUserActivity(room.id ?? room.name, 'book created');
         return createdspace;
 }
-//קבלת כל המרחבים
-//החזרת כל המרחבים מהמסד נתונים
-      async getAllSpaces() {
+//קבלת כל ההקצאות
+ async getAllSpaces() {
     try {
       const { data, error } = await supabase
         .from('space_assignment') // שם הטבלה שלך ב-Supabase
@@ -38,14 +37,15 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
         console.error('Supabase error:', error.message);
         return null;
       }
- const createdspace = SpaceAssignmentModel.fromDatabaseFormat(data)
+ const createdspace = SpaceAssignmentModel.fromDatabaseFormatArray(data)
       return createdspace;
-    } catch (err) {
+    } 
+   catch (err) {
       console.error('Unexpected error:', err);
       return null;
     }
-  }
-//עדכון מרחב
+}
+//עדכון הקצאה
       async updateSpace(id: string, updatedData: SpaceAssignmentModel): Promise<SpaceAssignmentModel | null> {
         const { data, error } = await supabase
             .from('space_assignment')
@@ -60,8 +60,9 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
         const space = SpaceAssignmentModel.fromDatabaseFormat(data);
         //logUserActivity(feature.description, 'feature updated');
         return space;
+      
 }
-//מחיקת מרחב
+//מחיקת הקצאה
 async  deleteSpace(id:string) {
             const { error } = await supabase
             .from('space_assignment')
@@ -240,5 +241,55 @@ async getHistory(date: Date): Promise<Space[] | null> {
   });
 
   return workspaces;
+}
+    
+   // קבלת דו"ח תפוסה על פי תאריך וסוג חלל
+async getOccupancyReport(type: string, startDate: string, endDate: string): Promise<{
+    count: number;           // סה"כ חללים מהסוג הזה
+   // data: SpaceAssignmentModel[];  // חללים תפוסים בתאריכים
+    occupancyRate: number;         // אחוז תפוסה
+}> {
+  debugger
+    let rate = 0;
+    const { count, error } = await supabase
+        .from('workspace')
+        .select('*', { count: 'exact', head: true })
+        .eq('type', type);
+
+    if (error) {
+        console.error('❌ Error counting spaces:', error);
+    }
+    console.log(`✅ Found ${count} total spaces of type ${type}`);
+    const { data, error: DataError } = await supabase
+        .from('space_assignment')
+        .select(`
+            *,
+            workspace_id (
+                id,
+                name,
+                type,
+                room,
+                current_customer_name
+            )
+        `)
+        .eq('workspace_id.type', type)
+        // .lte('assigned_date', startDate)
+        // .or(`unassigned_date.is.null,unassigned_date.gte.${endDate}`);
+    if (DataError) {
+        console.error('Error fetching occupancy report:', DataError);
+    }
+    const spaces = this.getAllSpaces()
+    console.log(`✅ Found ${spaces} occupied spaces of type ${type}`);
+    console.log(spaces);
+
+    // if (count !== null) {
+    //     rate = spaces / count * 100 || 0;
+    // }
+ console.log(rate);
+    return {
+        count: count || 0,
+        // data: spaces,
+        occupancyRate: rate || 0,
+    };
 }
 }
