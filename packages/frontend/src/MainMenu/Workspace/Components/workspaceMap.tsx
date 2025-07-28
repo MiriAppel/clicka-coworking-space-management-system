@@ -11,46 +11,6 @@ import { useRoomStore } from '../../../Stores/Workspace/roomStore';
 
 export const WorkspaceMap = () => {
 
-
-
-    // const rrr: Room[] = [
-    //     {
-    //         id: "space-002",
-    //         name: "לאונז'",
-    //         type: "LOUNGE" as RoomType,
-    //         status: RoomStatus.AVAILABLE,
-    //         positionX: 100,
-    //         positionY: 460,
-    //         hourlyRate: 1,
-    //         capacity: 10,
-    //         workspaceMapId: "space-002",
-    //         discountedHourlyRate: 1,
-    //         description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-    //         width: 600,
-    //         height: 500,
-    //         createdAt: "2024-01-01T08:00:00Z",
-    //         updatedAt: "2024-01-01T08:00:00Z"
-    //     },
-    //     {
-    //         id: "space-002",
-    //         name: "חדר ישיבות",
-    //         type: "MEETING_ROOM" as RoomType,
-    //         status: RoomStatus.AVAILABLE,
-    //         positionX: 1420,
-    //         positionY: 60,
-    //         hourlyRate: 1,
-    //         discountedHourlyRate: 1,
-    //         capacity: 10,
-    //         workspaceMapId: "space-002",
-    //         description: "חדר ישיבות מרווח עם מסך טלוויזיה",
-    //         width: 450,
-    //         height: 335,
-    //         createdAt: "2024-01-01T08:00:00Z",
-    //         updatedAt: "2024-01-01T08:00:00Z"
-    //     },
-    // ]
-
-
     const { workSpaces, getAllWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
     const { rooms, getAllRooms } = useRoomStore();
     const uniqueStatus = Object.values(SpaceStatus);
