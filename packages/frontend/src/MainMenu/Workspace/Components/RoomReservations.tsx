@@ -16,6 +16,9 @@ import { log } from "console";
 //יבוא מהספריה של ZOD ולולידציה
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { RoomFeature } from "shared-types";
+import { string } from "yargs";
+import { faFaceFlushed } from "@fortawesome/free-solid-svg-icons";
 // import { Room } from 'shared-types/booking';
 
 
@@ -158,15 +161,14 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     });
 
     const { createBookingInCalendar, createBooking, getCustomerByPhoneOrEmail} = useBookingStore();
-    const {getAllRooms} = useRoomStore();
-  
+    const {getAllRooms,rooms} = useRoomStore();
     const customers = useCustomerStore((s) => s.customers);
     const fetchCustomers = useCustomerStore((s) => s.fetchCustomers);
     const [roomOptions, setRoomOptions] = useState<{ label: string; value: string }[]>([]);
     const status = useWatch({ control: methods.control, name: "customerStatus" });
     const phoneOrEmail = useWatch({ control: methods.control, name: "phoneOrEmail" });
     const [selectedRoomFeatures, setSelectedRoomFeatures] = useState<string[]>([]);
-    const [rooms, setRooms] = useState<Room[]>([]);
+    // const [rooms, setRooms] = useState<Room[]>([]);
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
     const [allFeatures, setAllFeatures] = useState<{ id: string; name: string }[]>([]);
     const { features, getAllFeatures, loading, error } = useFeatureStore();
@@ -187,9 +189,10 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
     }));
     //הבאת כל החדרים
     useEffect(() => {
-      getAllRooms().then((data) => {
-        setRooms(data);
-      });
+      getAllRooms();
+      // .then((data) => {
+        // setRooms(data);
+      // });
     }, []);
     // useEffect(() => {
     //   getAllRooms().then(() => {
@@ -203,14 +206,22 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       fetchCustomers();
       console.log("הלקוחות שהתקבלו:", customers);
 //שליפת התכונות לפי חדרים
-      getAllRooms().then((rooms: Room[]) => {
-        setRoomOptions(
-          rooms.map((room) => ({
-            label: room.name,
-            value: room.id,
-          }))
-        );
-      });
+      // getAllRooms().then((rooms: Room[]) => {
+      //   setRoomOptions(
+      //     rooms.map((room) => ({
+      //       label: room.name,
+      //       value: room.id,
+      //     }))
+      //   );
+      // });
+      getAllFeatures();
+      // rooms.forEach((room) =>{
+      //   features.forEach((feature) => {
+      //     if(feature.id === room.features?.[i]) {
+      //       setAllFeatures((prev) => [...prev, { id: feature.id, name: feature.description || feature.name }]);
+      //     }
+      //   })
+      // })
       // getAllRooms().then(() => {
       //   const updatedRooms = useRoomStore.getState().rooms;
       //   setRooms(updatedRooms);
@@ -254,11 +265,13 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
       const room = roomOptions.find((r) => r.value === selectedRoomId);
       if (room) {
         // צריך להיות לך מאגר החדרים המלא עם תכונות, לא רק label/value
-        getAllRooms().then((rooms: Room[]) => {
-          const selectedFullRoom = rooms.find((r) => r.id === selectedRoomId);
-          setSelectedRoomFeatures(selectedFullRoom?.features ?? []);
-          console.log("room", selectedFullRoom);
-        });
+        getAllRooms();
+        
+        // .then((rooms: Room[]) => {
+        //   const selectedFullRoom = rooms.find((r) => r.id === selectedRoomId);
+        //   setSelectedRoomFeatures(selectedFullRoom?.features ?? []);
+        //   console.log("room", selectedFullRoom);
+        // });
         // getAllRooms().then(() => {
         //   const updatedRooms = useRoomStore.getState().rooms;
         //   setRooms(updatedRooms);
@@ -274,14 +287,27 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
         console.log("התכונות אחרי getAllFeatures:", features);
       });
     }, []);
-    const roomsWithFeatures = rooms.map(room => {
-      const featureIds = room.features || [];
-      const fullFeatures = allFeatures.filter(f => featureIds.includes(f.id));
-      return {
-        ...room,
-        features: fullFeatures,
-      };
-    });
+    // const roomsWithFeatures = rooms.map(room => {
+    //   const featureIds = room.features || [];
+    //   const fullFeatures = allFeatures.filter(f => featureIds.includes(f.id));
+    //   return {
+    //     ...room,
+    //     features: fullFeatures,
+    //   };
+    // });
+    const mapRoomFeatures = (fet:string[]) => {
+      const fff:string[] = [];
+       fet.map(f => {
+           features.map((feature) => {
+            if (feature.id === f) {
+               if(feature.description)
+                  fff.push(feature.description);
+            }
+           });
+
+      });
+      return fff;
+    };
 
     useEffect(() => {
       if (selectedRoomId && rooms.length > 0) {
@@ -433,18 +459,24 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
               )}
 
               <div className="form-field">
-                <SelectField name="selectedRoomId" label="בחירת חדר" options={roomOptions} required />
+                <SelectField name="selectedRoomId" label="בחירת חדר" options={rooms.map((r) => ({
+                        label: `${r.name}`,
+                        value: r.id || "",
+                      }))} required />
               </div>
               {selectedRoomId && (
                 <div className="form-field">
                   <label>תכונות החדר:</label>
                   <ul>
-                    {(rooms.find(r => r.id === selectedRoomId)?.features || [])
-                      .map(fid => features.find(f => f.id === fid)?.description || "תכונה לא ידועה")
-                      .map((name, index) => (
-                        <li key={index}>{name}</li>
-                      ))}
-                  </ul>
+  {rooms.length > 0 &&
+    rooms.flatMap((room) =>
+      mapRoomFeatures(room.features || []).map((feature) => (
+        <li key={uuidv4()}>
+          {feature}
+        </li>
+      ))
+    )}
+</ul>
                 </div>
               )}
               <div className="form-field">

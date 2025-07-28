@@ -19,7 +19,7 @@ import {
   // FileDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { CustomerStatus, PaymentMethodType, WorkspaceType  } from "shared-types";
+import { CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
 import { Button } from "./Button";
 
 export interface CustomerCardProps {
@@ -210,9 +210,9 @@ export const ExpandableCustomerCard = ({
           <div className="flex items-center gap-2">
             <BadgePercent size={14} /> תחום עיסוק: {businessType}
           </div>
-          {/* <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <ClipboardSignature size={14} /> סוג מקום עבודה: {workspaceTypeLabels[currentWorkspaceType!] || "לא זמין"}
-          </div> */}
+          </div>
           <div className="flex items-center gap-2">
             <Building2 size={14} /> מקומות עבודה: {workspaceCount ?? "לא זמין"}
           </div>
