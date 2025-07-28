@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import './App.css';
 import { Routes, Route } from 'react-router-dom';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
-import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
 import { VoiceCommand } from './VoiceAssistant';
 

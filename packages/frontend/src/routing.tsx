@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';

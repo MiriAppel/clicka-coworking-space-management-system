@@ -8,7 +8,7 @@ import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../../../Common/Components/BaseComponents/Button"
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserRole } from "shared-types";
 import { Eye, EyeOff } from "lucide-react";
@@ -16,7 +16,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export const RegisterUser = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const { setUser, setSessionId, user, isLoading } = useAuthStore();
+    const { user } = useAuthStore();
     const schema = z.object({
         email: z.string().min(1, "Email required").email("Invalid Email").nonempty("EMAIL"),
         password: z.string().min(1, "Password required").nonempty("PASSWORD"),
@@ -36,7 +36,7 @@ export const RegisterUser = () => {
             return;
         }
         try {
-            if (user.email !== data.email && user.role != UserRole.ADMIN) {
+            if (user.email !== data.email && user.role !== UserRole.ADMIN) {
                 showAlert("Email mismatch", "מייל לא תואם למשתמש המחובר", "error");
                 return;
             }

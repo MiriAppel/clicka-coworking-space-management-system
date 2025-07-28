@@ -144,8 +144,6 @@ export async function deleteVendor(id: ID): Promise<boolean> {
     console.error('Exception in deleteLoungePricing:', e);
     throw e;
   }
-<<<<<<< HEAD:packages/backend/src/services/vendor.servic.ts
-=======
 }
 
 
@@ -225,5 +223,4 @@ export async function getExpensesByVendorId(vendorId: string): Promise<Expense[]
     console.error('Exception in getExpensesByVendorId:', e);
     throw e;
   }
->>>>>>> 158a20a44856e450dd719d22acfbc63e4573414c:packages/backend/src/services/vendor.service.ts
 }

@@ -1,4 +1,4 @@
-import {  ReactNode, useEffect } from "react";
+import {  ReactNode, useCallback, useEffect } from "react";
 import { useAuthStore } from "../../../../Stores/CoreAndIntegration/useAuthStore";
 import axios from "axios";
 import { axiosInstance } from "../../../../Service/Axios";
@@ -10,7 +10,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { setUser, clearUser, setLoading, setSessionId, user, isLoading } = useAuthStore();
-  const verifyFunction = async () => {
+  const verifyFunction = useCallback(async () => {
     try {
       setLoading(true);
       let res = await axiosInstance.get("/auth/verify");
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       verifyFunction();
     };
     checkAuth();
-  }, []);
+  }, [verifyFunction]);
   //check session every 30 seconds to check if the session is still valid and same as the one in the store
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
