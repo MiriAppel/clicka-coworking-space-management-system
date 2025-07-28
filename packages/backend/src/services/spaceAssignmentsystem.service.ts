@@ -44,7 +44,7 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
       console.error('Unexpected error:', err);
       return null;
     }
-
+}
 //עדכון הקצאה
       async updateSpace(id: string, updatedData: SpaceAssignmentModel): Promise<SpaceAssignmentModel | null> {
         const { data, error } = await supabase
@@ -60,6 +60,7 @@ async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | 
         const space = SpaceAssignmentModel.fromDatabaseFormat(data);
         //logUserActivity(feature.description, 'feature updated');
         return space;
+      
 }
 //מחיקת הקצאה
 async  deleteSpace(id:string) {

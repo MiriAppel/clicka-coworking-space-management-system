@@ -76,7 +76,7 @@ export const WorkspaceMap = () => {
         updateSize();
         window.addEventListener("resize", updateSize);
         return () => window.removeEventListener("resize", updateSize);
-    }, [getAllWorkspace])
+    }, [getAllWorkspace, getAllRooms])
     useEffect(() => {
         getAllWorkspace();
     }, [getAllWorkspace]);

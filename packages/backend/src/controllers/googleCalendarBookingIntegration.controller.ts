@@ -43,8 +43,7 @@ export const createCalendarEvent = async (req: Request, res: Response, next: Nex
     const result = await calendarUpdate.updateEvent(updateDetails.calendarId, updateDetails.eventId,
             updateItem, token)
             if(result){
-        await CalendarService.updateEnevtOnChangeBooking(updateDetails.calendarId, updateDetails.eventId,
-            updateItem, token);
+        await CalendarService.updateEnevtOnChangeBooking(updateDetails.calendarId, updateDetails.eventId, updateItem, token);
         res.status(200).json({ message: 'Event updated successfully' });
             }
             else{
@@ -125,8 +124,8 @@ export const updateEventOnChangeBooking = async (req: Request, res: Response) =>
         }
         const result = await calendarUpdate.updateEvent(updateDetails.calendarId, updateDetails.eventId,
             updateItem, token)
-            if(result){
-        await CalendarService.updateEnevtOnChangeBooking(updateDetails.calendarId, updateDetails.eventId,
+        if(result){
+              await CalendarService.updateEnevtOnChangeBooking(updateDetails.calendarId, updateDetails.eventId,
             updateItem, token);
         res.status(200).json({ message: 'Event updated successfully' });
             }
@@ -187,9 +186,9 @@ export const shareCalendar = async (req: Request, res: Response) => {
 }
 export const handleGoogleCalendarWebhook = async (req: Request, res: Response) => {
   try {
-    const headers = req.headers;
+    // const headers = req.headers;
 
-    await CalendarService.processCalendarWebhook(headers);
+    // await CalendarService.processCalendarWebhook(headers);
 
     res.status(200).send("Webhook received");
   } catch (error) {
