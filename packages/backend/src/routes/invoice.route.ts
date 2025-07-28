@@ -44,6 +44,7 @@ invoiceRouter.put('/:id', updateInvoice);                        // עדכון �
 // DELETE - מחיקת חשבונית
 invoiceRouter.delete('/:id', deleteInvoice);                     // מחיקת חשבונית (הסרתי 'delete/')
 invoiceRouter.post('/sendemail', sendEmail);
+invoiceRouter.post('/send-invoice-update-email', sendInvoiceUpdateMail);
 
 
 invoiceRouter.get('/health', (req, res) => {
