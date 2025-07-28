@@ -58,7 +58,7 @@ export const getGoogleCalendarEvents = async (calendarId: string, token: string)
                 email: attendee.email || '',
                 displayName: attendee.displayName || '',
             })) || [],
-            status: booking?.status ?? BookingStatus.CONFIRMED, // הגנה מפני קריסה
+            status: booking?.status ?? BookingStatus.PENDING, // הגנה מפני קריסה
             created: event.created || '',
             updated: event.updated || '',
             htmlLink: event.htmlLink || '',
