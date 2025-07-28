@@ -7,7 +7,6 @@ import { menus } from '../menuData';
 import { T } from '../../Common/Service/T';
 import logo from '../Assets/Klika Logo.jpg'; 
 import { useAuthStore } from '../../Stores/CoreAndIntegration/useAuthStore';
-import { LogOut } from 'lucide-react';
 import { LogoutButton } from '../../MainMenu/CoreAndIntegration/Components/Login/LogoutButton';
 
 
@@ -17,7 +16,7 @@ const TopNav = () => {
   const navRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [clickedMenuKey, setClickedMenuKey] = useState<string>('');
-  const { user, clearUser } = useAuthStore();
+  const { user } = useAuthStore();
   console.log('user: ',user)
 
   const isMenuOpen = (menu: string) =>
@@ -25,10 +24,6 @@ const TopNav = () => {
 
   const toggleMenu = (menu: string) => {
     setOpenMenu(prev => (prev === menu ? null : menu));
-  };
-   const handleLogout = () => {
-    clearUser();
-    navigate('/auth');
   };
 
   const [mobileOpen, setMobileOpen] = useState(false);
