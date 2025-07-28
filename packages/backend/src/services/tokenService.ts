@@ -11,7 +11,7 @@ export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, 
     res.cookie('session', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'none',
         maxAge: 8 * 60 * 60 * 1000, // 8 שעות
     });
     console.log('setAuthCookie', sessionId);
@@ -19,7 +19,7 @@ export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, 
         res.cookie('sessionId', sessionId, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
+            sameSite: 'none',
             maxAge: 8 * 60 * 60 * 1000, // 8 שעות
         });
     }
@@ -28,7 +28,7 @@ export const setRefreshCookie = (res: Response, refreshToken: string): void => {
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'none',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ימים
     });
 };
@@ -37,17 +37,17 @@ export const clearAuthCookie = (res: Response): void => {
     res.clearCookie('session', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'none',
     });
     res.clearCookie('sessionId', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'none',
     });
     res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'none',
     });
 };
 // Function to get the current user ID from the session cookie
