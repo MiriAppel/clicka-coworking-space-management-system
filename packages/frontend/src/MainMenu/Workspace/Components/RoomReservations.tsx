@@ -17,11 +17,6 @@ export enum BookingStatus {
   COMPLETED = "COMPLETED",
 }
 
-type Room = {
-  id: string;
-  name: string;
-};
-
 export type FormFields = {
   customerStatus: "external" | "customer";
   phoneOrEmail?: string;

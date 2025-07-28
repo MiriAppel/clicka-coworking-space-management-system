@@ -31,7 +31,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
     //get by id
     getWorkspaceById: async (id) => {
         try {
-            const response = await axios.get(`api/workspace/getWorkspaceById/${id}`);
+            const response = await axiosInstance.get(`api/workspace/getWorkspaceById/${id}`);
             set({ workSpaces: response.data });
         } catch (error) {
             console.error('Error fetching work spaces:', error);
@@ -40,7 +40,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
     //update space
     updateWorkspace: async (workspace, id) => {
         try {
-            const response = await axios.put(`api/workspace/updateWorkspace/${id}`, workspace);
+            const response = await axiosInstance.put(`api/workspace/updateWorkspace/${id}`, workspace);
             set((state) => ({
                 workSpaces: state.workSpaces.map((ws) =>
                     ws.id === id ? response.data : ws
@@ -54,7 +54,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
     //add space
     createWorkspace: async (workspace) => {
         try {
-            const response = await axios.post('api/workspace/createWorkspace', workspace);
+            const response = await axiosInstance.post('api/workspace/createWorkspace', workspace);
             set((state) => ({
                 workSpaces: [...state.workSpaces, response.data]
             }));
@@ -65,7 +65,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
     //delete space
     deleteWorkspace: async (id) => {
         try {
-            await axios.delete(`api/workspace/deleteWorkspace/${id}`);
+            await axiosInstance.delete(`api/workspace/deleteWorkspace/${id}`);
             set((state) => ({
                 workSpaces: state.workSpaces.filter((ws) => ws.id !== id)
             }));
@@ -78,7 +78,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
             const formattedDate = date.toISOString().split('T')[0];
             console.log('Sending date to API:', formattedDate);
 
-            const response = await axios.get<Space[]>(`api/space/getHistory/${formattedDate}`);
+            const response = await axiosInstance.get<Space[]>(`api/space/getHistory/${formattedDate}`);
             const serverData = response.data;
 
             const { workSpaces: localData } = get();
@@ -107,7 +107,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
     // get all workspace maps
     getAllWorkspaceMap: async () => {
         try {
-            const response = await axios.get("http://localhost:3001/api/map/all");
+            const response = await axiosInstance.get("http://localhost:3001/api/map/all");
             set({ maps: response.data });  // שים את המפות בסטור
             return response.data; // החזר את המערך
         } catch (error) {

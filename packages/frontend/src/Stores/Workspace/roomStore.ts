@@ -1,6 +1,6 @@
 import {create} from "zustand";
-import axios from "axios";
-import {ID, Room} from "shared-types";
+import axiosInstance from "../../Service/Axios";
+import {Room} from "shared-types";
 
 
 interface RoomState {
@@ -15,7 +15,7 @@ rooms:[],
     //get all rooms
     getAllRooms: async () => {
         try {
-            const response = await axios.get('api/rooms/getAllRooms');
+            const response = await axiosInstance.get('api/rooms/getAllRooms');
             set({ rooms: response.data });
         } catch (error){
              console.error('Error fetching rooms:', error);
