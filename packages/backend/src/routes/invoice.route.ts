@@ -7,7 +7,8 @@ import {
   getInvoiceById,
   updateInvoice,
   deleteInvoice,
-  getCustomersCollection
+  getCustomersCollection,
+  sendEmail
 } from '../controllers/invoice.controller';
 import { sendInvoiceUpdateMail } from '../controllers/InvoiceUpdateMail';
 
@@ -42,6 +43,7 @@ invoiceRouter.get('/:id', getInvoiceById);                       // חשבוני
 invoiceRouter.put('/:id', updateInvoice);                        // עדכון חשבונית (הסרתי 'update/')
 // DELETE - מחיקת חשבונית
 invoiceRouter.delete('/:id', deleteInvoice);                     // מחיקת חשבונית (הסרתי 'delete/')
+invoiceRouter.post('/sendemail', sendEmail);
 
 
 invoiceRouter.get('/health', (req, res) => {
