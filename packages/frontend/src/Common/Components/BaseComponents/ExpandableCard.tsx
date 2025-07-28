@@ -63,7 +63,9 @@ const statusLabels: Record<CustomerStatus, string> = {
 };
 
 const workspaceTypeLabels: Record<WorkspaceType, string> = {
-  PRIVATE_ROOM: "חדר פרטי",
+  PRIVATE_ROOM1: "חדר פרטי",
+  PRIVATE_ROOM2: "חדר של 2",
+  PRIVATE_ROOM3: "חדר של 3",
   DESK_IN_ROOM: "שולחן בחדר",
   OPEN_SPACE: "אופן ספייס",
   KLIKAH_CARD: "כרטיס קליקה",

@@ -136,21 +136,33 @@ export async function createPricingTier(
       request.year2Price,
       request.year3Price,
       request.year4Price,
+      request.twoDaysFromOfficePrice,
+      request.threeDaysFromOfficePrice,
     ]);
     const effectiveDate = new Date(request.effectiveDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
     if (effectiveDate < today) {
       throw new Error("תאריך התחולה חייב להיות היום או בעתיד.");
     }
-    // בדיקת התנגשות תאריכים מול מסד הנתונים עבור אותו סוג סביבת עבודה
-    await checkEffectiveDateConflict(supabase, 'pricing_tiers', request.effectiveDate, { workspace_type: request.workspaceType });
+
+    // בדיקת התנגשות תאריכים מול מסד הנתונים
+    await checkEffectiveDateConflict(
+      supabase,
+      'pricing_tiers',
+      request.effectiveDate,
+      { workspace_type: request.workspaceType }
+    );
+
+
     const newPricingTierModel = new PricingTierModel({
       workspaceType: request.workspaceType,
       year1Price: request.year1Price,
       year2Price: request.year2Price,
       year3Price: request.year3Price,
       year4Price: request.year4Price,
+      twoDaysFromOfficePrice: request.twoDaysFromOfficePrice,
+      threeDaysFromOfficePrice: request.threeDaysFromOfficePrice,
       effectiveDate: request.effectiveDate,
       active: true, 
       createdAt: new Date().toISOString(),
@@ -172,6 +184,8 @@ export async function createPricingTier(
       year2Price: data.year2_price,
       year3Price: data.year3_price,
       year4Price: data.year4_price,
+      twoDaysFromOfficePrice: data.two_days_from_office_price,
+      threeDaysFromOfficePrice: data.three_days_from_office_price,
       effectiveDate: data.effective_date,
       active: data.active,
       createdAt: data.created_at,
@@ -182,6 +196,7 @@ export async function createPricingTier(
     throw e;
   }
 }
+
 // פונקציית העזר checkEffectiveDateConflict (כפי שתוקנה לאחרונה)
 // קודם כל, זו הפונקציה שעושה את בדיקת ההתנגשות
 export async function checkEffectiveDateConflict(
@@ -246,23 +261,29 @@ export async function getPricingHistory(workspaceType: WorkspaceType): Promise<P
       return [];
     }
 
-    return data.map(item => new PricingTierModel({
-      id: item.id,
-      workspaceType: item.workspace_type,
-      year1Price: item.year1_price,
-      year2Price: item.year2_price,
-      year3Price: item.year3_price,
-      year4Price: item.year4_price,
-      effectiveDate: item.effective_date,
-      active: item.active,
-      createdAt: item.created_at,
-      updatedAt: item.updated_at,
-    }));
+    return data.map(
+      (item) =>
+        new PricingTierModel({
+          id: item.id,
+          workspaceType: item.workspace_type,
+          year1Price: item.year1_price,
+          year2Price: item.year2_price,
+          year3Price: item.year3_price,
+          year4Price: item.year4_price,
+          twoDaysFromOfficePrice: item.two_days_from_office_price,
+          threeDaysFromOfficePrice: item.three_days_from_office_price,
+          effectiveDate: item.effective_date,
+          active: item.active,
+          createdAt: item.created_at,
+          updatedAt: item.updated_at,
+        })
+    );
   } catch (e) {
     console.error('חריגה בפונקציה getPricingHistory:', e);
     throw e;
   }
 }
+
 
 export async function getCurrentPricingTier(
   workspaceType: WorkspaceType
@@ -294,6 +315,8 @@ export async function getCurrentPricingTier(
       year2Price: data.year2_price,
       year3Price: data.year3_price,
       year4Price: data.year4_price,
+      twoDaysFromOfficePrice: data.two_days_from_office_price,
+      threeDaysFromOfficePrice: data.three_days_from_office_price,
       effectiveDate: data.effective_date,
       active: data.active,
       createdAt: data.created_at,
@@ -324,12 +347,14 @@ export async function updatePricingTier(
 
     const updatedTierModel = new PricingTierModel({
       id: existingTier.id,
-      workspaceType: update.workspaceType !== undefined ? update.workspaceType : existingTier.workspace_type,
-      year1Price: update.year1Price !== undefined ? update.year1Price : existingTier.year1_price,
-      year2Price: update.year2Price !== undefined ? update.year2Price : existingTier.year2_price,
-      year3Price: update.year3Price !== undefined ? update.year3Price : existingTier.year3_price,
-      year4Price: update.year4Price !== undefined ? update.year4Price : existingTier.year4_price,
-      effectiveDate: update.effectiveDate !== undefined ? update.effectiveDate : existingTier.effective_date,
+      workspaceType: update.workspaceType ?? existingTier.workspace_type,
+      year1Price: update.year1Price ?? existingTier.year1_price,
+      year2Price: update.year2Price ?? existingTier.year2_price,
+      year3Price: update.year3Price ?? existingTier.year3_price,
+      year4Price: update.year4Price ?? existingTier.year4_price,
+      twoDaysFromOfficePrice: update.twoDaysFromOfficePrice ?? existingTier.two_days_from_office_price,
+      threeDaysFromOfficePrice: update.threeDaysFromOfficePrice ?? existingTier.three_days_from_office_price,
+      effectiveDate: update.effectiveDate ?? existingTier.effective_date,
       active: existingTier.active,
       createdAt: existingTier.created_at,
       updatedAt: new Date().toISOString(),
@@ -355,9 +380,16 @@ export async function updatePricingTier(
 
       const newEffectiveDate = new Date(update.effectiveDate);
       if (newEffectiveDate < todayStartOfDay) {
-          throw new Error("לא ניתן לעדכן תאריך תחילה לתאריך שכבר עבר.");
+        throw new Error("לא ניתן לעדכן תאריך תחילה לתאריך שכבר עבר.");
       }
-      await checkEffectiveDateConflict(supabase, 'pricing_tiers', update.effectiveDate, { workspace_type: updatedTierModel.workspaceType }, id);
+
+      await checkEffectiveDateConflict(
+        supabase,
+        'pricing_tiers',
+        update.effectiveDate,
+        { workspace_type: updatedTierModel.workspaceType },
+        id
+      );
     }
 
     const { data, error: updateError } = await supabase
@@ -373,16 +405,18 @@ export async function updatePricingTier(
     }
 
     return new PricingTierModel({
-        id: data.id,
-        workspaceType: data.workspace_type,
-        year1Price: data.year1_price,
-        year2Price: data.year2_price,
-        year3Price: data.year3_price,
-        year4Price: data.year4_price,
-        effectiveDate: data.effective_date,
-        active: data.active,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
+      id: data.id,
+      workspaceType: data.workspace_type,
+      year1Price: data.year1_price,
+      year2Price: data.year2_price,
+      year3Price: data.year3_price,
+      year4Price: data.year4_price,
+      twoDaysFromOfficePrice: data.two_days_from_office_price,
+      threeDaysFromOfficePrice: data.three_days_from_office_price,
+      effectiveDate: data.effective_date,
+      active: data.active,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
     });
 
   } catch (e) {
@@ -695,7 +729,31 @@ export async function deleteMeetingRoomPricing(id: ID): Promise<boolean> {
     throw e;
   }
 }
+// export async function getMeetingRoomPriceByDate(date: DateISO): Promise<number | null> {
+//   try {
+//     const { data, error } = await supabase
+//       .from('meeting_room_pricing')
+//       .select('*')
+//       .lte('effective_date', date)  // כל תאריך תחולה עד לתאריך המבוקש כולל
+//       .order('effective_date', { ascending: false })  // מיון מהתאריך הכי קרוב למעלה
+//       .limit(1)
+//       .single();
 
+//     if (error && error.code !== 'PGRST116') {
+//       console.error('Error fetching meeting room pricing by date:', error);
+//       throw new Error('Failed to fetch meeting room pricing by date');
+//     }
+
+//     if (!data) {
+//       return null; // אין תמחור תקף לתאריך זה או לפניו
+//     }
+
+//     return data.hourly_rate;
+//   } catch (e) {
+//     console.error('Exception in getMeetingRoomPriceByDate:', e);
+//     throw e;
+//   }
+// }
 // ========================
 // תמחור לאונג' - מעודכן לעבודה מול Supabase
 // ========================
@@ -981,27 +1039,26 @@ export async function createOrUpdatePricingTier(
       throw new Error("חובה לבחור סוג סביבת עבודה.");
     }
 
-    // ודא ש-effectiveDate מוגדר (טיפול ב-undefined)
     if (request.effectiveDate === undefined) {
       throw new Error("תאריך התחולה (effectiveDate) חייב להיות מוגדר.");
     }
-    const effectiveDate = new Date(request.effectiveDate); // עכשיו זה בטוח string
+    const effectiveDate = new Date(request.effectiveDate);
 
-
-    // ודא ששדות המחיר מוגדרים (טיפול ב-undefined).
-    // נשתמש באופרטור אי-ריקנות (Non-Null Assertion Operator - !) כי אנו מניחים
-    // ששדות אלה תמיד יגיעו אם לא נזרקה שגיאה מוקדם יותר בשרשרת הקריאות
-    // (לדוגמה, מה-frontend או ולידציה ב-API Gateway).
+    // בטיפול בשדות המחיר נכלול גם את השדות החדשים
     const year1Price = request.year1Price!;
     const year2Price = request.year2Price!;
     const year3Price = request.year3Price!;
     const year4Price = request.year4Price!;
+    const twoDaysFromOfficePrice = request.twoDaysFromOfficePrice!;
+    const threeDaysFromOfficePrice = request.threeDaysFromOfficePrice!;
 
     validatePrices([
       year1Price,
       year2Price,
       year3Price,
       year4Price,
+      twoDaysFromOfficePrice,
+      threeDaysFromOfficePrice,
     ]);
 
     const today = new Date();
@@ -1016,20 +1073,14 @@ export async function createOrUpdatePricingTier(
     let excludeId: ID | undefined = undefined;
 
     // 2. קביעה האם זו פעולת יצירה או עדכון
-    // צמצום טיפוסים כדי ש-TypeScript יבין ש-request מכיל id אם הוא מגיע לכאן.
-    // אנו בודקים אם המאפיין 'id' קיים על אובייקט ה-request והוא מהטיפוס ID.
-    // אם ה-ID הוא string (כפי שהשגיאה רמזה), הבדיקה הזו עובדת היטב.
     if ('id' in request && typeof request.id === 'string' && request.id !== '') {
         isUpdate = true;
-        // כעת, בתוך הבלוק הזה, TypeScript יודע ש-request הוא בוודאות מהטיפוס שיש לו id.
-        // נוכל להשתמש ב-request.id ישירות, או להקצות למשתנה כמו excludeId.
         excludeId = request.id;
 
-        // אחזור השכבה הקיימת לעדכון
         const { data, error } = await supabase
             .from('pricing_tiers')
             .select('*')
-            .eq('id', excludeId) // השתמש ב-excludeId הבטוח
+            .eq('id', excludeId)
             .single();
 
         if (error || !data) {
@@ -1039,8 +1090,7 @@ export async function createOrUpdatePricingTier(
         existingTier = new PricingTierModel(data);
     }
 
-    // 3. טיפול בנטרול רשומות קודמות (רק אם זו יצירה חדשה)
-    // אם זו יצירה חדשה (לא עדכון רשומה ספציפית), נטרל את כל הפעילות הקודמות.
+    // 3. נטרול שכבות פעילות קודמות ביצירה חדשה בלבד
     if (!isUpdate) {
         const { error: deactivateError } = await supabase
             .from('pricing_tiers')
@@ -1058,49 +1108,50 @@ export async function createOrUpdatePricingTier(
     await checkEffectiveDateConflict(
       supabase,
       'pricing_tiers',
-      request.effectiveDate, // request.effectiveDate הוא עכשיו בוודאות string
+      request.effectiveDate,
       { workspace_type: request.workspaceType },
-      excludeId // העבר את ה-ID להחרגה אם זו פעולת עדכון (אחרת undefined)
+      excludeId
     );
 
     let resultData: any;
     let resultError: any;
 
-    // 5. ביצוע פעולת Supabase (insert או update)
+    // 5. ביצוע פעולת Insert או Update
     if (isUpdate && existingTier) {
-        // עדכון רשומה קיימת
         const updatedFields = {
             workspace_type: request.workspaceType,
-            year1_price: year1Price, // אלו כבר מוגדרים כ-number
+            year1_price: year1Price,
             year2_price: year2Price,
             year3_price: year3Price,
             year4_price: year4Price,
-            effective_date: request.effectiveDate, // זה בטוח string
+            two_days_from_office_price: twoDaysFromOfficePrice,
+            three_days_from_office_price: threeDaysFromOfficePrice,
+            effective_date: request.effectiveDate,
             updated_at: new Date().toISOString(),
-            // אם active יכול להשתנות דרך ה-request, הוסף את השורה הבאה:
-            // active: request.active,
-            // updated_by: createdBy, // הוסף אם קיים שדה updated_by בטבלה
+            // active: request.active, // אם רלוונטי
+            // updated_by: createdBy, // אם יש שדה כזה במסד
         };
 
         const { data, error } = await supabase
             .from('pricing_tiers')
             .update(updatedFields)
-            .eq('id', excludeId!) // excludeId בטוח מוגדר כאן
+            .eq('id', excludeId!)
             .select()
             .single();
+
         resultData = data;
         resultError = error;
-
     } else {
-        // יצירת רשומה חדשה
         const newPricingTierModel = new PricingTierModel({
             workspaceType: request.workspaceType,
-            year1Price: year1Price, // אלו כבר מוגדרים כ-number
-            year2Price: year2Price,
-            year3Price: year3Price,
-            year4Price: year4Price,
-            effectiveDate: request.effectiveDate, // זה בטוח string
-            active: true, // שכבת תמחור חדשה נוצרת תמיד כפעילה
+            year1Price,
+            year2Price,
+            year3Price,
+            year4Price,
+            twoDaysFromOfficePrice,
+            threeDaysFromOfficePrice,
+            effectiveDate: request.effectiveDate,
+            active: true,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
         });
@@ -1110,6 +1161,7 @@ export async function createOrUpdatePricingTier(
             .insert(newPricingTierModel.toDatabaseFormat())
             .select()
             .single();
+
         resultData = data;
         resultError = error;
     }
@@ -1119,7 +1171,6 @@ export async function createOrUpdatePricingTier(
       throw new Error('הפעולה ליצירת/עדכון שכבת תמחור נכשלה.');
     }
 
-    // המרת הנתונים חזרה לפורמט PricingTierModel לפני החזרה
     return new PricingTierModel({
       id: resultData.id,
       workspaceType: resultData.workspace_type,
@@ -1127,6 +1178,8 @@ export async function createOrUpdatePricingTier(
       year2Price: resultData.year2_price,
       year3Price: resultData.year3_price,
       year4Price: resultData.year4_price,
+      twoDaysFromOfficePrice: resultData.two_days_from_office_price,
+      threeDaysFromOfficePrice: resultData.three_days_from_office_price,
       effectiveDate: resultData.effective_date,
       active: resultData.active,
       createdAt: resultData.created_at,

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useInvoiceStore } from "../invoice-generation-engine/invoiceStore";
+import { useInvoiceStore } from "../../../../Stores/Billing/invoiceStore";
 import { InvoiceStatus, PaymentMethodType } from "shared-types";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";

@@ -85,8 +85,9 @@ app.use('/api/occupancy', occupancyrouter);
 app.use('/api/map', routerMap);
 app.use('/api/reports', routerReport);
 app.use('/api/emailTemplate', emailTemplateRouter);
-app.use('/api/google-calendar', syncRouter);
-app.use('/vendor', (req, res, next) => {
+app.use('api/google-calendar', syncRouter);
+app.use('/api/vendor', (req, res, next) => {
+
   console.log('Vendor route hit:', req.method, req.originalUrl);
   next();
 }, vendorRouter);
@@ -103,6 +104,9 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/emailTemplate', emailTemplateRouter);
 app.use('/api/drive', driveRoutes);
 // app.use('/api/leadInteraction', routerCstomer);
+app.use('/api/payment', routerPayment);
+app.use('/api/invoices', invoiceRouter);
+// app.use('/api/document', documentRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

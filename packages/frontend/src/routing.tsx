@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
@@ -7,7 +7,6 @@ import VendorsList from './MainMenu/Billing/Components/Vendor-management/Vendors
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import { Vendor } from 'shared-types';
 import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
-import { getAllVendors } from './Api/vendor-api'; // פונקציה שמבצעת קריאת axios למסד נתונים
 import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import MainLayout from './layout/MainLayout';
@@ -17,10 +16,9 @@ import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
-import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import { Billing } from './MainMenu/Billing/Components/billing';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
-import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
+// import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
 import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 import { SendEmail } from './MainMenu/CoreAndIntegration/Components/SendEmail/SendEmail';
 // import EmailConfirmationPage from './MainMenu/LeadAndCustomer/Components/Leads/EmailConfirmationPage';
@@ -29,30 +27,17 @@ import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLo
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
+import { Collection } from './MainMenu/Billing/Components/invoice-generation-engine/collection';
+import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
+import { BookingTable } from './MainMenu/Workspace/Components/bookingTable';
+import { UpdateBooking } from './MainMenu/Workspace/Components/updateBooking';
+import { Report } from './MainMenu/Workspace/Components/report';
+import { AssigmentTable } from './MainMenu/Workspace/Components/assigenmentTable';
+import { UpdateAssigenment } from './MainMenu/Workspace/Components/updateAssigenment';
+import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 export const Routing = () => {
-  // משתנה state שמכיל את כל הספקים שנשלפים מהמסד
-  const [vendors, setVendors] = useState<Vendor[]>([]);
-  // משתנה שמייצג האם הנתונים עוד בטעינה
-  const [loading, setLoading] = useState(true);
-  // useEffect - רץ פעם אחת לאחר טעינת הקומפוננטה
-  useEffect(() => {
-    const fetchVendors = async () => {
-      try {
-        // קריאה לפונקציה שמביאה את רשימת הספקים מהשרת (API)
-        const data = await getAllVendors();
-        setVendors(data); // שומר את הנתונים ב-state
-      } catch (err) {
-        console.error("שגיאה בשליפת ספקים:", err); // הדפסת שגיאה אם השליפה נכשלה
-      } finally {
-        setLoading(false); // מסמן שהטעינה הסתיימה (בין אם הצליחה או נכשלה)
-      }
-    };
-    fetchVendors(); // מפעיל את הפונקציה
-  }, []); // [] אומר שה־useEffect ירוץ רק בפעם הראשונה
-  // אם עדיין טוען – מציג הודעת טעינה למשתמש
-  if (loading) return <div>טוען נתונים...</div>;
-  // ברגע שהנתונים נטענו, מוצגים כל הראוטים של המערכת
+    const [vendors, setVendors] = useState<Vendor[]>([]);
   return (
     <Routes>
       <Route element={<MainLayout />}>
@@ -65,9 +50,13 @@ export const Routing = () => {
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
         <Route path="/workspaceMap" element={<WorkspaceMap />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
-        <Route path="assignmentForm" element={<AssignmentForm />} />
+        <Route path="assignmentForm" element={<AssignmentForm/>} />
+        <Route path="assignmentTable" element={<AssigmentTable/>} />
+        <Route path="updateAssignment" element={<UpdateAssigenment/>} />
+        <Route path="bookings" element={<BookingTable />} />
+        <Route path="updateBooking" element={<UpdateBooking />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
-        <Route path="payment" element={<PaymentForm />} />
+        <Route path="payments" element={<PaymentForm />} />
         <Route path="vendor" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
@@ -75,7 +64,7 @@ export const Routing = () => {
         <Route path="expense-form" element={<CreateExpenseForm />} />
         <Route path="billing/*" element={<Billing />} />
         <Route path="users" element={< UserTable />} />
-        <Route path="meetingRooms" element={<RoomReservations />} />
+        {/* <Route path="meetingRooms" element={<RoomReservations />} /> */}
         <Route path="UserActions" element={< AuditLogTable />} />
         <Route path="emailTemplate" element={< EmailTemplateTable />} />
         <Route path="sendEmails" element={< SendEmail />} />
@@ -85,6 +74,9 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
+        <Route path="/occupancyReports" element={<Report  />} />
+        <Route path="/billing/collection" element={< Collection />} />
+        <Route path="/petty-cash" element={<PettyCashPage />} />
       </Route>
     </Routes>
   );

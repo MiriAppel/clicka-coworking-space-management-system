@@ -15,6 +15,8 @@ expenseRouter.put("/markExpenseAsPaid/:id",expenseController.markExpenseAsPaid.b
 expenseRouter.delete("/:id",expenseController.deleteExpense.bind(expenseController));
 expenseRouter.get('/by-page', expenseController.getExpensesByPage.bind(expenseController));
 expenseRouter.get('/filter', expenseController.getExpensesByFilter.bind(expenseController));
+expenseRouter.get('/petty-cash', expenseController.getPettyCashExpenses.bind(expenseController));
+
 
 // ייצוא ה-router לשימוש ב-app הראשי (main app)
 export default expenseRouter;

@@ -22,48 +22,37 @@ type VendorFormProps = {
 
 // סכמת ולידציה עם zod לכל השדות
 const schema = z.object({
-  // שם הספק - חובה
   name: z.string().nonempty("חובה למלא שם"),
-  // קטגוריה מתוך enum - חובה
   category: z.nativeEnum(VendorCategory, {
     errorMap: () => ({ message: "חובה לבחור קטגוריה" }),
   }),
-  // טלפון - חובה עם בדיקת פורמט
-  phone: z.string().nonempty("חובה למלא טלפון").refine((val) => /^0\d{8,9}$/.test(val), {
-    message: "מספר טלפון לא תקין",
-  }),
-  // אימייל - חובה ובדיקה תקינות
+  phone: z
+    .string()
+    .nonempty("חובה למלא טלפון")
+    .refine((val) => /^0\d{8,9}$/.test(val), {
+      message: "מספר טלפון לא תקין",
+    }),
   email: z.string().email("אימייל לא תקין").nonempty("חובה למלא אימייל"),
-  // כתובת - חובה
   address: z.string().nonempty("חובה למלא כתובת"),
-  // איש קשר - חובה
   contact_name: z.string().nonempty("חובה למלא איש קשר"),
-  // אתר - אופציונלי
   website: z.string().optional(),
-  // ח.פ - אופציונלי
   taxId: z.string().optional(),
-  // אמצעי תשלום מועדף - אופציונלי
   preferred_payment_method: z.string().optional(),
-
   notes: z.string().optional(),
 });
 
 // קומפוננטת הטופס
 export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
-  // שליפת מזהה ספק מה-URL
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // חיפוש ספק קיים לעריכה
   const editingVendor = vendors.find((v) => v.id === id);
 
-  // אתחול ניהול טופס עם סכמת Zod
   const methods = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     mode: "onSubmit",
   });
 
-  // טעינת ערכים קיימים אם מדובר בעריכה
   useEffect(() => {
     if (editingVendor) {
       methods.reset({
@@ -80,6 +69,7 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
       });
     }
   }, [editingVendor, methods]);
+
   function mapToPaymentMethod(value?: string): PaymentMethod | undefined {
     switch (value) {
       case "CREDIT_CARD":
@@ -96,7 +86,7 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
         return undefined;
     }
   }
-  // שליחת טופס
+
   const handleSubmit = async (data: z.infer<typeof schema>) => {
     try {
       const formattedData = {
@@ -106,20 +96,18 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
 
       if (editingVendor) {
         // עדכון ספק קיים
-        const updatedVendor: Vendor = {
-          ...editingVendor,
-          ...formattedData,
-          updatedAt: new Date().toISOString(),
-        };
-        setVendors((prev) => prev.map((v) => (v.id === id ? updatedVendor : v)));
+        const response = await axiosInstance.put(`/vendor/${editingVendor.id}`, formattedData);
+        const updatedVendor = response.data;
+
+        setVendors((prev) =>
+          prev.map((v) => (v.id === id ? updatedVendor : v))
+        );
         alert("הספק עודכן בהצלחה");
       } else {
         // יצירת ספק חדש
-        const response = axiosInstance.post("/vendor/");
+        const response = await axiosInstance.post("/vendor/", formattedData);
+        const newVendor = response.data;
 
-        if (!response) throw new Error("שגיאה בהוספת ספק");
-
-        const newVendor = (await response).data;
         setVendors([...vendors, newVendor]);
         alert("הספק נוסף בהצלחה");
       }
@@ -133,12 +121,10 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
 
   return (
     <div>
-      {/* כותרת הטופס */}
       <h1 className="text-3xl font-bold text-center text-blue-600 my-4">
         {editingVendor ? "עריכת ספק" : "הוספת ספק"}
       </h1>
 
-      {/* טופס */}
       <Form
         label={editingVendor ? "ערוך ספק" : "הוסף ספק חדש"}
         schema={schema}
@@ -155,7 +141,7 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
           options={[
             { value: VendorCategory.Services, label: "שירותים" },
             { value: VendorCategory.Equipment, label: "ציוד" },
-            { value: VendorCategory.Maintenance, label: "תַחזוּקָה" },
+            { value: VendorCategory.Maintenance, label: "תחזוקה" },
             { value: VendorCategory.Other, label: "אחר" },
           ]}
         />
@@ -176,9 +162,7 @@ export const VendorForm = ({ vendors, setVendors }: VendorFormProps) => {
             { value: PaymentMethod.OTHER, label: "אחר" },
           ]}
         />
-
         <InputField name="notes" label="הערות" />
-
         <Button variant="primary" size="sm" type="submit">
           שמור
         </Button>

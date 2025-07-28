@@ -1,6 +1,7 @@
 import { BookingModel } from "../models/booking.model";
 import { BookingService } from "../services/booking.service";
 import { Request, Response } from "express";
+import { updateEventOnChangeBooking } from "./googleCalendarBookingIntegration.controller";
 
 export class BookingController {
     bookingservice = new BookingService();
@@ -28,10 +29,11 @@ export class BookingController {
 
 
  async  updateBooking(req: Request, res: Response){
-   
+   console.log('Received request to update booking:', req.body);
       const bookingId = req.params.id;
             const updatedData = req.body;
             const updatedBooking = new BookingModel(updatedData);
+            await updateEventOnChangeBooking(req, res);
         console.log('Prepared booking data:', JSON.stringify(updatedBooking, null, 2));
             const result = await BookingService.updateBooking(bookingId, updatedBooking);
             if (result) {
@@ -70,7 +72,15 @@ res.status(500).json({massage:'err.massage'});
       res.status(500).json({massage:'err.massage'});
     }
 }
-
+async  bookingApproval(req: Request, res: Response){
+    try{
+        const updateBooking=await this.bookingservice.bookingApproval(req.params.id);
+         res.json(updateBooking);
+    }
+    catch(err){
+       res.status(500).json({massage:'err.message'});
+    }
+}
 }
 
  

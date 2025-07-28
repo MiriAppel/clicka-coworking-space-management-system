@@ -1,67 +1,61 @@
-
-import { BookingStatus, CalendarSync, type CalendarEventInput, type CreateGoogleCalendarEventRequest, type DeleteGoogleCalendarEventRequest, type GoogleCalendarEvent, type ID, type UpdateGoogleCalendarEventRequest } from "shared-types";
+import type { CalendarEventInput, CreateGoogleCalendarEventRequest, DeleteGoogleCalendarEventRequest, GoogleCalendarEvent, ID, UpdateGoogleCalendarEventRequest } from "shared-types";
+import { CalendarConflict, CalendarSync, CalendarSyncStatus } from "shared-types/calendarSync";
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv';
 import { CalendarSyncModel } from "../models/calendarSync.model";
-import { getEvents } from './calendar-service';
+import { getEvents, updateEvent } from './calendar-service';
 import { createEvent } from './calendar-service'
 import { BookingModel } from "../models/booking.model";
 import * as syncController from "../controllers/googleCalendarBookingIntegration.controller";
-import { BookingService } from "./booking.service"
+import {BookingService} from "./booking.service"
 import { Event } from "shared-types/google";
-import { google } from "googleapis";
-import { toZonedTime } from "date-fns-tz";
-import { BookingController } from "../controllers/booking.controller";
-import { UserTokenService } from "./userTokenService";
 // טוען את משתני הסביבה מקובץ .env
 dotenv.config();
 
-const bookingService = new BookingService();
-const userTokenService = new UserTokenService();
 const supabaseUrl = process.env.SUPABASE_URL || ''; // החלף עם ה-URL של פרויקט ה-Supabase שלך
 const supabaseAnonKey = process.env.SUPABASE_KEY || ''; // החלף עם ה-Anon Key שלך
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 //נחמי קוזיץ getAll עבור event שליפת כל האירועים והמרת לאובייקט  
 export const getGoogleCalendarEvents = async (calendarId: string, token: string): Promise<Event[] | null> => {
     //שליפת כל האירועים לפי לוח
-    const events = await getEvents(calendarId, token);
-
+     const events = await getEvents(calendarId, token);
+  
 
     // המרת האירועים לאובייקטים מסוג GoogleCalendarEvent
-    const newEvents: Event[] = await Promise.all(events.map(async event => {
-        console.log("event in the getGoogleCalendarEvents\n", event);
-        console.log(event.id, "event.id in the getGoogleCalendarEvents\n", event.id);
+const newEvents: Event[] = await Promise.all(events.map(async event => {
+    console.log("event in the getGoogleCalendarEvents\n",event);
+    console.log(event.id, "event.id in the getGoogleCalendarEvents\n",event.id);
 
-        const booking = await BookingService.getBookingByEventId(event.id!);
-        console.log(booking, "booking in the getGoogleCalendarEvents\n");
-
-        console.log(booking?.status, "booking?.status in the getGoogleCalendarEvents\n", booking?.status);
-
-        return {
-            id: event.id || '',  // או זרוק שגיאה אם id לא קיים
-            calendarId: calendarId,
-            summary: event.summary || '',
-            description: event.description || '',
-            location: event.location || '',
-            start: {
-                dateTime: event.start?.dateTime || '',
-                timeZone: event.start?.timeZone || '',
-            },
-            end: {
-                dateTime: event.end?.dateTime || '',
-                timeZone: event.end?.timeZone || '',
-            },
-            attendees: event.attendees ? event.attendees.map(attendee => ({
-                email: attendee.email || '',
-                displayName: attendee.displayName || '',
-
-            })) : [],
-            status: booking!.status,
-            created: event.created || '',
-            updated: event.updated || '',
-            htmlLink: event.htmlLink || '',
-        };
-    }));
+    const booking = await BookingService.getBookingByEventId(event.id!);
+    console.log(booking, "booking in the getGoogleCalendarEvents\n");
+    
+    console.log(booking?.status, "booking?.status in the getGoogleCalendarEvents\n",booking?.status);
+    
+    return {
+        id: event.id || '',  // או זרוק שגיאה אם id לא קיים
+        calendarId: calendarId,
+        summary: event.summary || '',
+        description: event.description || '',
+        location: event.location || '',
+        start: {
+            dateTime: event.start?.dateTime || '',
+            timeZone: event.start?.timeZone || '',
+        },
+        end: {
+            dateTime: event.end?.dateTime || '',
+            timeZone: event.end?.timeZone || '',
+        },
+        attendees: event.attendees ? event.attendees.map(attendee => ({
+            email: attendee.email || '',
+            displayName: attendee.displayName || '',
+            
+        })) : [],
+        status: booking!.status ,
+        created: event.created || '',
+        updated: event.updated || '',
+        htmlLink: event.htmlLink || '',
+    };
+}));
 
     return newEvents;
 }
@@ -155,13 +149,13 @@ export async function getCalendarSyncById(id: string) {
 
 //המרת הזמנה לאובייקט תואם לקלנדר
 export async function convertBookingToCalendarEvent(booking: BookingModel): Promise<CalendarEventInput> {
-    console.log("booking in in the convert\n", booking);
-
-    let newName = "";
-    if (booking.customerName) {
+    console.log("booking in in the convert\n",booking);
+    
+    let newName="";
+    if(booking.customerName){
         newName = booking.customerName;
     }
-    else if (booking.externalUserName) {
+    else if(booking.externalUserName){
         newName = booking.externalUserName;
     }
     return {
@@ -196,32 +190,32 @@ export const createCalendarEvent = async (calendarId: string,
     console.log('Booking object:', booking);
     console.log('token object:', token);
     console.log('calendarId object:', calendarId);
-    console.log("booking before the convert\n", booking);
+    console.log("booking before the convert\n",booking);
     const calendarEvent = await convertBookingToCalendarEvent(booking);
     try {
         const statusEvent = await createEvent(calendarId, calendarEvent, token);
         console.log("statusEvent\n", statusEvent);
-
+        
         if (statusEvent.id != null) {
             booking.googleCalendarEventId = statusEvent.id;
         }
-        console.log("booking.googleCalendarEventId", booking.googleCalendarEventId);
-
+        console.log("booking.googleCalendarEventId",booking.googleCalendarEventId);
+        
 
         //לעדכן את נאווה שחייבים לשלוח id
-        if (!booking.id) {
+          if (!booking.id) {
             throw new Error('Booking ID is required to update the booking.');
-        }
-        console.log('Type of updatedData:', booking.constructor.name);
+          }
+          console.log('Type of updatedData:', booking.constructor.name);
 
-        console.log(booking, "booking in ??????????????????????????\n  ,", booking.id);
-
+          console.log(booking, "booking in ??????????????????????????\n  ,",booking.id);
+          
         const bookingModel = booking instanceof BookingModel
-            ? booking
-            : new BookingModel(booking);
-        await BookingService.updateBooking(bookingModel.id!, bookingModel);
+  ? booking
+  : new BookingModel(booking);
+await BookingService.updateBooking(bookingModel.id!, bookingModel);
 
-
+       
     } catch (error) {
         console.log("checking the type of", error);
 
@@ -230,10 +224,10 @@ export const createCalendarEvent = async (calendarId: string,
         if (error instanceof Error) {
             errorMessage = error.message; // אם error הוא אובייקט שגיאה
         } else if (typeof error === 'string') {
-            errorMessage = error; // אם error הוא מחרוזת
+               errorMessage = error; // אם error הוא מחרוזת
         }
 
-
+    
     }
 
 }
@@ -249,15 +243,65 @@ export const deleteEnevt = async (enevt: DeleteGoogleCalendarEventRequest) => {
 
 
 
-export const updateEnevtOnChangeBooking = async (updateDetails: UpdateGoogleCalendarEventRequest): Promise<void> => {
+export const updateEnevtOnChangeBooking =  async (calendarId: string,
+    eventId : string,
+    booking: BookingModel,
+    token: string) => {
     // פונקציה זו תעדכן אירוע קיים בלוח השנה כאשר פרטי ההזמנה משתנים.
     // לאה שארר-updateGoogleCalendarEvent ע"י שליחה לפונקצית עדכון
     // המתאים calendarSync ותעדכן את ה 
-    //updateCalendarSync() ע"י מציאתו בפונקציה 
+    //updateCalendarSync() ע"י  מציאתו בפונקציה 
+    console.log('Booking object:', booking);
+    console.log('token object:', token);
+    console.log('calendarId object:', calendarId);
+    console.log("booking before the convert\n",booking);
+    const calendarEvent = await convertBookingToCalendarEvent(booking);
+    try {
+        const statusEvent = await updateEvent(calendarId,eventId, calendarEvent, token);
+        console.log("statusEvent\n", statusEvent);
+        
+        if (statusEvent.id != null) {
+            booking.googleCalendarEventId = statusEvent.id;
+        }
+        console.log("booking.googleCalendarEventId",booking.googleCalendarEventId);
+        
+
+        //לעדכן את נאווה שחייבים לשלוח id
+          if (!booking.id) {
+            throw new Error('Booking ID is required to update the booking.');
+          }
+          console.log('Type of updatedData:', booking.constructor.name);
+
+          console.log(booking, "booking in ??????????????????????????\n  ,",booking.id);
+          
+        const bookingModel = booking instanceof BookingModel
+  ? booking
+  : new BookingModel(booking);
+await BookingService.updateBooking(bookingModel.id!, bookingModel);
+
+       
+    } catch (error) {
+        console.log("checking the type of", error);
+
+        let errorMessage = 'An unknown error occurred'; // הודעת שגיאה ברירת מחדל
+
+        if (error instanceof Error) {
+            errorMessage = error.message; // אם error הוא אובייקט שגיאה
+        } else if (typeof error === 'string') {
+               errorMessage = error; // אם error הוא מחרוזת
+        }
+
+    
+    }
+
 }
 
 
 
+export const getCalendarByRoom = async (roomId: ID): Promise<CalendarSync | null> => {
+    //  לקבלת לוח שנה עפ"י קוד חדר
+    return null;
+}
 
 
 export const manageCalendarPermissions = async (calendarId: string, email: string, role?: string): Promise<void> => {
