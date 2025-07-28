@@ -45,7 +45,6 @@ export interface Room {
   capacity: number;
   features?:ID[],
   hourlyRate: number;
-  fetures?: RoomFeature[];
   discountedHourlyRate: number; // For 4+ hours
   googleCalendarId?: string;
   createdAt: DateISO;
