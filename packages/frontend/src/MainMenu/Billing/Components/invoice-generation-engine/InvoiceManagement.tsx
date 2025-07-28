@@ -370,7 +370,7 @@ export const InvoiceManagement: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-       console.log('ID למחיקה:', id); // בדקי מה יוצא כאן
+      console.log('ID למחיקה:', id); // בדקי מה יוצא כאן
       const result = await Swal.fire({
         title: 'מחיקת חשבונית',
         text: 'האם אתה בטוח שברצונך למחוק את החשבונית?',

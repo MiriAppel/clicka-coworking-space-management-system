@@ -165,10 +165,7 @@ export const useInvoiceStore = create<InvoiceState>()(
       // עדכון חשבונית קיימת
         updateInvoice: async (invoiceId, updates) => {
           try {
-            console.log('Store - Invoice Number:', invoiceId);
-            console.log('Store - Updates:', JSON.stringify(updates, null, 2));
             const response = await axios.put(`/api/invoices/${invoiceId}`, updates);
-            console.log('Store - Response:', response.data);
             set((state) => ({
               invoices: state.invoices.map(invoice =>
                 invoice.id === invoiceId ? { ...invoice, ...response.data.invoice } : invoice
@@ -187,30 +184,18 @@ export const useInvoiceStore = create<InvoiceState>()(
         // מחיקת חשבונית
         deleteInvoice: async (id) => {
           try {
-            console.log('מוחק חשבונית:', id);
-            console.log('URL:', `/api/invoices/${id}`);
             const response = await axios.delete(`/api/invoices/${id}`);
-            console.log('תגובה מהשרת:', response);
 
             set((state) => {
               const filteredInvoices = state.invoices.filter(invoice => {
-                console.log('בודק חשבונית:', invoice.id, 'נגד:', id);
                 return invoice.id !== id;
               });
-              console.log('חשבוניות לפני מחיקה:', state.invoices.length);
-              console.log('חשבוניות אחרי מחיקה:', filteredInvoices.length);
 
               return {
                 invoices: filteredInvoices
               };
             });
           } catch (error: any) {
-            console.error('שגיאה במחיקת חשבונית:', error);
-            console.error('פרטי השגיאה:', error.response?.data);
-            console.error('סטטוס קוד:', error.response?.status);
-            console.error('הודעת השגיאה מהשרת:', error.response?.data?.message);
-            console.error('פרטים נוספים:', error.response?.data?.error);
-            set({ error: `Error deleting invoice: ${error.response?.data?.message || error.message}` });
             throw error;
           }
         },

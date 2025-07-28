@@ -58,8 +58,7 @@ export const getAllInvoices = async (_req: Request, res: Response) => {
 //  */
 
 export const getAllInvoiceItems = async (req: Request, res: Response) => {
-  console.log('=== getAllInvoiceItems CALLED ===*****');
-  console.log('Full URL:', req.url);
+
   try {
     const invoiceId = req.params.invoice_id as UUID;
     const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
@@ -128,7 +127,6 @@ export const updateInvoice = async (req: Request, res: Response): Promise<void> 
 export const deleteInvoice = async (req: Request, res: Response): Promise<void> => {
   try {
     const id = req.params.id; // זהו ה-ID שמתקבל מה-URL
-    console.log("ID שנשלח למחיקה:", id); // הדפס את ה-ID פה לשם בדיקה
     if (!id) {
       throw new Error("ID לא נמצא ב-params");
     }
