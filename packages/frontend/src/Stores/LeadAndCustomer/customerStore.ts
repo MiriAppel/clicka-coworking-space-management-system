@@ -40,10 +40,13 @@ export const useCustomerStore = create<CustomerStore>((set) => ({
     fetchCustomers: async () => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(BASE_API_URL);
+            const response = await fetch(`${BASE_API_URL}/`);
+            console.log(process.env.REACT_APP_API_URL);
             if (!response.ok) {
                 throw new Error("Failed to fetch customers");
             }
+            console.log("Response status:", response.status);
+            console.log("Fetching customers from API:", response);
             const data: Customer[] = await response.json();
             set({ customers: data, loading: false });
         } catch (error: any) {

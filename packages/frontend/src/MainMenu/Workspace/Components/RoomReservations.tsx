@@ -86,6 +86,7 @@ const isFullHourDifference = (startTime: string, endTime: string) => {
   return diffInMinutes >= 60 && diffInMinutes % 60 === 0;
 };
 //הולידציות
+//הולידציות
 const bookingSchema = z.object({
   customerStatus: z.enum(["external", "customer"]),
   customerId: z.string().optional(),
@@ -408,6 +409,7 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
                 </label>
                 <br></br>
                 <br></br>
+                <br></br>
                 <label>
                   <input
                     type="radio"
@@ -452,11 +454,25 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
                         label: `${r.name}`,
                         value: r.id || "",
                       }))} required />
+                <SelectField name="selectedRoomId" label="בחירת חדר" options={rooms.map((r) => ({
+                        label: `${r.name}`,
+                        value: r.id || "",
+                      }))} required />
               </div>
+              {selectedRoomId && (
               {selectedRoomId && (
                 <div className="form-field">
                   <label>תכונות החדר:</label>
                   <ul>
+  {rooms.length > 0 &&
+    rooms.flatMap((room) =>
+      mapRoomFeatures(room.features || []).map((feature) => (
+        <li key={uuidv4()}>
+          {feature}
+        </li>
+      ))
+    )}
+</ul>
   {rooms.length > 0 &&
     rooms.flatMap((room) =>
       mapRoomFeatures(room.features || []).map((feature) => (

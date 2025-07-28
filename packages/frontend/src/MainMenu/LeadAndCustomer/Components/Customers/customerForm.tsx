@@ -14,7 +14,9 @@ import { SelectField } from '../../../../Common/Components/BaseComponents/Select
 
 //בשביל שבתצוגה זה יהיה בעברית
 const workspaceTypeOptions = [
-    { value: WorkspaceType.PRIVATE_ROOM, label: 'חדר פרטי' },
+    { value: WorkspaceType.PRIVATE_ROOM1, label: 'חדר פרטי' },
+    { value: WorkspaceType.PRIVATE_ROOM2, label: 'חדר של שתיים' },
+    { value: WorkspaceType.PRIVATE_ROOM3, label: 'חדר של שלוש' },
     { value: WorkspaceType.DESK_IN_ROOM, label: 'שולחן בחדר' },
     { value: WorkspaceType.OPEN_SPACE, label: 'אופן ספייס' },
     { value: WorkspaceType.KLIKAH_CARD, label: 'כרטיס קליקה' },
