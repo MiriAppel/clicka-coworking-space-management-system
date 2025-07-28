@@ -57,7 +57,7 @@ export const WorkspaceMap = () => {
         updateSize();
         window.addEventListener("resize", updateSize);
         return () => window.removeEventListener("resize", updateSize);
-    }, [getAllWorkspace])
+    }, [getAllWorkspace,getAllRooms])
     // useEffect(() => {
     //     getAllWorkspace();
     //     getAllRooms();
@@ -96,6 +96,7 @@ export const WorkspaceMap = () => {
         setZoom(prev => Math.max(prev / 1.2, 3));
     };
     const handleResetZoom = () => {
+        setZoom(3);
         setZoom(3);
         applyPan({ x: 0, y: 0 });
     };
@@ -156,7 +157,6 @@ export const WorkspaceMap = () => {
         if (d.toDateString() === new Date().toDateString())
             getAllWorkspace();
         else {
-            const formattedDate = d.toISOString().split('T')[0];
             getWorkspaceHistory(d);
         }
         setDisplayDate(d);
@@ -193,17 +193,6 @@ export const WorkspaceMap = () => {
         return room.status;
     };
 
-    // const getPanBounds = () => {
-    //     const scaledWidth = mapDimensions.width * scale * zoom;
-    //     const scaledHeight = mapDimensions.height * scale * zoom;
-
-    //     return {
-    //         minX: containerSize.width - scaledWidth,
-    //         maxX: 0,
-    //         minY: containerSize.height - scaledHeight,
-    //         maxY: 0
-    //     };
-    // };
 
     const applyPan = (newPan: { x: number; y: number }) => {
         const scaledWidth = mapDimensions.width * 1 * zoom;
@@ -298,29 +287,29 @@ export const WorkspaceMap = () => {
             </g>
         );
     };
-    const renderReceptionDesk = (space: Space) => {
-        const centerX = space.positionX + space.width / 2;
-        const centerY = space.positionY + space.height / 2;
-        return (
-            <g>
-                <path
-                    d={`M ${centerX - 18} ${centerY + 3} A 18 12 0 0 1 ${centerX + 18} ${centerY + 3} L ${centerX + 15} ${centerY + 8} L ${centerX - 15} ${centerY + 8} Z`}
-                    fill="#8B4513"
-                    stroke="#654321"
-                    strokeWidth="1"
-                />
-                <ellipse
-                    cx={centerX}
-                    cy={centerY}
-                    rx="18"
-                    ry="10"
-                    fill="#D2691E"
-                    stroke="#A0522D"
-                    strokeWidth="1"
-                />
-            </g>
-        );
-    };
+    // const renderReceptionDesk = (space: Space) => {
+    //     const centerX = space.positionX + space.width / 2;
+    //     const centerY = space.positionY + space.height / 2;
+    //     return (
+    //         <g>
+    //             <path
+    //                 d={`M ${centerX - 18} ${centerY + 3} A 18 12 0 0 1 ${centerX + 18} ${centerY + 3} L ${centerX + 15} ${centerY + 8} L ${centerX - 15} ${centerY + 8} Z`}
+    //                 fill="#8B4513"
+    //                 stroke="#654321"
+    //                 strokeWidth="1"
+    //             />
+    //             <ellipse
+    //                 cx={centerX}
+    //                 cy={centerY}
+    //                 rx="18"
+    //                 ry="10"
+    //                 fill="#D2691E"
+    //                 stroke="#A0522D"
+    //                 strokeWidth="1"
+    //             />
+    //         </g>
+    //     );
+    // };
     return <div className="all">
         <h1>{displayDate.toLocaleDateString()}</h1>
         {tooltip.visible && (
@@ -550,10 +539,10 @@ export const WorkspaceMap = () => {
                                     );
                                 })}
                         {rooms.length > 0 && rooms.map((r) => {
-                            const hasActiveSearch = activeStatusSearch || activeTypeSearch;
-                            const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
-                            const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
-                            const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
+                            // const hasActiveSearch = activeStatusSearch || activeTypeSearch;
+                            // const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
+                            // const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
+                            // const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
                             return (
                                 <g key={r.id}>
                                     {r.width > 50 && r.height > 30 && (

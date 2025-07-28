@@ -15,7 +15,7 @@ rooms:[],
     //get all rooms
     getAllRooms: async () => {
         try {
-            const response = await axiosInstance.get('api/rooms/getAllRooms');
+            const response = await axiosInstance.get('rooms/getAllRooms');
             set({ rooms: response.data });
         } catch (error){
              console.error('Error fetching rooms:', error);

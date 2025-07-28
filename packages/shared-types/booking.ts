@@ -43,6 +43,7 @@ export interface Room {
   type: RoomType;
   status: RoomStatus;
   capacity: number;
+  features?:ID[],
   hourlyRate: number;
   fetures?: RoomFeature[];
   discountedHourlyRate: number; // For 4+ hours
@@ -71,7 +72,7 @@ export interface Booking {
   roomId: ID;
   roomName: string;
   customerId?: ID|null;
-  customerName?: string|null;
+  customerName?: string |null;
   externalUserName?: string|null;
   externalUserEmail?: string|null;
   externalUserPhone?: string|null;

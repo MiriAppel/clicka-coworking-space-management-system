@@ -1,5 +1,5 @@
 // ייבוא axios והטיפוס AxiosError
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 // ייבוא של כל הטיפוסים הדרושים לצורך ניהול תמחורים
 

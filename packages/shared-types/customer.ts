@@ -110,6 +110,8 @@ export interface CustomerPaymentMethod {
   updatedAt: DateISO;
 }
 
+
+
 // Customer model
 export interface Customer {
   id?: ID;
@@ -134,6 +136,7 @@ export interface Customer {
   createdAt: DateISO;
   updatedAt: DateISO;
 }
+
 
 // Create customer request
 
@@ -251,40 +254,3 @@ export interface StatusChangeRequest {
   notifyCustomer: boolean;
 }
 
-
-// export interface SavedSearch {
-//     id: ID;
-//     name: string;
-//     userId: ID;
-//     searchRequest: CustomerSearchRequest;
-//     isPublic: boolean; // Whether the saved search is public or private
-//     createdAt: DateISO;
-//     updatedAt: DateISO;
-// }
-
-// export interface CustomerSearchRequest {
-//     query?: string; // Full-text search query
-//     filters?: CustomerFilter[]; // Array of filters
-//     sortBy?: string; // Field to sort by
-//     sortDirection?: 'asc' | 'desc'; // Sort direction
-//     page?: number; // Current page number for pagination
-//     limit?: number; // Number of items per page
-// }
-
-// export interface CustomerFilter {
-//     field: keyof Customer; // Keyof Customer interface to ensure valid field names
-//     operator: 'equals' | 'contains' | 'startsWith' | 'greaterThan' | 'lessThan' | 'between' | 'in';
-//     value?: any; // Value for single-value operators
-//     values?: any[]; // Values for 'in' operator
-// }
-
-// export interface CustomerTimeline {
-//     customerId: ID;
-//     totalEvents: number; // For pagination, total count of events
-//     dateRange?: DateRangeFilter; // Applied date range filter
-// }
-
-// export interface DateRangeFilter {
-//     startDate?: DateISO;
-//     endDate?: DateISO;
-// }

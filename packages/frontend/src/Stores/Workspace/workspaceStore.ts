@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import axios from "axios";
 import axiosInstance from "../../Service/Axios";
 import { ID, Space, SpaceStatus } from "shared-types";
 

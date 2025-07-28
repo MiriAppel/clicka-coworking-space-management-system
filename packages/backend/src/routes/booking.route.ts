@@ -9,5 +9,6 @@ bookRouter.get("/getBookingById/:id", bookController.getBookingById.bind(bookCon
 bookRouter.get("/getBookingByEventId/:eventId", bookController.getBookingByEventId.bind(bookController));
 bookRouter.patch("/updateBooking/:id", bookController.updateBooking.bind(bookController));
 bookRouter.delete("/deleteBooking/:id", bookController.deleteRoom.bind(bookController));
+bookRouter.put("/bookingApproval/:id", bookController.bookingApproval.bind(bookController));
 
 export default bookRouter;
