@@ -184,7 +184,7 @@ export const useInvoiceStore = create<InvoiceState>()(
         // מחיקת חשבונית
         deleteInvoice: async (id) => {
           try {
-            const response = await axios.delete(`/api/invoices/${id}`);
+            // const response = await axios.delete(`/api/invoices/${id}`);
 
             set((state) => {
               const filteredInvoices = state.invoices.filter(invoice => {
