@@ -7,11 +7,12 @@ import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCu
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import { Vendor } from 'shared-types';
+import { ExcelUpload } from './MainMenu/LeadAndCustomer/Components/Leads/ UploadLeadsFile';
+import { ExcelCUpload } from './MainMenu/LeadAndCustomer/Components/Customers/UploadCustomersFile';
 import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import { PaymentList } from './MainMenu/Billing/Components/paymentList';
-import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
@@ -58,6 +59,8 @@ export const Routing = () => {
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="billing/*" element={<BillingRouting />} />
         <Route path="expenses" element={<ExpenseList />} />
+        <Route path="/leadAndCustomer/leads/UploadLeadsFile" element={<ExcelUpload />} />
+        <Route path="/leadAndCustomer/Customers/UploadCustomersFile" element={<ExcelCUpload />} />
         <Route path="expenses/expense-form" element={<CreateExpenseForm />} />
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
         <Route path="/workspaceMap" element={<WorkspaceMap />} />

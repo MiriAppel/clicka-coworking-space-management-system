@@ -1,5 +1,5 @@
 // ייבוא React ורפרנס לתפיסת אלמנט מה-DOMAdd commentMore actions
-import React, { } from 'react';
+import React from 'react';
 // ייבוא כפתור מעוצב מקומפוננטה פנימית
 import { Button } from './Button';
 // ייבוא ספרייה לצילום תוכן HTML לתמונה
@@ -60,7 +60,7 @@ export const ExportButtons = ({
           onClick={exportCSV} // הפעלת ייצוא ל־Excel בלחיצה
           className="bg-blue-500 text-white px-2 py-1 rounded" // עיצוב Tailwind
         >
-          CSV {/* טקסט הכפתור */}
+          יצוא ל-CSV {/* טקסט הכפתור */}
         </Button>
       )}
     {showPDF && (
@@ -74,8 +74,3 @@ export const ExportButtons = ({
     </div>
   );
 };
-
-
-
-
-
