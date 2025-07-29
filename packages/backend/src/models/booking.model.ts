@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { Booking, BookingStatus, DateISO, ID } from "shared-types";
 
 export class BookingModel implements Booking {
