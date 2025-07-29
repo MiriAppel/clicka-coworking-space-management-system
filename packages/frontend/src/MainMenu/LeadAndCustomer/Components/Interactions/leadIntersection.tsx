@@ -3,11 +3,20 @@ import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { LeadInteractionDetails } from "./leadInteractionDetails";
 import { SearchLeads } from "../Leads/SearchLeads";
-import { Building2, Calendar, ChevronDown, ChevronUp, FileText, Mail, Phone, ScrollText } from "lucide-react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  ChevronDown,
+  ChevronUp,
+  Mail,
+  Phone,
+  Building2,
+  Calendar,
+  FileText,
+  ScrollText,
+} from "lucide-react";
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 export const LeadInteractions = () => {
@@ -17,42 +26,37 @@ export const LeadInteractions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
-  const [status, setStatus] = useState("");//הוספה
-const navigate = useNavigate();
   const allLeadsRef = useRef<Lead[]>([]);
+  const [status, setStatus] = useState("");//הוספה
+  const navigate = useNavigate();
   const {
     leads,
     fetchLeads,
     handleDeleteLead,
     handleSelectLead,
     resetSelectedLead,
+    selectedLead,
   } = useLeadsStore();
-  const selectedLead = useLeadsStore((state) => state.selectedLead);
-  useEffect(() => {
-    fetchLeads().then(() => {
-      allLeadsRef.current = useLeadsStore.getState().leads;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]); // לא fetchLeads – רק page
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
-        !isSearching
-      ) {
-        setPage((prevPage) => prevPage + 1); // יגרום ל־useEffect לעיל לקרוא שוב ל־fetchLeads
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSearching]);
   const handleRegistration = (lead: Lead | undefined) => {
     if (lead) {
       navigate("interestedCustomerRegistration", { state: { data: lead } });
     }
   };
-  const handleSearch = (term: string, status: string = "") => {
+  useEffect(() => {
+    fetchLeads().then(() => {
+      allLeadsRef.current = useLeadsStore.getState().leads;
+    });
+  }, [page,fetchLeads]);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !isSearching) {
+        setPage((prev) => prev + 1);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isSearching]);
+    const handleSearch = (term: string, status: string = "") => {
   setSearchTerm(term);
   setStatus(status);
   setPage(1);
@@ -79,7 +83,7 @@ const navigate = useNavigate();
     return;
   }
   // :white_check_mark: אם אין את כל הלידים טעונים => fallback לשרת
-  fetch(`${process.env.REACT_APP_API_URL}/leads/search?q=${term}&status=${status}`)
+  fetch(`${process.env.REACT_APP_API_URL}leads/search?q=${term}&status=${status}`)
     .then((res) => res.json())
     .then((data: Lead[]) => {
       setIsSearching(true);
@@ -134,7 +138,7 @@ const navigate = useNavigate();
   return (
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
-      <SearchLeads
+           <SearchLeads
         term={searchTerm}
         setTerm={setSearchTerm}
         status={status}        // :white_check_mark: הוספה
@@ -181,11 +185,18 @@ const navigate = useNavigate();
           </select>
         </div>
         <Button
-          onClick={() => navigate("newLead")}
+          onClick={() => navigate("interestedCustomerRegistration")}
           variant="primary"
           size="sm"
         >
           הוספת מתעניין חדש
+        </Button>
+        <Button
+          onClick={() => navigate("/leadAndCustomer/leads/UploadLeadsFile")}
+          variant="primary"
+          size="sm"
+        >
+          יבוא לידים מקובץ אקסל
         </Button>
       </div>
       {sortedLeads.map((lead) => (
@@ -276,7 +287,7 @@ const LeadCard = ({
           <div className="flex gap-2 items-center"><ScrollText size={16} /> מזהה: {lead.id}</div>
           <div className="flex gap-4 mt-2">
             <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); onRegister(); }}>
-             לטופס המרה ללקוח
+              לטופס רישום
             </Button>
             <button
               onClick={(e) => {
