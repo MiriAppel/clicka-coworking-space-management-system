@@ -81,7 +81,6 @@ app.use('/api/interaction', interactionRouter);
 app.use('/api/payment', routerPayment);
 app.use('/api/document', documentRouter);
 app.use('/api/invoices', invoiceRouter);
-app.use('/api/payments', paymentRoutes);
 app.use('/api/drive', driveRoutes);
 app.use('/api/translate', translationRouter);
 
