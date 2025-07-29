@@ -32,9 +32,9 @@ const typeLabels: Record<Props['type'], string> = {
 const workspaceOptions = [
   { value: 'OPEN_SPACE', label: 'אופן ספייס' },
   { value: 'KLIKAH_CARD', label: 'כרטיס קליקה' },
-  { value: 'PRIVATE_ROOM1', label: 'חדר פרטי' },
-  { value: 'OPEN_SPACE2', label: 'חדר של 2 ' },
-  { value: 'KLIKAH_CARD3', label: 'חדר של 3 ' },
+  { value: 'PRIVATE_ROOM1', label: 'חדר פרטי 1' },
+  { value: 'PRIVATE_ROOM2', label: 'חדר פרטי 2' },
+  { value: 'PRIVATE_ROOM3', label: 'חדר פרטי 3' },
   { value: 'DESK_IN_ROOM', label: 'שולחן בחדר' },
 ];
 

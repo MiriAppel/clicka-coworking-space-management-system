@@ -26,10 +26,6 @@ const MeetingRoomPricingForm: React.FC<Props> = ({ initialData, onSuccess }) => 
     },
   });
 
-<<<<<<< HEAD
-  const { save, loading } = useMeetingRoomPricingStore();
-=======
->>>>>>> 6bf06734290043bda72c4936669fd38378ebfbd6
 
   const { save, loading } = useMeetingRoomPricingStore();
 

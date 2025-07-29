@@ -6,10 +6,7 @@ import { create } from 'zustand';
 // ייבוא של פונקציות שירות מהשכבת service
 import { 
   getCurrentPricingTier,                  // שליפת התמחור הנוכחי לפי סוג סביבת עבודה
-<<<<<<< HEAD
   // createOrUpdatePricingTier,              // לא בשימוש בקובץ הזה (אפשר למחוק אם לא צריך)
-=======
->>>>>>> 6bf06734290043bda72c4936669fd38378ebfbd6
   createPricingTierWithHistory,           // יצירת תמחור חדש עם היסטוריה
   updatePricingTierPricing,               // עדכון תמחור קיים
   deleteLoungePricing                     // מחיקת רשומת תמחור מסוג לאונג'
@@ -17,10 +14,7 @@ import {
 
 import {
   PricingTier,                            // טיפוס לייצוג שכבת תמחור
-<<<<<<< HEAD
   // PricingTierCreateRequest,               // טיפוס לבקשת יצירה
-=======
->>>>>>> 6bf06734290043bda72c4936669fd38378ebfbd6
   UpdatePricingTierRequest                // טיפוס לבקשת עדכון
 } from 'shared-types';
 
