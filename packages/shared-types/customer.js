@@ -21,6 +21,7 @@ var ContractStatus;
     ContractStatus["ACTIVE"] = "ACTIVE";
     ContractStatus["EXPIRED"] = "EXPIRED";
     ContractStatus["TERMINATED"] = "TERMINATED";
+    ContractStatus["CANCELED"] = "CANCELED";
 })(ContractStatus || (exports.ContractStatus = ContractStatus = {}));
 // Workspace type enum
 var WorkspaceType;

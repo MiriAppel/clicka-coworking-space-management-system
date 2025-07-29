@@ -11,7 +11,7 @@ import Swal from "sweetalert2"
 // const { user } = useAuthStore()
 // const userRole = user?.role;
 export const AssigmentTable = () => {
-  const { assignments , deleteAssignment,getAssignments } = useAssignmentStore();
+  const { assignments, deleteAssignment,getAssignments } = useAssignmentStore();
    const [isLoading, setIsLoading] = useState(false);
 const allAssignmentFields: (keyof SpaceAssign)[] = [
   'workspaceId', 'customerId', 'assignedDate', 'unassignedDate', 'status', 'assignedBy'
@@ -80,14 +80,21 @@ useEffect(() => {
     <h1  className="text-3xl font-bold text-center text-blue-600 my-4">הקצאות</h1>
     {isLoading && <h1>טוען...</h1>}
    
-   {!isLoading && <>
-<Button onClick={()=>navigate('/assignmentForm')}>להוספת הקצאה חדשה</Button>
+   {!isLoading && Array.isArray(assignments) && (
+  <>
+    <Button onClick={() => navigate('/assignmentForm')}>להוספת הקצאה חדשה</Button>
     <Table<SpaceAssign>
-        columns={columns}
-        data={assignments}
-         onUpdate={handleUpdate}
-         onDelete={handleDelete}
-        className="shadow-lg"   
-      /></>}
+      columns={columns}
+      data={assignments}
+      onUpdate={handleUpdate}
+      onDelete={handleDelete}
+      className="shadow-lg"
+    />
+  </>
+)}
+
+{!isLoading && !Array.isArray(assignments) && (
+  <div style={{ color: 'red' }}>שגיאה: assignments אינו מערך תקין</div>
+)}
     </div>
 }

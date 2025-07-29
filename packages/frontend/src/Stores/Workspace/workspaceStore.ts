@@ -2,7 +2,6 @@ import { create } from "zustand";
 import axiosInstance from "../../Service/Axios";
 import { ID, Space, SpaceStatus } from "shared-types";
 
-//הצהרות
 interface WorkSpaceState {
     workSpaces: Space[];
     maps: any[];
@@ -106,9 +105,9 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
     // get all workspace maps
     getAllWorkspaceMap: async () => {
         try {
-            const response = await axiosInstance.get("http://localhost:3001/api/map/all");
-            set({ maps: response.data });  
-            return response.data; 
+            const response = await axiosInstance.get(`/map/all`);
+            set({ maps: response.data });  // שים את המפות בסטור
+            return response.data; // החזר את המערך
         } catch (error) {
             console.error("Error fetching workspace maps:", error);
             return [];
