@@ -7,31 +7,31 @@ import { authorizeUser } from '../middlewares/authorizeUserMiddleware';
 const routerContract = express.Router();
 
 //  (GET)
-routerContract.get('/ending-soon',authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.getContractsEndingSoon); 
+routerContract.get('/ending-soon', contractControler.getContractsEndingSoon); 
 
-routerContract.get('/', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.getAllContracts); 
+routerContract.get('/', contractControler.getAllContracts); 
 
-routerContract.get('/customer/:customerId',authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.getAllContractsByCustomerId);
+routerContract.get('/customer/:customerId',contractControler.getAllContractsByCustomerId);
 
-routerContract.get('/:contractId', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.getContractById);
+routerContract.get('/:contractId',  contractControler.getContractById);
 
 // routerContract.get("/search", contractControler.searchContractsByText);
 
 
 // (POST)
-routerContract.post('/', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.postNewContract); 
+routerContract.post('/',  contractControler.postNewContract); 
 
-routerContract.post('documents', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]),contractControler.postContractDocument); 
+routerContract.post('documents', contractControler.postContractDocument); 
 
 //  (PATCH)
-routerContract.patch('/:contractId', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]),contractControler.updateContract);
+routerContract.patch('/:contractId', contractControler.updateContract);
 
-routerContract.put('/:contractId/document', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.updateContractDocument);
+routerContract.put('/:contractId/document', contractControler.updateContractDocument);
 
-routerContract.post('/customer/:customerId/document', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.createOrUpdateContractWithDocument);
+routerContract.post('/customer/:customerId/document', contractControler.createOrUpdateContractWithDocument);
 
 //  (DELETE)
-routerContract.delete('documents/:customerId', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.deleteContractDocument); 
-routerContract.delete('/:contractId', authorizeUser([UserRole.ADMIN,UserRole.MANAGER]), contractControler.deleteContract); 
+routerContract.delete('documents/:customerId',  contractControler.deleteContractDocument); 
+routerContract.delete('/:contractId', contractControler.deleteContract); 
 
 export default routerContract;

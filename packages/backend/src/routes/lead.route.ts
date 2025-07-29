@@ -5,29 +5,29 @@ import { authorizeUser } from '../middlewares/authorizeUserMiddleware';
 
 const routerLead = express.Router();
 
-routerLead.get('/by-page', authorizeUser([UserRole.ADMIN, UserRole.MANAGER, UserRole.SYSTEM_ADMIN]), controllerLead.getLeadsByPage);
+routerLead.get('/by-page',  controllerLead.getLeadsByPage);
 
-routerLead.get("/search", authorizeUser([UserRole.ADMIN, UserRole.MANAGER, UserRole.SYSTEM_ADMIN]), controllerLead.searchLeadsByText);
+routerLead.get("/search",  controllerLead.searchLeadsByText);
 
-routerLead.get('/', authorizeUser([UserRole.ADMIN, UserRole.MANAGER, UserRole.SYSTEM_ADMIN]), controllerLead.getAllLeads);
+routerLead.get('/',  controllerLead.getAllLeads);
 
-routerLead.get('/:id', authorizeUser([UserRole.ADMIN, UserRole.MANAGER, UserRole.SYSTEM_ADMIN]), controllerLead.getLeadById);
+routerLead.get('/:id', controllerLead.getLeadById);
 
-routerLead.post('/', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), controllerLead.createLead);
+routerLead.post('/', controllerLead.createLead);
 
-routerLead.get('/sources/:id', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), controllerLead.getSourcesLeadById);
+routerLead.get('/sources/:id', controllerLead.getSourcesLeadById);
 
-routerLead.patch('/:id', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), controllerLead.patchLead);
+routerLead.patch('/:id', controllerLead.patchLead);
 
-routerLead.post('/upload/csv', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), controllerLead.postLeadFromCSV);
+routerLead.post('/upload/csv', controllerLead.postLeadFromCSV);
 
-routerLead.get('/reminders/open', authorizeUser([UserRole.ADMIN, UserRole.MANAGER, UserRole.SYSTEM_ADMIN]), controllerLead.getLeadsToRemind);
+routerLead.get('/reminders/open',  controllerLead.getLeadsToRemind);
 
-routerLead.delete('/:id', authorizeUser([UserRole.ADMIN]), controllerLead.deleteLead);
+routerLead.delete('/:id',  controllerLead.deleteLead);
 
-routerLead.post('/:id/addInteraction', authorizeUser([UserRole.ADMIN, UserRole.MANAGER, UserRole.SYSTEM_ADMIN]), controllerLead.addInteractionToLead);
+routerLead.post('/:id/addInteraction',controllerLead.addInteractionToLead);
 
-routerLead.delete('/:leadId/interactions/:interactionId', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), controllerLead.deleteInteraction);
+routerLead.delete('/:leadId/interactions/:interactionId', controllerLead.deleteInteraction);
 
 
 export default routerLead;
