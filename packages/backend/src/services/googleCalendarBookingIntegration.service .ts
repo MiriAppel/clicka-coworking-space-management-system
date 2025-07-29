@@ -320,7 +320,11 @@ export async function processCalendarWebhook(headers: any): Promise<void> {
 
     // שלב 2 – משיכת אירועים מגוגל
     const events = await getGoogleCalendarEvents(calendarId!, token!);
-
+    console.log(events+'*************************************************');
+    if (!events || events.length === 0) {
+        console.log("No events found in Google Calendar.");
+        return;
+    }
     for (const event of events ?? []) {
         const existing = await BookingService.getBookingByEventId(event.id!);
         if (event.status === BookingStatus.CANCELED) {
