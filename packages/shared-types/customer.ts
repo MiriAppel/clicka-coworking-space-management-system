@@ -18,7 +18,8 @@ export enum ContractStatus {
   SIGNED = 'SIGNED',
   ACTIVE = 'ACTIVE',
   EXPIRED = 'EXPIRED',
-  TERMINATED = 'TERMINATED'
+  TERMINATED = 'TERMINATED',
+  RENEWED = 'RENEWED'
 }
 
 // Workspace type enum
@@ -89,7 +90,7 @@ export interface Contract {
   startDate?: DateISO;
   endDate?: DateISO;
   terms?: ContractTerms;
-  documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
+  documents: ID[]; // כאן ישמרו כל טפסי החוזה 
   signedBy?: string;
   witnessedBy?: string;
   createdAt: DateISO;

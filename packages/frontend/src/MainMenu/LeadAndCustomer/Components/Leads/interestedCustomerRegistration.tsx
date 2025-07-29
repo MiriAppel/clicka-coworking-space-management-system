@@ -48,10 +48,8 @@ export const InterestedCustomerRegistration: React.FC = () => {
           }
           : undefined,
       contractDocuments: data.contractDocuments,
-      requireEmailVerification: data.requireEmailVerification === true,
     };
 
-    console.log('📧 Customer request requireEmailVerification:', customerRequest.requireEmailVerification);
 
 
     try {

@@ -51,7 +51,6 @@ export const NewCustomerPage: React.FC = () => {
                 creditCardHolderPhone: data.creditCardHolderPhone,
             } : undefined,
             contractDocuments: data.contractDocuments, // אם יש שדה כזה
-            requireEmailVerification: data.requireEmailVerification === true,
         };
 
         console.log(customerRequest);
