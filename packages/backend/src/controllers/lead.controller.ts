@@ -57,6 +57,18 @@ export const createLead = async (req: Request, res: Response) => {
   }
 };
 
+export const postLeadFromExcel = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    console.log('Received file:', req.file);
+    await serviceLead.importLeadsFromExcelBuffer(req.file.buffer);
+    res.status(200).json({ message: 'הלידים נוספו בהצלחה!!' });
+  } catch (error: any) {
+    console.error('Error uploading leads:', error);
+    res.status(500).json({ message: 'שגיאה, אנא העלה קובץ אקסל של לידים בלבד!!!', error: error.message });
+  }
+};
+
 // קבלת המקור לפי id
 export const getSourcesLeadById = async (req: Request, res: Response) => {
   const { id } = req.params;
