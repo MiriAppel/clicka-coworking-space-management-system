@@ -2,6 +2,8 @@ import type{ ID, Invoice, Payment } from "shared-types";
 import { baseService } from "./baseService";
 import { PaymentModel } from "../models/payments.model";
 import { supabase } from "../db/supabaseClient";
+import { EmailTemplateService } from "./emailTemplate.service";
+import { sendEmail } from "./gmail-service";
 
 export class PaymentService extends baseService<PaymentModel> {
 
@@ -136,7 +138,98 @@ async getPaymentByDateAndCIds(params: {
       return [];
     }
   }
+   /**
+   * שליפת תשלומים לפי טווח תאריכים
+   * @param params - אובייקט עם תאריך התחלה ותאריך סיום
+   * @returns רשימת תשלומים
+   */
+
+  //שליחת מייל תזכורת
+
+  sendPaymentReminderEmail = async (
+    customerName: string,
+    amount: number,
+    invoiceNumber: string,
+    dueDate: string,
+    token: any,
+  ): Promise<void> => {
+
+    try {
+      // טוענים את תבנית המייל בשם "תזכורת תשלום"
+      const template = await emailService.getTemplateByName("תזכורת לתשלום על חשבונית");
+      if (!template) {
+        console.warn("Email template 'תזכורת תשלום' not found");
+        return;
+      }
+
+      // ממלאים את התבנית עם הנתונים הדינמיים
+      const renderedHtml = await emailService.renderTemplate(template.bodyHtml, {
+        customerName,
+        amount: amount.toString(),
+        invoiceNumber,
+        dueDate,
+      });
+
+      // שולחים את המייל
+      const response = await sendEmail(
+        "me",
+        {
+          to: ["ettylax@gmail.com"],
+          subject: encodeSubject(template.subject),
+          body: renderedHtml,
+          isHtml: true,
+        },
+        token,
+      );
+
+      console.log("Payment reminder email sent successfully:", response);
+    } catch (err) {
+      console.error("Error sending payment reminder email:", err);
     }
+  };
+}
+const emailService = new EmailTemplateService();
+
+export const sendPaymentProblemEmailInternal = async (
+  customerName: string,
+  invoiceNumber: string,
+  amount: number,
+  paymentStatus: string,
+  invoiceUrl: string,
+  customerEmail: string,
+  token: any
+): Promise<void> => {
+  const template = await emailService.getTemplateByName("בעיית תשלום");
+
+  if (!template) {
+    throw new Error("Template 'בעיית תשלום' not found.");
+  }
+
+  const renderedHtml = await emailService.renderTemplate(template.bodyHtml, {
+    customerName,
+    invoiceNumber,
+    amount: amount.toFixed(2),
+    paymentStatus,
+    invoiceUrl,
+  });
+
+  await sendEmail(
+    "me",
+    {
+      to: ["ettylax@gmail.com"],
+      subject: encodeSubject(template.subject),
+      body: renderedHtml,
+      isHtml: true,
+    },
+    token
+  );
+};
+
+function encodeSubject(subject: string): string {
+  return `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+}
+    
+    
 //   getCustomerBalance(customerId: ID)/*: CustomerBalance*/ {
 //     // שליפת כל החשבוניות של הלקוח שלא שולמו במלואן
 //     // חישוב סך כל החשבוניות שעדיין פתוחות

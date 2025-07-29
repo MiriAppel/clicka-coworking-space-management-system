@@ -248,7 +248,7 @@ export const ExpandableCustomerCard = ({
 
           <div className="flex flex-wrap justify-between items-center mt-4 gap-2">
             <div className="flex gap-3 text-blue-600 font-medium text-sm">
-              {/* <button onClick={() => navigate(`/${id}/dashboard`)}>לוח בקרה</button> */}
+              <button onClick={() => navigate(`/${id}/dashboard`)}>לוח בקרה</button>
               <button onClick={() => navigate(`${id}/contract`, { state: { customerName: name }})}>חוזה לקוח</button>
             </div>
             <div className="flex gap-2">

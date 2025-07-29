@@ -20,7 +20,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 
 // בדיקה שמחירים אינם שליליים - פונקציה זו נשארת ללא שינוי
-function validatePrices(prices: number[]) {
+export function validatePrices(prices: number[]) {
   for (const price of prices) {
     if (price < 0) throw new Error("לא ניתן להזין מחירים שליליים");
   }
