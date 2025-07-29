@@ -168,46 +168,33 @@ async getHistory(date: Date): Promise<Space[] | null> {
     .from('space_assignment')
     .select('*')
     .lte('assigned_date', dateStr); // לשלוף רק הקצאות שהתחילו עד התאריך
-
   if (error) return null;
   if (!assignments || assignments.length === 0) return [];
-
   const workspaceIds = [...new Set(assignments.map((a) => a.workspace_id))];
   const { data: workspaceData, error: workspaceError } = await supabase
     .from('workspace')
     .select('*')
     .in('id', workspaceIds);
-
   if (workspaceError || !workspaceData) return null;
-
   const customerIds = [...new Set(assignments.map((a) => a.customer_id))];
   const { data: customerData, error: customerError } = await supabase
     .from('customer')
     .select('id, name')
     .in('id', customerIds);
-
   if (customerError || !customerData) return null;
-
   const workspaceMap = new Map(workspaceData.map((w) => [w.id, w]));
   const customerMap = new Map(customerData.map((c) => [c.id, c.name]));
-
   const targetDate = new Date(dateStr);
-
   const workspaces: Space[] = assignments.flatMap((record) => {
     const assignedDate = new Date(record.assigned_date);
     const unassignedDate = record.unassigned_date ? new Date(record.unassigned_date) : null;
-
     const isRelevant =
       targetDate >= assignedDate &&
       (unassignedDate === null || targetDate <= unassignedDate);
-
     if (!isRelevant) return []; // התאריך לא בטווח – מדלגים
-
     const workspace = workspaceMap.get(record.workspace_id);
     const customerName = customerMap.get(record.customer_id) ?? '';
-
     let sStatus: SpaceStatus = SpaceStatus.AVAILABLE;
-
     switch (record.status) {
       case 'ACTIVE':
       case 'ENDED':
@@ -220,7 +207,6 @@ async getHistory(date: Date): Promise<Space[] | null> {
         sStatus =SpaceStatus.INACTIVE;
         break;
     }
-
     return [{
       id: record.workspace_id,
       workspaceMapId: workspace?.workspace_map_id,

@@ -667,7 +667,7 @@ export const WorkspaceMap = () => {
                     y={-pan.y / (scale * zoom)}
                     width={containerSize.width / (scale * zoom)}
                     height={containerSize.height / (scale * zoom)}
-                    fill="INACTIVE"
+                    fill="none"
                     stroke="red"
                     strokeWidth="2"
                 />
