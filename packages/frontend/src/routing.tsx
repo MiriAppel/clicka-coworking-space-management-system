@@ -11,6 +11,7 @@ import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import MainLayout from './layout/MainLayout';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
+import { PaymentList } from './MainMenu/Billing/Components/paymentList';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
@@ -53,7 +54,8 @@ export const Routing = () => {
         <Route path="bookings" element={<BookingTable />} />
         <Route path="updateBooking" element={<UpdateBooking />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
-        <Route path="payments" element={<PaymentForm />} />
+        <Route path="payments" element={<PaymentList />} />
+        <Route path="payment-form" element={<PaymentForm />} />
         <Route path="vendor" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
