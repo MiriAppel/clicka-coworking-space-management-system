@@ -9,13 +9,8 @@ import { PricingTier, ID, DateISO, BillingItemType, InvoiceStatus, WorkspaceType
 import { MeetingRoomPricing } from '../../../shared-types/pricing'; // ייבוא טיפוס תמחור חדרי ישיבות
 import { differenceInCalendarDays, startOfMonth, endOfMonth } from 'date-fns'; // פונקציות עזר לתאריכים
 import { VAT_RATE } from '../constants'; // קבוע מע"מ
-<<<<<<< HEAD
-import { createInvoice, InvoiceItemModel, InvoiceModel } from '../models/invoice.model'; // מודלים של חשבונית ופריט חשבונית
-import { generateId } from '../models/invoice.mock-db'; // פונקציה ליצירת מזהה ייחודי
-=======
 import { InvoiceItemModel, InvoiceModel } from '../models/invoice.model'; // מודלים של חשבונית ופריט חשבונית
 // import { generateId } from '../models/invoice.mock-db'; // פונקציה ליצירת מזהה ייחודי
->>>>>>> origin/main
 import { customerService } from './customer.service'; // שירות לשליפת לקוחות
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv'; // ייבוא dotenv לקריאת משתני סביבה
@@ -79,13 +74,10 @@ export interface BillingCalculationResult {
     taxAmount: number;
     total: number;
 }
-<<<<<<< HEAD
-=======
 //to do check this function
 export function generateId(): ID {
     return (Math.random() * 1000000).toFixed(0) as ID;
 }
->>>>>>> origin/main
 export const calculateBillingForCustomer = async (
     customerId: ID,
     billingPeriod: { startDate: DateISO; endDate: DateISO },
@@ -222,25 +214,6 @@ export const billingCalculation = (input: BillingCalculationInput): BillingCalcu
         });
 
         // הוספת פריט לחשבונית (פריט מסוג WORKSPACE_RENTAL)
-<<<<<<< HEAD
-        items.push(
-            new InvoiceItemModel(
-                generateId(),
-                '', // invoice_id ימולא לאחר יצירת החשבונית
-                'WORKSPACE_RENTAL' as BillingItemType,
-                `השכרת ${ws.workspaceType}`,
-                ws.quantity,
-                unitPrice,
-                totalPrice,
-                taxRate,
-                Math.round(totalPrice * (taxRate / 100) * 100) / 100,
-                ws.workspaceType,
-                ws.workspaceId,
-                new Date().toISOString(),
-                new Date().toISOString()
-            )
-        );
-=======
         // items.push(
         //     new InvoiceItemModel(
         //         generateId(),
@@ -258,7 +231,6 @@ export const billingCalculation = (input: BillingCalculationInput): BillingCalcu
         //         new Date().toISOString()
         //     )
         // );
->>>>>>> origin/main
 
         subtotal += totalPrice; // מוסיף לסכום הביניים
     }
@@ -305,25 +277,6 @@ export const billingCalculation = (input: BillingCalculationInput): BillingCalcu
             });
 
             // הוספת פריט לחשבונית (פריט מסוג MEETING_ROOM)
-<<<<<<< HEAD
-            items.push(
-                new InvoiceItemModel(
-                    generateId(),
-                    '', // invoice_id ימולא לאחר יצירת החשבונית
-                    'MEETING_ROOM' as BillingItemType,
-                    `הזמנת חדר ישיבות`,
-                    chargeableHours,
-                    hourlyRate,
-                    totalCharge,
-                    taxRate,
-                    Math.round(totalCharge * (taxRate / 100) * 100) / 100,
-                    undefined,
-                    booking.bookingId,
-                    new Date().toISOString(),
-                    new Date().toISOString()
-                )
-            );
-=======
             // items.push(
             //     new InvoiceItemModel(
             //         generateId(),
@@ -341,7 +294,6 @@ export const billingCalculation = (input: BillingCalculationInput): BillingCalcu
             //         new Date().toISOString()
             //     )
             // );
->>>>>>> origin/main
 
             subtotal += totalCharge; // מוסיף לסכום הביניים
         }
@@ -349,28 +301,6 @@ export const billingCalculation = (input: BillingCalculationInput): BillingCalcu
 
     // הנחות
     const discounts = input.discounts ?? [];
-<<<<<<< HEAD
-    const totalDiscounts = discounts.reduce((sum, d) => sum + (d.amount || 0), 0);
-    for (const discount of discounts) {
-        items.push(
-            new InvoiceItemModel(
-                generateId(),
-                '',
-                'DISCOUNT' as BillingItemType,
-                discount.description,
-                1,
-                discount.amount,
-                discount.amount,
-                taxRate,
-                Math.round(discount.amount * (taxRate / 100) * 100) / 100,
-                undefined,
-                undefined,
-                new Date().toISOString(),
-                new Date().toISOString()
-            )
-        );
-    }
-=======
     // const totalDiscounts = discounts.reduce((sum, d) => sum + (d.amount || 0), 0);
     // for (const discount of discounts) {
     //     items.push(
@@ -391,7 +321,6 @@ export const billingCalculation = (input: BillingCalculationInput): BillingCalcu
     //         )
     //     );
     // }
->>>>>>> origin/main
 
     // // עמלות
     // const fees = input.fees ?? [];

@@ -16,11 +16,6 @@
   "description": "Backend for Clicka application",
   "dependencies": {
     "@supabase/supabase-js": "^2.50.3",
-    "@types/bcrypt": "^5.0.2",
-    "@types/cookie-parser": "^1.4.3",
-    "@types/dotenv": "^8.2.3",
-    "@types/morgan": "^1.9.10",
-    "@types/papaparse": "^5.3.16",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
