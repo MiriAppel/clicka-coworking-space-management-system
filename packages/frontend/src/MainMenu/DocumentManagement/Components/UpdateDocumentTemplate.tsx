@@ -48,8 +48,8 @@ export const UpdateDocumentTemplate = ({
     const [textDirection, setTextDirection] = useState<'rtl' | 'ltr'>('rtl');
 
     // קביעת התבנית לעריכה - מה-props או מה-store
-    const templateToEdit = documentTemplate || currentDocumentTemplate;
-
+    const [templateToEdit,setTemplateToEdit] = useState(useDocumentTemplateStore(state => state.currentDocumentTemplate) || documentTemplate);
+    
     const methods = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
@@ -65,16 +65,21 @@ export const UpdateDocumentTemplate = ({
 
     // טעינת התבנית מהשרת אם יש ID ואין תבנית מה-props
     useEffect(() => {
-        if (id && !documentTemplate) {
-            getDocumentTemplateById(id);
-        }
+         if (id) {
+             const a= getDocumentTemplateById(id);
+             (async () => {
+               const template:any = await a;
+               console.log("Loaded template:", (template as any).data) ;
+            setTemplateToEdit((template as any).data);
+             })();
+             console.log("Loaded template:", templateToEdit);
+           }
     }, [id, documentTemplate, getDocumentTemplateById]);
 
     // מילוי הטופס עם נתוני התבנית הקיימת
     useEffect(() => {
         if (templateToEdit) {
             methods.reset({
-                name: templateToEdit.name || '',
                 type: templateToEdit.type || DocumentType.INVOICE, // 👈 עדכן לערך שקיים
                 language: templateToEdit.language || 'hebrew',
                 template: templateToEdit.template || '',
@@ -115,12 +120,9 @@ export const UpdateDocumentTemplate = ({
             showAlert("שגיאה", "לא נמצאה תבנית לעדכון", "error");
             return;
         }
-
         setIsSubmitting(true);
-        
         try {
             const updatedTemplate = {
-                customerId: templateToEdit.customer_id || '',
                 name: data.name,
                 type: data.type,
                 language: data.language,
@@ -129,7 +131,7 @@ export const UpdateDocumentTemplate = ({
                 isDefault: data.is_default ?? false,
                 active: data.active ?? true
             };
-
+            console.log("Updating template with data before send:", updatedTemplate);
             const result = await updateDocumentTemplate(templateToEdit.id, updatedTemplate);
             
             if (result) {
@@ -152,13 +154,13 @@ export const UpdateDocumentTemplate = ({
 
     // ביטול העריכה וחזרה לעמוד הקודם
     const handleCancel = () => {
-        if (onClose) {
-            onClose();
-        } else if (templateToEdit) {
-            navigate(`/document-templates/${templateToEdit.id}`);
-        } else {
-            navigate('/document-templates');
-        }
+
+        navigate(-1);
+        return;
+        // if (onClose) 
+        //     onClose();
+        // } else if (templateToEdit) {
+        //     navigate(`/document-templates/`);
     };
 
     // 👈 עדכן את האפשרויות לערכים שקיימים באמת
@@ -205,7 +207,7 @@ export const UpdateDocumentTemplate = ({
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h2 className="text-2xl font-bold">עריכת תבנית מסמך</h2>
-                    <p className="text-gray-600">עדכון פרטי התבנית: {templateToEdit.name}</p>
+                    {/* <p className="text-gray-600">עדכון פרטי התבנית: {templateToEdit.name}</p> */}
                 </div>
                 {onClose && (
                     <Button variant="secondary" onClick={onClose}>
@@ -263,7 +265,6 @@ export const UpdateDocumentTemplate = ({
                                 />
                             </div>
                         </div>
-
                         <div className="bg-white rounded-lg shadow-md p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-xl font-semibold">משתנים</h3>
@@ -285,12 +286,10 @@ export const UpdateDocumentTemplate = ({
                             />
                         </div>
                     </div>
-
                     {/* עורך התוכן */}
                     <div className="lg:col-span-2">
                         <div className="bg-white rounded-lg shadow-md p-6">
                             <h3 className="text-xl font-semibold mb-4">תוכן התבנית</h3>
-                            
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     תוכן התבנית *
@@ -308,7 +307,6 @@ export const UpdateDocumentTemplate = ({
                                     </p>
                                 )}
                             </div>
-
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
                                 <h4 className="font-semibold text-blue-800 mb-2">עצות לכתיבת תבניות:</h4>
                                 <ul className="text-sm text-blue-700 space-y-1">
@@ -320,9 +318,32 @@ export const UpdateDocumentTemplate = ({
                             </div>
                         </div>
                     </div>
+                    <div
+                        style={{width: '120px',height: '40px'}}
+                     >
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        disabled={isSubmitting || loading}
+                    >
+                        {isSubmitting ? 'מעדכן...' : 'שמור שינויים'}
+                    </Button>
+                    </div>
                 </div>
-
-                <div className="flex justify-end space-x-4 pt-6 border-t">
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-700 mb-2">מידע על התבנית הנוכחית:</h4>
+                    <div className="text-sm text-gray-600 space-y-1">
+                        <p><strong>נוצר:</strong> {new Date(templateToEdit.createdAt || '').toLocaleDateString()}</p>
+                        <p><strong>עדכון אחרון:</strong> {new Date(templateToEdit.updatedAt || '').toLocaleDateString()}</p>
+                    </div>
+                </div>
+                {isSubmitting && (
+                    <div className="bg-blue-50 border border-blue-200 rounded p-4">
+                        <p className="text-blue-800">מעדכן תבנית מסמך, אנא המתן...</p>
+                    </div>
+                )}
+            </Form>
+            <div style={{width: '120px',height: '40px'}}>
                     <Button
                         type="button"
                         variant="secondary"
@@ -331,30 +352,8 @@ export const UpdateDocumentTemplate = ({
                     >
                         ביטול
                     </Button>
-                    
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        disabled={isSubmitting || loading}
-                    >
-                        {isSubmitting ? 'מעדכן...' : 'שמור שינויים'}
-                    </Button>
-                </div>
-
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-semibold text-gray-700 mb-2">מידע על התבנית הנוכחית:</h4>
-                    <div className="text-sm text-gray-600 space-y-1">
-                        <p><strong>נוצר:</strong> {new Date(templateToEdit.createdAt || '').toLocaleDateString()}</p>
-                        <p><strong>עדכון אחרון:</strong> {new Date(templateToEdit.updatedAt || '').toLocaleDateString()}</p>
                     </div>
-                </div>
 
-                {isSubmitting && (
-                    <div className="bg-blue-50 border border-blue-200 rounded p-4">
-                        <p className="text-blue-800">מעדכן תבנית מסמך, אנא המתן...</p>
-                    </div>
-                )}
-            </Form>
         </div>
     );
 };

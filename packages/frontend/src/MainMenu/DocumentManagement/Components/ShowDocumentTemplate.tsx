@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDocumentTemplateStore } from '../../../Stores/DocumentManagement/DocumentTemplateStore';
+import { log } from 'console';
 
 const ShowDocumentTemplate: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,7 +35,14 @@ const ShowDocumentTemplate: React.FC = () => {
    */
   useEffect(() => {
     if (id) {
-      getDocumentTemplateById(id);
+      const a= getDocumentTemplateById(id);
+      (async () => {
+        const template:any = await a;
+        console.log("Loaded template:", (template as any).data) ;
+        setCurrentDocumentTemplate((template as any).data);
+      })();
+      console.log("Loaded template:", currentDocumentTemplate);
+      
     }
   }, [id, getDocumentTemplateById]);
 
@@ -55,13 +63,16 @@ const ShowDocumentTemplate: React.FC = () => {
   const handleDelete = async () => {
     if (!currentDocumentTemplate) return;
 
-    const confirmMessage = `האם אתה בטוח שברצונך למחוק את התבנית "${currentDocumentTemplate.name || 'ללא שם'}"?\nפעולה זו לא ניתנת לביטול.`;
+    const confirmMessage = `האם אתה בטוח שברצונך למחוק את התבנית "?\nפעולה זו לא ניתנת לביטול.`;
     
     if (window.confirm(confirmMessage)) {
       try {
-        await deleteDocumentTemplate(currentDocumentTemplate.id);
-        alert('התבנית נמחקה בהצלחה');
-        navigate('/document-templates');
+        if (currentDocumentTemplate.id)
+        {
+          await deleteDocumentTemplate(currentDocumentTemplate.id);
+          alert('התבנית נמחקה בהצלחה');
+          navigate('/document-templates');
+        }
       } catch (error) {
         alert('שגיאה במחיקת התבנית');
       }
@@ -90,7 +101,7 @@ const ShowDocumentTemplate: React.FC = () => {
   const handleDownloadTemplate = () => {
     if (!currentDocumentTemplate) return;
 
-    const content = `שם התבנית: ${currentDocumentTemplate.name || 'ללא שם'}
+    const content = `
 סוג: ${currentDocumentTemplate.type}
 שפה: ${currentDocumentTemplate.language}
 תאריך יצירה: ${formatDate(currentDocumentTemplate.createdAt)}
@@ -118,13 +129,14 @@ ${currentDocumentTemplate.variables?.join(', ') || 'אין משתנים'}`;
    */
   const handleDuplicate = () => {
     if (!currentDocumentTemplate) return;
-    
     const templateToDuplicate = {
       ...currentDocumentTemplate,
-      name: `${currentDocumentTemplate.name || 'תבנית'} - עותק`,
-      is_default: false
-    };
-    
+      id: undefined,
+          name: `- תבנית- עותק`,
+
+      // name: `${currentDocumentTemplate.name || 'תבנית'} - עותק`,
+      isDefault: false
+    };   
     setCurrentDocumentTemplate(templateToDuplicate);
     navigate('/document-templates/add');
   };
@@ -295,7 +307,7 @@ ${currentDocumentTemplate.variables?.join(', ') || 'אין משתנים'}`;
           </button>
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
-              {currentDocumentTemplate.name || 'תבנית ללא שם'}
+              {/* {currentDocumentTemplate.name || 'תבנית ללא שם'} */}
             </h1>
             <p className="text-gray-600">
               {getTypeTranslation(currentDocumentTemplate.type)} • {getLanguageTranslation(currentDocumentTemplate.language)}
@@ -312,12 +324,12 @@ ${currentDocumentTemplate.variables?.join(', ') || 'אין משתנים'}`;
             עריכה
           </button>
           
-          <button
+          {/* <button
             onClick={handleDuplicate}
             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
           >
             שכפול
-          </button>
+          </button> */}
           
           <button
             onClick={handleDelete}
@@ -337,13 +349,8 @@ ${currentDocumentTemplate.variables?.join(', ') || 'אין משתנים'}`;
             
             <div className="space-y-4">
               <div>
-                <span className="text-sm text-gray-600">מזהה לקוח:</span>
-                <p className="font-medium">{currentDocumentTemplate.customer_id}</p>
-              </div>
-
-              <div>
                 <span className="text-sm text-gray-600">סוג תבנית:</span>
-                <p className="font-medium">{getTypeTranslation(currentDocumentTemplate.type)}</p>
+                <p className="font-medium">{getTypeTranslation((currentDocumentTemplate as any).type)}</p>
               </div>
 
               <div>

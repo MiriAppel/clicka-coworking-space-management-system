@@ -87,7 +87,6 @@ export class GeneratedDocumentController {
         templateId,
         entityId,
         variables,
-        customerId,
         deliveryMethod
       );
 
@@ -146,9 +145,6 @@ export class GeneratedDocumentController {
       if (req.query.entityId) {
         filter.entityId = req.query.entityId as ID;
       }
-      if (req.query.customerId) {
-        filter.customerId = req.query.customerId as ID;
-      }
       if (req.query.type) {
         filter.type = req.query.type as string;
       }
@@ -156,7 +152,7 @@ export class GeneratedDocumentController {
         filter.templateId = req.query.templateId as ID;
       }
       if (req.query.pending === 'true') {
-        filter.deliveredAt = null;
+        filter.deliveredAt = '';
       }
 
       const documents = await this.generatedDocumentService.getGeneratedDocuments(filter);

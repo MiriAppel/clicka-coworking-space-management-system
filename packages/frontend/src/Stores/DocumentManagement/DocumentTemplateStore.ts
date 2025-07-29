@@ -1,19 +1,10 @@
-// ✅ קובץ store - useDocumentTemplateStore.ts (עודכן לשמות נכונים והוספת name)
+//  קובץ store - useDocumentTemplateStore.ts
 
 import { create } from 'zustand';
-import { DocumentTemplate, DocumentType } from 'shared-types';
+import { DocumentTemplate } from 'shared-types';
 import { axiosInstance } from '../../services/Axios';
+import{CreateDocumentTemplateRequest} from 'shared-types/template';
 
-interface CreateDocumentTemplateRequest {
-  customerId: string;
-  name: string;
-  type: DocumentType;
-  language: 'hebrew' | 'english';
-  template: string;
-  variables: string[];
-  isDefault: boolean;
-  active: boolean;
-}
 
 interface DocumentTemplateState {
   documentTemplates: DocumentTemplate[];
@@ -38,14 +29,17 @@ export const useDocumentTemplateStore = create<DocumentTemplateState>((set) => (
   error: null,
 
   getDocumentTemplates: async () => {
+        const API_BASE = process.env.REACT_APP_API_URL;
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get<DocumentTemplate[]>('/api/documents/document_template');
-      set({ documentTemplates: response.data, loading: false });
+      const response = await fetch(`${API_BASE}/documents/document_template`,{method:'GET',
+        headers: { 'Content-Type': 'application/json' }});
+      const aa=await response.json();
+      set({ documentTemplates:aa, loading: false });
     } catch (error) {
       set({ error: 'Error getting all documentTemplates', loading: false });
       throw error;
-    }
+    }  
   },
 
   getDocumentTemplateById: async (id: string | undefined): Promise<DocumentTemplate | null> => {
@@ -55,8 +49,9 @@ export const useDocumentTemplateStore = create<DocumentTemplateState>((set) => (
     }
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get<DocumentTemplate>(`/api/documents/document_template/${id}`);
+      const response = await axiosInstance.get<DocumentTemplate>(`/documents/document_template/${id}`);
       set({ currentDocumentTemplate: response.data, loading: false });
+      console.log("success");
       return response.data;
     } catch (error) {
       set({ error: 'Error getting documentTemplate by id', loading: false });
@@ -69,7 +64,6 @@ export const useDocumentTemplateStore = create<DocumentTemplateState>((set) => (
     try {
       const now = new Date().toISOString();
     //   const templateToInsert = {
-    //     customerId: templateData.customerId,
     //     name: templateData.name,
     //     type: templateData.type,
     //     language: templateData.language,
@@ -81,18 +75,17 @@ export const useDocumentTemplateStore = create<DocumentTemplateState>((set) => (
     //     updatedAt: now
     //   };
     const templateToInsert = {
-  customer_id: templateData.customerId,  // 👈 snake_case כמו בשרת
   name: templateData.name,
   type: templateData.type,
   language: templateData.language,
   template: templateData.template,
   variables: templateData.variables,
-  isDefault: templateData.isDefault,     // 👈 camelCase כמו בשרת
+  isDefault: templateData.isDefault,
   active: templateData.active,
   createdAt: now,
   updatedAt: now
 };
-      const response = await axiosInstance.post('/api/documents/document_template', templateToInsert);
+      const response = await axiosInstance.post('/documents/document_template', {newDocuments:templateToInsert});
       const newDocumentTemplate = response.data;
       set(state => ({
         documentTemplates: [...state.documentTemplates, newDocumentTemplate],
@@ -108,7 +101,7 @@ export const useDocumentTemplateStore = create<DocumentTemplateState>((set) => (
   deleteDocumentTemplate: async (id: string): Promise<DocumentTemplate | null> => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.delete(`/api/documents/document_template/${id}`);
+      const response = await axiosInstance.delete(`/documents/document_template/${id}`);
       const deletedDocumentTemplate = response.data;
       set(state => ({
         documentTemplates: state.documentTemplates.filter(documentTemplate => documentTemplate.id !== id),
@@ -127,7 +120,6 @@ export const useDocumentTemplateStore = create<DocumentTemplateState>((set) => (
     try {
       const now = new Date().toISOString();
       const templateToUpdate = {
-    //     customerId: templateData.customerId,
     //     name: templateData.name,
     //     type: templateData.type,
     //     language: templateData.language,
@@ -137,18 +129,18 @@ export const useDocumentTemplateStore = create<DocumentTemplateState>((set) => (
     //     active: templateData.active,
     //     updatedAt: now
     //   };
-  customer_id: templateData.customerId,  // 👈 snake_case כמו בשרת
   name: templateData.name,
   type: templateData.type,
   language: templateData.language,
   template: templateData.template,
   variables: templateData.variables,
-  isDefault: templateData.isDefault,     // 👈 camelCase כמו בשרת
-  active: templateData.active,
-  createdAt: now,
+  isDefault: templateData.isDefault,     
+  createdAt: now, // אם רוצים לשמור את התאריך המקורי
   updatedAt: now
 };
-      const response = await axiosInstance.put(`/api/documents/document_template/${id}`, templateToUpdate);
+console.log(templateToUpdate, "Updating template with data before 2 send");
+
+      const response = await axiosInstance.put(`/documents/document_template/${id}`, templateToUpdate);
       const updatedDocumentTemplate = response.data;
       set(state => ({
         documentTemplates: state.documentTemplates.map(documentTemplate =>
@@ -167,7 +159,7 @@ export const useDocumentTemplateStore = create<DocumentTemplateState>((set) => (
   previewDocumentTemplate: async (id: string, variables: Record<string, string>): Promise<string | null> => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.post(`/api/documents/document_template/${id}/preview`, { variables });
+      const response = await axiosInstance.post(`/documents/document_template/${id}/preview`, { variables });
       const renderedHtml = typeof response.data === 'string' ? response.data : response.data.renderedHtml;
       set({ loading: false });
       return renderedHtml ?? null;

@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { DocumentService, CreateDocumentTemplateRequest, UpdateDocumentTemplateRequest } from '../services/document.service';
-import { DocumentTemplateModel, DocumentType } from '../models/document.model';
+import { DocumentService} from '../services/document.service';
+import { DocumentTemplateModel } from '../models/document.model';
 import { ID } from 'shared-types';
+import{ DocumentType } from 'shared-types';
 
 export class DocumentController {
   private documentService: DocumentService;
@@ -12,16 +13,16 @@ export class DocumentController {
 
   // יצירת תבנית חדשה
   createTemplate = async (req: Request, res: Response) => {
+    console.log(req.body, "req.body in createTemplate");
+    
     try {
       const {
-        newDocuments,
-        customer_id
-      }: {
+        newDocuments      }: {
         newDocuments: DocumentTemplateModel,
-        customer_id: ID
       } = req.body;
+      console.log(newDocuments, "יצירת תבנית חדשהההה");
       
-      const newTemplate = await this.documentService.createDocumentTemplate(newDocuments, customer_id);
+      const newTemplate = await this.documentService.createDocumentTemplate(newDocuments);
       
       res.status(201).json({
         success: true,
@@ -30,6 +31,8 @@ export class DocumentController {
       });
 
     } catch (error) {
+      console.log(error, "Error in createTemplate");
+      
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       res.status(500).json({ 
         success: false,
@@ -63,12 +66,8 @@ export class DocumentController {
   getAllTemplates = async (req: Request, res: Response): Promise<void> => {
     try {
       const templates = await this.documentService.getAllTemplates();
-
-      res.status(200).json({
-        success: true,
-        message: 'תבניות המסמכים נשלפו בהצלחה',
-        data: templates
-      });
+      if(templates)
+      res.status(200).json(templates);
     } catch (error) {
       res.status(500).json({
         success: false,
@@ -132,9 +131,8 @@ export class DocumentController {
     try {
       const { id } = req.params;
       const updatedTemplate = req.body;
-
-      const result = await DocumentService.updateTemplate(id, updatedTemplate);
-      
+console.log(updatedTemplate, "updatedTemplate in updateTemplate");
+      const result = await DocumentService.updateTemplate(id, updatedTemplate);      
       res.status(200).json({
         success: true,
         message: 'תבנית עודכנה בהצלחה',
@@ -229,6 +227,3 @@ export class DocumentController {
     }
   };
 }
-
-
-

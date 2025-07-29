@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
-import { DocumentTemplateModel, DocumentType } from '../models/document.model';
+import { DocumentTemplateModel } from '../models/document.model';
 import { ID } from 'shared-types';
-
+import { UpdateDocumentTemplateRequest,DocumentType } from "shared-types";
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_KEY || "";
 
@@ -11,28 +11,12 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export interface CreateDocumentTemplateRequest {
-  name: string;
-  type: DocumentType;
-  language: 'hebrew' | 'english';
-  template: string;
-  variables: string[];
-  isDefault?: boolean;
-  active?: boolean;
-}
 
-export interface UpdateDocumentTemplateRequest {
-  name?: string;
-  template?: string;
-  variables?: string[];
-  isDefault?: boolean;
-  active?: boolean;
-}
 
 export class DocumentService {
   
   // יצירת תבנית מסמך חדשה
-  async createDocumentTemplate(newDocuments: DocumentTemplateModel, customer_id: ID): Promise<DocumentTemplateModel> {
+  async createDocumentTemplate(newDocuments: DocumentTemplateModel): Promise<DocumentTemplateModel> {
     try {
       if (!newDocuments.template) {
         throw new Error('תוכן התבנית הוא שדה חובה');
@@ -45,7 +29,7 @@ export class DocumentService {
       const now = new Date().toISOString();
       
       const templateToInsert = {
-        customer_id: customer_id,
+        name: newDocuments.name?? "תבנית חדשה",
         type: newDocuments.type ?? "RECEIPT",
         language: newDocuments.language ?? 'english',
         template: newDocuments.template ?? "",
@@ -55,6 +39,7 @@ export class DocumentService {
         created_at: now,
         updated_at: now
       };
+console.log(templateToInsert);
 
       const { data, error } = await supabase
         .from('document_template')
@@ -153,11 +138,14 @@ export class DocumentService {
   // עדכון תבנית - static method לתאימות לאחור
   static async updateTemplate(id: string, data: UpdateDocumentTemplateRequest): Promise<DocumentTemplateModel> {
     const service = new DocumentService();
+    console.log(data, "Data in updateTemplate static method before updateTemplateById");
     return await service.updateTemplateById(id as ID, data);
   }
 
   // עדכון תבנית
   async updateTemplateById(id: ID, data: UpdateDocumentTemplateRequest): Promise<DocumentTemplateModel> {
+    console.log("start updateTemplateById called with id:", id, "and data:", data);
+    
     try {
       if (data.isDefault) {
         const currentTemplate = await this.getTemplateById(id);
@@ -171,10 +159,19 @@ export class DocumentService {
         updateData.is_default = data.isDefault;
         delete updateData.isDefault;
       }
-
+      console.log("before enter db Data to be sent for update:", updateData);
+const newData={
+  type:updateData.type,
+  language:updateData.language,
+  template:updateData.template,
+  variables:updateData.variables,
+  is_default:updateData.is_default,
+  active:updateData.active,
+  updated_at:updated_at
+}
       const { data: updatedData, error } = await supabase
         .from('document_template')
-        .update(updateData)
+        .update(newData)
         .eq('id', id)
         .select()
         .single();
@@ -251,7 +248,6 @@ export class DocumentService {
   private mapTemplateFromDatabase(data: any): DocumentTemplateModel {
     return {
       id: data.id,
-      customer_id: data.customer_id,
       type: data.type,
       language: data.language,
       template: data.template,
@@ -276,9 +272,9 @@ export const getActiveDocumentTemplates = async (): Promise<DocumentTemplateMode
   return await service.getActiveTemplates();
 };
 
-export const createDocumentTemplate = async (templateData: DocumentTemplateModel, customer_id: ID): Promise<DocumentTemplateModel> => {
+export const createDocumentTemplate = async (templateData: DocumentTemplateModel): Promise<DocumentTemplateModel> => {
   const service = new DocumentService();
-  return await service.createDocumentTemplate(templateData, customer_id);
+  return await service.createDocumentTemplate(templateData);
 };
 
 export const getDocumentTemplateById = async (id: string): Promise<DocumentTemplateModel | null> => {

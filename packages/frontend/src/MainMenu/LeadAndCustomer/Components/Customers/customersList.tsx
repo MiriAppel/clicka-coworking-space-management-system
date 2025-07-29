@@ -158,7 +158,6 @@ import {
   Table,
   TableColumn,
 } from "../../../../Common/Components/BaseComponents/Table";
-import { Customer, CustomerStatus } from "shared-types";
 import { deleteCustomer } from "../Customers/LeadAndCustomersService";
 import { Stack, TextField } from "@mui/material";
 import axios from "axios";

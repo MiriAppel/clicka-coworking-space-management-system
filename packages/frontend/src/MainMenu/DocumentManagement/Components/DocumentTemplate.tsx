@@ -26,17 +26,17 @@ const DocumentTemplate: React.FC = () => {
   }, [getDocumentTemplates]);
 
   // פונקציה לסינון התבניות לפי חיפוש, סוג וסטטוס
-  const filteredTemplates = documentTemplates.filter(template => {
-    const matchesSearch = template.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         template.type?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = filterType === 'ALL' || template.type === filterType;
-    const matchesActive = filterActive === 'ALL' || 
+    const filteredTemplates = documentTemplates.filter(template => {
+      const matchesSearch = template.template?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           template.type?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesType = filterType === 'ALL' || template.type === filterType;
+      const matchesActive = filterActive === 'ALL' || 
                          (filterActive === 'ACTIVE' && template.active) ||
                          (filterActive === 'INACTIVE' && !template.active);
     
     return matchesSearch && matchesType && matchesActive;
-  });
-
+});
+  
   // פונקציה לניווט לעמוד הוספת תבנית חדשה
   const handleAdd = () => {
     navigate('/document-templates/add');
@@ -85,6 +85,7 @@ const DocumentTemplate: React.FC = () => {
       </div>
     );
   }
+console.log(filteredTemplates, "Filtered Templates");
 
   return (
     <div className="container mx-auto p-6" dir="rtl">
@@ -161,9 +162,9 @@ const DocumentTemplate: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   שם התבנית
-                </th>
+                </th> 
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   סוג
                 </th>
@@ -196,11 +197,11 @@ const DocumentTemplate: React.FC = () => {
                 // מיפוי וחזרה על כל התבניות המסוננות
                 filteredTemplates.map((template) => (
                   <tr key={template.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {template.name || 'ללא שם'}
                       </div>
-                    </td>
+                    </td> 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                         {template.type}
@@ -253,7 +254,7 @@ const DocumentTemplate: React.FC = () => {
                           <FaEdit />
                         </button>
                         <button
-                          onClick={() => handleDelete(template.id)}
+                          onClick={ () =>template.id&& handleDelete(template.id)}
                           className="text-red-600 hover:text-red-900 p-1"
                           title="מחיקה"
                         >

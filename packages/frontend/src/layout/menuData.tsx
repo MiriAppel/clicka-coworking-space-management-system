@@ -52,9 +52,11 @@ export const menus: Menu[] = [
     title: 'חשבוניות',
     icon: <FileText size={18} style={{ marginLeft: 8 }} />,
     items: [
-      { label: 'חשבוניות', path: '/billing' },
-      { label: 'תשלומים', path: '/payments' },
-      { label: 'הוצאות', path: '/expenses' }
+      { label: 'חשבוניות', path: '/billing/invoiceManagement' },
+      { label: 'תשלומים', path: '/billing/payments' },
+      { label: 'הוצאות', path: '/expenses' },
+      { label: 'תמחור', path: '/pricing' } // הוספתי כאן
+
     ]
   },
   {
@@ -83,7 +85,8 @@ export const menus: Menu[] = [
     title: 'תקשורת',
     icon: <Mail size={18} style={{ marginLeft: 8 }} />,
     items: [
-      { label: 'תבניות מייל', path: '/emailTemplates' },
+      { label: 'תבניות מייל', path: '/emailTemplate' },
+      { label: 'תבניות מסמכים', path: '/document-templates' },
       { label: 'שליחת מיילים', path: '/sendEmails' },
       { label: 'התראות', path: '/notifications' }
     ]

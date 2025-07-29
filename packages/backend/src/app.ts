@@ -11,11 +11,35 @@ import dotenv from 'dotenv';
 dotenv.config();
 import  routerAuth  from './routes/auth';
 import { Request, Response } from 'express';
+import bookRouter from './routes/booking.route';
+import workspaceRouter from './routes/workspace.route';
+import featureRouter from './routes/roomFaeature.route';
+import spaceRouter from './routes/spaceAssignmemt.route';
+import roomRouter from './routes/room.route';
+import occupancyrouter from './routes/occupancyTrend.route';
+import routerMap from './routes/workspaceMap.route';
+import { setupSwagger } from './docs/swagger';
+import routerReport from './routes/Reports.route';
 import documentTemplatesRouter from './routes/document.route';
 import generatedDocumentsRouter from './routes/GeneratedDocument.route';
 const cookieParser = require('cookie-parser');
 import userRouter from './routes/user.route';
 import vendorRouter from './routes/vendor.router';
+import router from './routes';
+import { globalAuditMiddleware } from './middlewares/globalAudit.middleware'; 
+import documentRouter from './routes/document.routes';
+import invoiceRouter from './routes/invoice.route';
+import paymentRoutes from './routes/payment.routes';
+import emailTemplateRouter from './routes/emailTemplate.route';
+import driveRoutes from './routes/drive-route';
+import translationRouter from './routes/translation.route';
+import auditLogRouter from './routes/auditLog.route';
+
+
+// import cookieParser from "cookie-parser";
+// const cookieParser = require("cookie-parser")
+// import cookieParser from "cookie-parser";
+// const cookieParser = require("cookie-parser")
 // Create Express app
 const app = express();
 // Apply middlewares
@@ -50,7 +74,7 @@ app.use('/api/leads', routerLead);
 //app.use('/api/contract', routerContract);
 // app.use('/api/translate', translationRouter);
 // Document management routes
-app.use('/api/documents/templates', documentTemplatesRouter);
+app.use('/api/documents/document_template', documentTemplatesRouter);
 app.use('/api/documents/generated', generatedDocumentsRouter);
 app.use('/api/auth',routerAuth);
 // app.use('/api/leadInteraction', routerCstomer);

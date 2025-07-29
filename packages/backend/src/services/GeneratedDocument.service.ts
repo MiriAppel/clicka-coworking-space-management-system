@@ -1,11 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
-import { GeneratedDocument } from '../models/document.model';
+import { GeneratedDocument } from 'shared-types';
 import { DocumentService } from './document.service';
-import { ID, DateISO } from 'shared-types';
+import { ID, DateISO ,FileReference} from 'shared-types';
 import puppeteer from 'puppeteer';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { file } from "googleapis/build/src/apis/file";
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_KEY || "";
@@ -18,7 +19,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 export interface GeneratedDocumentFilter {
   entityId?: ID;
-  customerId?: ID;
   type?: string;
   templateId?: ID;
   deliveredAt?: DateISO;
@@ -108,8 +108,6 @@ export class GeneratedDocumentService {
     templateId: ID,
     entityId: ID,
     variables: Record<string, string>,
-    customerId?: ID,
-
     deliveryMethod?: string
   ): Promise<{ document: GeneratedDocument; filePath: string }> {
     try {
@@ -133,18 +131,19 @@ export class GeneratedDocumentService {
 
       // שמירת המסמך במסד הנתונים
       const documentData: Omit<GeneratedDocument, 'id'> = {
-        customer_id: customerId,
         type: template.type,
         entityId,
+        name: template.name,
         documentNumber,
         templateId,
+        //זה ריק צריך לשנות בהמשך
+        file:{} as FileReference,
         htmlContent: html,
         generatedAt: new Date().toISOString(),
         deliveryMethod
       };
 
       const document = await this.createGeneratedDocument(documentData);
-
       return { document, filePath };
     } catch (error) {
       throw new Error(`שגיאה ביצירת ושמירת מסמך: ${error}`);
@@ -159,7 +158,6 @@ export class GeneratedDocumentService {
       const now = new Date().toISOString();
       
       const documentToInsert = {
-        customer_id: documentData.customer_id,
         type: documentData.type,
         entity_id: documentData.entityId,
         document_number: documentData.documentNumber,
@@ -214,9 +212,6 @@ export class GeneratedDocumentService {
       // הוספת פילטרים
       if (filter.entityId) {
         query = query.eq('entity_id', filter.entityId);
-      }
-      if (filter.customerId) {
-        query = query.eq('customer_id', filter.customerId);
       }
       if (filter.type) {
         query = query.eq('type', filter.type);
@@ -304,8 +299,8 @@ export class GeneratedDocumentService {
 
   private mapGeneratedDocFromDatabase(data: any): GeneratedDocument {
     return {
+      name: data.name,
       id: data.id,
-      customer_id: data.customer_id,
       type: data.type,
       entityId: data.entity_id,
       documentNumber: data.document_number,
@@ -313,7 +308,8 @@ export class GeneratedDocumentService {
       htmlContent: data.html_content,
       generatedAt: data.generated_at,
       deliveredAt: data.delivered_at,
-      deliveryMethod: data.delivery_method
+      deliveryMethod: data.delivery_method,
+      file:data.file
     };
   }
 }

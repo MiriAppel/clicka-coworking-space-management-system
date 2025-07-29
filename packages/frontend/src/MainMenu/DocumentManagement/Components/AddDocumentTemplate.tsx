@@ -465,30 +465,13 @@
 //     </div>
 //   );
 // };
-
-// export default AddDocumentTemplate;
-// תואם לאפיון: כולל name, camelCase, enums חוקיים
-
-// תואם לאפיון: כולל name, camelCase, enums חוקיים
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTemplateStore } from '../../../Stores/DocumentManagement/DocumentTemplateStore';
 import { FaSave, FaArrowLeft, FaPlus, FaMinus, FaEye } from 'react-icons/fa';
-import { DocumentType } from 'shared-types/document'; // או מהנתיב הנכון
+import { DocumentType } from 'shared-types'; // או מהנתיב הנכון
 
-// interface FormData {
-//   customerId: string;
-//   name: string;
-//   type: 'RECEIPT' | 'INVOICE' | 'TAX_INVOICE' | 'CREDIT_NOTE' | 'STATEMENT';
-//   language: 'hebrew' | 'english';
-//   template: string;
-//   variables: string[];
-//   isDefault: boolean;
-//   active: boolean;
-// }
 interface FormData {
-  customerId: string;
   name: string;
   type: DocumentType; // 👈 השתמש ב-enum במקום union type
   language: 'hebrew' | 'english';
@@ -500,17 +483,27 @@ interface FormData {
 const AddDocumentTemplate: React.FC = () => {
   const navigate = useNavigate();
   const { createDocumentTemplate, loading, error, clearError } = useDocumentTemplateStore();
-
-  const [formData, setFormData] = useState<FormData>({
-    customerId: '',
-    name: '',
-    type: DocumentType.RECEIPT, // 👈 במקום 'RECEIPT'
-    language: 'hebrew',
-    template: '',
-    variables: [],
-    isDefault: false,
-    active: true
-  });
+  const currentDocumentTemplate = useDocumentTemplateStore(state => state.currentDocumentTemplate);
+  const [formData, setFormData] = useState<FormData>(  currentDocumentTemplate
+    ? {
+        name: currentDocumentTemplate.name || '',
+        type: currentDocumentTemplate.type || DocumentType.RECEIPT,
+        language: currentDocumentTemplate.language || 'hebrew',
+        template: currentDocumentTemplate.template || '',
+        variables: currentDocumentTemplate.variables || [],
+        isDefault: false, // תמיד לא ברירת מחדל בשכפול
+        active: true
+      }
+    : {
+        name: '',
+        type: DocumentType.RECEIPT,
+        language: 'hebrew',
+        template: '',
+        variables: [],
+        isDefault: false,
+        active: true
+      }
+);
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [newVariable, setNewVariable] = useState('');
@@ -546,7 +539,6 @@ const AddDocumentTemplate: React.FC = () => {
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
-    if (!formData.customerId.trim()) errors.customerId = 'חובה להזין מזהה לקוח';
     if (!formData.name.trim()) errors.name = 'יש להזין שם תבנית';
     if (!formData.template.trim()) errors.template = 'תוכן התבנית נדרש';
     setFormErrors(errors);
@@ -558,7 +550,7 @@ const AddDocumentTemplate: React.FC = () => {
     clearError();
     if (!validateForm()) return;
     try {
-      await createDocumentTemplate(formData);
+      await createDocumentTemplate(formData);      
       alert('התבנית נוצרה בהצלחה!');
       navigate('/document-templates');
     } catch {
@@ -574,14 +566,24 @@ const AddDocumentTemplate: React.FC = () => {
     });
     return previewContent;
   };
-
+useEffect(() => {
+  if (currentDocumentTemplate) {
+    setFormData({
+      name: currentDocumentTemplate.name || '',
+      type: currentDocumentTemplate.type || DocumentType.RECEIPT,
+      language: currentDocumentTemplate.language || 'hebrew',
+      template: currentDocumentTemplate.template || '',
+      variables: currentDocumentTemplate.variables || [],
+      isDefault: false,
+      active: true
+    });
+  }
+}, [currentDocumentTemplate]);
   return (
     <div className="p-6 max-w-6xl mx-auto" dir="rtl">
       <h1 className="text-2xl font-bold mb-4">הוספת תבנית מסמך</h1>
       {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="customerId" placeholder="מזהה לקוח" value={formData.customerId} onChange={handleInputChange} className="w-full p-2 border" />
-        {formErrors.customerId && <p className="text-red-500 text-sm">{formErrors.customerId}</p>}
 
         <input name="name" placeholder="שם תבנית" value={formData.name} onChange={handleInputChange} className="w-full p-2 border" />
         {formErrors.name && <p className="text-red-500 text-sm">{formErrors.name}</p>}
@@ -598,12 +600,21 @@ const AddDocumentTemplate: React.FC = () => {
           <option value="hebrew">עברית</option>
           <option value="english">אנגלית</option>
         </select>
-
+        <a href="https://wordtohtml.net/" className="text-blue-500 hover:underline">ליצירת תוכן תבנית לחץ כאן עצב תוכן והעתק קוד</a>
+         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                                <h4 className="font-semibold text-blue-800 mb-2">עצות לכתיבת תבניות:</h4>
+                                <ul className="text-sm text-blue-700 space-y-1">
+                                    <li>• השתמש ב-{`{{variable_name}}`} להוספת משתנים</li>
+                                    <li>• לדוגמה: שלום {`{{customer_name}}`}, סכום לתשלום: {`{{amount}}`}</li>
+                                    <li>• ודא שהמשתנים מופיעים ברשימת המשתנים</li>
+                                </ul>
+                            </div>
         <textarea name="template" value={formData.template} onChange={handleInputChange} className="w-full h-40 p-2 border" placeholder="תוכן התבנית" />
         {formErrors.template && <p className="text-red-500 text-sm">{formErrors.template}</p>}
 
         <div className="space-y-2">
-          <div className="flex">
+          <h4 className="font-semibold text-gray-800">רשימת המשתנים:</h4>
+          <div className="flex"> 
             <input value={newVariable} onChange={(e) => setNewVariable(e.target.value)} className="flex-1 p-2 border" placeholder="משתנה חדש" />
             <button type="button" onClick={handleAddVariable} className="p-2 bg-green-500 text-white">הוסף</button>
           </div>
