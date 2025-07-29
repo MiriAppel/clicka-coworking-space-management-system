@@ -70,20 +70,31 @@ export class BookingModel implements Booking {
     this.updatedAt = params.updatedAt ?? new Date().toISOString();
   }
   static fromGoogleEvent(event: any): BookingModel {
+    const startTime = event.start?.dateTime || event.start?.date;
+    const endTime = event.end?.dateTime || event.end?.date;
+    
+    // חישוב שעות
+    let totalHours = 0;
+    if (startTime && endTime) {
+      const start = new Date(startTime);
+      const end = new Date(endTime);
+      totalHours = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60) * 100) / 100;
+    }
+    
     return new BookingModel({
       id: randomUUID(),
       roomId: '6e19a553-e8ee-4c75-9046-6b374af4d998',
       roomName: event.location || "לא ידוע",
-      startTime: event.start?.dateTime || event.start?.date,
-      endTime: event.end?.dateTime || event.end?.date,
-      status: BookingStatus.COMPLETED, 
-      totalHours: 0,
-      chargeableHours: 0,
+      startTime,
+      endTime,
+      status: BookingStatus.PENDING,
+      totalHours,
+      chargeableHours: totalHours,
       totalCharge: 0,
       isPaid: false,
       customerId: undefined,
       customerName: undefined,
-      externalUserName: event.creator?.displayName || undefined,
+      externalUserName: event.creator?.displayName || event.summary || undefined,
       externalUserEmail: event.creator?.email || undefined,
       notes: event.description || undefined,
       googleCalendarEventId: event.id,
