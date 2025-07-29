@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import '../Css/workspaceMap.css';
 import { Room, Space, SpaceStatus, WorkspaceType } from 'shared-types';

@@ -42,7 +42,7 @@ import { file } from 'googleapis/build/src/apis/file';
 dotenv.config();
 
 const app = express();
-setupSwagger(app);
+// setupSwagger(app);
 
 app.use(cookieParser());
 app.use(helmet());
