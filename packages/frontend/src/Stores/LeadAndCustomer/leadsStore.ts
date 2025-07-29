@@ -39,7 +39,7 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
     fetchLeads: async () => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch("http://localhost:3001/api/leads"); // כאן אתה משנה לכתובת שלך
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/leads`);
             if (!response.ok) {
                 throw new Error("Failed to fetch leads");
             }
@@ -108,7 +108,7 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
     fetchLeadDetails: async (leadId: string) => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`http://localhost:3001/api/leads/${leadId}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/leads/${leadId}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch lead details");
             }
@@ -131,7 +131,7 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
     //         return;
     //     }
     //     try {
-    //         const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${interactionId}`, {
+    //         const response = await fetch(`${process.env.REACT_APP_API_URL}/leads/${selectedLead.id}/interactions/${interactionId}`, {
     //             method: "DELETE",
     //         });
     //         if (!response.ok) {
@@ -153,7 +153,7 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
     handleCreateInteraction: async (lead: Lead) => {
         try {
             console.log(lead);
-            const response = await fetch(`http://localhost:3001/api/leads/${lead.id}/addInteraction`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/leads/${lead.id}/addInteraction`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -182,7 +182,7 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
             return;
         }
         try {
-            const response = await fetch(`http://localhost:3001/api/leads/${selectedLead.id}/interactions/${interactionId}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/leads/${selectedLead.id}/interactions/${interactionId}`, {
                 method: "DELETE",
             });
             if (!response.ok) {

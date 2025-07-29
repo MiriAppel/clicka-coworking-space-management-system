@@ -43,6 +43,8 @@ interface AssignmentStoreState {
 
 
   // Actions
+    getAllSpaces: () => Promise<Space[]>;
+
   getAssignments: () => Promise<SpaceAssign[]>;
   createAssignment: (assignmentData: Omit<SpaceAssign, 'id'>) => Promise<SpaceAssign>;
   updateAssignment: (id: string | number, assignmentData: Partial<SpaceAssign>) => Promise<SpaceAssign>;
@@ -94,7 +96,20 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       throw error;
     }
   },
-
+getAllSpaces: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await api.get<Space[]>('/workspace/getAllWorkspace');
+      set({ spaces: response.data, loading: false });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error instanceof AxiosError
+        ? error.message
+        : 'An unknown error occurred';
+      set({ error: errorMessage, loading: false });
+      throw error;
+    }
+  },
   /**
    * מביא את כל ההקצאות - משתמש ב-getAllSpaces (שבעצם מביא הקצאות)
    */
