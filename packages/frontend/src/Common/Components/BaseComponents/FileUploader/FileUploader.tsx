@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Card, CardContent, LinearProgress, IconButton, Chip } from '@mui/material';
 import { Upload, X, CheckCircle, AlertCircle, File, Image, FileText, ExternalLink, Copy, CloudUpload } from 'lucide-react';
-import axios from 'axios';
+// import axios from 'axios';
 import { Button as CustomButton } from '../Button';
 import { showAlert } from '../../BaseComponents/ShowAlert';
 import { useTheme } from '../../themeConfig';
