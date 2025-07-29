@@ -84,13 +84,13 @@ export async function refreshAccessToken(refreshToken: string) {
 
     const { access_token, expires_in } = response.data;
     const expiresAt = new Date(Date.now() + expires_in * 1000).toISOString();
-
+    console.log(access_token+'-----------------------');
     return {
       access_token,
       expires_at: expiresAt,
     };
   } catch (error: any) {
-    console.error('error in getting new token from google: ', error.response?.data || error.message);
+    console.error('error in getting new token from google: ', error);
     throw new Error('RefreshTokenError');
   }
 }
