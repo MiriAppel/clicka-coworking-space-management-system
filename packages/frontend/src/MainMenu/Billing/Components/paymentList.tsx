@@ -32,7 +32,7 @@ export const PaymentList = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const fetchPayment = async (
     page: number,

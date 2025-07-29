@@ -14,7 +14,6 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import {
   CustomerStatus,
-  DateISO,
   PaymentMethodType,
   WorkspaceType,
 } from "shared-types";
@@ -52,7 +51,6 @@ export const CustomersList = () => {
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [term, setTerm] = useState("");
 
   const {
     customers,
@@ -107,7 +105,6 @@ export const CustomersList = () => {
 
     const value = e.target.value;
 
-    setTerm(value);
     setSearchTerm(value);
     debouncedSearch(value);
   }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import { Table , TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+import { Table } from "../../../../Common/Components/BaseComponents/Table";
 import { Contract, ContractStatus, ID } from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
@@ -54,6 +54,7 @@ export const ContractManagement = () => {
     fetchContracts().catch((err) =>
       console.error("שגיאה בטעינת חוזים:", err)
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const valuesToTable: ValuesToTable[] = contracts.map((contract) => ({
@@ -128,10 +129,6 @@ export const ContractManagement = () => {
     });
 
     setJustRenewedContracts((prev) => [...prev, row.id]);
-  };
-
-  const addNewContract = () => {
-    navigate("addContract", { state: { mode: "add" } });
   };
 
   const renderActions = (row: ValuesToTable) => {

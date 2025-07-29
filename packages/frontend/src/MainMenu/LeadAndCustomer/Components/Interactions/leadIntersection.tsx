@@ -3,7 +3,6 @@ import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { LeadInteractionDetails } from "./leadInteractionDetails";
 import { SearchLeads } from "../Leads/SearchLeads";
-import { number } from "yargs";
 import { Building2, Calendar, ChevronDown, ChevronUp, FileText, Mail, Phone, ScrollText } from "lucide-react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +11,6 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 export const LeadInteractions = () => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [alertCriterion, setAlertCriterion] = useState<AlertCriterion>("noRecentInteraction");
@@ -34,6 +32,7 @@ const navigate = useNavigate();
     fetchLeads().then(() => {
       allLeadsRef.current = useLeadsStore.getState().leads;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]); // לא fetchLeads – רק page
   useEffect(() => {
     const handleScroll = () => {
@@ -46,6 +45,7 @@ const navigate = useNavigate();
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSearching]);
   const handleRegistration = (lead: Lead | undefined) => {
     if (lead) {
@@ -79,7 +79,7 @@ const navigate = useNavigate();
     return;
   }
   // :white_check_mark: אם אין את כל הלידים טעונים => fallback לשרת
-  fetch(`http://localhost:3001/api/leads/search?q=${term}&status=${status}`)
+  fetch(`${process.env.REACT_APP_API_URL}/leads/search?q=${term}&status=${status}`)
     .then((res) => res.json())
     .then((data: Lead[]) => {
       setIsSearching(true);

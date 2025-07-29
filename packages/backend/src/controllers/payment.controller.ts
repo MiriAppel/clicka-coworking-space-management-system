@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Request, Response } from "express";
 import { PaymentService } from "../services/payments.service";
 import type { ID, Payment } from "shared-types";
@@ -7,14 +6,6 @@ import { sendPaymentProblemEmailInternal} from "../services/payments.service";
 import { UserTokenService } from "../services/userTokenService";
 
 const servicePayment = new PaymentService();
-=======
-// import { Request, Response } from "express";
-// import { PaymentService } from "../services/payments.service";
-// import type { ID, Payment } from "shared-types";
-// import { PaymentModel } from "../models/payments.model";
-
-// const servicePayment = new PaymentService();
->>>>>>> origin/miryam-main
 
 // // קבלת כל התשלומים
 // export const getAllPayments = async (req: Request, res: Response) => {
@@ -47,13 +38,7 @@ const servicePayment = new PaymentService();
 //   }
 // };
 
-<<<<<<< HEAD
-    res.json(payments);
-  } catch (error) {
-    console.error("Controller Error:", error);
-    res.status(500).json({ error: "Failed to fetch payments" });
-  }
-}
+
 
 // קבלת כל התשלומים
 export const getAllPayments = async (req: Request, res: Response) => {
@@ -200,17 +185,6 @@ const paymentService = new PaymentService();
 export const sendPaymentReminder = async (req: Request, res: Response) => {
   try {
     console.log("sendPaymentReminder called with body:", req.body);
-=======
-// // עדכון תשלום
-// export const updatePayment = async (req: Request, res: Response) => {
-//   try {
-//     const updated = await servicePayment.patch(req.body, req.params.id);
-//     res.status(200).json(updated);
-//   } catch (error: any) {
-//     res.status(400).json({ error: error.message });
-//   }
-// };
->>>>>>> origin/miryam-main
 
 // // מחיקת תשלום
 // export const deletePayment = async (req: Request, res: Response) => {
@@ -243,7 +217,6 @@ export const sendPaymentReminder = async (req: Request, res: Response) => {
 //   const filters = req.query;
 //   console.log("Filters received:", filters);
 
-<<<<<<< HEAD
     res.status(200).json({ message: "Payment reminder email sent successfully." });
   } catch (error) {
     console.error("Error in sendPaymentReminder:", error);
@@ -252,24 +225,6 @@ export const sendPaymentReminder = async (req: Request, res: Response) => {
 };
 
 
-=======
-//   try {
-//     // המרה עם בדיקה
-//     const pageNum = Number(filters.page);
-//     const limitNum = Math.max(1, Number(filters.limit) || 10);
-
-//     // אם pageNum לא מספר תקין, תגדיר כברירת מחדל 1
-//     const validPage = Number.isInteger(pageNum) && pageNum > 0 ? pageNum : 1;
-
-//     const filtersForService = {
-//       page: String(validPage), // convert to string
-//       limit: limitNum,
-//     };
-
-//     console.log("Filters passed to service:", filtersForService);
-
-//     const customer = await servicePayment.getPaymentByPage(filtersForService);
->>>>>>> origin/miryam-main
 
 //     if (customer.length > 0) {
 //       res.status(200).json(customer);

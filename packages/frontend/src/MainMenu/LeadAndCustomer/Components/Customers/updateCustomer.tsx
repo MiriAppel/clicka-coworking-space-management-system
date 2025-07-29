@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Customer, CustomerPaymentMethod, WorkspaceType } from "shared-types";
+import { Customer} from "shared-types";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
 import { CustomerRegistrationForm } from "./customerForm";
-import { cu } from "@fullcalendar/core/internal-common";
 
 
 export const UpdateCustomer: React.FC = () => {

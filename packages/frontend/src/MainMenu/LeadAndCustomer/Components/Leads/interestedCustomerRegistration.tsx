@@ -18,7 +18,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
   const lead: Lead | undefined = location.state?.data;
 
   const { createCustomer, loading } = useCustomerStore();
-  const { handleUpdateLead, loading: loadingLead } = useLeadsStore();
+  const { handleUpdateLead } = useLeadsStore();
 
   const onSubmit = async (data: any) => {
     console.log('📧 Form data requireEmailVerification:', data.requireEmailVerification);

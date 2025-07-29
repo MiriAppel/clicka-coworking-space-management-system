@@ -3,7 +3,6 @@ import { LeadAndCustomer } from "./leadAndCustomer";
 import { ContractManagement } from "./Contracts/contractManagement";
 import { ContractDetails } from "./Contracts/contractDetails";
 import { CustomerDashboard } from "./Customers/customerDashboard";
-import { LeadsHomePage } from "./Leads/leadHomePage";
 import { InterestedCustomerRegistration } from "./Leads/interestedCustomerRegistration";
 import { UpdateCustomer } from "./Customers/updateCustomer";
 import { CustomerStatusChanged } from "./Customers/CustomerStatusChanged";

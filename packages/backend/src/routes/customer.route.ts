@@ -1,5 +1,7 @@
 import express from 'express';
-import * as customerController from '../controllers/customer.controller'; 
+import * as customerController from '../controllers/customer.controller';
+import { UserRole } from 'shared-types'; 
+import { authorizeUser } from '../middlewares/authorizeUserMiddleware';
 
 const routerCustomer = express.Router();
 
@@ -10,32 +12,32 @@ routerCustomer.get('/confirm-email/:id/:email', customerController.confirmEmail)
 
 routerCustomer.get('/sendEmailWithContract/:link', customerController.sendContractEmail)
 
-routerCustomer.get('/page', customerController.getCustomersByPage); 
+routerCustomer.get('/page', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), customerController.getCustomersByPage); 
 
-routerCustomer.get('/', customerController.getAllCustomers); 
+routerCustomer.get('/', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), customerController.getAllCustomers); 
 
-routerCustomer.get('/status/all', customerController.getAllCustomerStatus);
+routerCustomer.get('/status/all', authorizeUser([UserRole.ADMIN, UserRole.MANAGER,]), customerController.getAllCustomerStatus);
 
-routerCustomer.get('/notify/:id', customerController.getCustomersToNotify); 
+routerCustomer.get('/notify/:id', authorizeUser([UserRole.ADMIN, UserRole.MANAGER,UserRole.SYSTEM_ADMIN]), customerController.getCustomersToNotify); 
 
-routerCustomer.get('/search', customerController.searchCustomersByText);
+routerCustomer.get('/search', authorizeUser([UserRole.ADMIN, UserRole.MANAGER,UserRole.SYSTEM_ADMIN]), customerController.searchCustomersByText);
 
-routerCustomer.get('/:id', customerController.getCustomerById); 
+routerCustomer.get('/:id', authorizeUser([UserRole.ADMIN, UserRole.MANAGER, UserRole.SYSTEM_ADMIN]), customerController.getCustomerById); 
 
-routerCustomer.get('/:id/payment-methods', customerController.getCustomerPaymentMethods);
+routerCustomer.get('/:id/payment-methods', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), customerController.getCustomerPaymentMethods);
 
 //(POST)
-routerCustomer.post('/:id/exit-notice', customerController.postExitNotice); 
+routerCustomer.post('/:id/exit-notice', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), customerController.postExitNotice); 
 
-routerCustomer.post('/post-customer', customerController.postCustomer); 
+routerCustomer.post('/post-customer', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), customerController.postCustomer); 
 
-routerCustomer.post('/:id/status-change', customerController.changeCustomerStatus)
+routerCustomer.post('/:id/status-change', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), customerController.changeCustomerStatus)
 
 //PATCH/PUT)
 
-routerCustomer.patch('/:id', customerController.patchCustomer); 
+routerCustomer.patch('/:id', authorizeUser([UserRole.ADMIN, UserRole.MANAGER]), customerController.patchCustomer); 
 
-routerCustomer.delete('/:id', customerController.deleteCustomer);
+routerCustomer.delete('/:id', authorizeUser([UserRole.ADMIN]), customerController.deleteCustomer);
 
 export default routerCustomer;
 

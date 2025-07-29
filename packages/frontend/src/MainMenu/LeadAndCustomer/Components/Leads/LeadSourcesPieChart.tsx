@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { ChartDisplay, ChartData } from '../../../../Common/Components/BaseComponents/Graph';
+import { LeadSource } from 'shared-types';
 
 const LeadSourcesPieChart = () => {
-  const { leads } = useLeadsStore();
+  const { leads, fetchLeads, loading } = useLeadsStore();
+  
+  useEffect(() => {
+    fetchLeads();
+  }, [fetchLeads]);
+  
+  // תרגום מקורות לעברית
+  const sourceLabels: Record<LeadSource, string> = {
+    [LeadSource.WEBSITE]: 'אתר אינטרנט',
+    [LeadSource.REFERRAL]: 'הפניה',
+    [LeadSource.SOCIAL_MEDIA]: 'רשתות חברתיות',
+    [LeadSource.EVENT]: 'אירוע',
+    [LeadSource.PHONE]: 'טלפון',
+    [LeadSource.WALK_IN]: 'הגעה ישירה',
+    [LeadSource.EMAIL]: 'אימייל',
+    [LeadSource.OTHER]: 'אחר'
+  };
   
   const sourceCounts: { [key: string]: number } = leads.reduce((acc: { [key: string]: number }, lead) => {
-    acc[lead.source] = (acc[lead.source] || 0) + 1;
+    const sourceLabel = sourceLabels[lead.source] || lead.source;
+    acc[sourceLabel] = (acc[sourceLabel] || 0) + 1;
     return acc;
   }, {});
   
@@ -19,6 +37,17 @@ const LeadSourcesPieChart = () => {
   const mostPopularSource = Object.entries(sourceCounts).reduce((prev, curr) => {
     return (curr[1] > prev[1]) ? curr : prev;
   }, ["", 0]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 mx-auto mb-4"></div>
+          <p className="text-slate-600">טוען נתוני מקורות...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
@@ -97,6 +126,15 @@ const LeadSourcesPieChart = () => {
                 {mostPopularSource[1]} מתעניינים • {((mostPopularSource[1] / totalCount) * 100).toFixed(1)}%
               </p>
             </div>
+          </div>
+        )}
+        
+        {/* Debug Info */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-slate-100 p-4 rounded-lg mb-8">
+            <h4 className="font-medium mb-2">מידע לבדיקה:</h4>
+            <p>סה״כ לידים: {leads.length}</p>
+            <p>מקורות: {JSON.stringify(sourceCounts, null, 2)}</p>
           </div>
         )}
         

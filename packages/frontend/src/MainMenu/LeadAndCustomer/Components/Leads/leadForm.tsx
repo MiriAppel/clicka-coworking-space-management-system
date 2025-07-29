@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,12 +56,12 @@ export const LeadForm = () => {
   });
   const navigate = useNavigate();
 
-  const { watch, setValue, reset } = methods;
+  const { reset } = methods;
 
-  const id = watch("idNumber");
-  const Name = watch("name");
-  const phone = watch("phone");
-  const email = watch("email");
+  // const id = watch("idNumber");
+  // const Name = watch("name");
+  // const phone = watch("phone");
+  // const email = watch("email");
 
   // מילוי אוטומטי לפי אחד מהשדות
   // useEffect(() => {

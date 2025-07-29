@@ -17,9 +17,7 @@ import {
   ScrollText,
   Coins,
   BadgePercent,
-  User,
   Camera,
-  FileDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";

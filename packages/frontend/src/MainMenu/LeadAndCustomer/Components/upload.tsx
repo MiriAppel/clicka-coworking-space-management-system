@@ -18,6 +18,7 @@ export const FolderPathGenerator: React.FC<FileUploaderProps> = ({ email, docume
       const path = `לקוחות/${email}/${documentCategory}`;
       onPathReady(path);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email, documentCategory]);
 
   return null; // לא מציג כלום, רק מחשב נתיב

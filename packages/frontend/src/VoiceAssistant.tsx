@@ -24,7 +24,6 @@ export const VoiceCommand = () => {
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      const wakeWord = "מירי";
 
       console.log("הפקודה שהתקבלה:", transcript);
       handleCommand(transcript);

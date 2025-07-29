@@ -1,7 +1,5 @@
-import { log } from 'console';
 import { CreateCustomerRequest, Customer, CustomerPaymentMethod, CustomerStatus, RecordExitNoticeRequest, StatusChangeRequest } from 'shared-types'; // עדכן את הנתיב אם צריך
 import { create } from 'zustand';
-import { showAlert } from '../../Common/Components/BaseComponents/ShowAlert';
 
 interface CustomerStore {
     customersPage: Customer[]; //כל פעם גם משתנה זה מתעדכן עם הלקוחות של העמוד הזה כדי שבחיפוש יחפשו מתוך הרשימה הזו

@@ -47,8 +47,8 @@ setupSwagger(app);
 app.use(cookieParser());
 app.use(helmet());
 app.use(cors({
-  origin: [process.env.CORS_ORIGIN || 'http://localhost:3000', 'https://57737495d7dc.ngrok-free.app'],
-  credentials: true,
+  origin: process.env.CORS_ORIGIN || process.env.REACT_APP_API_URL_FE, // Adjust as needed
+  credentials: true, // Allow cookies to be sent with requests
 }));
 app.use(morgan('dev'));
 app.use(express.json());
@@ -93,6 +93,19 @@ app.get('/api/health', (req, res) => {
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
+  res.status(err.status || 500).json({
+    success: false,
+    error: {
+      code: err.code || 'INTERNAL_SERVER_ERROR',
+      message: err.message || 'An unexpected error occurred',
+      details: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    }
+  });
+});
+// Error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.log(err);
+  console.log(req);
   res.status(err.status || 500).json({
     success: false,
     error: {

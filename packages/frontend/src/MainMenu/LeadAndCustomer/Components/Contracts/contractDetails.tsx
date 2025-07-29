@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { Contract, ContractStatus, FileReference, WorkspaceType } from "shared-types";
+import { Contract, ContractStatus, WorkspaceType } from "shared-types";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useContractStore } from "../../../../Stores/LeadAndCustomer/contractsStore";
 import { Pencil, Trash } from "lucide-react";

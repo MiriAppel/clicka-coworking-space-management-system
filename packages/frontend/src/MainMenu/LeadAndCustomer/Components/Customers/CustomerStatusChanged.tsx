@@ -90,7 +90,6 @@ export const CustomerStatusChanged: React.FC = () => {
     fetchCustomerById,
     changeCustomerStatus,
     loading,
-    error,
   } = useCustomerStore();
 
   //  if (!customerId) return null;

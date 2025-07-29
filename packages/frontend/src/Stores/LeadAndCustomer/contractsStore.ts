@@ -1,4 +1,4 @@
-import { Contract, FileReference, ID } from "shared-types";
+import { Contract} from "shared-types";
 import { create } from "zustand";
 
 interface ContractStore {

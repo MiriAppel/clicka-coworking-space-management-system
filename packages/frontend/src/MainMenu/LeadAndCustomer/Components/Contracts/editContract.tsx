@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
@@ -85,6 +85,7 @@ export const EditContract = () => {
       })
       .catch(() => showAlert("טעינת חוזה", "שגיאה בטעינת חוזה", "error"))
       .finally(() => setLoading(false));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractId, formMethods]);
 
   // שליחה

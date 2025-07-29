@@ -1,5 +1,5 @@
 // ייבוא React ורפרנס לתפיסת אלמנט מה-DOMAdd commentMore actions
-import React, { useRef } from 'react';
+import React, { } from 'react';
 // ייבוא כפתור מעוצב מקומפוננטה פנימית
 import { Button } from './Button';
 // ייבוא ספרייה לצילום תוכן HTML לתמונה

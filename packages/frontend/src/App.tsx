@@ -1,23 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import './App.css';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { AuthProvider } from './MainMenu/CoreAndIntegration/Components/Login/AuthProvider';
 import { Accesibility } from './Common/Components/BaseComponents/Accesibility';
-import { Button } from './Common/Components/BaseComponents/Button';
-import { DynamicReportBuilder } from './Common/Components/BaseComponents/DynamicReportBuilder';
-import LanguageSelector from './Common/Components/LanguageSelector';
 import { VoiceCommand } from './VoiceAssistant';
 
 import PricingConfigurationPage from './MainMenu/Billing/Components/Pricing/PricingConfigurationPage';
-import ClientSearchAndSelect from './MainMenu/LeadAndCustomer/Components/upload';
-import FileUploader from './Common/Components/BaseComponents/FileUploader';
 
 function App() {
-  const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  // const [healthStatus, setHealthStatus] = useState<{ status: string; timestamp: string } | null>(null);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState<string | null>(null);
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const lang = localStorage.getItem('language') || 'he';
@@ -32,14 +27,14 @@ function App() {
         }
         return response.json();
       })
-      .then((data) => {
-        setHealthStatus(data);
-        setLoading(false);
-      })
+      // .then((data) => {
+      //   // setHealthStatus(data);
+      //   // setLoading(false);
+      // })
       .catch((err) => {
         console.error('Error fetching API health:', err);
-        setError('Could not connect to API server. Make sure it is running.');
-        setLoading(false);
+        // setError('Could not connect to API server. Make sure it is running.');
+        // setLoading(false);
       });
   }, []);
 
@@ -56,14 +51,7 @@ function App() {
         <h1>Clicka</h1>
         <h2>Co-working Space Management System</h2>
       </header>
-{/* <Button
-  onClick={() => navigate('/graph')}
-  
-  className="mb-4 bg-green-500 text-white px-4 py-2 rounded"
->
- 
-  graph
-</Button> */}
+
       <div className='menu' style={{ backgroundColor: 'black' }}>
       </div>
      
@@ -73,6 +61,8 @@ function App() {
           {/* אפשר להוסיף כאן ראוטים נוספים */}
         </Routes>
         <AuthenticationScreen />
+        
+
       </div>
     </AuthProvider>
 

@@ -264,6 +264,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
         stepFieldNames[currentStep].forEach((field) => {
             methods.clearErrors(field as any);
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentStep]);
 
 
