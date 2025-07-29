@@ -3,10 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import App from './App';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
 import { ProtectedRoute } from './MainMenu/CoreAndIntegration/Components/Login/ProtectedRoute';
-
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
-import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
-import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import { getAllVendors } from './Api/vendor-api';
@@ -37,6 +34,8 @@ import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import DocumentUpload from './MainMenu/CoreAndIntegration/Components/DocumentUpload';
 import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 import { RoomManager } from './MainMenu/Workspace/Components/RoomManager';
+import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
+import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 
 export const Routing = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
