@@ -1,14 +1,13 @@
-import  { useState } from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
+import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
+import { ProtectedRoute } from './MainMenu/CoreAndIntegration/Components/Login/ProtectedRoute';
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
-import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
+import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import { Vendor } from 'shared-types';
-import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
-import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
-import MainLayout from './layout/MainLayout';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import { PaymentList } from './MainMenu/Billing/Components/paymentList';
@@ -17,15 +16,16 @@ import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
 // import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
-import { EmailTemplateTable } from "./MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates";
 import { SendEmail } from './MainMenu/CoreAndIntegration/Components/SendEmail/SendEmail';
-// import EmailConfirmationPage from './MainMenu/LeadAndCustomer/Components/Leads/EmailConfirmationPage';
+import { EmailTemplateTable } from './MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates';
 import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLogTable';
 import PricingHomePage from './MainMenu/Billing/Components/Pricing/PricingHomePage';
 import PricingSectionPage from './MainMenu/Billing/Components/Pricing/PricingSectionPage';
 import { InvoiceManagement } from './MainMenu/Billing/Components/invoice-generation-engine/InvoiceManagement';
 import { Collection } from './MainMenu/Billing/Components/invoice-generation-engine/collection';
-import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
+import { RegisterUser } from './MainMenu/CoreAndIntegration/Components/Login/registerUser';
+import { VendorForm } from './MainMenu/Billing/Components/Vendor-management/VendorForm';
+
 import { BookingTable } from './MainMenu/Workspace/Components/bookingTable';
 import { UpdateBooking } from './MainMenu/Workspace/Components/updateBooking';
 import { Report } from './MainMenu/Workspace/Components/report';
@@ -33,14 +33,27 @@ import { AssigmentTable } from './MainMenu/Workspace/Components/assigenmentTable
 import { UpdateAssigenment } from './MainMenu/Workspace/Components/updateAssigenment';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import DocumentUpload from './MainMenu/CoreAndIntegration/Components/DocumentUpload';
+import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 import { RoomManager } from './MainMenu/Workspace/Components/RoomManager';
+import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
+import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 
 export const Routing = () => {
-    const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
   return (
     <Routes>
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<App />} />
+
+      <Route path="/auth" element={<AuthenticationScreen />} />
+
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <App />
+          </ProtectedRoute>
+        }
+      >
+        {/* Rutas hijas que se renderizan dentro de <Outlet /> en App */}
         <Route path="leadAndCustomer" element={<LeadAndCustomer />} />
         <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
         <Route path="billing/*" element={<BillingRouting />} />
@@ -73,12 +86,17 @@ export const Routing = () => {
         <Route path="/pricing/lounge" element={<PricingSectionPage type="lounge" />} />
         <Route path="/managementWorkspace" element={<ManagementWorkspace />} />
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
-        <Route path="/occupancyReports" element={<Report  />} />
+        <Route path="/occupancyReports" element={<Report />} />
         <Route path="/billing/collection" element={< Collection />} />
                 <Route path="/rooms" element={<RoomManager />} />
         <Route path="/petty-cash" element={<PettyCashPage />} />
         <Route path="/documentUpload" element={< DocumentUpload />} />
+        <Route path="/registerUser" element={<RegisterUser />} />
+
       </Route>
+
+
+      <Route path="*" element={<div>404 - page not found</div>} />
     </Routes>
   );
 };

@@ -673,7 +673,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               backgroundColor: theme.colors.neutral[0]
             }}>
               <CustomButton
-
                 variant="secondary"
                 size="md"
                 disabled={files.filter(f => f.status === 'pending' || f.status === 'error').length === 0}
