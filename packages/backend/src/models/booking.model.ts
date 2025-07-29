@@ -70,7 +70,7 @@ export class BookingModel implements Booking {
   }
   static fromGoogleEvent(event: any): BookingModel {
     return new BookingModel({
-      roomId: "unknown-room-id", // אם אין לך מזהה חדר, שימי זמני
+      roomId: '6e19a553-e8ee-4c75-9046-6b374af4d998',
       roomName: event.location || "לא ידוע",
       startTime: event.start?.dateTime || event.start?.date,
       endTime: event.end?.dateTime || event.end?.date,
