@@ -20,7 +20,7 @@ function App() {
     document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
   }, []);
   useEffect(() => {
-    fetch('http://localhost:3001/api/health')
+    fetch(`${process.env.REACT_APP_API_URL}/health`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('API server not responding');

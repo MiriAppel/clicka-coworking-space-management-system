@@ -7,10 +7,9 @@ import {
   TableColumn,
 } from "../../../Common/Components/BaseComponents/Table";
 import { NavLink } from "react-router";
-
+import axios from "axios";
 import { Stack, TextField } from "@mui/material";
 import { Button } from "../../../Common/Components/BaseComponents/Button";
-import axiosInstance from "../../../Service/Axios";
 
 interface ValuesToTable {
   id: string;
@@ -33,6 +32,8 @@ export const PaymentList = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const fetchPayment = async (
     page: number,
     limit: number,
@@ -40,9 +41,12 @@ export const PaymentList = () => {
   ) => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get('/payment/by-page', {
-        params: { page, limit },
-      });
+      const response = await axios.get(
+        `${API_URL}/api/payment/by-page`,
+        {
+          params: { page, limit },
+        }
+      );
 
       const data: Payment[] = response.data;
 
@@ -172,8 +176,8 @@ export const PaymentList = () => {
                 ) {
                   console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
 
-                  axiosInstance
-                    .get("/payment/search", {
+                  axios
+                    .get(`${API_URL}/api/payment/search`, {
                       params: { text: searchTerm },
                     })
                     .then((response) => {

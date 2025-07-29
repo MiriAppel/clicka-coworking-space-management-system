@@ -46,4 +46,4 @@ export const Default: Story = {
       </FormProvider>
     );
   },
-};
+}

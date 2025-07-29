@@ -16,7 +16,7 @@ export const usePaymentStore = create<PaymentState>((set) => ({
     
     getAllPayments: async () => {
         try {
-            const response = await axios.get("http://localhost:3001/payments");
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/payments`);
             set(() => ({ payments: response.data }));
         } catch (error) {
             console.error("שגיאה בשליפת תשלומים:", error);

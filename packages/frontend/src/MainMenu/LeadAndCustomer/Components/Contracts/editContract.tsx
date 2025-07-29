@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
@@ -21,6 +21,7 @@ const statusLabels = {
   ACTIVE: "פעיל",
   EXPIRED: "פג תוקף",
   TERMINATED: "הסתיים",
+  RENEWED: "חודש"
 } satisfies Record<ContractStatus, string>;
 
 // תוויות סוג חלל עבודה
@@ -35,7 +36,7 @@ const workspaceTypeLabels = {
   WALL: "קיר",
   COMPUTER_STAND: "עמדת מחשב",
   RECEPTION_DESK: "דלפק קבלה",
-  BASE: "בסיס",
+  BASE: "בסיס"
 } satisfies Record<WorkspaceType, string>;
 
 // סכימת אימות Zod
@@ -84,7 +85,8 @@ export const EditContract = () => {
       })
       .catch(() => showAlert("טעינת חוזה", "שגיאה בטעינת חוזה", "error"))
       .finally(() => setLoading(false));
-  }, [contractId, formMethods,fetchContractDetails]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractId, formMethods]);
 
   // שליחה
   const handleSubmit = async (data: ContractFormData) => {

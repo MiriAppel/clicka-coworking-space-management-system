@@ -33,6 +33,7 @@ export const globalAuditMiddleware = async (
 
 async function logAuditAsync(req: AuthenticatedRequest, res: Response, responseData: any) {
   try {
+    console.log(responseData);
     const auditService = new AuditLogService();
     // Identifying the function from the URL
     const functionName = extractFunctionFromUrl(req.baseUrl, req.method);
@@ -76,6 +77,8 @@ function extractFunctionFromUrl(path: string, method: string): string {
   // Examples
   // POST /api/users -> createUser
   // PUT /api/users/123 -> updateUser
+  // DELETE /api/users/123 -> deleteUser
+  // POST /api/vendors -> createVendor
   console.log(path);
 
   const parts = path.split('/').filter(p => p && p !== 'api');
