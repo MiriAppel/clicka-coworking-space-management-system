@@ -78,8 +78,8 @@ export interface Invoice {
   // billingPeriodStart :DateISO
   // billingPeriodEnd :DateISO
   // templateId:ID 
-  createdAt: DateISO;
-  updatedAt: DateISO;
+  created_at: DateISO;
+  updated_at: DateISO;
 }
 
 // Payment model
@@ -235,3 +235,5 @@ export enum PaymentStatus {
   FAILED = 'FAILED',
   CANCELED = 'CANCELED'
 }
+
+

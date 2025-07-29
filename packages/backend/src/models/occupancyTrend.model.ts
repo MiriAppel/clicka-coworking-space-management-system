@@ -1,9 +1,8 @@
-// import { TimePeriod,  StatusOccupancy, WorkSpaceType } from 'frontend/occupancy';
+
 import { ID, DateISO } from 'shared-types/core';
-import { OccupancyTrend, OccupancyAlert, TimePeriod, StatusOccupancy, WorkSpaceType }from 'shared-types/occupancy'
+import { OccupancyTrend, TimePeriod, StatusOccupancy, WorkSpaceType }from 'shared-types/occupancy'
 
 export class OccupancyTrendModel implements OccupancyTrend {
-  // ---- OccupancyTrend ----
  id?:ID;
   period: TimePeriod;
   roomId: string;
@@ -16,7 +15,6 @@ export class OccupancyTrendModel implements OccupancyTrend {
   peakOccupancy: number;
   lowOccupancy: number;
   growthRate: number;
-  // ---- OccupancyAlert ----
   type: StatusOccupancy;
   threshold: number;
   currentValue: number;

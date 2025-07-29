@@ -1,5 +1,5 @@
 // workspace-types.d.ts
-import { ID, DateISO, ApiResponse, PaginatedResponse } from './core';
+import { ID, DateISO } from './core';
 import { WorkspaceType } from './customer';
 
 // Space status enum
@@ -8,7 +8,8 @@ export enum SpaceStatus {
   OCCUPIED = 'OCCUPIED',
   RESERVED = 'RESERVED',
   MAINTENANCE = 'MAINTENANCE',
-  INACTIVE = 'INACTIVE'
+  INACTIVE = 'INACTIVE',
+  NONE = 'NONE',
 }
 
 // Space model
@@ -18,13 +19,14 @@ export interface Space {
   description?: string;
   type: WorkspaceType;
   status: SpaceStatus;
-  room?: string;
+  workspaceMapId?: ID
   currentCustomerId?: ID;
   currentCustomerName?: string;
   positionX: number;
   positionY: number;
   width: number;
   height: number;
+  location?: string;
   createdAt: DateISO;
   updatedAt: DateISO;
 }

@@ -1,5 +1,4 @@
 import type{ DateISO, Expense, ExpenseCategory, ExpensePaymentMethod, ExpenseStatus, FileReference, ID } from "shared-types";
-
 export class ExpenseModel implements Expense {
   id: ID;
   vendor_id: ID;
@@ -18,11 +17,10 @@ export class ExpenseModel implements Expense {
   invoice_file?: FileReference;
   receipt_file?: FileReference;
   notes?: string;
-  approved_by?: ID; 
-  approvedAt?: DateISO; 
+  approved_by?: ID;
+  approvedAt?: DateISO;
   createdAt: DateISO;
   updatedAt: DateISO;
-
   constructor(
     id: ID,
     vendor_id: ID,
@@ -99,9 +97,39 @@ invoice_file: this.invoice_file,
 receipt_file: this.receipt_file,
 notes: this.notes,
 approved_by: this.approved_by,
-approvedAt: this.approvedAt,
-createdAt: this.createdAt,
-updatedAt: this.updatedAt,
+approved_at: this.approvedAt,
+created_at: this.createdAt,
+updated_at: this.updatedAt,
 };
 }
+static fromDatabaseFormat(dbData: any): ExpenseModel {
+    return new ExpenseModel(
+      dbData.id,
+      dbData.vendor_id,
+      dbData.vendor_name,
+      dbData.category,
+      dbData.description,
+      dbData.amount,
+      dbData.tax,
+      dbData.date,
+      dbData.due_date,
+      dbData.paid_date,
+      dbData.status,
+      dbData.payment_method,
+      dbData.reference,
+      dbData.invoice_number,
+      dbData.invoice_file,
+      dbData.receipt_file,
+      dbData.notes,
+      dbData.approved_by,
+      dbData.approved_at,
+      dbData.created_at,
+      dbData.updated_at,
+    );
+  }
+
+  static fromDatabaseFormatArray(dbDataArray: any[]): ExpenseModel[] {
+    return dbDataArray.map(dbData => ExpenseModel.fromDatabaseFormat(dbData));
+  }
+
 }

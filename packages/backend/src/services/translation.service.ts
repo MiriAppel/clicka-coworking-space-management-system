@@ -1,11 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
-import { Translation } from 'shared-types';
 import { translateText } from '../utils/translate';
 import { supportedLanguages } from 'shared-types';
-import dotenv from 'dotenv';
 import { TranslationModel } from '../models/TranslationRecord';
 
-dotenv.config();
 
 // יצירת לקוח Supabase
 const supabaseUrl = process.env.SUPABASE_URL || '';
@@ -31,15 +28,13 @@ export class TranslationService {
             console.error('Error fetching by key:', error);
             return [];
         }
-
+        console.log(data);
+        
         return data as TranslationModel[];
     }
 
     // פונקציה לקבלת תרגומים לפי שפה
     async getByLang(lang: string): Promise<TranslationModel[]> {
-        if (!isLanguage(lang)) {
-            throw new Error(`Invalid language: ${lang}`);
-        }
 
         const { data, error } = await supabase
             .from('translations')
@@ -50,7 +45,7 @@ export class TranslationService {
             console.error('Error fetching by language:', error);
             return [];
         }
-
+        console.log(data);
         return data as TranslationModel[];
     }
 
@@ -63,7 +58,7 @@ export class TranslationService {
         const langsToTranslate = supportedLanguages.filter(l => l !== lang);
         if (existing.length > 0) {
             console.log('its exists already');
-            return [];
+            return existing;
         }
 
         let translatedText = '';
@@ -75,7 +70,7 @@ export class TranslationService {
         const newTranslations: TranslationModel[] = [];
 
         const alreadyExists = existing.find(e => e.en === translatedText || e.he === translatedText);
-        let translation: TranslationModel;
+        let translation: TranslationModel = undefined!;
         if (!alreadyExists) {
             if (lang === 'en') {
                  translation = new TranslationModel(
@@ -103,14 +98,15 @@ export class TranslationService {
         const { error } = await supabase
             .from('translations')
             .insert([translation!.toDatabaseFormat()]);
-        console.log('Inserting translations:', newTranslations);
+        console.log('Inserting translations:', translation!.toDatabaseFormat());
 
         if (error) {
             console.error('Error inserting translations:', error);
             return [];
         }
-
-        return newTranslations;
+        console.log(newTranslations);
+        
+        return translation ? [translation] : [];
     }
 }
 

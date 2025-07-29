@@ -1,6 +1,5 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { RoomModel } from "../models/room.model";
 import type { ID, PricingTier } from "shared-types";
 import { WorkspaceModel } from '../models/workspace.model'
 import dotenv from 'dotenv';
@@ -15,16 +14,14 @@ function logUserActivity(userId: string, action: string) {
   console.log(`[Activity Log] ${userId}: ${action}`);
 }
 export class WorkspaceService {
-  async createWorkspace(Workspace: WorkspaceModel): Promise<WorkspaceModel | null> {
-    console.log('📦 Inserting Workspace:', Workspace.toDatabaseFormat());
-    const { data, error } = await supabase
-      .from('workspace')
-      .insert([Workspace.toDatabaseFormat()])
-      .select()
-      .single();
-
-
-    if (error) {
+async  createWorkspace(Workspace: WorkspaceModel): Promise<WorkspaceModel | null> {
+        console.log('📦 Inserting Workspace:', Workspace.toDatabaseFormat());
+        const { data, error } = await supabase
+          .from('workspace')
+          .insert([Workspace.toDatabaseFormat()])
+          .select()
+          .single();
+       if (error) {
       console.log('❌ Supabase Insert Error:', error); // ✅ הוספתי הדפסה מפורטת
       throw new Error(`Failed to create workspace: ${error.message}`);
     }
@@ -53,7 +50,7 @@ export class WorkspaceService {
     }
   }
 
-  async getPricingTiersByWorkspaceType(workspaceType: string): Promise<PricingTier[] | null> {
+async getPricingTiersByWorkspaceType(workspaceType: string): Promise<PricingTier[] | null> {
     const { data, error } = await supabase
       .from('pricing_tiers') // שם הטבלה שבה מאוחסנות מדרגות התמחור
       .select('*')
@@ -68,6 +65,7 @@ export class WorkspaceService {
     const pricingTiers = data.map(tier => PricingTierModel.fromDatabaseFormat(tier));
     return pricingTiers;
   }
+
 
 
   //עדכון חדר
@@ -144,6 +142,7 @@ export class WorkspaceService {
     return workspaces;
   }
 
+  
   //טיפול בכשלים באינטגרציה עם יומן גוגל
   //יש לבדוק אם ההרשאות תקינות ואם TOKEN בתוקפו 
   //וכן יש לבדוק אם הפגשיה נשמרת

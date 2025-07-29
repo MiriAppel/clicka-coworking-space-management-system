@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import { calculateBillingForCustomer, calculateBillingForAllCustomers } from '../services/billingCalcullation.services';
-import { getAllCustomers } from '../controllers/customer.controller';
 
 const billingRouter = express.Router();
 

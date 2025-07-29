@@ -1,5 +1,4 @@
-import type{  DateISO, ID } from "shared-types/core";
-import {Booking,BookingStatus} from 'shared-types/booking'
+import { Booking, BookingStatus, DateISO, ID } from "shared-types";
 
 export class BookingModel implements Booking {
   id?: ID;
@@ -14,7 +13,7 @@ export class BookingModel implements Booking {
   endTime: DateISO;
   status: BookingStatus;
   notes?: string;
-  googleCalendarEventId?: string;
+  googleCalendarEventId?: string | null;
   totalHours: number;
   chargeableHours: number;
   totalCharge: number;
@@ -25,7 +24,7 @@ export class BookingModel implements Booking {
   updatedAt: DateISO;
 
   constructor(params: {
-    id: ID;
+    id?: ID;
     roomId: ID;
     roomName: string;
     startTime: DateISO;
@@ -47,7 +46,7 @@ export class BookingModel implements Booking {
     createdAt?: DateISO;
     updatedAt?: DateISO;
   }) {
-    this.id = params.id;
+    this.id = params.id || undefined;
     this.roomId = params.roomId;
     this.roomName = params.roomName;
     this.customerId = params.customerId;
@@ -64,14 +63,38 @@ export class BookingModel implements Booking {
     this.chargeableHours = params.chargeableHours ?? 0;
     this.totalCharge = params.totalCharge ?? 0;
     this.isPaid = params.isPaid ?? false;
-    this.approvedBy = params.approvedBy;
-    this.approvedAt = params.approvedAt;
+    this.approvedBy = params.approvedBy || undefined;
+    this.approvedAt = params.approvedAt || undefined;
     this.createdAt = params.createdAt ?? new Date().toISOString();
     this.updatedAt = params.updatedAt ?? new Date().toISOString();
   }
+  static fromGoogleEvent(event: any): BookingModel {
+    return new BookingModel({
+      roomId: "unknown-room-id", // אם אין לך מזהה חדר, שימי זמני
+      roomName: event.location || "לא ידוע",
+      startTime: event.start?.dateTime || event.start?.date,
+      endTime: event.end?.dateTime || event.end?.date,
+      status: BookingStatus.COMPLETED, 
+      totalHours: 0,
+      chargeableHours: 0,
+      totalCharge: 0,
+      isPaid: false,
+      customerId: undefined,
+      customerName: undefined,
+      externalUserName: event.creator?.displayName || undefined,
+      externalUserEmail: event.creator?.email || undefined,
+      notes: event.description || undefined,
+      googleCalendarEventId: event.id,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+
 
   toDatabaseFormat() {
     return {
+      id: this.id,
       room_id: this.roomId,
       room_name: this.roomName,
       customer_id: this.customerId,
@@ -83,28 +106,44 @@ export class BookingModel implements Booking {
       end_time: this.endTime,
       status: this.status,
       notes: this.notes,
-      is_paid:this.isPaid,
-}}
-     static fromDatabaseFormat(dbData: any): BookingModel {
-        return new BookingModel({
-            id: dbData.id,
-            roomId: dbData.room_id,
-            roomName: dbData.room_name,
-            customerId: dbData.customer_id,
-            customerName: dbData.customer_name,
-            externalUserName: dbData.external_user_name,
-            externalUserEmail: dbData.external_user_email,
-            externalUserPhone: dbData.external_user_phone,
-            startTime: dbData.start_time,
-            endTime: dbData.end_time,
-            status: dbData.status,
-            notes: dbData.notes,
-            googleCalendarEventId: dbData.google_calendar_event_id,
-            isPaid: dbData.is_paid,
-            totalHours: dbData.total_hours,
-        });
+      google_calendar_event_id: this.googleCalendarEventId,
+      total_hours: this.totalHours,
+      chargeable_hours: this.chargeableHours,
+      total_charge: this.totalCharge,
+      is_paid: this.isPaid,
+      approved_by: this.approvedBy,
+      approved_at: this.approvedAt,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt,
+
     }
-    static fromDatabaseFormatArray(dbDataArray: any[] ): BookingModel[] {
-        return dbDataArray.map(dbData => BookingModel.fromDatabaseFormat(dbData));
-    }
+  }
+  static fromDatabaseFormat(dbData: any): BookingModel {
+    return new BookingModel({
+      id: dbData.id,
+      roomId: dbData.room_id,
+      roomName: dbData.room_name,
+      customerId: dbData.customer_id,
+      customerName: dbData.customer_name,
+      externalUserName: dbData.external_user_name,
+      externalUserEmail: dbData.external_user_email,
+      externalUserPhone: dbData.external_user_phone,
+      startTime: dbData.start_time,
+      endTime: dbData.end_time,
+      status: dbData.status,
+      notes: dbData.notes,
+      googleCalendarEventId: dbData.google_calendar_event_id,
+      isPaid: dbData.is_paid,
+      totalHours: dbData.total_hours,
+      chargeableHours: dbData.chargeable_hours,
+      totalCharge: dbData.total_charge,
+      approvedBy: dbData.approved_by,
+      approvedAt: dbData.approved_at,
+      createdAt: dbData.created_at,
+      updatedAt: dbData.updated_at,
+    });
+  }
+  static fromDatabaseFormatArray(dbDataArray: any[]): BookingModel[] {
+    return dbDataArray.map(dbData => BookingModel.fromDatabaseFormat(dbData));
+  }
 }

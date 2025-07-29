@@ -4,7 +4,6 @@ import { serviceCreateInvoice } from '../services/invoice.service'; // ייבו�
 import { customerService } from '../services/customer.service';
 import { VAT_RATE } from '../constants'; // אחוז המע"מ
 import { CustomerModel } from '../models/customer.model'; // מבנה לקוח
-import { createInvoice } from '../controllers/invoice.controller'; // בקר יצירת חשבונית
 const serviceCustomer = new customerService();
 console.log('billing-cron.ts loaded!');
 // פונקציות עזר לחישוב תאריכים

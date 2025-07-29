@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import { Lead, LeadSource, LeadStatus, InteractionType , WorkspaceType } from "shared-types";
 
@@ -19,7 +19,7 @@ export const DetailsOfTheLead = () => {
         email: 'yossi@example.com',
         businessType: 'סטארטאפ',
         interestedIn: [
-            WorkspaceType.PRIVATE_ROOM,
+            WorkspaceType.PRIVATE_ROOM1,
             WorkspaceType.DESK_IN_ROOM
         ],
         source: LeadSource.WEBSITE,
@@ -86,3 +86,6 @@ export const DetailsOfTheLead = () => {
     </div>
 
 }
+
+
+

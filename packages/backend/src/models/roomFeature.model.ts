@@ -1,5 +1,5 @@
-import { ID } from "../../../shared-types/core";
-import { Room,RoomFeature } from "../../../../types/booking";
+import { ID } from "shared-types";
+import { RoomFeature } from "shared-types";
 
 export class RoomFeatureModel implements RoomFeature {
   id?: ID;
@@ -8,12 +8,12 @@ export class RoomFeatureModel implements RoomFeature {
   additionalCost: number;
 
    constructor(params: {
-    id: ID;
+    id?:ID;
     description?: string;
     IsIncluded: boolean;
     additionalCost: number;
    }) {
-    this.id = params.id;
+    this.id = params.id?? crypto.randomUUID();;
     this.description = params.description;
     this.IsIncluded = params.IsIncluded;
     this.additionalCost = params.additionalCost; 

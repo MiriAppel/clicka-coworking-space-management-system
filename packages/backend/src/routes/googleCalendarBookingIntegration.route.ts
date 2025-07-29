@@ -1,24 +1,13 @@
-import { Router } from 'express';
-import * as CalanderController from '../controllers/googleCalendarBookingIntegration.controller';
+import express from 'express'
+import * as calendarSyncController from '../controllers/googleCalendarBookingIntegration.controller'
 
-const router = Router();
+const routerSync = express.Router()
+routerSync.get('/all/:calendarId', calendarSyncController.getAllCalendarSync.bind(calendarSyncController))
+routerSync.get('/get/:id', calendarSyncController.getCalendarSyncById.bind(calendarSyncController))
+// routerSync.post('/post-sync', calendarSyncController.createCalendarSync.bind(calendarSyncController))
+routerSync.post('/add/:calendarId', calendarSyncController.createCalendarEvent.bind(calendarSyncController));
+// routerSync.patch('/update/:id', calendarSyncController.updateCalendarSync.bind(calendarSyncController))
+routerSync.delete('/delete/:id', calendarSyncController.deleteCalendarSyncByEventId.bind(calendarSyncController))
+routerSync.post("/webhook", calendarSyncController.handleGoogleCalendarWebhook.bind(calendarSyncController));
 
-// post
-router.post('/createSync', CalanderController.createCalendarSync);
-router.post('/create', CalanderController.createCalendarEvent);
-
-// get
-router.get('/Allevents/:calendarId', CalanderController.getGoogleCalendarEvents);
-router.get('/byRoom/:roomId', CalanderController.getCalendarByRoom);
-// put/patch
-
-router.put("/conflicts",CalanderController.detectCalendarConflicts)
-// router.put('/solveConflict', CalanderController.solveCalendarConflict);
-router.put('/update',CalanderController.updateEventOnChangeBooking)
-router.put('/updateSync',CalanderController.updateCalendarSync);
-router.put('/managePermissions', CalanderController.manageCalendarPermissions);
-router.put('/share', CalanderController.shareCalendar);
-// delete
-router.delete('/event', CalanderController.deleteEvent);
-router.delete('/enentSync/:eventId', CalanderController.deleteCalendarSyncByEventId);
-export default router;
+export default routerSync

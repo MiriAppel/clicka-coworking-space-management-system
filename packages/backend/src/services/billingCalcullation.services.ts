@@ -4,20 +4,14 @@
 // מבצעת פרורציה אם צריך.
 // מחשבת סה"כ, מע"מ, וסה"כ לתשלום.
 // מחזירה פירוט לכל חלל ולחשבונית.
-import { v4 as uuidv4 } from 'uuid'; // ייבוא UUID
 import { PricingTier, ID, DateISO, BillingItemType, InvoiceStatus, WorkspaceType, SpaceStatus } from '../../../shared-types'; // ייבוא טיפוסים רלוונטיים
-import { MeetingRoomPricing } from '../../../shared-types/pricing'; // ייבוא טיפוס תמחור חדרי ישיבות
 import { differenceInCalendarDays, startOfMonth, endOfMonth } from 'date-fns'; // פונקציות עזר לתאריכים
 import { VAT_RATE } from '../constants'; // קבוע מע"מ
 import { InvoiceItemModel, InvoiceModel } from '../models/invoice.model'; // מודלים של חשבונית ופריט חשבונית
-import { generateId } from '../models/invoice.mock-db'; // פונקציה ליצירת מזהה ייחודי
 import { customerService } from './customer.service'; // שירות לשליפת לקוחות
 import { BookingService } from '../services/booking.service';
-import { UUID } from 'crypto';
 import { serviceCreateInvoice, serviceCreateInvoiceItem, serviceUpdateInvoice } from './invoice.service';
 import { WorkspaceService } from './workspace.service';
-import { WorkspaceModel } from '../models/workspace.model';
-
 // --- הרחבת מבני קלט ---
 // מבנה להזמנת חדר ישיבות
 interface MeetingRoomBooking {
@@ -68,6 +62,11 @@ export interface BillingCalculationResult {
     subtotal: number;
     taxAmount: number;
     total: number;
+}
+
+//generateId רנדומלי ליצירת מס חשבונית 
+export function generateId(): ID {
+    return (Math.random() * 1000000).toFixed(0) as ID;
 }
 //עוברת על כל הלקוחות במערכת.
 //מחשבת עבור כל אחד מהם את החשבונית לתקופה נתונה.
@@ -176,7 +175,7 @@ export const calculateBillingForCustomer = async (
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
                 description: ws.description ?? '',
-                room: ws.room ?? '',
+                room: ws.location ?? '',
                 currentCustomerId: ws.currentCustomerId ?? '', // מזהה לקוח נוכחי
                 currentCustomerName: ws.currentCustomerName ?? '', //  שם לקוח נוכחי
             };
@@ -359,8 +358,8 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
 
         // הוסף פריטי חשבונית
         const invoiceItem = new InvoiceItemModel(
-            generateId(),
-            invoiceId,
+            '',
+            invoiceId as `${string}-${string}-${string}-${string}-${string}`, // ← הוספת as כאן
             BillingItemType.WORKSPACE,
             `השכרת ${ws.workspaceType}`,
             ws.quantity,
@@ -390,8 +389,8 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
     if (isKlikahCardHolder) {
         const klikahCardPrice = 200;
         const klikahCardItem = new InvoiceItemModel(
-            generateId(),
-            invoiceId,
+            '',
+            invoiceId as `${string}-${string}-${string}-${string}-${string}`, // ← הוספת as כאן
             BillingItemType.WORKSPACE,
             'דמי כרטיס קליקה',
             1,
@@ -413,8 +412,8 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
     if (isKlikahCardProHolder) {
         const klikahCardProPrice = 300;
         const klikahCardProItem = new InvoiceItemModel(
-            generateId(),
-            invoiceId,
+            '',
+            invoiceId as `${string}-${string}-${string}-${string}-${string}`, // ← הוספת as כאן
             BillingItemType.WORKSPACE,
             'דמי כרטיס קליקה משודרג',
             1,
@@ -436,7 +435,6 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
     // חישוב עבור חדרי ישיבות
     // ערכי ברירת מחדל לתמחור חדרי ישיבות
     const DEFAULT_HOURLY_RATE = 100; // מחיר לשעת שימוש בחדר ישיבות
-    const DEFAULT_TOTAL = 0; // סך הכל ברירת מחדל
 
     // חישוב עבור חדרי ישיבות
     if (input.meetingRoomBookings && input.meetingRoomBookings.length > 0) {
@@ -453,8 +451,8 @@ export const billingCalculation = async (input: BillingCalculationInput, invoice
             });
 
             const meetingRoomItem = new InvoiceItemModel(
-                generateId(),
-                invoiceId,
+                '',
+                invoiceId as `${string}-${string}-${string}-${string}-${string}`, // ← הוספת as כאן
                 BillingItemType.MEETING_ROOM,
                 'שימוש בחדר ישיבות',
                 booking.totalHours,

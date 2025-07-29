@@ -10,17 +10,17 @@ export interface CalendarSync {
 
 export enum CalendarSyncStatus {
     SYNCED = 'SYNCED',
-    PENDING = 'PENDING',
+    PENDING = 'PENDING',//ממתין לאישור
     FAILED = 'FAILED',
     CONFLICT = 'CONFLICT'
 }
 
-export interface SyncBookingsWithGoogleRequest {
-    roomId?: ID;
-    startDate?: DateISO;
-    endDate?: DateISO;
-    forceSync?: boolean;
-}
+// export interface SyncBookingsWithGoogleRequest {
+//     roomId?: ID;
+//     startDate?: DateISO;
+//     endDate?: DateISO;
+//     forceSync?: boolean;
+// }
 
 export interface CalendarConflict {
     bookingId: ID;

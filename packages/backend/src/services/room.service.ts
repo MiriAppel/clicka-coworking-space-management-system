@@ -1,6 +1,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { RoomModel } from "../models/room.model";
+import { RoomFeatureModel } from '../models/roomFeature.model';
 import type { ID } from "shared-types";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -37,9 +38,12 @@ async  createRoomRequest(room: RoomModel): Promise<RoomModel | null> {
       async getAllrooms() {
     try {
       const { data, error } = await supabase
-        .from('room') // שם הטבלה שלך ב-Supabase
-        .select('*');
-
+        .from('room') 
+      .select('*'); 
+      const { data: features, error: featureError } = await supabase
+      .from("feature")
+      .select("*");
+    
       if (error) {
         console.error('Supabase error:', error.message);
         return null;
@@ -119,4 +123,6 @@ async  integrationWithGoogle(id:any) {
     //לשמור שגיאות במסד נתונים
     //לשלוח הודעות למנהל במקרה של כשל
 }
+
 }
+

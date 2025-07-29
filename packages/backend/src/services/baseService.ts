@@ -1,20 +1,10 @@
 import type { ID } from "shared-types";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_KEY || ""; // שימי לב לשם המדויק
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error(
-    "חסרים ערכים ל־SUPABASE_URL או SUPABASE_SERVICE_KEY בקובץ הסביבה"
-  );
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from "../db/supabaseClient";
+import { sendEmailToConfrim } from "./gmail-service";
 
 export class baseService<T> {
   // בשביל שם המחלקה
-  constructor(private tableName: string) { }
+  constructor(private tableName: string) {}
 
   getById = async (id: ID): Promise<T> => {
     const { data, error } = await supabase
@@ -35,37 +25,15 @@ export class baseService<T> {
     return data;
   };
 
-  getByFilters = async (filters: { q?: string; page?: number; limit?: number;}): Promise<T[]> => {
-    const { q, page, limit } = filters;
-
-    let query = supabase.from(this.tableName).select("*");
-
-    if (q) {
-      const searchValue = `%${q}%`;
-      query = query.or(
-        `name.ilike.${searchValue},email.ilike.${searchValue},phone.ilike.${searchValue},id_number.ilike.${searchValue}`
-      );
-    }
-    if (page && limit) {
-      const from = (page - 1) * limit;
-      const to = from + limit - 1;
-      query = query.range(from, to);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("Error fetching filtered data:", error);
-      throw error;
-    }
-
-    return data ?? [];
-  };
-
   getAll = async (): Promise<T[]> => {
-    console.log("🧾 טבלה:", this.tableName);
+    // console.log("🧾 טבלה:", this.tableName);
 
-    const { data, error } = await supabase.from(this.tableName).select("*");
+    const { data, error } = await supabase
+    .from(this.tableName)
+    // .select("*, lead_interaction(*)")
+    .select("*");
+
+    console.log(data);
 
     if (!data || data.length === 0) {
       console.log(` אין נתונים בטבלה ${this.tableName}`);
@@ -81,15 +49,15 @@ export class baseService<T> {
   };
 
   patch = async (dataToUpdate: Partial<T>, id: ID): Promise<T> => {
-    
     let dataForInsert = dataToUpdate;
-    if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
-      try{
-      dataForInsert = (dataToUpdate as any).toDatabaseFormat();
-      console.log(dataForInsert);
+    (dataToUpdate as any).updated_at = new Date().toISOString();
 
-      }catch (error){
-        console.error("שגיאה בהמרה", error)
+    if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
+      try {
+        dataForInsert = (dataToUpdate as any).toDatabaseFormat();
+        console.log(dataForInsert);
+      } catch (error) {
+        console.error("שגיאה בהמרה", error);
       }
     }
 
@@ -104,8 +72,9 @@ export class baseService<T> {
       throw error;
     }
 
-    if (!data || data.length === 0)
+    if (!data || data.length === 0) {
       throw new Error("לא התקבלה תשובה מהשרת אחרי העדכון");
+    }
 
     return data[0];
   };
@@ -121,6 +90,15 @@ export class baseService<T> {
       console.log(dataForInsert);
     }
 
+    // אם זה הוספת לקוח לא מוסיפים לו מייל עד שמאמתים את הלקוח והמייל נוסף רק בצורת עדכון אחרי שהשלקוח נוצר
+    let emailToSave: string | undefined;
+
+    if (this.tableName === "customer") {
+      const { email, ...rest } = dataForInsert as any;
+      emailToSave = email; // שומרת את המייל במשתנה
+      dataForInsert = rest; // dataForInsert בלי המייל
+    }
+
     const { data, error } = await supabase
       .from(this.tableName)
       .insert([dataForInsert])
@@ -128,6 +106,12 @@ export class baseService<T> {
 
     console.log("added");
     console.log(data);
+
+    const createdRecord = data?.[0];
+
+    if (this.tableName === "customer") {
+      sendEmailToConfrim(emailToSave, createdRecord.id);
+    }
 
     if (error) {
       console.log("enter to log", error);
