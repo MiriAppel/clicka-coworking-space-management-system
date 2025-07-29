@@ -38,6 +38,7 @@ import { UpdateAssigenment } from './MainMenu/Workspace/Components/updateAssigen
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
 import ClientSearchAndSelect from './MainMenu/LeadAndCustomer/Components/upload';
 import DocumentUpload from './MainMenu/CoreAndIntegration/Components/DocumentUpload';
+import { RoomManager } from './MainMenu/Workspace/Components/RoomManager';
 
 export const Routing = () => {
     const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -78,6 +79,7 @@ export const Routing = () => {
         <Route path="/billing/invoiceManagement" element={< InvoiceManagement />} />
         <Route path="/occupancyReports" element={<Report  />} />
         <Route path="/billing/collection" element={< Collection />} />
+                <Route path="/rooms" element={<RoomManager />} />
         <Route path="/petty-cash" element={<PettyCashPage />} />
         <Route path="/documentUpload" element={< DocumentUpload />} />
       </Route>
