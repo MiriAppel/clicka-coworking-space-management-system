@@ -24,7 +24,6 @@ export const LoginWithPassword = () => {
     });
     const onSubmit = async (data: FormSchema) => {
         try {
-            console.log("sending: ", data);
 
             const response = await axiosInstance.post("/auth/loginWithPassword", JSON.stringify(data, null, 2));
             console.log(" success", response.data);
@@ -43,18 +42,20 @@ export const LoginWithPassword = () => {
     };
   
     return (
-        <Form
+<Form
             schema={schema}
             methods={methods}
             onSubmit={onSubmit}
-            className="mx-auto mt-10">
-            <InputField name="email" label="מייל" type="email" required placeholder="email" />
+            className="!flex !flex-col !items-center gap-5 w-full max-w-sm mx-auto">
+            <InputField name="email" label="מייל" type="email" required placeholder="email"  
+            className="w-full text-lg py-3 px-4 border rounded-lg"/>
             <br />
-            <InputField name="password" label="סיסמה" type="password" required placeholder="password" />
+            <InputField name="password" label="סיסמה" type="password" required placeholder="password" 
+             className="w-full text-lg py-3 px-4 border rounded-lg"/>
             <br />
             <Button
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                className="w-full bg-blue-600 text-white py-3 text-lg rounded-lg hover:bg-blue-700 transition-colors">
                 התחבר
             </Button>
         </Form>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
@@ -6,7 +6,6 @@ import { ProtectedRoute } from './MainMenu/CoreAndIntegration/Components/Login/P
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
-import { getAllVendors } from './Api/vendor-api';
 import { Vendor } from 'shared-types';
 import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
@@ -39,29 +38,10 @@ import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 
 export const Routing = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchVendors = async () => {
-      try {
-        const data = await getAllVendors();
-        setVendors(data);
-      } catch (err) {
-        console.error('Error fetching vendors:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchVendors();
-  }, []);
-
-  if (loading) return <div>Loading vendors...</div>;
-
   return (
     <Routes>
 
       <Route path="/auth" element={<AuthenticationScreen />} />
-
 
       <Route
         path="/"
