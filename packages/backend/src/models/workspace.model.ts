@@ -1,6 +1,8 @@
 import { ID } from "shared-types";
 import { WorkspaceType } from "shared-types/customer";
 import { Space, SpaceStatus } from "shared-types/workspace";
+
+
 export class WorkspaceModel implements Space {
   id?: ID;
   workspaceMapId?: ID;
@@ -17,6 +19,8 @@ export class WorkspaceModel implements Space {
   location?: string;
   createdAt: string;
   updatedAt: string;
+
+
   constructor(params: {
     id?: string;
     workspaceMapId?: ID;
@@ -46,10 +50,11 @@ export class WorkspaceModel implements Space {
     this.createdAt = params.createdAt;
     this.updatedAt = params.updatedAt;
     this.description = params.description;
-    this.location = params.location && params.location.trim() !== '' ? params.location : undefined;
+    this.location = params.location || undefined;
     this.currentCustomerId = params.currentCustomerId;
     this.currentCustomerName = params.currentCustomerName;
   }
+
   toDatabaseFormat() {
     const dbObj: any = {
       workspace_map_id: this.workspaceMapId,
@@ -72,6 +77,7 @@ export class WorkspaceModel implements Space {
     }
     return dbObj;
   }
+
   static fromDatabaseFormat(dbData: any): WorkspaceModel {
     return new WorkspaceModel({
       id: dbData.id,
@@ -91,6 +97,8 @@ export class WorkspaceModel implements Space {
       location: dbData.location || undefined
     });
   }
+
+
   static fromDatabaseFormatArray(dbDataArray: any[]): WorkspaceModel[] {
     return dbDataArray.map(dbData => WorkspaceModel.fromDatabaseFormat(dbData));
   }

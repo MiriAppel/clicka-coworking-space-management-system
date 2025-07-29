@@ -16,7 +16,7 @@ import { PaymentList } from './MainMenu/Billing/Components/paymentList';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
-// import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
+import { RoomReservations } from './MainMenu/Workspace/Components/RoomReservations';
 import { SendEmail } from './MainMenu/CoreAndIntegration/Components/SendEmail/SendEmail';
 import { EmailTemplateTable } from './MainMenu/CoreAndIntegration/Components/EmailTemplate/ShowAllEmailTemplates';
 import AuditLogTable from './MainMenu/CoreAndIntegration/Components/User/AuditLogTable';
@@ -38,6 +38,7 @@ import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem
 import { RoomManager } from './MainMenu/Workspace/Components/RoomManager';
 import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
+import { CustomerChange } from './MainMenu/Workspace/Components/customerChange';
 
 export const Routing = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -79,7 +80,7 @@ export const Routing = () => {
         <Route path="expense-form" element={<CreateExpenseForm />} />
         {/* <Route path="billing/*" element={<Billing />} /> */}
         <Route path="users" element={< UserTable />} />
-        {/* <Route path="meetingRooms" element={<RoomReservations />} /> */}
+        <Route path="meetingRooms" element={<RoomReservations />} />
         <Route path="UserActions" element={< AuditLogTable />} />
         <Route path="emailTemplate" element={< EmailTemplateTable />} />
         <Route path="sendEmails" element={< SendEmail />} />
@@ -96,6 +97,7 @@ export const Routing = () => {
         <Route path="/documentUpload" element={< DocumentUpload />} />
         <Route path="/registerUser" element={<RegisterUser />} />
 
+        <Route path="/customerChange" element={<CustomerChange />} />
       </Route>
 
 
