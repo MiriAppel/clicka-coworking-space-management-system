@@ -134,7 +134,7 @@ export const SendEmail = () => {
         formData.append('attachments', file);
       });
 
-      await axios.post('/api/gmail/v1/users/me/messages/send', formData, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/gmail/v1/users/me/messages/send`, formData, {
         withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' },
       });
