@@ -53,5 +53,5 @@ export function useCustomerFormData({
       // כאשר המודאל נסגר, מאפסים את הדגל כדי לאפשר reset שוב בפעם הבאה
       didFetch.current = false;
     };
-  }, [open, customerId, fetchCustomerData,methods]);
+  }, [open, customerId, fetchCustomerData]);
 }

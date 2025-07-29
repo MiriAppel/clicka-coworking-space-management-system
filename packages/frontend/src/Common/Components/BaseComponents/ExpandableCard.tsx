@@ -1,3 +1,6 @@
+
+
+////מעודכן כולל פרופיל
 import React, { useState } from "react";
 import {
   ChevronDown,
@@ -14,9 +17,9 @@ import {
   ScrollText,
   Coins,
   BadgePercent,
-  // User,
+  User,
   Camera,
-  // FileDown,
+  FileDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
@@ -51,7 +54,7 @@ const statusColors: Record<CustomerStatus, string> = {
   NOTICE_GIVEN: "bg-yellow-100 text-yellow-800",
   EXITED: "bg-red-100 text-red-800",
   PENDING: "bg-gray-100 text-gray-800",
-  CREATED: "bg-blue-100 text-gray-800"
+  CREATED: "bg-blue-100 text-blue-800",
 };
 
 const statusLabels: Record<CustomerStatus, string> = {
@@ -144,7 +147,7 @@ export const ExpandableCustomerCard = ({
   const hasImage = !!image;
 
   return (
-    <div className="rounded-xl border shadow p-5 mb-4 bg-white transition-all duration-300 text-right">
+    <div className="rounded-xl border shadow p-2 mb-0.5 bg-white transition-all duration-300 text-right">
       <div className="cursor-pointer" onClick={() => setOpen(!open)}>
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
@@ -245,8 +248,8 @@ export const ExpandableCustomerCard = ({
 
           <div className="flex flex-wrap justify-between items-center mt-4 gap-2">
             <div className="flex gap-3 text-blue-600 font-medium text-sm">
-              <button onClick={() => navigate(`/${id}/dashboard`)}>לוח בקרה</button>
-              <button onClick={() => navigate(`${id}/contract`)}>חוזה לקוח</button>
+              {/* <button onClick={() => navigate(`/${id}/dashboard`)}>לוח בקרה</button> */}
+              <button onClick={() => navigate(`${id}/contract`, { state: { customerName: name }})}>חוזה לקוח</button>
             </div>
             <div className="flex gap-2">
               <Button

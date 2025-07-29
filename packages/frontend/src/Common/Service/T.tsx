@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { fetchTranslations } from "./translationLoader";
 import { LangContext } from "./langContext";
+import { log } from "console";
 
 const cache: Record<string, string> = {};
 const pending: Record<string, Promise<void>> = {};

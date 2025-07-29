@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useInvoiceStore } from '../../../../Stores/Billing/invoiceStore';
-import { BillingItemType, CreateInvoiceRequest } from 'shared-types';
+import { BillingItemType, CreateInvoiceRequest, InvoiceStatus } from 'shared-types';
 import { Table, TableColumn } from '../../../../Common/Components/BaseComponents/Table';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
 import Swal from 'sweetalert2';
@@ -11,27 +11,27 @@ import { UUID } from 'crypto';
 export const InvoiceManagement: React.FC = () => {
   const {
     invoices,
-    // loading,
+    loading,
     error,
     getAllInvoices,
     getAllInvoiceItems,
     createInvoice,
     updateInvoice,
-    // updateInvoiceStatus,
+    updateInvoiceStatus,
     deleteInvoice,
-    // generateMonthlyInvoices,
-    // sendInvoiceByEmail,
-    // getOverdueInvoices,
-    // getInvoicesByStatus,
-    // calculateOpenInvoicesTotal,
+    generateMonthlyInvoices,
+    sendInvoiceByEmail,
+    getOverdueInvoices,
+    getInvoicesByStatus,
+    calculateOpenInvoicesTotal,
     clearError
   } = useInvoiceStore();
 
   const [showForm, setShowForm] = useState(false);
-  // const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus>(InvoiceStatus.DRAFT);
-  // const [emailData, setEmailData] = useState({ invoiceId: '', email: '' });
+  const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus>(InvoiceStatus.DRAFT);
+  const [emailData, setEmailData] = useState({ invoiceId: '', email: '' });
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
-  // const [invoiceItems, setInvoiceItems] = useState<any[]>([]);
+  const [invoiceItems, setInvoiceItems] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     customerId: '',
     customerName: '',
@@ -58,7 +58,7 @@ export const InvoiceManagement: React.FC = () => {
         if (response.invoiceItems.length === 0) {
           Swal.fire('אין פרטי חיוב', 'לא נמצאו פרטי חיוב לחשבונית זו', 'info');
         } else {
-          // setInvoiceItems(response.invoiceItems);
+          setInvoiceItems(response.invoiceItems);
           Swal.fire({
             title: 'פריטי החשבונית',
             html: `

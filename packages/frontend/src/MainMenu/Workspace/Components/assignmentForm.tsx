@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useAssignmentStore } from "../../../Stores/Workspace/assigmentStore";
 import { useCustomerStore } from "../../../Stores/LeadAndCustomer/customerStore";
@@ -190,7 +191,20 @@ export const AssignmentForm: React.FC<AssignmentFormProps> = (props) => {
   console.log('Render - spaces:', spaces.length);
   console.log('Render - loading:', loading);
   console.log('Render - error:', error);
+  console.log('Render - customers:', customers.length);
+  console.log('Render - spaces:', spaces.length);
+  console.log('Render - loading:', loading);
+  console.log('Render - error:', error);
 
+  if (loading) {
+    return (
+      <div className="p-4 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-2">טוען נתונים...</p>
+        <p className="text-xs text-gray-500">Customers: {customers.length}, Spaces: {spaces.length}</p>
+      </div>
+    );
+  }
   if (loading) {
     return (
       <div className="p-4 text-center">

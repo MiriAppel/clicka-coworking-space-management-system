@@ -23,7 +23,7 @@ function encodeMessage(request: SendEmail): string {
     `To: ${request.to.join(", ")}`,
     request.cc?.length ? `Cc: ${request.cc.join(", ")}` : "",
     request.bcc?.length ? `Bcc: ${request.bcc.join(", ")}` : "",
-    `Subject: ${encodeSubject(request.subject)}`,
+    `Subject: ${request.subject}`,
     "MIME-Version: 1.0",
     `Content-Type: multipart/mixed; boundary="${boundaryMixed}"`,
   ].filter(Boolean).join("\n");
@@ -222,7 +222,7 @@ export const sendEmailToConfrim = async (email: string | undefined, id: ID) => {
     {
       "name": customer.name,
       "link":
-        `http://localhost:3001/api/customers/confirm-email/${id}/${email}`,
+        `${process.env.API_URL}/customers/confirm-email/${id}/${email}`,
     },
   );
   await sendEmail(
@@ -235,4 +235,6 @@ export const sendEmailToConfrim = async (email: string | undefined, id: ID) => {
     },
     token,
   );
+
+  
 };

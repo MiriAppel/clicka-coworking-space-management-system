@@ -1,7 +1,7 @@
 import swaggerUi, { JsonObject } from 'swagger-ui-express';
 import yaml from 'js-yaml';
 import path from 'path';
-import fs from 'node:fs';
+import fs from 'fs';
 
 import { Express } from 'express';
 

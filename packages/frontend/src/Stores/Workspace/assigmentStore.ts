@@ -6,17 +6,9 @@ import { SpaceAssign } from 'shared-types/spaceAssignment';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 
-interface Customer {
-  id: string | number;
-  name: string;
-  email?: string;
-  phone?: string;
-}
-
 interface Assignment {
   id: string | number;
   workspaceId: string | number;
-  customerId: string | number;
   assignedDate: string;
   unassignedDate?: string;
   notes?: string;
@@ -35,7 +27,6 @@ interface AssignmentStoreState {
   // State
   assignments: SpaceAssign[];
   spaces: Space[];
-  customers: Customer[];
   loading: boolean;
   error: string | null;
   selectedAssignment: Assignment | null;
@@ -66,7 +57,6 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   // State - מצב התחלתי של הסטור
   assignments: [],
   spaces: [],
-  customers: [],
   loading: false,
   error: null,
   selectedAssignment: null,
@@ -87,8 +77,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       }));
       return newAssignment;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -105,8 +95,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       set({ assignments: response.data, loading: false });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -122,15 +112,15 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       const response = await api.put<SpaceAssign>(`${BASE_API_URL}/updateSpace/${id}`, assignmentData);
       const updatedAssignment = response.data;
       set((state) => ({
-        assignments: state.assignments.map((assignment) => 
+        assignments: state.assignments.map((assignment) =>
           assignment.id === id ? updatedAssignment : assignment
         ),
         loading: false
       }));
       return updatedAssignment;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -149,8 +139,8 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
         loading: false
       }));
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage, loading: false });
       throw error;
@@ -159,20 +149,21 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   /**
    * בדיקת קונפליקטים לפני יצירת/עדכון הקצאה
    */
-  checkConflicts: async (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number) => {
+  checkConflicts: async (workspaceId: string | number, assignedDate: string, unassignedDate?: string, excludeId?: string | number, daysOfWeek?: number[]) => {
     try {
       const response = await api.post<ConflictCheck>(`${BASE_API_URL}/checkConflicts`, {
         workspaceId,
         assignedDate,
         unassignedDate,
-        excludeId
+        excludeId,
+        daysOfWeek
       });
-      
+
       set({ conflictCheck: response.data });
       return response.data;
     } catch (error) {
-      const errorMessage = error instanceof AxiosError 
-        ? error.message 
+      const errorMessage = error instanceof AxiosError
+        ? error.message
         : 'An unknown error occurred';
       set({ error: errorMessage });
       throw error;
@@ -200,7 +191,6 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
     set({
       assignments: [],
       spaces: [],
-      customers: [],
       loading: false,
       error: null,
       selectedAssignment: null,

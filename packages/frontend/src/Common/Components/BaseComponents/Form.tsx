@@ -73,7 +73,7 @@ const internalMethods = useForm<T>({
               ? theme.typography.fontFamily.hebrew
               : theme.typography.fontFamily.latin,
         }}
-        // role="form"
+        role="form"
 
         aria-label={label ? t(label) : undefined}
       >

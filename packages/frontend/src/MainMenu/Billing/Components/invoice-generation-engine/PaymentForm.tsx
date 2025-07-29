@@ -9,6 +9,7 @@ import { SelectField } from "../../../../Common/Components/BaseComponents/Select
 import { NumberInputField } from "../../../../Common/Components/BaseComponents/InputNumber";
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { usePaymentStore } from "./paymentStore";
+import { createReceiptFromPayment } from "./createReceiptFromPayment"; // ודאי שזה הנתיב הנכון
 
 interface FormFields {
   amount: number;
@@ -19,7 +20,7 @@ interface FormFields {
 
 async function sendPaymentToApi(payment: any) {
   try {
-    const response = await axios.post("http://localhost:3001/payments", payment);
+    const response = await axios.post(`${process.env.REACT_APP_API_URL}/payments`, payment);
     return response.data;
   } catch (error) {
     console.error("שגיאה בשליחת תשלום לשרת:", error);
@@ -28,7 +29,7 @@ async function sendPaymentToApi(payment: any) {
 }
 
 export default function PaymentForm() {
-  const { invoices, getAllInvoices, updateInvoiceStatus, loading } = useInvoiceStore();
+  const { invoices, fetchInvoices, updateInvoiceStatus } = useInvoiceStore();
   const { payments, addPayment } = usePaymentStore();
 
   const methods = useForm<FormFields>({
@@ -42,8 +43,8 @@ export default function PaymentForm() {
   });
 
   useEffect(() => {
-    getAllInvoices();
-  }, [getAllInvoices]);
+    fetchInvoices();
+  }, [fetchInvoices]);
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     const { amount, invoiceId, paymentMethod, reference } = data;
@@ -54,7 +55,6 @@ export default function PaymentForm() {
     const paid = payments
       .filter((p) => p.invoice_id === invoiceId)
       .reduce((sum, p) => sum + p.amount, 0);
-
     const remaining = invoice.subtotal - paid;
 
     if (amount <= 0) {
@@ -80,13 +80,25 @@ export default function PaymentForm() {
       transaction_reference: reference || "",
     };
 
-    await sendPaymentToApi(paymentObj);
-    addPayment(paymentObj);
+    try {
+      await sendPaymentToApi(paymentObj);
+      addPayment(paymentObj);
 
-    const paidAfter = paid + amount;
-    const remainingAfter = invoice.subtotal - paidAfter;
-    if (remainingAfter === 0) {
-      updateInvoiceStatus(invoiceId, InvoiceStatus.PAID);
+      const paidAfter = paid + amount;
+      const remainingAfter = invoice.subtotal - paidAfter;
+      if (remainingAfter === 0) {
+        updateInvoiceStatus(invoiceId, InvoiceStatus.PAID);
+      }
+
+      // ✅ יצירת קבלה
+      const receiptUrl = await createReceiptFromPayment(paymentObj);
+      console.log("קבלה נוצרה:", receiptUrl);
+
+      // ניתן גם להוסיף לינק לצפייה/הורדה
+      alert("תשלום בוצע בהצלחה!\nנוצרה קבלה:\n" + receiptUrl);
+    } catch (err) {
+      console.error("שגיאה בעת שליחת תשלום או יצירת קבלה:", err);
+      alert("שגיאה בעת רישום תשלום או יצירת קבלה.");
     }
 
     methods.reset();
@@ -118,27 +130,21 @@ export default function PaymentForm() {
 
         <InputField name="reference" label="רפרנס" />
 
-        {loading ? (
-          <p className="text-gray-500 text-sm">טוען חשבוניות...</p>
-        ) : (
-          <SelectField
-            name="invoiceId"
-            label="חשבונית"
-            options={[
-              { value: "", label: "בחר חשבונית" },
-              ...invoices
-                .filter((inv) => inv.id)
-                .map((inv) => ({
-                  value: inv.id!,
-                  label: `${inv.invoice_number} - ${inv.customer_name}`,
-                })),
-            ]}
-            required
-          />
-        )}
+        <SelectField
+          name="invoiceId"
+          label="חשבונית"
+          options={[
+            { value: "", label: "בחר חשבונית" },
+            ...invoices.map((inv) => ({
+              value: inv.id,
+              label: `${inv.invoice_number} - ${inv.customer_name}`,
+            })),
+          ]}
+          required
+        />
 
         {methods.watch("invoiceId") && (
-          <div className="bg-gray-50 border rounded p-4 space-y-2 mt-4">
+          <div className="bg-gray-50 border rounded p-4 space-y-2">
             <div>
               <strong>סטטוס חשבונית:</strong>{" "}
               {invoices.find((inv) => inv.id === methods.watch("invoiceId"))?.status}

@@ -125,7 +125,6 @@ export class leadService extends baseService<LeadModel> {
     }
 
     const leads =  data || [];
-    
     return LeadModel.fromDatabaseFormatArray(leads)
   };
 
@@ -195,6 +194,3 @@ export class leadService extends baseService<LeadModel> {
       
   
 }
-
-
-

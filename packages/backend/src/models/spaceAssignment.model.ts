@@ -6,6 +6,8 @@ export class SpaceAssignmentModel implements SpaceAssign {
     customerId: string;
     assignedDate: Date;
     unassignedDate?: Date;
+    daysOfWeek?:number[];
+    hours?:number[];
     notes?: string;
     assignedBy: string;
     status: AssignmentStatus;

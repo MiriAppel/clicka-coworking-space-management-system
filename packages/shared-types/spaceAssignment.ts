@@ -2,8 +2,7 @@
 export enum AssignmentStatus {
   ACTIVE = 'ACTIVE',
   ENDED = 'ENDED',
-  SUSPENDED = 'SUSPENDED',
-  INACTIVE = 'INACTIVE',
+  SUSPENDED = 'SUSPENDED'
 }
 
 // Space model
@@ -13,6 +12,8 @@ export interface SpaceAssign {
   customerId: string;
   assignedDate: Date;
   unassignedDate?: Date;
+  daysOfWeek?: number[];
+  hours?: number[];
   notes?: string;
   assignedBy: string;
   status: AssignmentStatus;

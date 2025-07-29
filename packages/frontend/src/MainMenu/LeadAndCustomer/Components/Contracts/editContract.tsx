@@ -21,6 +21,7 @@ const statusLabels = {
   ACTIVE: "פעיל",
   EXPIRED: "פג תוקף",
   TERMINATED: "הסתיים",
+  RENEWED: "חודש"
 } satisfies Record<ContractStatus, string>;
 
 // תוויות סוג חלל עבודה
@@ -35,7 +36,7 @@ const workspaceTypeLabels = {
   WALL: "קיר",
   COMPUTER_STAND: "עמדת מחשב",
   RECEPTION_DESK: "דלפק קבלה",
-  BASE: "בסיס",
+  BASE: "בסיס"
 } satisfies Record<WorkspaceType, string>;
 
 // סכימת אימות Zod
@@ -84,7 +85,7 @@ export const EditContract = () => {
       })
       .catch(() => showAlert("טעינת חוזה", "שגיאה בטעינת חוזה", "error"))
       .finally(() => setLoading(false));
-  }, [contractId, formMethods,fetchContractDetails]);
+  }, [contractId, formMethods]);
 
   // שליחה
   const handleSubmit = async (data: ContractFormData) => {
