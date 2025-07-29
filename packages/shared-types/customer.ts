@@ -1,6 +1,5 @@
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
-// import {DocumentModel} from '../backend/src/models/document.model';
 
 export enum TimelineEventType {
   LEAD_CREATED = 'LEAD_CREATED',
@@ -19,8 +18,7 @@ export enum ContractStatus {
   SIGNED = 'SIGNED',
   ACTIVE = 'ACTIVE',
   EXPIRED = 'EXPIRED',
-  TERMINATED = 'TERMINATED',
-  RENEWED =  "RENEWED",
+  TERMINATED = 'TERMINATED'
 }
 
 // Workspace type enum
@@ -91,7 +89,7 @@ export interface Contract {
   startDate?: DateISO;
   endDate?: DateISO;
   terms?: ContractTerms;
-  documents: ID[]; // מזהי מסמכים ששמורים בטבלת document 
+  documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
   signedBy?: string;
   witnessedBy?: string;
   createdAt: DateISO;
@@ -164,7 +162,6 @@ export interface CreateCustomerRequest {
   };
   paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
-  requireEmailVerification?: boolean;
 }
 
 // Update customer request
@@ -256,4 +253,3 @@ export interface StatusChangeRequest {
   notes?: string;
   notifyCustomer: boolean;
 }
-

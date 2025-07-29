@@ -55,7 +55,7 @@ export interface LeadInteraction {
 export interface Lead extends Person {
   idNumber: ID;
   businessType: string;
-  interestedIn: WorkspaceType;
+  interestedIn: WorkspaceType[];
   source: LeadSource;
   status: LeadStatus;
   contactDate?: DateISO;

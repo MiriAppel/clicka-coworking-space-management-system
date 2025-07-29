@@ -11,7 +11,7 @@ export class LeadModel implements Lead {
   phone: string;
   email: string;
   businessType: string;
-  interestedIn: WorkspaceType;
+  interestedIn: WorkspaceType[];
   source: LeadSource;
   status: LeadStatus;
   interactions: LeadInteraction[]; // כל אינטראקציה שייכת לליד אחד, אבל ליד יכול להכיל הרבה אינטראקציות (שיחות, תזכורות, ביקורים וכו׳).
@@ -28,7 +28,7 @@ export class LeadModel implements Lead {
     phone: string,
     email: string,
     businessType: string,
-    interestedIn: WorkspaceType,
+    interestedIn: WorkspaceType[],
     source: LeadSource,
     status: LeadStatus,
     contactDate: string | undefined,
