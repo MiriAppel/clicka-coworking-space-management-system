@@ -1,33 +1,43 @@
 import express from 'express';
-import * as customerController from '../controllers/customer.controller'; 
-import * as contractController from '../controllers/contract.controller'
+import * as customerController from '../controllers/customer.controller';
+import { UserRole } from 'shared-types'; 
+import { authorizeUser } from '../middlewares/authorizeUserMiddleware';
 
-const routerCstomer = express.Router();
+const routerCustomer = express.Router();
 
 // (GET)
-routerCstomer.get('/by-page', customerController.getCustomersByPage);
+// routerCustomer.get('/by-page', customerController.getCustomersByPage);
 
-routerCstomer.get('/', customerController.getAllCustomers); 
+routerCustomer.get('/confirm-email/:id/:email', customerController.confirmEmail);
 
-routerCstomer.get('/page', customerController.getCustomersByPage); 
+routerCustomer.get('/sendEmailWithContract/:link', customerController.sendContractEmail)
 
-routerCstomer.get('/status/all', customerController.getAllCustomerStatus);
+routerCustomer.get('/page', customerController.getCustomersByPage); 
 
-routerCstomer.get('/notify/:id', customerController.getCustomersToNotify); 
+routerCustomer.get('/', customerController.getAllCustomers); 
 
-routerCstomer.get('/id/:id', customerController.getCustomerById); 
+routerCustomer.get('/status/all', customerController.getAllCustomerStatus);
 
-routerCstomer.get('/filter', customerController.getCustomersByFilter);
+routerCustomer.get('/notify/:id',  customerController.getCustomersToNotify); 
+
+routerCustomer.get('/search',  customerController.searchCustomersByText);
+
+routerCustomer.get('/:id', customerController.getCustomerById); 
+
+routerCustomer.get('/:id/payment-methods',  customerController.getCustomerPaymentMethods);
 
 //(POST)
-routerCstomer.post('/:id/exit-notice', customerController.postExitNotice); 
+routerCustomer.post('/:id/exit-notice',  customerController.postExitNotice); 
 
-routerCstomer.post('/post-customer', customerController.postCustomer); 
+routerCustomer.post('/post-customer',  customerController.postCustomer); 
+
+routerCustomer.post('/:id/status-change', customerController.changeCustomerStatus)
 
 //PATCH/PUT)
-routerCstomer.patch('/:id', customerController.patchCustomer); 
 
-routerCstomer.delete('/:id', customerController.deleteCustomer);
+routerCustomer.patch('/:id',  customerController.patchCustomer); 
 
-export default routerCstomer;
+routerCustomer.delete('/:id', customerController.deleteCustomer);
+
+export default routerCustomer;
 

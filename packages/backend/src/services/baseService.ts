@@ -1,6 +1,7 @@
 import type { ID } from "shared-types";
 import { supabase } from "../db/supabaseClient";
-
+import { sendEmailToConfrim } from "./gmail-service";
+import { ca } from "date-fns/locale";
 
 export class baseService<T> {
   // בשביל שם המחלקה
@@ -25,37 +26,19 @@ export class baseService<T> {
     return data;
   };
 
-  getByFilters = async (filters: { q?: string; page?: number; limit?: number;}): Promise<T[]> => {
-    const { q, page, limit } = filters;
+  getAll = async (): Promise<T[]> => {
+    console.log("🧾 טבלה:", this.tableName);
 
     let query = supabase.from(this.tableName).select("*");
-
-    if (q) {
-      const searchValue = `%${q}%`;
-      query = query.or(
-        `name.ilike.${searchValue},email.ilike.${searchValue},phone.ilike.${searchValue},id_number.ilike.${searchValue}`
-      );
-    }
-    if (page && limit) {
-      const from = (page - 1) * limit;
-      const to = from + limit - 1;
-      query = query.range(from, to);
+    
+    // אם זה טבלת customer, נוסיף מיון לפי created_at
+    if (this.tableName === 'customer') {
+      query = query.order('created_at', { ascending: false });
     }
 
     const { data, error } = await query;
 
-    if (error) {
-      console.error("Error fetching filtered data:", error);
-      throw error;
-    }
-
-    return data ?? [];
-  };
-
-  getAll = async (): Promise<T[]> => {
-    console.log("🧾 טבלה:", this.tableName);
-
-    const { data, error } = await supabase.from(this.tableName).select("*");
+    // console.log(data);
 
     if (!data || data.length === 0) {
       console.log(` אין נתונים בטבלה ${this.tableName}`);
@@ -71,15 +54,15 @@ export class baseService<T> {
   };
 
   patch = async (dataToUpdate: Partial<T>, id: ID): Promise<T> => {
-    
     let dataForInsert = dataToUpdate;
-    if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
-      try{
-      dataForInsert = (dataToUpdate as any).toDatabaseFormat();
-      console.log(dataForInsert);
+    (dataToUpdate as any).updated_at = new Date().toISOString();
 
-      }catch (error){
-        console.error("שגיאה בהמרה", error)
+    if (typeof (dataToUpdate as any).toDatabaseFormat === "function") {
+      try {
+        dataForInsert = (dataToUpdate as any).toDatabaseFormat();
+        console.log(dataForInsert);
+      } catch (error) {
+        console.error("שגיאה בהמרה", error);
       }
     }
 
@@ -94,8 +77,9 @@ export class baseService<T> {
       throw error;
     }
 
-    if (!data || data.length === 0)
+    if (!data || data.length === 0) {
       throw new Error("לא התקבלה תשובה מהשרת אחרי העדכון");
+    }
 
     return data[0];
   };
@@ -106,9 +90,18 @@ export class baseService<T> {
     let dataForInsert = dataToAdd;
     console.log("tableName:", this.tableName);
 
-    if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
+   if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
       dataForInsert = (dataToAdd as any).toDatabaseFormat();
       console.log(dataForInsert);
+    }
+
+    // אם זה הוספת לקוח לא מוסיפים לו מייל עד שמאמתים את הלקוח והמייל נוסף רק בצורת עדכון אחרי שהשלקוח נוצר
+    let emailToSave: string | undefined;
+
+    if (this.tableName === "customer") {
+      const { email, ...rest } = dataForInsert as any;
+      emailToSave = email; // שומרת את המייל במשתנה
+      dataForInsert = rest; // dataForInsert בלי המייל
     }
 
     const { data, error } = await supabase
@@ -119,12 +112,28 @@ export class baseService<T> {
     console.log("added");
     console.log(data);
 
+
     if (error) {
       console.log("enter to log", error);
 
       console.error("שגיאה בהוספת הנתונים:", error);
       throw error;
     }
+
+    const createdRecord = data?.[0];
+
+    if (this.tableName === "customer") {
+      try{
+      await sendEmailToConfrim(emailToSave, createdRecord.id);
+console.log("📧 after send email Confirmation email sent to:", emailToSave);
+
+      }
+      catch (error) {
+        console.error("שגיאה בשליחת מייל אימות:", error);
+      }
+    }
+
+
     if (!data) throw new Error("לא התקבלה תשובה מהשרת אחרי ההוספה");
     console.log(data);
 

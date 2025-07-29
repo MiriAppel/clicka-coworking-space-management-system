@@ -15,3 +15,5 @@ export * from './translation';
 export * from './person';
 export * from './template';
 export * from './document';
+export * from './booking'
+export * from './calendarSync';

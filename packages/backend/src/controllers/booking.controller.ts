@@ -1,6 +1,7 @@
 import { BookingModel } from "../models/booking.model";
 import { BookingService } from "../services/booking.service";
 import { Request, Response } from "express";
+import { updateEventOnChangeBooking } from "./googleCalendarBookingIntegration.controller";
 
 export class BookingController {
     bookingservice = new BookingService();
@@ -28,20 +29,33 @@ export class BookingController {
 
 
  async  updateBooking(req: Request, res: Response){
-    try{
-        const bookingData = req.body;
-        const booking = new BookingModel(bookingData);
-      const updateBooking=await this.bookingservice.updateBooking(req.params.id,booking);
-      res.json(updateBooking);
-    }
-    catch(err){
-       res.status(500).json({massage:'err.message'});
-    }
+   console.log('Received request to update booking:', req.body);
+      const bookingId = req.params.id;
+            const updatedData = req.body;
+            const updatedBooking = new BookingModel(updatedData);
+            await updateEventOnChangeBooking(req, res);
+        console.log('Prepared booking data:', JSON.stringify(updatedBooking, null, 2));
+            const result = await BookingService.updateBooking(bookingId, updatedBooking);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(500).json({ error: "Failed to update booking" });
+            }
 }
 
  async  getBookingById(req: Request, res: Response){
     try{
-        const getBooking=await this.bookingservice.getBookingById(req.params.id);
+        const getBooking = await BookingService.getBookingById(req.params.id ? req.params.id : null);
+        res.json(getBooking);
+    }
+    catch(err){
+res.status(500).json({massage:'err.massage'});
+    }
+}
+ async  getBookingByEventId(req: Request, res: Response){
+    try{
+       const getBooking = await BookingService.getBookingByEventId(req.params.eventId);
+
         res.json(getBooking);
     }
     catch(err){
@@ -56,6 +70,15 @@ res.status(500).json({massage:'err.massage'});
     }
     catch(err){
       res.status(500).json({massage:'err.massage'});
+    }
+}
+async  bookingApproval(req: Request, res: Response){
+    try{
+        const updateBooking=await this.bookingservice.bookingApproval(req.params.id);
+         res.json(updateBooking);
+    }
+    catch(err){
+       res.status(500).json({massage:'err.message'});
     }
 }
 }

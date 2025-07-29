@@ -1,6 +1,7 @@
-import type{ Payment } from "shared-types";
+import type { Payment } from "shared-types";
 import { PaymentMethodType } from "shared-types";
 import { create } from "zustand";
+import axios from "axios"; // או supabase אם צריך
 
 interface PaymentState {
     payments: Payment[];
@@ -11,30 +12,30 @@ interface PaymentState {
 }
 
 export const usePaymentStore = create<PaymentState>((set) => ({
-    payments: [
-        {
-            id: 'p1',
-            customer_id: 'c1',
-            customer_name: 'לקוח א',
-            invoice_id: '1',
-            amount: 50,
-            method: PaymentMethodType.CASH,
-            date: '2024-06-10',
-            createdAt: '2024-06-10',
-            updatedAt: '2024-06-10'
+    payments: [],
+    
+    getAllPayments: async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/payments`);
+            set(() => ({ payments: response.data }));
+        } catch (error) {
+            console.error("שגיאה בשליפת תשלומים:", error);
         }
-    ],
-    getAllPayments: async () => {},
+    },
+
     addPayment: async (payment: Payment) => {
+        // כאן את יכולה גם לשלוח לשרת אם צריך
         set(state => ({
             payments: [...state.payments, payment]
         }));
     },
+
     updatePayment: async (payment: Payment) => {
         set(state => ({
             payments: state.payments.map(p => p.id === payment.id ? payment : p)
         }));
     },
+
     deletePayment: async (payment: Payment) => {
         set(state => ({
             payments: state.payments.filter(p => p.id !== payment.id)

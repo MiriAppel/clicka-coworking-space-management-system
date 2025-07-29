@@ -3,6 +3,7 @@ node_modules/
 npm-debug.log
 yarn-error.log
 yarn-debug.log
+yarn.lock
 
 # Build
 dist/
@@ -29,9 +30,12 @@ Thumbs.db
 # Logs
 logs
 *.log
+.txt
 
 # Testing
 coverage/
 
 # Supabase
 .supabase/
+*storybook.log
+storybook-static

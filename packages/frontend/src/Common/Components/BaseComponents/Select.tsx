@@ -2,6 +2,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import clsx from "clsx";
 import { useTheme } from "../themeConfig";
+
 interface SelectFieldProps {
   name: string;
   label: string;
@@ -11,7 +12,11 @@ interface SelectFieldProps {
   dir?: "rtl" | "ltr";
   className?: string;
   "data-testid"?: string;
+  defaultValue?: string; // ✅ הוסף defaultValue
+  value?: string; // ✅ הוסף value לcontrolled component
+  onChange?: (value: string) => void; // ✅ הוסף onChange
 }
+
 export const SelectField: React.FC<SelectFieldProps> = ({
   name,
   label,
@@ -21,14 +26,41 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   dir,
   className,
   "data-testid": testId,
+  defaultValue, // ✅ קבל defaultValue
+  value, // ✅ קבל value
+  onChange, // ✅ קבל onChange
 }) => {
-  const {theme} = useTheme();
+  const { theme } = useTheme();
   const {
     register,
     formState: { errors },
+    setValue, // ✅ הוסף setValue
+    watch, // ✅ הוסף watch
   } = useFormContext();
+  
   const error = errors[name]?.message as string | undefined;
   const effectiveDir = dir || theme.direction;
+
+  // ✅ עדכן ערך ברירת מחדל כשהוא משתנה
+  React.useEffect(() => {
+    if (defaultValue && defaultValue !== '') {
+      console.log(`🔄 מעדכן ${name} ל:`, defaultValue);
+      setValue(name, defaultValue);
+    }
+  }, [defaultValue, name, setValue]);
+
+  // ✅ טיפול בשינוי ערך
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = event.target.value;
+    setValue(name, newValue);
+    if (onChange) {
+      onChange(newValue);
+    }
+  };
+
+  // ✅ קבל ערך נוכחי
+  const currentValue = value !== undefined ? value : watch(name) || defaultValue || '';
+
   return (
     <div className="space-y-1 w-full" dir={effectiveDir}>
       <label
@@ -50,6 +82,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({
         aria-invalid={!!error}
         aria-label={label}
         data-testid={testId}
+        value={currentValue} // ✅ השתמש בערך הנוכחי
+        onChange={handleChange} // ✅ השתמש בhandler המותאם
         className={clsx(
           "w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 transition",
           error
@@ -69,9 +103,6 @@ export const SelectField: React.FC<SelectFieldProps> = ({
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
-          //יש לי מערך של OPTIONS הוא בנוי בצורה שיש לו LABEL וVALUE עובר עם בMAP כל אלאמט קוראים לא OPT
-          //אחכ שומר את זה בVALUE ובKEY כדי שיהיה מיוחד כל אלד ואחד
-          // <option value="male">Hombre</option> לדוגמא
         ))}
       </select>
       {error && (

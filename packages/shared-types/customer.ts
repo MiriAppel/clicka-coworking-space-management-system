@@ -1,5 +1,3 @@
-// customer-types.d.ts
-
 import { PaymentMethodType } from './billing';
 import { ID, DateISO, FileReference, ApiResponse, PaginatedResponse } from './core';
 
@@ -20,15 +18,23 @@ export enum ContractStatus {
   SIGNED = 'SIGNED',
   ACTIVE = 'ACTIVE',
   EXPIRED = 'EXPIRED',
-  TERMINATED = 'TERMINATED'
+  TERMINATED = 'TERMINATED',
+  RENEWED = 'RENEWED'
 }
 
 // Workspace type enum
 export enum WorkspaceType {
-  PRIVATE_ROOM = 'PRIVATE_ROOM',
+  PRIVATE_ROOM1 = 'PRIVATE_ROOM1',
+  PRIVATE_ROOM2 = 'PRIVATE_ROOM2',
+  PRIVATE_ROOM3 = 'PRIVATE_ROOM3',
   DESK_IN_ROOM = 'DESK_IN_ROOM',
   OPEN_SPACE = 'OPEN_SPACE',
-  KLIKAH_CARD = 'KLIKAH_CARD'
+  KLIKAH_CARD = 'KLIKAH_CARD',
+  DOOR_PASS = "DOOR_PASS",
+  WALL = "WALL",
+  COMPUTER_STAND = "COMPUTER_STAND",
+  RECEPTION_DESK = "RECEPTION_DESK",
+  BASE = "BASE",
 }
 
 
@@ -37,7 +43,8 @@ export enum CustomerStatus {
   ACTIVE = 'ACTIVE',
   NOTICE_GIVEN = 'NOTICE_GIVEN',
   EXITED = 'EXITED',
-  PENDING = 'PENDING'
+  PENDING = 'PENDING',
+  CREATED = 'CREATED'
 }
 
 // Exit reason enum
@@ -83,7 +90,7 @@ export interface Contract {
   startDate?: DateISO;
   endDate?: DateISO;
   terms?: ContractTerms;
-  documents: FileReference[]; // כאן ישמרו כל טפסי החוזה 
+  documents: ID[]; // כאן ישמרו כל טפסי החוזה 
   signedBy?: string;
   witnessedBy?: string;
   createdAt: DateISO;
@@ -95,7 +102,7 @@ export interface Contract {
 export interface CustomerPaymentMethod {
   id?: ID;
   customerId: ID;
-  creditCardLast4?: string;
+  creditCardNumber?: string;
   creditCardExpiry?: string;
   creditCardHolderIdNumber?: string;
   creditCardHolderPhone?: string;
@@ -104,12 +111,14 @@ export interface CustomerPaymentMethod {
   updatedAt: DateISO;
 }
 
+
+
 // Customer model
 export interface Customer {
   id?: ID;
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   idNumber: string;
   businessName: string;
   businessType: string;
@@ -122,11 +131,13 @@ export interface Customer {
   notes?: string;
   invoiceName?: string;
   contractDocuments?: FileReference[];
-  paymentMethods: CustomerPaymentMethod[];
+  paymentMethods?: CustomerPaymentMethod[];
+  paymentMethodType: PaymentMethodType;
   periods?: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
 }
+
 
 // Create customer request
 
@@ -137,7 +148,7 @@ export interface CreateCustomerRequest {
   idNumber: string;
   businessName: string;
   businessType: string;
-  workspaceType: WorkspaceType;
+  currentWorkspaceType: WorkspaceType;
   workspaceCount: number;
   contractSignDate: DateISO;
   contractStartDate: DateISO;
@@ -145,12 +156,12 @@ export interface CreateCustomerRequest {
   notes?: string;
   invoiceName?: string;
   paymentMethod?: {
-    creditCardLast4?: string;
+    creditCardNumber?: string;
     creditCardExpiry?: string;
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;
   };
-    paymentMethodType: PaymentMethodType;
+  paymentMethodType: PaymentMethodType;
   contractDocuments?: FileReference[];
 }
 
@@ -226,7 +237,7 @@ export interface ConvertLeadToCustomerRequest {
   billingStartDate: DateISO;
   notes?: string;
   paymentMethod?: {
-    creditCardLast4?: string;
+    creditCardNumber?: string;
     creditCardExpiry?: string;
     creditCardHolderIdNumber?: string;
     creditCardHolderPhone?: string;
@@ -243,41 +254,3 @@ export interface StatusChangeRequest {
   notes?: string;
   notifyCustomer: boolean;
 }
-
-
-// export interface SavedSearch {
-//     id: ID;
-//     name: string;
-//     userId: ID;
-//     searchRequest: CustomerSearchRequest;
-//     isPublic: boolean; // Whether the saved search is public or private
-//     createdAt: DateISO;
-//     updatedAt: DateISO;
-// }
-
-// export interface CustomerSearchRequest {
-//     query?: string; // Full-text search query
-//     filters?: CustomerFilter[]; // Array of filters
-//     sortBy?: string; // Field to sort by
-//     sortDirection?: 'asc' | 'desc'; // Sort direction
-//     page?: number; // Current page number for pagination
-//     limit?: number; // Number of items per page
-// }
-
-// export interface CustomerFilter {
-//     field: keyof Customer; // Keyof Customer interface to ensure valid field names
-//     operator: 'equals' | 'contains' | 'startsWith' | 'greaterThan' | 'lessThan' | 'between' | 'in';
-//     value?: any; // Value for single-value operators
-//     values?: any[]; // Values for 'in' operator
-// }
-
-// export interface CustomerTimeline {
-//     customerId: ID;
-//     totalEvents: number; // For pagination, total count of events
-//     dateRange?: DateRangeFilter; // Applied date range filter
-// }
-
-// export interface DateRangeFilter {
-//     startDate?: DateISO;
-//     endDate?: DateISO;
-// }

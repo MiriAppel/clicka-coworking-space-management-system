@@ -56,7 +56,7 @@ export const NumberInputField: React.FC<NumberInputFieldProps> = ({
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <input
-        {...register(name)}
+        {...register(name, { valueAsNumber: true })}
         disabled={disabled}
         aria-required={required}
         aria-invalid={!!error}

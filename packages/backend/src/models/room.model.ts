@@ -1,28 +1,30 @@
-import {RoomFeature,RoomType,RoomStatus,Room, BookingRules} from 'shared-types/booking';
-import { ID, DateISO } from 'shared-types/core';
+import { RoomFeature, RoomType, RoomStatus, Room } from "shared-types/booking";
+import { ID, DateISO } from "shared-types/core";
 
-export class RoomModel implements Room{
+export class RoomModel implements Room {
   id?: ID;
   name: string;
   description?: string;
   type: RoomType;
   status: RoomStatus;
   capacity: number;
-  features?: RoomFeature[];
+  features?: ID[];
   hourlyRate: number;
   discountedHourlyRate: number;
   googleCalendarId?: string;
   location: string;
   equipment?: string[];
+  positionX: number;
+  positionY: number;
+  width: number;
+  height: number;
 
-  // BookingRules fields INLINED:
   MinimumBookingMinutes: number;
   MaximumBookingMinutes: number;
   RequiredApproval: boolean;
   FreeHoursForKlikcaCard: number;
-
   nextMaintenanceDate?: DateISO;
-  workspaceMapId: ID; // Assuming this is a reference to a WorkspaceMap
+  workspaceMapId: string; 
   createdAt: DateISO;
   updatedAt: DateISO;
 
@@ -33,7 +35,7 @@ export class RoomModel implements Room{
      type: RoomType;
      status: RoomStatus;
      capacity: number;
-     features: RoomFeature[];
+     features: ID[];
      hourlyRate: number;
      discountedHourlyRate: number;
      googleCalendarId?: string;
@@ -45,13 +47,17 @@ export class RoomModel implements Room{
      MaximumBookingMinutes: number;
      RequiredApproval: boolean;
      FreeHoursForKlikcaCard: number;
-
+  positionX: number;
+  positionY: number;
+  // ממדי סביבת העבודה
+  width: number;
+  height: number;
      nextMaintenanceDate?: DateISO;
-     workspaceMapId: ID; // Reference to a WorkspaceMap
+     workspaceMapId: ID; 
      createdAt?: DateISO;
      updatedAt?: DateISO;
    }) {
-    this.id = params.id ?? crypto.randomUUID(); // Generate a unique ID if not provided
+    this.id = params.id ?? crypto.randomUUID(); 
     this.name = params.name;  
     this.description = params.description;
     this.type = params.type;
@@ -68,7 +74,11 @@ export class RoomModel implements Room{
     this.RequiredApproval = params.RequiredApproval;
     this.FreeHoursForKlikcaCard = params.FreeHoursForKlikcaCard;
     this.nextMaintenanceDate = params.nextMaintenanceDate;
-    this.workspaceMapId = params.workspaceMapId; // Reference to a WorkspaceMap
+    this.workspaceMapId = params.workspaceMapId; 
+    this.positionX = params.positionX;
+    this.positionY = params.positionY;
+    this.width = params.width;
+    this.height = params.height;
     this.createdAt = params.createdAt ?? new Date().toISOString(); 
     this.updatedAt = params.updatedAt ?? new Date().toISOString(); 
    }
@@ -86,15 +96,12 @@ toDatabaseFormat() {
       google_calendar_id: this.googleCalendarId,
       location: this.location,
       equipment: this.equipment,
-
-      // BookingRules fields:
       minimum_booking_minutes: this.MinimumBookingMinutes,
       maximum_booking_minutes: this.MaximumBookingMinutes,
       required_approval: this.RequiredApproval,
       free_hours_for_klikca_card: this.FreeHoursForKlikcaCard,
-
       next_maintenance_date: this.nextMaintenanceDate,
-      workspace_map_id:this.workspaceMapId, // Reference to a WorkspaceMap
+      workspace_map_id:this.workspaceMapId, 
        createdat: this.createdAt,
        updatedat: this.updatedAt
     };
@@ -118,7 +125,11 @@ toDatabaseFormat() {
             RequiredApproval: dbData.required_approval,
             FreeHoursForKlikcaCard: dbData.free_hours_for_klikca_card,
             nextMaintenanceDate: dbData.next_maintenance_date,
-            workspaceMapId: dbData.workspace_map_id, // Reference to a WorkspaceMap
+            positionX: dbData.position_x,
+            positionY: dbData.position_y,
+            width: dbData.width,
+            height: dbData.height,
+            workspaceMapId: dbData.workspace_map_id, 
         });
     }
     static fromDatabaseFormatArray(dbDataArray: any[] ): RoomModel[] {

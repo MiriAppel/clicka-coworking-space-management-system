@@ -19,7 +19,7 @@ export const DetailsOfTheLead = () => {
         email: 'yossi@example.com',
         businessType: 'סטארטאפ',
         interestedIn: [
-            WorkspaceType.PRIVATE_ROOM,
+            WorkspaceType.PRIVATE_ROOM1,
             WorkspaceType.DESK_IN_ROOM
         ],
         source: LeadSource.WEBSITE,
@@ -64,7 +64,7 @@ export const DetailsOfTheLead = () => {
         <p><strong>טלפון:</strong> {currentLead.phone}</p>
         <p><strong>אימייל:</strong> {currentLead.email}</p>
         <p><strong>סוג עסק:</strong> {currentLead.businessType}</p>
-        <p><strong>מעוניין ב:</strong> {currentLead.interestedIn.join(', ')}</p>
+        <p><strong>מעוניין ב:</strong> {currentLead.interestedIn}</p>
         <p><strong>מקור:</strong> {currentLead.source}</p>
         <p><strong>סטטוס:</strong> {currentLead.status}</p>
         {currentLead.contactDate && <p><strong>תאריך קשר:</strong> {new Date(currentLead.contactDate).toLocaleDateString()}</p>}
@@ -86,3 +86,6 @@ export const DetailsOfTheLead = () => {
     </div>
 
 }
+
+
+

@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { LeadModel } from "../models/lead.model";
 import { leadService } from "../services/lead.service";
+import { NextFunction } from 'express';
+
+
 
 const serviceLead = new leadService();
 
@@ -42,7 +45,7 @@ export const createLead = async (req: Request, res: Response) => {
     const leadData: LeadModel = req.body;
     console.log(leadData);
 
-    const newLead = await serviceLead.post(leadData);
+    const newLead = await serviceLead.createLead(leadData);
 
     res.status(201).json(newLead);
   } catch (error: any) {
@@ -68,8 +71,11 @@ export const getSourcesLeadById = async (req: Request, res: Response) => {
 // עדכון ליד
 export const patchLead = async (req: Request, res: Response) => {
   const leadData = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
-
+  console.log(leadData);
+  
   const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
+  console.log(id);
+  
   try {
     const updatedLead = await serviceLead.patch(leadData, id);
     res.status(200).json(updatedLead);
@@ -78,6 +84,17 @@ export const patchLead = async (req: Request, res: Response) => {
   }
 };
 
+export const addInteractionToLead = async (req: Request, res: Response) => {
+  const { id } = req.params; // הנח שהמזהה נמצא בפרמטרים של הבקשה
+  const interactionData = req.body; // הנח שהנתונים מגיעים בגוף הבקשה
+
+  try {
+    const updatedLead = await serviceLead.addInteraction(id, interactionData);
+    res.status(200).json(updatedLead);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding interaction to lead", error });
+  }
+}
 export const postLeadFromCSV = async (req: Request, res: Response) => {
   const csvData: string = req.body.csvData; // הנח שהנתונים מגיעים בגוף הבקשה
   try {
@@ -98,30 +115,63 @@ export const getLeadsToRemind = async (req: Request, res: Response) => {
   }
 };
 
-export const getLeadsByFilter = async (req: Request, res: Response) => {
-  const filters = req.query;
+export const searchLeadsByText = async (req: Request, res: Response) => {
   try {
-    const customers = await serviceLead.getByFilters(filters);
+    const text = req.query.text as string;
 
-    if (customers.length > 0) {
-      res.status(200).json(customers);
-    } else {
-      res.status(404).json({ message: "No customers found" });
+    if (!text || text.trim() === "") {
+      return res.status(400).json({ error: "יש לספק טקסט לחיפוש." });
     }
+
+    const leads = await serviceLead.getLeadsByText(text);
+    return res.json(leads);
   } catch (error) {
-    res.status(500).json({ message: "Error filtering customers", error });
+    console.error("שגיאה בחיפוש לידים:", error);
+    return res.status(500).json({ error: "שגיאה בשרת." });
   }
 };
+//*****
+//  */
 
-export const deleteLead = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    try {
-        const leads = await serviceLead.delete(id);
-        res.status(200).json(leads);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching all statuses', error });
+export const deleteInteraction = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  
+  const { leadId, interactionId } = req.params;
+
+  try {
+    const lead = await serviceLead.getById(leadId);
+
+    if (!lead) {
+      res.status(404).json({ message: "Lead not found" });
+      return; // עצור כאן לאחר שליחת התגובה
     }
+    
+
+    // אם ה-id לא קיים, נחזיר שגיאה
+    if (!lead.id) {
+      res.status(400).json({ message: "Lead ID is missing" });
+      return; // עצור כאן לאחר שליחת התגובה
+    }
+
+    // עדכון הליד ב-database
+    await serviceLead.deleteInteraction(lead.id,interactionId);
+
+    res.status(200).json({ message: "Interaction deleted successfully" });
+
+  } catch (error) {
+    console.log(error);
+    
+    next(error); // אם יש שגיאה, מועברים למטפל בשגיאות
+  }
 }
+export const deleteLead = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const leads = await serviceLead.delete(id);
+    res.status(200).json(leads);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching all statuses", error });
+  }
+};
 export const getLeadsByPage = async (req: Request, res: Response) => {
   console.log("getLeadsByPage called");
 
@@ -166,4 +216,5 @@ export const getLeadsByPage = async (req: Request, res: Response) => {
       .json({ message: "Server error", error: error?.message || error });
   }
   console.log("getLeadsByPage completed");
-};
+
+}

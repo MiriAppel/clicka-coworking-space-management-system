@@ -16,324 +16,207 @@
 //   email: string; // מייל
 // }
 // //צריך לעשות קריאת שרת לקבלת כל המתעניינים למשתנה הזה
+
 import { NavLink, useNavigate } from "react-router-dom";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import {
-  Table,
-  TableColumn,
-} from "../../../../Common/Components/BaseComponents/Table";
+import { SearchLeads } from "./SearchLeads";
 import { Lead } from "shared-types";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { SearchLeads } from "./SearchLeads";
-// import { deleteLead } from "../../../../service/Axios";
+import { LeadsTable } from "./LeadsTable"; // 💡 ודאי שהשמות תואמים
+// import { deleteLead } from "../../Service/LeadAndCustomersService";
+import { deleteLead } from "../../Service/LeadAndCustomersService";
 
-
-interface ValuesToTable {
-  id: string;
-  name: string;
-  status: string;
-  phone: string;
-  email: string;
-}
-
-interface LeadsListProps {
-  leads: Lead[];
-  onDelete: (id: string) => void;
-}
-// export const LeadHomePage = ({ leads, onDelete }: LeadsListProps) => {
-//   console.log(leads + "leads in start");
-//   const navigate = useNavigate();
-//   const valuesToTable: ValuesToTable[] = leads.map(lead => ({
-
-export const LeadHomePage = ({ leads, onDelete }: LeadsListProps) => {
-
+export const LeadsHomePage = () => {
   const navigate = useNavigate();
-
-  const valuesToTable: ValuesToTable[] = leads.map((lead) => ({
-    id: lead.id!,
-    name: lead.name,
-    status: lead.status,
-    phone: lead.phone,
-    email: lead.email,
-  }));
-  const Columns: TableColumn<ValuesToTable>[] = [
-    { header: "שם", accessor: "name" },
-    { header: "סטטוס", accessor: "status" },
-    { header: "פלאפון", accessor: "phone" },
-    { header: "מייל", accessor: "email" },
-  ];
-
-
-  //   const updateLead = (val: ValuesToTable) => {
-  //   }
-
-  //   // const goTointerestedCustomerRegistration = () => {
-  //   //   navigate("interestedCustomerRegistration");
-  //   //   {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
-  //   // }
-  //   return <div className="p-6">
-
-  //     <Table<ValuesToTable> data={valuesToTable} columns={Columns} onDelete={deleteCurrentLead} onUpdate={updateLead}
-  //       renderActions={(row) => (
-  //         <Button
-  //           onClick={() => navigate("interestedCustomerRegistration", { state: { data: leads.find(lead => lead.id == row.id) } })}
-  //           variant="primary"
-  //           size="sm"
-  //         >
-  //           לטופס רישום ללקוח
-  //         </Button>
-
-  //       )}
-  //     />
-  //   </div>
-  // }
-  // export const LeadsPage = () => {
-  //   const navigate = useNavigate();
-  //   const [leads, setLeads] = useState<Lead[]>([]);
-  //   const goToAnotherPage = () => {
-  //     // navigate("detailsOfTheLead");
-  //     {/*זה הפונקצייה שמעבירה אותנו באת לחיצה על הכפתור לדף שנבחר*/ }
-  //   }
-  //   useEffect(() => {
-  //     axios.get('http://localhost:3001/api/leads')
-  //       .then(response => {
-  //         setLeads(response.data);
-  //         console.log("leads fetched successfully:", response.data);
-  //       })
-  //       .catch(error => {
-  //         console.error("Error fetching leads:", error);
-  //       });
-  //       console.log(leads);
-
-  //     // const initialCustomers: Customer[] = [ /* ...רשימת לקוחות ראשונית */];
-  //     // setCustomers(initialCustomers);
-  //   }, []);
-  //   const handleDeleteLeads = (id: string) => {
-  //     setLeads(prev => prev.filter(l => l.id !== id));
-  //   };
-  //   const handleSearchResults = (results: Person[]) => {
-  //     const onlyCustomers = results.filter((p): p is Lead =>
-  //       'status' in p && 'name' in p
-  //     );
-  //     setLeads(onlyCustomers);
-  //   };
-  //   return (
-  //     <div style={{ direction: "rtl", padding: "20px" }}>
-  //       <h2 className="text-3xl font-bold text-center text-blue-600 my-4">מתעניינים</h2>
-  //       <Button variant="primary" size="sm" onClick={() => navigate('intersections')}>אינטראקציות של מתעניינים</Button><br />
-  //       <Button onClick={goToAnotherPage} variant="primary" size="sm" >הוספת מתענין חדש </Button>
-  //       <SearchLeads onResults={handleSearchResults} />
-  //       <LeadHomePage leads={leads} onDelete={handleDeleteLeads} />
-  //     </div>
-  //   );
-  // };
-  //עד פה
-
-  return (
-    <div className="p-6">
-
-      <Table<ValuesToTable>
-        data={valuesToTable}
-        columns={Columns}
-        onDelete={(val) => onDelete(val.id)}
-        renderActions={(row) => (
-          <Button
-            onClick={() => navigate("interestedCustomerRegistration", { state: { data: leads.find(lead => lead.id == row.id) } })}
-            variant="primary"
-            size="sm"
-          >
-            לטופס רישום ללקוח
-          </Button>
-        )}
-      />
-    </div>
-  );
-};
-
-export const LeadsPage = () => {
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [status, setStatus] = useState(""); // סטטוס לחיפוש
+  const [isSearching, setIsSearching] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [allLeads, setAllLeads] = useState<Lead[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const allLeadsRef = useRef<Lead[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // שליפה ראשונית מהשרת
-
-  const fetchLeads = async () => {
-        console.log("Fetching initial leads...");
-
-    axios
-      .get("http://localhost:3001/api/leads/by-page", {
-        params: { page, limit: 50 },
-      })
-      .then((response) => {
-        if (response.data.length < 50) {
-          setHasMore(false); // אין יותר נתונים
-        }
-        // עדכון הלידים שצריכים להופיע בדף
-        setLeads((prev) => {
-          const ids = new Set(prev.map((l) => l.id));
-          const uniqueNew = response.data.filter(
-            (lead: Lead) => !ids.has(lead.id)
-          );
-          return [...prev, ...uniqueNew];
-        });
-
-        // עדכון המאגר הכללי של הלידים
-        setAllLeads((prev) => {
-          const ids = new Set(prev.map((l) => l.id));
-          const uniqueNew = response.data.filter(
-            // מסנן לידים שלא קיימים כבר במאגר הכללי
-            (lead: Lead) => !ids.has(lead.id)
-          );
-          return [...prev, ...uniqueNew];
-        });
-      })
-      .catch((error) => {
-        console.log("error in leadHomePage.tsx useEffect:", error);
-
-        console.error("Error fetching leads:", error);
+  // שליפת לידים מדף מסוים
+  const fetchLeads = async (page: number, limit: number = 50) => {
+    try {
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/api/leads/by-page`, {
+        params: { page, limit },
       });
-  }
+
+      if (data.length < limit) setHasMore(false);
+
+      setLeads((prev) => [...prev, ...data]);
+      allLeadsRef.current = [...allLeadsRef.current, ...data];
+      setIsLoading(false);
+    } catch (error) {
+      console.error("שגיאה בשליפת מתעניינים:", error);
+    }
+  };
+
+  // טעינת לידים כשהעמוד משתנה ואנחנו לא בחיפוש
   useEffect(() => {
-    fetchLeads();
-    // console.log("Fetching initial leads...");
+    if (!isSearching) fetchLeads(page);
+  }, [page, isSearching]);
 
-    // axios
-    //   .get("http://localhost:3001/api/leads/by-page", {
-    //     params: { page, limit: 50 },
-    //   })
-    //   .then((response) => {
-    //     if (response.data.length < 50) {
-    //       setHasMore(false); // אין יותר נתונים
-    //     }
-    //     // עדכון הלידים שצריכים להופיע בדף
-    //     setLeads((prev) => {
-    //       const ids = new Set(prev.map((l) => l.id));
-    //       const uniqueNew = response.data.filter(
-    //         (lead: Lead) => !ids.has(lead.id)
-    //       );
-    //       return [...prev, ...uniqueNew];
-    //     });
-
-    //     // עדכון המאגר הכללי של הלידים
-    //     setAllLeads((prev) => {
-    //       const ids = new Set(prev.map((l) => l.id));
-    //       const uniqueNew = response.data.filter(
-    //         // מסנן לידים שלא קיימים כבר במאגר הכללי
-    //         (lead: Lead) => !ids.has(lead.id)
-    //       );
-    //       return [...prev, ...uniqueNew];
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.log("error in leadHomePage.tsx useEffect:", error);
-
-    //     console.error("Error fetching leads:", error);
-    //   });
-  }, [page]);
-
+  // אינטרסקשן אובזרבר לטעינת דפים נוספים (אינסופיניט סקרול)
   useEffect(() => {
-    if (!loaderRef.current || !hasMore || isSearching) return;
-
-    // ברגע שהלידים עומדים להגמר זה עובר לעמוד הבא
+    if (!loaderRef.current || isSearching) return;
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setPage((prev) => prev + 1);
-      }
+      if (entries[0].isIntersecting && hasMore) setPage((p) => p + 1);
     });
-
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [hasMore, isSearching]);
+  }, [isSearching, hasMore]);
 
-  const handleSearch = (term: string) => {
+  // פונקציית החיפוש עם לוגים
+  const handleSearch = (term: string, searchStatus: string = "") => {
+    console.log("handleSearch נקרא עם:", { term, searchStatus });
+    console.log("לידים לפני סינון (allLeadsRef.current):", allLeadsRef.current);
+
     setSearchTerm(term);
+    setStatus(searchStatus);
 
-    if (!term) {
+    // אם אין טקסט ואין סטטוס, מציגים את כל הלידים ללא סינון
+    if (!term.trim() && !searchStatus) {
+      console.log("אין טקסט ואין סטטוס — מחזירים את כל הלידים");
       setIsSearching(false);
-      setLeads(allLeads);
-      setPage(1); // מחזיר לעמוד הראשון
-      setHasMore(true); // מאפס את הסטטוס של יש עוד עמוד
+      setLeads(allLeadsRef.current);
       return;
     }
 
-    setIsSearching(true);
+    // סינון הלידים לפי טקסט וסטטוס
+    const filtered = allLeadsRef.current.filter((l) => {
+      console.log("התחלת סינון הלידים, כמות לידים:", allLeadsRef.current.length);
 
-    // סינון תומך באותיות קטנות וגדולות
-    // מחפש גם לפי שם, פלאפון ודוא"ל
-    // אם לא מצא תוצאות, שולח בקשה לשרת
-    const filtered = allLeads.filter(
-      (lead) =>
-        lead.name.toLowerCase().includes(term.toLowerCase()) ||
-        lead.phone.includes(term) ||
-        lead.email.toLowerCase().includes(term.toLowerCase())
-    );
+        const leadStatus = l.status?.toLowerCase().trim() || "";
+  const searchStatus = status.toLowerCase().trim();
+      // בדיקת טקסט - אם יש מונח חיפוש
+      const textMatch = term
+        ? l.name.toLowerCase().includes(term.toLowerCase()) ||
+          l.phone.includes(term) ||
+          l.email?.toLowerCase().includes(term.toLowerCase())
+        : true;
+
+      // בדיקת סטטוס - אם יש סטטוס לחיפוש
+      const statusMatch = searchStatus
+        ? l.status?.toLowerCase().trim() === searchStatus.toLowerCase().trim()
+        : true;
+
+      // לוג לבדיקה
+      console.log(`בדיקה לליד id=${l.id}, status=${l.status}, textMatch=${textMatch}, statusMatch=${statusMatch}`);
+
+      return textMatch && statusMatch;
+    });
+
+    console.log("לידים לאחר סינון:", filtered);
 
     if (filtered.length > 0) {
+      setIsSearching(true);
       setLeads(filtered);
     } else {
+      // חיפוש בשרת אם אין תוצאות בסינון מקומי
       axios
-        .get("http://localhost:3001/api/leads/filter", {
-          params: { q: term, page: 1, limit: 50 },
+        .get(`${process.env.REACT_APP_API_URL}/leads/search`, {
+          params: { q: term },
         })
-        .then((response) => {
-          setLeads(response.data);
+        .then((res) => {
+          setIsSearching(true);
+          if (res.data.length > 0) {
+            setLeads(res.data);
+          } else {
+            setLeads([]);
+          }
         })
-        .catch((error) => {
-          console.error("Error searching from server:", error);
+        .catch((err) => {
+          console.error("שגיאה בחיפוש מהשרת:", err);
+          setLeads([]);
         });
     }
   };
 
-  // const handleDeleteLeads = (id: string) => {
-  //   setLeads((prev) => prev.filter((l) => l.id !== id));
-  //   setAllLeads((prev) => prev.filter((l) => l.id !== id)); // גם מהמאגר הכללי
-  // };
-  const navigate = useNavigate();
-
-  // const deleteCurrentLead = async (id: string) => {
-  //   try {
-  //     await deleteLead(id);
-  //     //לראות איך לעדכן את הנתונים או שיעבוד הרפרוש או לרפרש שוב
-  //     fetchLeads();
-  //     alert("מתעניין נמחק בהצלחה");
-  //   } catch (error) {
-  //     console.error("שגיאה במחיקת מתעניין:", error);
-  //     alert("מחיקה נכשלה");
-  //   }
-  // };
-
+  const deleteCurrentLead = async (id: string) => {
+    try {
+      // await deleteLead(id);
+      setLeads((prev) => prev.filter((l) => l.id !== id));
+      allLeadsRef.current = allLeadsRef.current.filter((l) => l.id !== id);
+      alert("מתעניין נמחק בהצלחה");
+    } catch (error) {
+      console.error("שגיאה במחיקה:", error);
+      alert("מחיקה נכשלה");
+    }
+  };
 
   return (
-    <div style={{ direction: "rtl", padding: "20px" }}>
-      <h2 className="text-3xl font-bold text-center text-blue-600 my-4">מתעניינים</h2>
-      <Button
-        variant="primary"
-        size="sm"
-        onClick={() => navigate("intersections")}
-      >
-        אינטראקציות של מתעניינים
-      </Button>
-      <Button
-        onClick={() => navigate("interestedCustomerRegistration")}
-        variant="primary"
-        size="sm"
-      >
-        הוספת מתעניין חדש
-      </Button>
-      <br />
-      <br />
-      <SearchLeads
-        term={searchTerm}
-        setTerm={setSearchTerm}
-        onSearch={handleSearch}
-      />
-      {/* <LeadHomePage leads={leads} onDelete={deleteCurrentLead} /> */}
-      <div ref={loaderRef} style={{ height: "1px" }} />
-    </div>
+    <>
+      {isLoading ? (
+        <h2 className="text-3xl font-bold text-center text-blue-600 my-4">
+          טוען...
+        </h2>
+      ) : (
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-extralight text-slate-900 mb-4 tracking-wide">מתעניינים</h2>
+              <div className="w-24 h-px bg-slate-300 mx-auto mb-8"></div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-4 mb-8 justify-center">
+              <button 
+                onClick={() => navigate("newLead")}
+                className="group flex items-center gap-3 px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                הוספת מתעניין חדש
+              </button>
+              
+              <button 
+                onClick={() => navigate("intersections")}
+                className="group flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                אינטראקציות
+              </button>
+              
+              <button 
+                onClick={() => navigate("LeadSourcesPieChart")}
+                className="group flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                גרף מקורות
+              </button>
+            </div>
+
+            {/* Search Section */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
+              <SearchLeads
+                term={searchTerm}
+                setTerm={setSearchTerm}
+                status={status}
+                setStatus={setStatus}
+                onSearch={handleSearch}
+              />
+            </div>
+
+            {/* Table Section */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+              <LeadsTable leads={leads} onDelete={deleteCurrentLead} />
+            </div>
+            
+            <div ref={loaderRef} className="h-4 mt-8" />
+          </div>
+        </div>
+      )}
+    </>
   );
 };

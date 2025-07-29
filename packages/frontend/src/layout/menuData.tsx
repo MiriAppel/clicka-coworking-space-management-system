@@ -22,8 +22,8 @@ export const menus: Menu[] = [
       { label: 'סקירה כללית', path: '/dashboard' },
       { label: 'חוזים קרובים', path: '/dashboard/contracts' },
       { label: 'תשלומים אחרונים', path: '/dashboard/payments' },
-      { label: 'מפת חללים', path: '/workspaceMap' }
-
+      { label: 'מפת חללים', path: '/workspaceMap' },
+      { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
     ]
   },
   {
@@ -34,6 +34,7 @@ export const menus: Menu[] = [
       { label: 'מתעניינים', path: '/leadAndCustomer/leads' },
       { label: 'לקוחות', path: '/leadAndCustomer/customers' },
       { label: 'חוזים', path: '/leadAndCustomer/contracts' },
+      { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
       { label: 'היסטוריית לקוח', path: '/customerHistory' }
     ]
   },
@@ -42,9 +43,12 @@ export const menus: Menu[] = [
     title: 'חללים',
     icon: <Map size={18} style={{ marginLeft: 8 }} />,
     items: [
+      {label: 'ניהול חדרים', path: '/rooms' },
       { label: 'מפה', path: '/workspaceMap' },
-      { label: 'הקצאות', path: '/workspaceAssign' },
-      { label: 'ישיבות', path: '/meetingRooms' }
+      { label: 'הקצאות', path: '/assignmentTable' },
+      { label: 'ישיבות', path: '/bookingCalendar' },
+      { label: 'ניהול', path: '/managementWorkspace' },
+      { label: 'הזמנות', path: '/bookings' }
     ]
   },
   {
@@ -53,10 +57,10 @@ export const menus: Menu[] = [
     icon: <FileText size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'חשבוניות', path: '/billing/invoiceManagement' },
-      { label: 'תשלומים', path: '/billing/payments' },
+      { label: 'גבייה', path: '/billing/collection' },
+      { label: 'תשלומים', path: '/payments' },
       { label: 'הוצאות', path: '/expenses' },
-      { label: 'תמחור', path: '/pricing' } // הוספתי כאן
-
+      { label: 'תמחור', path: '/pricing' }
     ]
   },
   {
@@ -75,9 +79,11 @@ export const menus: Menu[] = [
     icon: <Settings size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'משתמשים', path: '/users' },
+      { label: 'פעולות משתמשים', path: '/UserActions' },
       { label: 'הרשאות', path: '/permissions' },
       { label: 'הגדרות', path: '/settings' },
-      { label: 'אינטגרציות', path: '/integrations' }
+      { label: 'אינטגרציות', path: '/integrations' },
+      { label: 'העלאת מסמכים', path: '/documentUpload' }
     ]
   },
   {
@@ -85,6 +91,7 @@ export const menus: Menu[] = [
     title: 'תקשורת',
     icon: <Mail size={18} style={{ marginLeft: 8 }} />,
     items: [
+      { label: 'תבניות מייל', path: '/emailTemplate' },
       { label: 'תבניות מייל', path: '/emailTemplate' },
       { label: 'תבניות מסמכים', path: '/document-templates' },
       { label: 'שליחת מיילים', path: '/sendEmails' },

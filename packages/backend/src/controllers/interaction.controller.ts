@@ -51,3 +51,15 @@ export const patchInteractions = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error updating interactions', error });
     }
 }
+
+export const patchInteraction = async (req: Request, res: Response) => {
+    const data: LeadInteractionModel = req.body; 
+    const { id } = req.params; 
+    try {
+        await serviceInteraction.patch(data , id);
+        res.status(200).json({ message: 'Interactions updated' });
+    } 
+    catch (error) {
+        res.status(500).json({ message: 'Error updating interactions', error });
+    }
+}

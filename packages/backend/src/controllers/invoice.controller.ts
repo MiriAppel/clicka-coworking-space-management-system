@@ -1,97 +1,192 @@
-import { Request, Response } from "express";
-import { createManualInvoice, customizeInvoiceTemplate } from "../services/invoice.service";
-import type{ CreateInvoiceRequest } from "shared-types";
-import { CustomerModel } from "../models/customer.model";
-import { customerService } from "../services/customer.service";
-//crud functions
+import { Request, Response } from 'express';
+import {
+  serviceCreateInvoice,
+  serviceGetAllInvoices,
+  serviceGetAllInvoiceItems,
+  serviceGetInvoiceById,
+  serviceUpdateInvoice,
+  serviceDeleteInvoice,
+  serviceGetCustomersCollection,
+  sendStatusChangeEmails
+  
+} from "../services/invoice.service";
+import { BillingItem, ID } from "shared-types";
+import { InvoiceModel } from '../models/invoice.model';
+import { UUID } from 'crypto';
+import { UserTokenService } from '../services/userTokenService';
 
 /**
  * בקר ליצירת חשבונית ידנית
  */
-export const createInvoice = async (req: Request, res: Response) => {
+// יצירת חשבונית חדשה
+export async function createInvoice(req: Request, res: Response): Promise<void> {
   try {
-    const invoice = await createManualInvoice(req.body); // יצירת חשבונית ידנית
-    res.status(201).json(invoice);
+    const invoiceData: Partial<InvoiceModel> = req.body;
+    const newInvoice = await serviceCreateInvoice(invoiceData);
+    res.status(201).json({
+      success: true,
+      message: 'חשבונית נוצרה בהצלחה',
+      data: newInvoice
+    });
   } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
+    res.status(500).json({
+      success: false,
+      message: 'שגיאה ביצירת החשבונית',
+      error: error instanceof Error ? error.message : 'שגיאה לא ידועה'
+    });
+  }
+}
+
+
+
+// /**
+//  * בקר לקבלת כל החשבוניות
+//  */
+export const getAllInvoices = async (_req: Request, res: Response) => {
+  try {
+    const invoices = await serviceGetAllInvoices();
+    res.status(200).json({
+      message: `נמצאו ${invoices.length} חשבוניות`,
+      invoices
+    });
+  } catch (error) {
+    console.error(' CONTROLLER: שגיאה:', error);
+    res.status(500).json({ message: (error as Error).message });
+  }
+};
+
+//  * בקר לקבלת כל פרטי החשבוניות
+//  */
+export const getAllInvoiceItems = async (req: Request, res: Response) => {
+
+  try {
+    const invoiceId = req.params.invoice_id as UUID;
+    const invoiceItems = await serviceGetAllInvoiceItems(invoiceId);
+    res.status(200).json({
+      message: `נמצאו ${invoiceItems.length} חשבוניות`,
+      invoiceItems
+    });
+  } catch (error) {
+    console.error(' CONTROLLER: שגיאה:', error);
+    res.status(500).json({ message: (error as Error).message });
+  }
+};
+
+
+
+/**
+ * בקר לקבלת חשבונית לפי מזהה
+ */
+export const getInvoiceById = async (req: Request, res: Response): Promise<void> => {
+  console.log('=== getInvoiceById CALLED ===');
+  console.log('Full URL:', req.url);
+  console.log('Params:', req.params);
+  try {
+    const id = req.params.id as ID;
+    const invoice = await serviceGetInvoiceById(id);
+
+    if (!invoice) {
+      res.status(404).json({ message: "חשבונית לא נמצאה" });
+      return;
+    }
+
+    res.status(200).json(invoice);
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message });
   }
 };
 
 /**
- * בקר ליצירת חשבוניות אוטומטיות (למשל ללקוחות חוזיים)
+ * בקר לעדכון חשבונית
  */
-export const generateInvoices = async (_req: Request, res: Response) => {
-  // try {
-  //   const customers = await getAllActiveCustomers(); // דוגמה: שליפה מבסיס נתונים
-  //   const generatedInvoices = [];
+export const updateInvoice = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id as ID;
+    const updateData = req.body;
+    const updatedInvoice = await serviceUpdateInvoice(id, updateData);
+    if (!updatedInvoice) {
+      res.status(404).json({ message: "חשבונית לא נמצאה" });
+      return;
+    }
+    res.status(200).json({
+      message: "חשבונית עודכנה בהצלחה",
+      invoice: updatedInvoice
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: (error as Error).message,
+      details: error instanceof Error ? error.stack : 'Unknown error'
+    });
+  }
+};
 
-    // for (const customer of customers) {
-    //   const items = await getItemsForCustomer(customer.id);
-
-    //   if (!items.length) continue;
-
-    //   const invoiceRequest: CreateInvoiceRequest = {
-    //     customerId: customer.id,
-    //     billingPeriod: {
-    //       startDate: getStartOfMonth(),
-    //       endDate: getEndOfMonth(),
-    //     },
-    //     due_Date: getEndOfMonth(),
-    //     items,
-    //     notes: "", // אופציונלי
-    //   };
-
-      // const invoice = await createInvoice(invoiceRequest, { auto: true });
-      // generatedInvoices.push(invoice);
+/**
+ * בקר למחיקת חשבונית
+ */
+export const deleteInvoice = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const id = req.params.id; // זהו ה-ID שמתקבל מה-URL
+    if (!id) {
+      throw new Error("ID לא נמצא ב-params");
+    }
+    const isDeleted = await serviceDeleteInvoice(id);
+    if (!isDeleted) {
+      res.status(404).json({ message: "חשבונית לא נמצאה" });
+      return;
     }
 
-//     res.status(201).json({
-//       // message:` נוצרו ${generatedInvoices.length} חשבוניות`,
-//       // invoices: generatedInvoices,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: (error as Error).message });
-//   }
-// };
-//לרחל
-// יצירת חשבונית ידנית
-export const createManualInvoiceController = (req: Request, res: Response) => {
-  try {
-    // req.body צריך להכיל את כל שדות החשבונית
-    const invoice = createManualInvoice(req.body);
-    res.status(201).json(invoice);
+    res.status(200).json({ message: "חשבונית נמחקה בהצלחה" });
   } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
-  }
-};
-//לנחמה
-// התאמה אישית של תבנית החשבונית
-export const customizeInvoiceTemplateController = (req: Request, res: Response) => {
-  try {
-    // req.body.invoice - החשבונית המקורית
-    // req.body.customTemplateId - מזהה/HTML של התבנית החדשה
-    const invoice = customizeInvoiceTemplate(req.body.invoice, req.body.customTemplateId);
-    res.status(200).json(invoice);
-  } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
+    console.error("שגיאה במהלך מחיקת החשבונית:", error);
+    res.status(500).json({ message: (error as Error).message });
   }
 };
 
-function getAllActiveCustomers() {
 
-  throw new Error("Function not implemented.");
-}
 
-function getItemsForCustomer(id: any) {
 
-  throw new Error("Function not implemented.");
-}
+//בקר לקבלת פרטי הגבייה 
 
-function getStartOfMonth() {
-  throw new Error("Function not implemented.");
-}
+export const getCustomersCollection = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const collectionDetails = await serviceGetCustomersCollection();
+    res.status(200).json({
+      message: "הפרטים של הגבייה נמצאו בהצלחה",
+      collectionDetails
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "אירעה שגיאה בעת שליפת פרטי הגבייה",
+      error: (error as Error).message
+    });
+  }
+}; 
 
-function getEndOfMonth() {
-  throw new Error("Function not implemented.");
-}
 
+
+export const sendEmail = async (req: Request, res: Response) => {
+  try {
+    console.log("sendEmail called with params:", req.params);
+    const userTokenService = new UserTokenService();
+    const customerName = req.body.customerName;
+    const amount = req.body.amount;
+    const invoiceNumber = req.body.invoiceNumber;
+    const token = await userTokenService.getSystemAccessToken();
+    console.log("sendEmail called with token:", token);
+    if (!token) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: missing access token" });
+    }
+    if (!customerName || !amount || !invoiceNumber) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+    await sendStatusChangeEmails(customerName, amount, invoiceNumber, token);
+    res
+      .status(200)
+      .json({ message: "Status change processed and emails sent." });
+  } catch (error) {
+    console.error("Error in sendEmail:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

@@ -7,7 +7,6 @@ const userController = new UserController();
 const userRouter = Router();
 
 //לברר איזה הרשאות יש לכל משתמש
-//authorizeUser([UserRole.ADMIN,UserRole.MANAGER])
 
 //get
 userRouter.get("/loginByGoogleId/:googleId", userController.loginByGoogleId.bind(userController));
@@ -20,16 +19,17 @@ userRouter.get("/getUserByEmail/:email", userController.getUserByEmail.bind(user
 
 //post
 
-userRouter.post("/createUser", userController.createUser.bind(userController));
+userRouter.post("/createUser", authorizeUser([UserRole.ADMIN,UserRole.MANAGER]),
+userController.createUser.bind(userController));
 
 userRouter.put("/updateGoogleIdUser/:id", userController.updateGoogleIdUser.bind(userController));
 
 //put
 
-userRouter.put("/updateUser/:id", userController.updateUser.bind(userController));
+userRouter.put("/updateUser/:id", authorizeUser([UserRole.ADMIN]), userController.updateUser.bind(userController));
 
 //delete
 
-userRouter.delete("/deleteUser/:id", userController.deleteUser.bind(userController));
+userRouter.delete("/deleteUser/:id", authorizeUser([UserRole.ADMIN]), userController.deleteUser.bind(userController));
 
 export default userRouter;

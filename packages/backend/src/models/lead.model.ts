@@ -1,9 +1,11 @@
 
-import type{ ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } from "shared-types";
+import { UUID } from "node:crypto";
+import type { ID, Lead, LeadInteraction, LeadSource, LeadStatus, WorkspaceType } from "shared-types";
+import { LeadInteractionModel } from "./leadInteraction.model";
 
 export class LeadModel implements Lead {
-  
-  id?: ID; // PK
+
+  id?: UUID; // PK
   idNumber: ID; // FK
   name: string;
   phone: string;
@@ -19,8 +21,8 @@ export class LeadModel implements Lead {
   followUpDate?: string | undefined;
   notes?: string | undefined;
 
-    constructor( 
-    id: ID,
+  constructor(
+    id: UUID,
     idNumber: ID,
     name: string,
     phone: string,
@@ -66,12 +68,13 @@ export class LeadModel implements Lead {
       contact_date: this.contactDate,
       follow_up_date: this.followUpDate,
       notes: this.notes,
-      interactions: this.interactions,
       created_at: this.createdAt,
       updated_at: this.updatedAt,
     }
   }
+  
   static fromDatabaseFormat(dbData: any): LeadModel {
+    const interactions = LeadInteractionModel.fromDatabaseFormatArray(dbData.lead_interaction || []);
     return new LeadModel(
       dbData.id,
       dbData.id_number,
@@ -85,14 +88,17 @@ export class LeadModel implements Lead {
       dbData.contact_date,
       dbData.follow_up_date,
       dbData.notes,
-      dbData.interactions,
+      interactions,
       dbData.created_at,
       dbData.updated_at
     );
   }
 
   static fromDatabaseFormatArray(dbDataArray: any[]): LeadModel[] {
-    return dbDataArray.map(dbData => LeadModel.fromDatabaseFormat(dbData));
+    return dbDataArray.map(dbData => {
+      let lead = LeadModel.fromDatabaseFormat(dbData);
+      return lead
+    });
   }
 
 }

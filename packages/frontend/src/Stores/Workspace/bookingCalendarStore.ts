@@ -1,7 +1,5 @@
 import { create } from "zustand";
-import axios from "axios";
 import type { Booking } from "./../../../../shared-types";
-import type { ApiResponse } from "./../../../../shared-types";
 
 interface BookingCalendarState {
     bookings: Booking[];
@@ -19,8 +17,8 @@ const mockBookings: Booking[] = [
         id: "1",
         roomId: "101",
         customerName: "דני",
-        startTime: "2024-06-20T10:00:00",
-        endTime: "2024-06-20T11:00:00",
+        startTime: "2025-07-20T10:00:00",
+        endTime: "2025-07-20T11:00:00",
         status: "APPROVED"
     } as Booking
 ];
