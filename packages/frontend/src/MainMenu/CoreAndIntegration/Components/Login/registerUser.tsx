@@ -68,7 +68,7 @@ export const RegisterUser = () => {
                 <InputField name="password" label="סיסמה" type={showPassword ? "text" : "password"} required placeholder="password" />
                 <button
                     type="button"
-                    className="absolute right-2 top-2"
+                    className="absolute left-2 top-9"
                     onClick={() => setShowPassword(prev => !prev)}>
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>

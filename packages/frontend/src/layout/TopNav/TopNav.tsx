@@ -5,7 +5,7 @@ import MobileMenu from '../MobileMenu/MobileMenu';
 import { useMediaQuery } from 'react-responsive';
 import { menus } from '../menuData';
 import { T } from '../../Common/Service/T';
-import logo from '../Assets/Klika Logo.jpg'; 
+import logo from '../Assets/Klika Logo.jpg';
 import { useAuthStore } from '../../Stores/CoreAndIntegration/useAuthStore';
 import { LogoutButton } from '../../MainMenu/CoreAndIntegration/Components/Login/LogoutButton';
 
@@ -17,7 +17,7 @@ const TopNav = () => {
   const navigate = useNavigate();
   const [clickedMenuKey, setClickedMenuKey] = useState<string>('');
   const { user } = useAuthStore();
-  console.log('user: ',user)
+  console.log('user: ', user)
 
   const isMenuOpen = (menu: string) =>
     openMenu === menu || (hoveredMenu === menu && !openMenu);
@@ -65,9 +65,8 @@ const TopNav = () => {
           {menus.map(menu => (
             <li
               key={menu.key}
-              className={`${styles.navItem} ${
-                clickedMenuKey === menu.key ? styles.activeLink : ''
-              }`}
+              className={`${styles.navItem} ${clickedMenuKey === menu.key ? styles.activeLink : ''
+                }`}
               onMouseEnter={() => setHoveredMenu(menu.key)}
               onMouseLeave={() => setHoveredMenu(null)}
             >
@@ -99,7 +98,7 @@ const TopNav = () => {
           ))}
         </ul>
       )}
-     {user && (
+      {user && (
         <div
           style={{
             marginLeft: 'auto',
@@ -119,14 +118,13 @@ const TopNav = () => {
               {user.firstName} {user.lastName}
             </span>
           </div>
-<LogoutButton></LogoutButton>
-
+          <LogoutButton></LogoutButton>
         </div>
       )}
     </nav>
 
   );
-  
+
 };
 
 export default TopNav;

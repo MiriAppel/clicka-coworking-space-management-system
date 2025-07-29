@@ -13,7 +13,6 @@ import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
 import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
-import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
 import { UserTable } from './MainMenu/CoreAndIntegration/Components/User/ShowAllUsers';
@@ -78,7 +77,7 @@ export const Routing = () => {
         <Route path="expenses" element={<ExpenseList />} />
         <Route path="expenses/expense-form" element={<CreateExpenseForm />} />
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
-        <Route path="workspaceMap" element={<WorkspaceMap />} />
+        {/* <Route path="workspaceMap" element={<WorkspaceMap />} /> */}
         <Route path="assignmentForm" element={<AssignmentForm />} />
         <Route path="assignmentTable" element={<AssigmentTable />} />
         <Route path="updateAssignment" element={<UpdateAssigenment />} />
