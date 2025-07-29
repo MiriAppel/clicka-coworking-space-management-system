@@ -1,7 +1,7 @@
 import { baseService } from "./baseService";
 import { LeadModel } from "../models/lead.model";
 import Papa, { parse } from "papaparse";
-import { ID, LeadSource, UpdateLeadRequest } from "shared-types";
+import { ID, LeadSource, LeadStatus, UpdateLeadRequest } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 
 export class leadService extends baseService<LeadModel> {
@@ -11,8 +11,8 @@ export class leadService extends baseService<LeadModel> {
 
   getAllLeads = async (): Promise<LeadModel[] | null> => {
     const leads = await this.getAll();
-    return LeadModel.fromDatabaseFormatArray(leads) // המרה לסוג UserModel
-  }
+    return LeadModel.fromDatabaseFormatArray(leads); // המרה לסוג UserModel
+  };
 
   getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
     const { data, error } = await supabase
@@ -124,45 +124,89 @@ export class leadService extends baseService<LeadModel> {
       );
     }
 
-    const leads =  data || [];
-    
-    return LeadModel.fromDatabaseFormatArray(leads)
+    const leads = data || [];
+    return LeadModel.fromDatabaseFormatArray(leads);
   };
 
-  addInteraction = async (leadId: string, interaction: { type: string; date: string; notes: string; userEmail: string }) => {
+  addInteraction = async (
+    leadId: string,
+    interaction: {
+      type: string;
+      date: string;
+      notes: string;
+      userEmail: string;
+    }
+  ) => {
     console.log(leadId, interaction);
 
-    const { data, error } = await supabase
-      .from("lead_interaction")
-      .insert([
-        {
-          lead_id: leadId,
-          type: interaction.type.toUpperCase(),
-          date: interaction.date,
-          notes: interaction.notes,
-          user_email: interaction.userEmail,
-          user_id: leadId
-        },
-      ]);
-    if (data)
-      return data;
-    if (error) console.log(error);;
-  }
+    const { data, error } = await supabase.from("lead_interaction").insert([
+      {
+        lead_id: leadId,
+        type: interaction.type.toUpperCase(),
+        date: interaction.date,
+        notes: interaction.notes,
+        user_email: interaction.userEmail,
+        user_id: leadId,
+      },
+    ]);
+    if (data) return data;
+    if (error) console.log(error);
+  };
 
+  createLead = async (newLead: any): Promise<LeadModel> => {
+    // יצירת אובייקט LeadModel
+    const leadData: LeadModel = {
+      idNumber: newLead.idNumber,
+      name: newLead.name,
+      phone: newLead.phone,
+      email: newLead.email,
+      businessType: newLead.businessType,
+      interestedIn: newLead.interestedIn,
+      source: newLead.source,
+      status: LeadStatus.NEW, // או כל סטטוס רלוונטי אחר
+      contactDate: newLead.contactDate,
+      followUpDate: newLead.followUpDate,
+      notes: newLead.notes,
+      interactions: [], // אם יש אינטראקציות, תוכל להעביר אותן כאן
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      toDatabaseFormat() {
+        return {
+          id_number: this.idNumber,
+          name: this.name,
+          phone: this.phone,
+          email: this.email,
+          business_type: this.businessType,
+          interested_in: this.interestedIn,
+          source: this.source,
+          status: this.status,
+          contact_date: this.contactDate,
+          follow_up_date: this.followUpDate,
+          notes: this.notes,
+          created_at: this.createdAt,
+          updated_at: this.updatedAt,
+        };
+      },
+    };
+    // הוספת הליד למסד הנתונים
+    const savedLead = await this.post(leadData);
+    return savedLead;
+  };
 
-
-  deleteInteraction = async (leadId: string, interactionId: string): Promise<void> => {
+  deleteInteraction = async (
+    leadId: string,
+    interactionId: string
+  ): Promise<void> => {
     try {
       // שליחה של בקשה למחוק אינטראקציה מתוך המערך
       const { data, error } = await supabase
-        .from('lead_interaction')
+        .from("lead_interaction")
         .delete()
-        .eq('id', interactionId)
-        .eq('lead_id', leadId);
+        .eq("id", interactionId)
+        .eq("lead_id", leadId);
 
       if (error) {
-        console.log(error + '--------------------------');
-
+        console.log(error + "--------------------------");
       }
       // console.log(data); // יוכל להדפיס את התוצאה של העדכון
     } catch (error) {
@@ -172,29 +216,22 @@ export class leadService extends baseService<LeadModel> {
   };
 
   getLeadsByText = async (text: string): Promise<LeadModel[]> => {
-  const searchFields = ["name", "status", "phone", "email", "city"]; // כל השדות שאת רוצה לבדוק בהם
+    const searchFields = ["name", "status", "phone", "email", "city"]; // כל השדות שאת רוצה לבדוק בהם
 
-  const filters = searchFields
-    .map((field) => `${field}.ilike.%${text}%`)
-    .join(",");
+    const filters = searchFields
+      .map((field) => `${field}.ilike.%${text}%`)
+      .join(",");
 
-  const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .or(filters);
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .or(filters);
 
-  if (error) {
-    console.error("שגיאה:", error);
-    return [];
-  }
+    if (error) {
+      console.error("שגיאה:", error);
+      return [];
+    }
 
-  return data as LeadModel[];
-};
-
-  
-      
-  
+    return data as LeadModel[];
+  };
 }
-
-
-

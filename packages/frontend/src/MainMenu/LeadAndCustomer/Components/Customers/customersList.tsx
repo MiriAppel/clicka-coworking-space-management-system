@@ -6,9 +6,11 @@ import { ExportToExcel } from "../exportToExcel";
 import { Stack, TextField } from "@mui/material";
 import debounce from "lodash/debounce";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
-import { ShowAlertWarn } from "../../../../Common/Components/showAlertWarn";
+import { ShowAlertWarn } from "../../../../Common/Components/BaseComponents/showAlertWarn";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
 import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import {
   CustomerStatus,
@@ -49,7 +51,6 @@ export const CustomersList = () => {
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-  // const [term, setTerm] = useState("");
 
   const {
     customers,
@@ -64,27 +65,18 @@ export const CustomersList = () => {
     fetchPrevPage,
   } = useCustomerStore();
 
-
   useEffect(() => {
     fetchCustomersByPage()
   }, [fetchCustomersByPage]);
 
-  // הפונקציה שמטפלת בשינוי החיפוש
-  const handleSearch = (term: string) => {
-    searchCustomersInPage(term)
-      .then(() => {
-      })
-  };
-
 
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
-    const confirmed = await ShowAlertWarn('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?', 'לא ניתן לשחזר את המידע לאחר מחיקה.');
+    const confirmed = await ShowAlertWarn('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?', 'לא ניתן לשחזר את המידע לאחר מחיקה.', "warning");
     if (confirmed) {
       await deleteCustomer(val.id);
       showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
       const latestError = useCustomerStore.getState().error;
       if (latestError) {
-        // נניח שהשגיאה מכילה את ההודעה שהגדרת ב-store
         const errorMessage = latestError || 'שגיאה בלתי צפויה';
         console.error('Error:', errorMessage);
         showAlert("שגיאה במחיקת לקוח", errorMessage, "error");
@@ -95,10 +87,15 @@ export const CustomersList = () => {
   const editCustomer = (val: ValuesToTable) => {
     const selected = customers.find((c) => c.id === val.id);
     console.log("selected customer", selected);
-
     navigate("update", { state: { data: selected } });
   };
 
+  // הפונקציה שמטפלת בשינוי החיפוש
+  const handleSearch = (term: string) => {
+    searchCustomersInPage(term)
+      .then(() => {
+      })
+  };
 
   const debouncedSearch = useRef(
     debounce((value: string) => handleSearch(value), 400)
@@ -107,9 +104,7 @@ export const CustomersList = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     const value = e.target.value;
-    console.log("value", value);
 
-    // setTerm(value);
     setSearchTerm(value);
     debouncedSearch(value);
   }
@@ -176,6 +171,7 @@ export const CustomersList = () => {
           value={searchTerm}
           onChange={handleChange}
           onKeyDown={searchInApi}
+          placeholder="חפש לקוחות לפי שם, טלפון, אימייל, שם עסק או סוג עסק"
         />
       </Stack>
 
@@ -190,7 +186,6 @@ export const CustomersList = () => {
             />
           ))}
         </div>
-
         {loading && (
           <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
@@ -207,8 +202,10 @@ export const CustomersList = () => {
               await fetchPrevPage();
             }
           }}
+          className="flex items-center"
         >
-          <span>❮❮</span> הקודם
+          <ArrowForwardIcon className="ml-1" />
+          הקודם
         </Button>
         <Button
           variant={customers.length === limit ? "secondary" : "accent"}
@@ -218,8 +215,10 @@ export const CustomersList = () => {
               await fetchNextPage();
             }
           }}
+          className="flex items-center"
         >
-          הבא <span>❯❯</span>
+          הבא
+          <ArrowBackIcon className="mr-1" />
         </Button>
       </div>
 

@@ -45,7 +45,7 @@ export const createLead = async (req: Request, res: Response) => {
     const leadData: LeadModel = req.body;
     console.log(leadData);
 
-    const newLead = await serviceLead.post(leadData);
+    const newLead = await serviceLead.createLead(leadData);
 
     res.status(201).json(newLead);
   } catch (error: any) {

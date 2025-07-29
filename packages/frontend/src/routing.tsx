@@ -5,13 +5,14 @@ import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/L
 import { ProtectedRoute } from './MainMenu/CoreAndIntegration/Components/Login/ProtectedRoute';
 
 import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
+import { LeadAndCustomer } from './MainMenu/LeadAndCustomer/Components/leadAndCustomer';
+import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import { LeadAndCustomerRouting } from './MainMenu/LeadAndCustomer/Components/LeadAndCustomerRouting';
 import VendorsList from './MainMenu/Billing/Components/Vendor-management/VendorsList';
 import { getAllVendors } from './Api/vendor-api';
 import { Vendor } from 'shared-types';
 import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
-import { CreateExpenseForm } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import { BookingCalendar } from './MainMenu/Workspace/Components/bookingCalendar';
 import { ManagementWorkspace } from './MainMenu/Workspace/Components/managementWorkspace';
@@ -33,6 +34,7 @@ import { Report } from './MainMenu/Workspace/Components/report';
 import { AssigmentTable } from './MainMenu/Workspace/Components/assigenmentTable';
 import { UpdateAssigenment } from './MainMenu/Workspace/Components/updateAssigenment';
 import { AssignmentForm } from './MainMenu/Workspace/Components/assignmentForm';
+import DocumentUpload from './MainMenu/CoreAndIntegration/Components/DocumentUpload';
 import PettyCashPage from './MainMenu/Billing/Components/expenseManagementSystem/PettyCashPage';
 import { RoomManager } from './MainMenu/Workspace/Components/RoomManager';
 
@@ -77,10 +79,10 @@ export const Routing = () => {
         <Route path="expenses" element={<ExpenseList />} />
         <Route path="expenses/expense-form" element={<CreateExpenseForm />} />
         <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} />
-        {/* <Route path="workspaceMap" element={<WorkspaceMap />} /> */}
-        <Route path="assignmentForm" element={<AssignmentForm />} />
-        <Route path="assignmentTable" element={<AssigmentTable />} />
-        <Route path="updateAssignment" element={<UpdateAssigenment />} />
+        <Route path="/workspaceMap" element={<WorkspaceMap />} />
+        <Route path="assignmentForm" element={<AssignmentForm/>} />
+        <Route path="assignmentTable" element={<AssigmentTable/>} />
+        <Route path="updateAssignment" element={<UpdateAssigenment/>} />
         <Route path="bookings" element={<BookingTable />} />
         <Route path="updateBooking" element={<UpdateBooking />} />
         <Route path="bookingCalendar" element={<BookingCalendar roomId="" roomName="" />} />
@@ -90,6 +92,7 @@ export const Routing = () => {
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
         <Route path="expense-form" element={<CreateExpenseForm />} />
+        {/* <Route path="billing/*" element={<Billing />} /> */}
         <Route path="users" element={< UserTable />} />
         {/* <Route path="meetingRooms" element={<RoomReservations />} /> */}
         <Route path="UserActions" element={< AuditLogTable />} />
@@ -105,6 +108,7 @@ export const Routing = () => {
         <Route path="/billing/collection" element={< Collection />} />
                 <Route path="/rooms" element={<RoomManager />} />
         <Route path="/petty-cash" element={<PettyCashPage />} />
+        <Route path="/documentUpload" element={< DocumentUpload />} />
         <Route path="/registerUser" element={<RegisterUser />} />
 
       </Route>
