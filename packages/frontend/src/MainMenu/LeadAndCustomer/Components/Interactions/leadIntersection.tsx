@@ -1,27 +1,15 @@
-// LeadInteractions.tsx
 import { useEffect, useRef, useState } from "react";
 import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 import { Lead } from "shared-types";
 import { LeadInteractionDetails } from "./leadInteractionDetails";
 import { SearchLeads } from "../Leads/SearchLeads";
+import { Building2, Calendar, ChevronDown, ChevronUp, FileText, Mail, Phone, ScrollText } from "lucide-react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import {
-  ChevronDown,
-  ChevronUp,
-  Mail,
-  Phone,
-  Building2,
-  Calendar,
-  FileText,
-  ScrollText,
-} from "lucide-react";
-
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
-
 export const LeadInteractions = () => {
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -29,70 +17,79 @@ export const LeadInteractions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
+  const [status, setStatus] = useState("");//הוספה
+const navigate = useNavigate();
   const allLeadsRef = useRef<Lead[]>([]);
-  const navigate = useNavigate();
-
   const {
     leads,
     fetchLeads,
     handleDeleteLead,
     handleSelectLead,
     resetSelectedLead,
-    selectedLead,
   } = useLeadsStore();
-
+  const selectedLead = useLeadsStore((state) => state.selectedLead);
+  useEffect(() => {
+    fetchLeads().then(() => {
+      allLeadsRef.current = useLeadsStore.getState().leads;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]); // לא fetchLeads – רק page
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
+        !isSearching
+      ) {
+        setPage((prevPage) => prevPage + 1); // יגרום ל־useEffect לעיל לקרוא שוב ל־fetchLeads
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSearching]);
   const handleRegistration = (lead: Lead | undefined) => {
     if (lead) {
       navigate("interestedCustomerRegistration", { state: { data: lead } });
     }
   };
-
-  useEffect(() => {
-    fetchLeads().then(() => {
-      allLeadsRef.current = useLeadsStore.getState().leads;
+  const handleSearch = (term: string, status: string = "") => {
+  setSearchTerm(term);
+  setStatus(status);
+  setPage(1);
+  // אין טקסט ואין סטטוס => החזר הכל
+  if (!term.trim() && !status.trim()) {
+    setIsSearching(false);
+    useLeadsStore.setState({ leads: allLeadsRef.current });
+    return;
+  }
+  // :white_check_mark: אם כל הלידים טעונים (לא פונים לשרת בכלל)
+  if (allLeadsRef.current.length > 0) {
+    const filtered = allLeadsRef.current.filter((l) => {
+      const matchesTerm =
+        !term.trim() ||
+        l.name?.toLowerCase().includes(term.toLowerCase()) ||
+        l.phone?.includes(term) ||
+        l.email?.toLowerCase().includes(term.toLowerCase());
+      const matchesStatus = !status.trim() ||
+        l.status?.toLowerCase().trim() === status.toLowerCase().trim();
+      return matchesTerm && matchesStatus;
     });
-  }, [page,fetchLeads]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !isSearching) {
-        setPage((prev) => prev + 1);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [isSearching]);
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setPage(1);
-    if (!term.trim()) {
-      setIsSearching(false);
-      useLeadsStore.setState({ leads: allLeadsRef.current });
-      return;
-    }
-    const filtered = allLeadsRef.current.filter((l) =>
-      l.name?.toLowerCase().includes(term.toLowerCase()) ||
-      l.phone?.includes(term) ||
-      l.email?.toLowerCase().includes(term.toLowerCase())
-    );
-    if (filtered.length > 0) {
+    setIsSearching(true);
+    useLeadsStore.setState({ leads: filtered });
+    return;
+  }
+  // :white_check_mark: אם אין את כל הלידים טעונים => fallback לשרת
+  fetch(`${process.env.REACT_APP_API_URL}/leads/search?q=${term}&status=${status}`)
+    .then((res) => res.json())
+    .then((data: Lead[]) => {
       setIsSearching(true);
-      useLeadsStore.setState({ leads: filtered });
-    } else {
-      fetch(`http://localhost:3001/api/leads/search?q=${term}`)
-        .then((res) => res.json())
-        .then((data: Lead[]) => {
-          setIsSearching(true);
-          useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
-        })
-        .catch((err) => {
-          console.error("שגיאה בחיפוש מהשרת:", err);
-          useLeadsStore.setState({ leads: [] });
-        });
-    }
-  };
-
+      useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
+    })
+    .catch((err) => {
+      console.error("שגיאה בחיפוש מהשרת:", err);
+      useLeadsStore.setState({ leads: [] });
+    });
+};
   const isAlert = (lead: Lead): boolean => {
     switch (alertCriterion) {
       case "noRecentInteraction":
@@ -110,7 +107,6 @@ export const LeadInteractions = () => {
         return false;
     }
   };
-
   const getSortValue = (lead: Lead): string | number | Date => {
     switch (sortField) {
       case "name":
@@ -128,7 +124,6 @@ export const LeadInteractions = () => {
         return "";
     }
   };
-
   const sortedLeads = [...leads].sort((a, b) => {
     const aVal = getSortValue(a);
     const bVal = getSortValue(b);
@@ -136,13 +131,16 @@ export const LeadInteractions = () => {
     if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
-
   return (
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
-
-      <SearchLeads term={searchTerm} setTerm={setSearchTerm} onSearch={handleSearch} />
-
+      <SearchLeads
+        term={searchTerm}
+        setTerm={setSearchTerm}
+        status={status}        // :white_check_mark: הוספה
+        setStatus={setStatus}  // :white_check_mark: הוספה
+        onSearch={handleSearch}
+      />
       <div className="flex flex-wrap justify-center gap-4 mb-6 mt-4">
         <div className="flex flex-col items-start">
           <label className="mb-1 text-sm font-medium text-gray-700">מיין לפי:</label>
@@ -164,7 +162,7 @@ export const LeadInteractions = () => {
             onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
             className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-xl shadow transition"
           >
-            {sortOrder === "asc" ? "⬆️ עולה" : "⬇️ יורד"}
+            {sortOrder === "asc" ? ":arrow_up: עולה" : ":arrow_down: יורד"}
             <span className="hidden sm:inline">
               ({sortOrder === "asc" ? "מהקטן לגדול" : "מהגדול לקטן"})
             </span>
@@ -183,14 +181,13 @@ export const LeadInteractions = () => {
           </select>
         </div>
         <Button
-          onClick={() => navigate("interestedCustomerRegistration")}
+          onClick={() => navigate("newLead")}
           variant="primary"
           size="sm"
         >
           הוספת מתעניין חדש
         </Button>
       </div>
-
       {sortedLeads.map((lead) => (
         <LeadCard
           key={lead.id}
@@ -208,7 +205,6 @@ export const LeadInteractions = () => {
           }
         />
       ))}
-
       <Button
         onClick={() => navigate("/leadAndCustomer/leads/LeadSourcesPieChart")}
         variant="primary"
@@ -230,7 +226,6 @@ export const LeadInteractions = () => {
     </div>
   );
 };
-
 // LeadCard Component (עיצוב בלבד)
 const LeadCard = ({
   lead,
@@ -251,7 +246,6 @@ const LeadCard = ({
 }) => {
   const [open, setOpen] = useState(false);
   const initials = lead.name?.charAt(0).toUpperCase() || "?";
-
   return (
     <div
       className={`rounded-xl border shadow p-5 mb-4 bg-white transition-all duration-300 cursor-pointer ${
@@ -272,7 +266,6 @@ const LeadCard = ({
         </div>
         {open ? <ChevronUp /> : <ChevronDown />}
       </div>
-
       {open && (
         <div className="mt-4 space-y-2 text-sm text-gray-700">
           <div className="flex gap-2 items-center"><Phone size={16} /> {lead.phone}</div>
@@ -283,7 +276,7 @@ const LeadCard = ({
           <div className="flex gap-2 items-center"><ScrollText size={16} /> מזהה: {lead.id}</div>
           <div className="flex gap-4 mt-2">
             <Button variant="secondary" size="sm" onClick={(e) => { e.stopPropagation(); onRegister(); }}>
-              לטופס רישום
+             לטופס המרה ללקוח
             </Button>
             <button
               onClick={(e) => {

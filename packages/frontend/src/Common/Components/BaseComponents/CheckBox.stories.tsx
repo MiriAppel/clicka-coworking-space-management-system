@@ -42,7 +42,7 @@ export const Default: Story = {
     return (
       // עוטף את הקומפוננטה ב־FormProvider כדי לאפשר לה גישה להקשר של הטופס
       <FormProvider {...methods}>
-        <CheckboxField name={''} label={''} {...args} />
+        <CheckboxField {...args} />
       </FormProvider>
     );
   },
