@@ -25,6 +25,57 @@ export function validatePrices(prices: number[]) {
     if (price < 0) throw new Error("לא ניתן להזין מחירים שליליים");
   }
 }
+/*
+// בדיקה של חפיפות תאריכי התחולה בין שכבות פעילות באותה קטגוריה - מעודכנת לעבודה מול Supabase
+export async function checkEffectiveDateConflict(
+  supabaseClient: typeof supabase,
+  tableName: string,
+  newEffectiveDate: string,
+  filterConditions: Record<string, any> = {},
+  idToExclude: ID | undefined = undefined // הגדרת ערך ברירת מחדל ל-undefined
+) {
+  const newDate = new Date(newEffectiveDate); // תאריך התחולה החדש שאותו בודקים
+
+  let query = supabaseClient
+    .from(tableName)
+    .select('id, effective_date')
+    .eq('effective_date', newDate.toISOString().split('T')[0]) // השוואת תאריך בלבד (YYYY-MM-DD)
+    .eq('active', true); // בודקים רק רשומות פעילות
+
+  // הוספת תנאי סינון נוספים (לדוגמה, workspace_type, או כל פילטר אחר)
+  for (const key in filterConditions) {
+    if (Object.prototype.hasOwnProperty.call(filterConditions, key)) { // ודא שזה מאפיין של האובייקט
+      query = query.eq(key, filterConditions[key]);
+    }
+  }
+
+  // אם נשלח ID להחרגה (במקרה של עדכון), מוסיפים את התנאי .neq()
+  if (idToExclude) {
+    query = query.neq('id', idToExclude);
+  }
+
+  // ביצוע השאילתה וציפייה לפריט יחיד או לא כלום
+  const { data: conflictingItem, error } = await query.maybeSingle();
+
+  // טיפול בשגיאות מה-Supabase (למעט שגיאת 'No rows found')
+  if (error && error.code !== 'PGRST116') {
+    console.error(`Error checking effective date conflict in ${tableName}:`, error);
+    throw new Error('Failed to check for effective date conflicts.');
+  }
+
+  // אם נמצא פריט מתנגש (שאינו הפריט המעודכן עצמו)
+  if (conflictingItem) {
+    throw new Error(
+      `תאריך התחולה ${newEffectiveDate} מתנגש עם שכבה קיימת (id: ${conflictingItem.id})`
+    );
+  }
+  // אם conflictingItem הוא null, אין התנגשות, והפונקציה מסתיימת בהצלחה.
+
+}
+  */
+// ========================
+// סביבת עבודה - מעודכן לעבודה מול Supabase
+// ========================
 
 export async function createPricingTierWithHistory(
   request: PricingTierCreateRequest,

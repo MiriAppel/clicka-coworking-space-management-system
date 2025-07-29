@@ -90,6 +90,7 @@ export class PricingTierModel implements PricingTier {
     effectiveDate: DateISO;
     createdAt: DateISO;
     updatedAt: DateISO;
+
     constructor(data: {
         id?: ID;
         workspaceType: WorkspaceType;
@@ -120,17 +121,17 @@ export class PricingTierModel implements PricingTier {
 
     toDatabaseFormat() {
         return {
-      workspace_type: this.workspaceType,
-      year1_price: this.year1Price,
-      year2_price: this.year2Price,
-      year3_price: this.year3Price,
-      year4_price: this.year4Price,
-      two_days_from_office_price: this.twoDaysFromOfficePrice,
-      three_days_from_office_price: this.threeDaysFromOfficePrice,
-      active: this.active,
-      effective_date: this.effectiveDate,
-      created_at: this.createdAt,
-      updated_at: this.updatedAt
+            workspace_type: this.workspaceType,
+            year1_price: this.year1Price,
+            year2_price: this.year2Price,
+            year3_price: this.year3Price,
+            year4_price: this.year4Price,
+            two_days_from_office_price: this.twoDaysFromOfficePrice,
+            three_days_from_office_price: this.threeDaysFromOfficePrice,
+            active: this.active,
+            effective_date: this.effectiveDate,
+            created_at: this.createdAt,
+            updated_at: this.updatedAt
         };
     }
     static fromDatabaseFormat(data: any): PricingTierModel {
@@ -142,7 +143,7 @@ export class PricingTierModel implements PricingTier {
             year3Price: data.year3_price,
             year4Price: data.year4_price,
             twoDaysFromOfficePrice: data.two_days_from_office_price,
-        threeDaysFromOfficePrice: data.three_days_from_office_price,
+            threeDaysFromOfficePrice: data.three_days_from_office_price,
             active: data.active,
             effectiveDate: data.effective_date,
             createdAt: data.created_at,
@@ -150,4 +151,3 @@ export class PricingTierModel implements PricingTier {
         });
     }
 }
-

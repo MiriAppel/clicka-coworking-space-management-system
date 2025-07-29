@@ -6,9 +6,9 @@ dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
-// function logUserActivity(userId: string, action: string) {
-//   console.log(`[Activity Log] ${userId}: ${action}`);
-// }
+function logUserActivity(userId: string, action: string) {
+  console.log(`[Activity Log] ${userId}: ${action}`);
+}
 //יצירת מרחב
 export class SpaceAssignmentService {
 async  createSpace(space: SpaceAssignmentModel): Promise<SpaceAssignmentModel | null> {

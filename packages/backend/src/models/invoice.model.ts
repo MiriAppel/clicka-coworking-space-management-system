@@ -74,7 +74,7 @@ export class InvoiceModel implements Invoice {
 
 export class InvoiceItemModel implements BillingItem {
     id: ID;
-    invoice_id: `${string}-${string}-${string}-${string}-${string}`;
+    invoice_id:UUID;
     type: BillingItemType;
     description: string;
     quantity: number;
@@ -102,7 +102,7 @@ export class InvoiceItemModel implements BillingItem {
         updatedAt?: DateISO
     ) {
         this.id = id;
-        this.invoice_id = invoice_id as `${string}-${string}-${string}-${string}-${string}`;
+        this.invoice_id =invoice_id;
         this.type = type;
         this.description = description;
         this.quantity = quantity;
