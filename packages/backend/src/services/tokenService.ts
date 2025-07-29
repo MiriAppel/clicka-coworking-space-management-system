@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { LoginResponse } from "shared-types"
+import { LoginResponse, UserRole } from "shared-types"
 import { UserTokenService } from './userTokenService';
 import { generateJwtToken, verifyJwtToken } from './authService';
 import { decrypt } from './cryptoService';
@@ -10,7 +10,7 @@ const userTokenService = new UserTokenService();
 export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, token: string, sessionId?: string): void => {
     res.cookie('session', token, {
         httpOnly: true,
-        secure: true,
+         secure: true,
         sameSite: 'none',
         maxAge: 8 * 60 * 60 * 1000, // 8 שעות
     });
@@ -18,7 +18,7 @@ export const setAuthCookie = (res: Response<LoginResponse | { error: string }>, 
     if (sessionId) {
         res.cookie('sessionId', sessionId, {
             httpOnly: true,
-            secure: true,
+             secure: true,
             sameSite: 'none',
             maxAge: 8 * 60 * 60 * 1000, // 8 שעות
         });
@@ -36,23 +36,23 @@ export const setRefreshCookie = (res: Response, refreshToken: string): void => {
 export const clearAuthCookie = (res: Response): void => {
     res.clearCookie('session', {
         httpOnly: true,
-        secure: true,
+         secure: true,
         sameSite: 'none',
     });
     res.clearCookie('sessionId', {
         httpOnly: true,
-        secure: true,
+         secure: true,
         sameSite: 'none',
     });
     res.clearCookie('refreshToken', {
         httpOnly: true,
-        secure: true,
+         secure: true,
         sameSite: 'none',
     });
 };
 // Function to get the current user ID from the session cookie
 
-export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string } | null => {
+export const getUserFromCookie = (req: Request): { userId: string; email: string; googleId: string ;role:UserRole } | null => {
     const sessionToken = req.cookies.session;
     const sessionId = req.cookies.sessionId;
 
@@ -82,7 +82,8 @@ export const getUserFromCookie = (req: Request): { userId: string; email: string
         return {
             userId,
             email: payload.email,
-            googleId: payload.googleId
+            googleId: payload.googleId,
+            role: payload.role
         };
     } catch (error) {
         console.error('Error verifying JWT token:', error);

@@ -1,7 +1,7 @@
 import express from 'express';
 import * as controllerLead from '../controllers/lead.controller';
-import { UserRole } from 'shared-types';
-import { authorizeUser } from '../middlewares/authorizeUserMiddleware';
+import multer from 'multer';
+const upload = multer({ storage: multer.memoryStorage() }); 
 
 const routerLead = express.Router();
 
@@ -12,6 +12,8 @@ routerLead.get("/search",  controllerLead.searchLeadsByText);
 routerLead.get('/',  controllerLead.getAllLeads);
 
 routerLead.get('/:id', controllerLead.getLeadById);
+
+routerLead.post('/upload/excel', upload.single('file'), controllerLead.postLeadFromExcel);
 
 routerLead.post('/', controllerLead.createLead);
 

@@ -19,6 +19,18 @@ const serviceContract = new contractService();
 const userTokenService = new UserTokenService();
 const emailService = new EmailTemplateService();
 
+export const postCustomersFromExcel = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+    console.log('Received file:', req.file);
+    await serviceCustomer.importCustomersFromExcelBuffer(req.file.buffer);
+    res.status(200).json({ message: 'הלידים נוספו בהצלחה!!' });
+  } catch (error: any) {
+    console.error('Error uploading leads:', error);
+    res.status(500).json({ message: 'שגיאה, אנא העלה קובץ אקסל של לידים בלבד!!!', error: error.message });
+  }
+};
+
 export const sendContractEmail = async (req: Request, res: Response) => {
   try {
     const customer: CustomerModel = req.body;

@@ -124,9 +124,18 @@ export const UserTable = () => {
           className="flex items-center gap-2"
         >
           <span>+</span>
-          הוספת משתמש
-        </Button>
+          Add New User
+        </Button> 
+        <Button
+        variant="primary"
+        onClick={() => window.location.href = '/registerUser'}
+        className="flex items-center gap-2"
+      >
+        <span>הרשם עם סיסמה</span>
+      </Button>
       </div>
+      {/* קישור להרשמה עם סיסמה */}
+     
 
       {/* סטטיסטיקות */}
       <div className="mb-4 p-4 bg-gray-50 rounded-lg">

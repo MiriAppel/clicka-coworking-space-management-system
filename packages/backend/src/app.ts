@@ -84,7 +84,6 @@ app.use('/api/interaction', interactionRouter);
 app.use('/api/payment', routerPayment);
 app.use('/api/document', documentRouter);
 app.use('/api/invoices', invoiceRouter);
-app.use('/api/payments', paymentRoutes);
 
 
 
@@ -95,7 +94,11 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.log(err);
+  console.error('Error occurred:', {
+    message: err.message || 'Unknown error',
+    status: err.status || 500,
+    code: err.code || 'INTERNAL_SERVER_ERROR'
+  });
   res.status(err.status || 500).json({
     success: false,
     error: {
@@ -107,7 +110,11 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log(err);
+  console.error('Error occurred:', {
+    message: err.message || 'Unknown error',
+    status: err.status || 500,
+    code: err.code || 'INTERNAL_SERVER_ERROR'
+  });
   console.log(req);
   res.status(err.status || 500).json({
     success: false,

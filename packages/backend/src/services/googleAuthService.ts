@@ -90,7 +90,9 @@ export async function refreshAccessToken(refreshToken: string) {
       expires_at: expiresAt,
     };
   } catch (error: any) {
-    console.error('error in getting new token from google: ', error);
+    console.error('error in getting new token from google: ', error.response?.data || error.message);
+    console.error('Using refresh_token:', refreshToken);
+
     throw new Error('RefreshTokenError');
   }
 }
