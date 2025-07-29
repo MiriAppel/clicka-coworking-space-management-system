@@ -11,7 +11,7 @@ import {
   serviceCreateInvoiceItem
   
 } from "../services/invoice.service";
-import { BillingItem, ID } from "shared-types";
+import { ID } from "shared-types";
 import { InvoiceItemModel, InvoiceModel } from '../models/invoice.model';
 import { UUID } from 'crypto';
 import { UserTokenService } from '../services/userTokenService';
