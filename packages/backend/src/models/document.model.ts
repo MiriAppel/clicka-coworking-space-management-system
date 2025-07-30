@@ -23,7 +23,6 @@ export class DocumentModel implements Document {
   created_at: DateISO;
   updated_at: DateISO;
 //   type?: DocumentType;
-  // fileReference?: FileReference;
 
   constructor(params: Document) {
     this.id = params.id ?? crypto.randomUUID();
@@ -36,7 +35,6 @@ export class DocumentModel implements Document {
     this.created_at = params.created_at ?? new Date().toISOString();
     this.updated_at = params.updated_at ?? new Date().toISOString();
     // this.type = params.type;
-    // this.fileReference = params.fileReference;
   }
 
   toDatabaseFormat() {

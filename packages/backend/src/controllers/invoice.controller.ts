@@ -9,7 +9,6 @@ import {
   serviceGetCustomersCollection,
   sendStatusChangeEmails,
   serviceCreateInvoiceItem
-  
 } from "../services/invoice.service";
 import { ID } from "shared-types";
 import { InvoiceItemModel, InvoiceModel } from '../models/invoice.model';

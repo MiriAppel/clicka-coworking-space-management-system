@@ -1,6 +1,5 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { RoomModel } from "../models/room.model";
 import type { ID, PricingTier } from "shared-types";
 import { WorkspaceModel } from '../models/workspace.model'
 import dotenv from 'dotenv';

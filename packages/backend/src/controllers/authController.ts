@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as authService from '../services/authService';
 import * as tokenService from '../services/tokenService';
-import { LoginResponse } from "shared-types";
+import { LoginResponse, StatusChangeRequest, UserRole } from "shared-types";
 import { HttpStatusCode } from 'axios';
 import { UserService } from '../services/user.service';
 import { UserTokenService } from '../services/userTokenService';
@@ -180,13 +180,21 @@ export const handleLoginWithPassword = async (req: Request, res: Response) => {
 }
 export const registerUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
+  const connectedUser = await tokenService.getUserFromCookie(req);
+  if (!connectedUser || !connectedUser.email) {
+    return res.status(401).json({ error: 'Unauthorized. Please login with Google first' });
+  }
+  if(email !== connectedUser.email && connectedUser.role !== UserRole.ADMIN) {
+    return res.status(403).json({ error: 'Email mismatch. Please login with the correct Google account' });
+  }
   const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
   // 2. save to database
   const user = await userService.getUserByEmail(email);
   if (user) {
     if (user.password) {
-      throw new Error('User password already exists');
+      return res.status(400).json({ error: 'User password already exists' });
+      // throw new Error('User password already exists');
     }
     userService.updatePassword(user?.id!, hashedPassword);
   }
@@ -195,4 +203,3 @@ export const registerUser = async (req: Request, res: Response) => {
   }
   return res.status(200).json(user);
 }
-

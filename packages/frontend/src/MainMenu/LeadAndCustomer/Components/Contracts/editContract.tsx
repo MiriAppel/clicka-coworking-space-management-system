@@ -21,11 +21,14 @@ const statusLabels = {
   ACTIVE: "פעיל",
   EXPIRED: "פג תוקף",
   TERMINATED: "הסתיים",
+  RENEWED: "חודש"
 } satisfies Record<ContractStatus, string>;
 
 // תוויות סוג חלל עבודה
 const workspaceTypeLabels = {
-  PRIVATE_ROOM: "חדר פרטי",
+  PRIVATE_ROOM1: "חדר פרטי",
+  PRIVATE_ROOM2: "חדר של 2",
+  PRIVATE_ROOM3: "חדר של 3",
   DESK_IN_ROOM: "שולחן בחדר",
   OPEN_SPACE: "אופן ספייס",
   KLIKAH_CARD: "כרטיס קליקה",
@@ -34,7 +37,7 @@ const workspaceTypeLabels = {
   WALL: "קיר",
   COMPUTER_STAND: "עמדת מחשב",
   RECEPTION_DESK: "דלפק קבלה",
-  BASE: "בסיס",
+  BASE: "בסיס"
 } satisfies Record<WorkspaceType, string>;
 
 // סכימת אימות Zod
@@ -83,7 +86,8 @@ export const EditContract = () => {
       })
       .catch(() => showAlert("טעינת חוזה", "שגיאה בטעינת חוזה", "error"))
       .finally(() => setLoading(false));
-  }, [contractId, formMethods,fetchContractDetails]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractId, formMethods]);
 
   // שליחה
   const handleSubmit = async (data: ContractFormData) => {

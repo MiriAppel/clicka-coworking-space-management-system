@@ -19,8 +19,9 @@ interface BookingState {
   setCurrentBooking: (booking: Booking | null) => void;
   clearError: () => void;
   getCustomerByPhoneOrEmail: (value: string) => Promise<any>;
-  
+   bookingApproval: (id: string) =>  Promise<Booking | null>;
 }
+const BASE_API_URL = `${process.env.REACT_APP_API_URL}/book`;
 
 export const useBookingStore = create<BookingState>((set, get) => ({
   bookings: [],
@@ -31,7 +32,8 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   getAllBookings: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get<Booking[]>('/api/bookings/getAllBooking');
+      console.log('📡 Base URL:', process.env.REACT_APP_API_URL);
+      const response = await axiosInstance.get<Booking[]>(`${BASE_API_URL}/getAllBooking`);
       set({ bookings: response.data, loading: false });
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -42,7 +44,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   getBookingById: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get<Booking>(`/api/bookings/getBookingById/${id}`);
+      const response = await axiosInstance.get<Booking>(`${BASE_API_URL}/getBookingById/${id}`);
       set({ currentBooking: response.data, loading: false });
       return response.data;
     } catch (error) {
@@ -104,7 +106,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
   updateBooking: async (id: string, updated: Booking) => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.put(`/api/bookings/updateBooking/${id}`, updated);
+      const response = await axiosInstance.patch(`${BASE_API_URL}/updateBooking/${id}`, updated);
       const updatedBooking = response.data;
 
       set(state => ({
@@ -124,7 +126,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
   deleteBooking: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      await axiosInstance.delete(`/api/bookings/deleteBooking/${id}`);
+      await axiosInstance.delete(`${BASE_API_URL}/deleteBooking/${id}`);
       set(state => ({
         bookings: state.bookings.filter(b => b.id !== id),
         currentBooking: state.currentBooking?.id === id ? null : state.currentBooking,
@@ -148,7 +150,7 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
   getCustomerByPhoneOrEmail: async (value: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get(`/api/customers/getByPhoneOrEmail`, {
+      const response = await axiosInstance.get(`/customers/getByPhoneOrEmail`, {
         params: { value },
       });
       return response.data; 
@@ -158,7 +160,22 @@ console.log(created,"created in createBookingInCalendar?????????????????????????
       return null;
     }
   },
-
-
+ bookingApproval: async (id: string) => {  
+         set({ loading: true, error: null });
+        try {
+          const response = await axiosInstance.put<Booking>(`${BASE_API_URL}/bookingApproval/${id}`);
+          const current = response.data;
+          set(state => ({
+            bookings: state.bookings.map(b => b.id === id ? current : b),
+            currentBooking: state.currentBooking?.id === id ? current : state.currentBooking,
+            loading: false,
+          }));
+          return current;
+        } catch (error) {
+          console.error('Error approving booking:', error);
+          set({ error: 'שגיאה באישור ההזמנה', loading: false });
+          return null;
+        }
+      }
 
 }));

@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import cron from 'node-cron';
 import dotenv from 'dotenv';
 
+
 dotenv.config(); // טוען את משתני הסביבה
 
 const supabase = createClient(
@@ -91,3 +92,4 @@ cron.schedule("0 22 * * *", () => {
 //   console.log("🔥 cron רץ לבדיקת חוזים ולקוחות (כל דקה)...");
 //   updateContractsAndCustomers();
 // });
+

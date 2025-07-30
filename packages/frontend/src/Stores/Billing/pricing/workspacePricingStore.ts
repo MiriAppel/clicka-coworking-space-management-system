@@ -5,14 +5,16 @@ import { create } from 'zustand';
 
 // ייבוא של פונקציות שירות מהשכבת service
 import { 
-  getCurrentPricingTier,                  // שליפת התמחור הנוכחי לפי סוג סביבת עבודה             // לא בשימוש בקובץ הזה (אפשר למחוק אם לא צריך)
+  getCurrentPricingTier,                  // שליפת התמחור הנוכחי לפי סוג סביבת עבודה
+  // createOrUpdatePricingTier,              // לא בשימוש בקובץ הזה (אפשר למחוק אם לא צריך)
   createPricingTierWithHistory,           // יצירת תמחור חדש עם היסטוריה
   updatePricingTierPricing,               // עדכון תמחור קיים
-  deleteLoungePricing                     // מחיקת רשומת תמחור מסוג לאונג'
+  deletePricingTier                       // מחיקת רשומת תמחור workspace
 } from '../../../Service/pricing.service';
 
 import {
-  PricingTier,                            // טיפוס לייצוג שכבת תמחור               // טיפוס לבקשת יצירה
+  PricingTier,                            // טיפוס לייצוג שכבת תמחור
+  // PricingTierCreateRequest,               // טיפוס לבקשת יצירה
   UpdatePricingTierRequest                // טיפוס לבקשת עדכון
 } from 'shared-types';
 
@@ -83,7 +85,7 @@ export const useWorkspacePricingStore = create<WorkspacePricingState>((set, get)
   delete: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      await deleteLoungePricing(id);          // מחיקה
+      await deletePricingTier(id);            // מחיקה
       set({ loading: false });
       alert('המחיר נמחק בהצלחה!');
       // await get().fetch(); // רענון נתונים (אם נדרש)

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useInvoiceStore } from "../invoice-generation-engine/invoiceStore";
+import { useInvoiceStore } from "../../../../Stores/Billing/invoiceStore";
 import { InvoiceStatus, PaymentMethodType } from "shared-types";
 import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
@@ -19,7 +19,7 @@ interface FormFields {
 
 async function sendPaymentToApi(payment: any) {
   try {
-    const response = await axios.post("http://localhost:3001/payments", payment);
+    const response = await axios.post(`${process.env.REACT_APP_API_URL}/payments`, payment);
     return response.data;
   } catch (error) {
     console.error("שגיאה בשליחת תשלום לשרת:", error);

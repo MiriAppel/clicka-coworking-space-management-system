@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useInvoiceStore } from '../invoice-generation-engine/invoiceStore';
+import { useInvoiceStore } from '../../../../Stores/Billing/invoiceStore';
 import { BillingItemType, CreateInvoiceRequest } from 'shared-types';
 import { Table, TableColumn } from '../../../../Common/Components/BaseComponents/Table';
 import { Button } from '../../../../Common/Components/BaseComponents/Button';
@@ -9,7 +9,6 @@ import { UUID } from 'crypto';
 
 // מחלקה שמכילה הצהרה ומימוש פונקציות לניהול החשבוניות
 export const InvoiceManagement: React.FC = () => {
-
   const {
     invoices,
     error,
@@ -62,7 +61,7 @@ export const InvoiceManagement: React.FC = () => {
                   <p><strong>תיאור:</strong> ${item.description}</p>
                   <p><strong>כמות:</strong> ${item.quantity}</p>
                   <p><strong>מחיר יחידה:</strong> ₪${item.unit_price}</p>
-                  <p><strong>מחיר יחידה:</strong> ₪${item.total_price}</p>
+                  <p><strong>מחיר כולל:</strong> ₪${item.total_price}</p>
                   <p><strong>סוג:</strong> ${item.type}</p>
                 </div>
               `).join('')}
@@ -82,6 +81,7 @@ export const InvoiceManagement: React.FC = () => {
     }
   };
   
+
   const columns: TableColumn<any>[] = [
     { header: 'מספר חשבונית', accessor: 'invoice_number' },
     { header: 'שם לקוח', accessor: 'customer_name' },
@@ -107,23 +107,22 @@ export const InvoiceManagement: React.FC = () => {
   ];
 
   const tableData = (invoices && Array.isArray(invoices) ? invoices : []).map((invoice: any) => {
-  const createdAt = invoice.created_at ? new Date(invoice.created_at).toLocaleDateString('he-IL') : '';
-  const updatedAt = invoice.updated_at ? new Date(invoice.updated_at).toLocaleDateString('he-IL') : '';
+    const createdAt = invoice.created_at ? new Date(invoice.created_at).toLocaleDateString('he-IL') : '';
+    const updatedAt = invoice.updated_at ? new Date(invoice.updated_at).toLocaleDateString('he-IL') : '';
 
-  return {
-    ...invoice,
-    issue_date: invoice.issue_date ? new Date(invoice.issue_date).toLocaleDateString('he-IL') : '',
-    due_date: invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('he-IL') : '',
-    subtotal: invoice.subtotal ? `₪${invoice.subtotal.toFixed(2)}` : '₪0.00',
-    tax_total: invoice.taxtotal ? `₪${invoice.taxtotal.toFixed(2)}` : '₪0.00',
-    status: invoice.status ? invoice.status.replace('_', ' ') : '',
-    payment_due_reminder_sent_at: invoice.payment_dueReminder_sentAt ?
-      new Date(invoice.payment_dueReminder_sentAt).toLocaleDateString('he-IL') : 'לא נשלחה',
-    
-    createdAt,
-    updatedAt
-  };
-});
+    return {
+      ...invoice,
+      issue_date: invoice.issue_date ? new Date(invoice.issue_date).toLocaleDateString('he-IL') : '',
+      due_date: invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('he-IL') : '',
+      subtotal: invoice.subtotal ? `₪${invoice.subtotal.toFixed(2)}` : '₪0.00',
+      tax_total: invoice.tax_total ? `₪${invoice.tax_total.toFixed(2)}` : '₪0.00',
+      status: invoice.status ? invoice.status.replace('_', ' ') : '',
+      payment_due_reminder_sent_at: invoice.payment_dueReminder_sent_at ?
+        new Date(invoice.payment_dueReminder_sent_at).toLocaleDateString('he-IL') : 'לא נשלחה',
+      createdAt,
+      updatedAt
+    };
+  });
 
   const resetForm = () => {
     setFormData({
@@ -145,6 +144,9 @@ export const InvoiceManagement: React.FC = () => {
   const handleEdit = async (invoice: any) => {
     try {
       const response: any = await getAllInvoiceItems(invoice.id);
+
+      console.log('Response from getAllInvoiceItems:++++++++++', response);
+      console.log('BillingItemType values:+++++++++++', BillingItemType);
       let invoiceItems = [];
       if (Array.isArray(response.invoiceItems)) {
         invoiceItems = response.invoiceItems;
@@ -196,15 +198,19 @@ export const InvoiceManagement: React.FC = () => {
         </div>
         <div>
   
-          <label>סוג:</label>
-          <select id="type-${index}">
-            <option value="${BillingItemType.WORKSPACE}" ${item.type === BillingItemType.WORKSPACE ? 'selected' : ''}>Workspace</option>
-            <option value="${BillingItemType.MEETING_ROOM}" ${item.type === BillingItemType.MEETING_ROOM ? 'selected' : ''}>Meeting Room</option>
-            <option value="${BillingItemType.LOUNGE}" ${item.type === BillingItemType.LOUNGE ? 'selected' : ''}>Lounge</option>
-            <option value="${BillingItemType.SERVICE}" ${item.type === BillingItemType.SERVICE ? 'selected' : ''}>Service</option>
-            <option value="${BillingItemType.DISCOUNT}" ${item.type === BillingItemType.DISCOUNT ? 'selected' : ''}>Discount</option>
-            <option value="${BillingItemType.OTHER}" ${item.type === BillingItemType.OTHER ? 'selected' : ''}>Other</option>
-          </select>
+<div>
+  <label>סוג:</label>
+  <select id="type-${index}">
+    <option value="WORKSPACE" ${item.type === 'WORKSPACE' ? 'selected' : ''}>Workspace</option>
+    <option value="MEETING_ROOM" ${item.type === 'MEETING_ROOM' ? 'selected' : ''}>Meeting Room</option>
+    <option value="LOUNGE" ${item.type === 'LOUNGE' ? 'selected' : ''}>Lounge</option>
+    <option value="SERVICE" ${item.type === 'SERVICE' ? 'selected' : ''}>Service</option>
+    <option value="DISCOUNT" ${item.type === 'DISCOUNT' ? 'selected' : ''}>Discount</option>
+    <option value="OTHER" ${item.type === 'OTHER' ? 'selected' : ''}>Other</option>
+  </select>
+</div>
+
+
         </div>
       </div>
     `).join('');
@@ -356,24 +362,9 @@ export const InvoiceManagement: React.FC = () => {
   };
 
 
-
-  // const handleDelete = async (id: string) => {
-  //   console.log('מתחיל מחיקה של חשבונית עם ID:', id);
-  //   console.log('סוג המזהה:', typeof id);
-
-  //   if (!window.confirm(`האם אתה בטוח שברצונך למחוק את החשבונית?`)) {
-  //     return;
-  //   }
-
-  //   try {
-  //     await deleteInvoice(id);
-  //     console.log('חשבונית נמחקה בהצלחה');
-  //   } catch (error) {
-  //     console.error('שגיאה במחיקת חשבונית:', error);
-  //   }
-  // };
   const handleDelete = async (id: string) => {
     try {
+      console.log('ID למחיקה:', id); // בדקי מה יוצא כאן
       const result = await Swal.fire({
         title: 'מחיקת חשבונית',
         text: 'האם אתה בטוח שברצונך למחוק את החשבונית?',
@@ -384,18 +375,14 @@ export const InvoiceManagement: React.FC = () => {
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6'
       });
-
       if (!result.isConfirmed) return;
-
       await deleteInvoice(id);
-
       Swal.fire({
         title: 'הצלחה!',
         text: 'החשבונית נמחקה בהצלחה',
         icon: 'success',
         confirmButtonText: 'סגור'
       });
-
     } catch (error) {
       console.error('שגיאה במחיקת חשבונית:', error);
       Swal.fire({
@@ -465,4 +452,3 @@ export const InvoiceManagement: React.FC = () => {
 };
 
 export default InvoiceManagement;
-

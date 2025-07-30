@@ -1,3 +1,4 @@
+
 // middlewares/authMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../services/user.service';
@@ -16,7 +17,6 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
     res.status(401).json({ error: 'not authenticated' });
     return;
   }
-
   try {
     const payload = verifyJwtToken(token);
     const result = await userService.loginByGoogleId(payload.googleId);
@@ -24,22 +24,17 @@ export const verifySession = async (req: Request, res: Response, next: NextFunct
       res.status(404).json({ error: 'user not found' });
       return;
     }
-
     const userTokenService = new UserTokenService();
 
     if (! await userTokenService.validateSession(payload.userId, sessionId)) {
       res.status(409).json({ error: 'SessionConflict', message: 'User is already logged in on another device.' });
       return
     }
-    // if (await userTokenService.checkIfExpiredAccessToken(result.id ?? payload.userId))
-    //   throw new Error('TokenExpiredError');
 
     const user: User = result;
     (req as any).user = { payload, user, sessionId };// Store the user object in the request object for further use;
     //------------------------------------------------------------
-    // (req as any).user = { payload, firstName: "aaaa", sessionId };
-    console.log(sessionId);
-    (req as any).sessionId = { sessionId };
+    // (req as any).sessionId = { sessionId };
 
     next();
   } catch (err: any) {
@@ -80,10 +75,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
           // Save the new token in a cookie
           setAuthCookie(res, newAccessToken);
-          console.log(
-            'New access token generated and set in cookie for user:',
-            userData.email
-          );
+          console.log('New access token generated and set in cookie for user:', {
+            userId: userData.id,
+            email: userData.email ? '[REDACTED]' : 'undefined'
+          });
           
           return next();
         }
