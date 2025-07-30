@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import  { useState } from 'react';
 import { Button } from '../../../Common/Components/BaseComponents/Button';
 import { useWorkSpaceStore } from '../../../Stores/Workspace/workspaceStore';
-import { Space } from 'shared-types';
-import { SpaceStatus } from 'shared-types';
 import { useAssignmentStore } from '../../../Stores/Workspace/assigmentStore';
-// import '../Css/';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SpaceAssign } from 'shared-types/spaceAssignment';
 
@@ -24,7 +21,7 @@ export const CustomerChange = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
   const { getAssignments, assignments, deleteAssignment, createAssignment } = useAssignmentStore();
-  const { getAllWorkspace, updateWorkspace, deleteWorkspace, createWorkspace, workSpaces } = useWorkSpaceStore();
+  const { getAllWorkspace, workSpaces } = useWorkSpaceStore();
 
   const location = useLocation();
   const state = location.state || {};
@@ -71,24 +68,23 @@ export const CustomerChange = () => {
 
     deleteAssignment(theCustomerAssignment[0].id || '');
     createAssignment(newAssignment);
-
+    setStep('options');
 }
 
     const handleCancel = () => {
-      setStep('question');
       setMode(null);
       setSelectedRoomId('');
       setMessage(null);
       setMessageType(null);
     };
 
-    const handleSelectMode = (selectedMode: 'swap' | 'move') => {
-      setMode(selectedMode);
-      setStep('selectRoom');
-      setSelectedRoomId('');
-      setMessage(null);
-      setMessageType(null);
-    };
+    // const handleSelectMode = (selectedMode: 'swap' | 'move') => {
+    //   setMode(selectedMode);
+    //   setStep('selectRoom');
+    //   setSelectedRoomId('');
+    //   setMessage(null);
+    //   setMessageType(null);
+    // };
 
 
     const chooseSpaces = () => {

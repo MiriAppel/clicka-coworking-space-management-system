@@ -16,20 +16,20 @@ export const AssigmentTable = () => {
   const { customers,fetchCustomers } = useCustomerStore();
   const { workSpaces,getAllWorkspace } = useWorkSpaceStore();
    const [isLoading, setIsLoading] = useState(false);
-const allAssignmentFields: (keyof SpaceAssign)[] = [
-  'workspaceId', 'customerId', 'assignedDate', 'unassignedDate', 'status', 'assignedBy'
-];
+// const allAssignmentFields: (keyof SpaceAssign)[] = [
+//   'workspaceId', 'customerId', 'assignedDate', 'unassignedDate', 'status', 'assignedBy'
+// ];
 const navigate = useNavigate();
 // תרגום לתצוגה בלבד
-const fieldLabels: Partial<Record<keyof SpaceAssign, string>> = {
-  workspaceId: 'מרחב עבודה',
-  customerId: 'לקוח',
-  assignedDate: 'תאריך התחלה',
-  unassignedDate: 'תאריך סיום',
-  // notes: 'הערות',
-  assignedBy: 'שובץ ע"י',
-  status: 'סטטוס',
-};
+// const fieldLabels: Partial<Record<keyof SpaceAssign, string>> = {
+//   workspaceId: 'מרחב עבודה',
+//   customerId: 'לקוח',
+//   assignedDate: 'תאריך התחלה',
+//   unassignedDate: 'תאריך סיום',
+//   // notes: 'הערות',
+//   assignedBy: 'שובץ ע"י',
+//   status: 'סטטוס',
+// };
 // const getFieldLabel = (field: keyof SpaceAssign): string => {
 //   return fieldLabels[field] || field;
 // };
@@ -81,7 +81,7 @@ useEffect(() => {
     getAssignments()
     setIsLoading(false);
   }
-}, []);
+}, [assignments, fetchCustomers, getAllWorkspace, getAssignments]);
 //מחיקת הקצאה
   const handleDelete = async (ass: SpaceAssign) => {
     const result = await Swal.fire({
