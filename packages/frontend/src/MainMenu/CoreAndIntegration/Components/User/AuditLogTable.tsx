@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
+import { axiosInstance } from "../../../../Service/Axios";
 
 /**
  * קומפוננט לתצוגת טבלת יומן פעולות המשתמשים
@@ -61,16 +62,16 @@ const AuditLogTable = () => {
       }
 
       /**
-       * שליחת בקשת GET לשרת
+       * שליחת בקשת GET לשרת באמצעות axiosInstance
        * הURL כולל את כל פרמטרי הסינון
        */
-      const response = await fetch(`/api/audit-logs/AuditLogController?${queryParams.toString()}`);
+      const response = await axiosInstance.get(`/audit-logs/AuditLogController?${queryParams.toString()}`);
 
       /**
-       * המרת התגובה לפורמט JSON
+       * axios מחזיר את הנתונים ב-response.data
        * השרת מחזיר מערך של אובייקטי AuditLog
        */
-      const data = await response.json();
+      const data = response.data;
 
       // עדכון ה-state עם הנתונים החדשים
       setFilteredLogs(data);
