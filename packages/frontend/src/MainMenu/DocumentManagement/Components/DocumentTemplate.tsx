@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDocumentTemplateStore } from '../../../Stores/DocumentManagement/DocumentTemplateStore';
 import { DocumentTemplate as DocumentTemplateType } from 'shared-types';
-import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaToggleOn, FaToggleOff } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaToggleOn, FaToggleOff, FaFileExport } from 'react-icons/fa';
 
 const DocumentTemplate: React.FC = () => {
   const navigate = useNavigate();
@@ -233,34 +233,34 @@ console.log(filteredTemplates, "Filtered Templates");
                       {/* כפתורי פעולות לכל תבנית */}
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleView(template)}
-                          className="text-blue-600 hover:text-blue-900 p-1"
-                          title="צפייה"
-                        >
-                          <FaEye />
-                        </button>
-                        <button
-                          onClick={() => handlePreview(template)}
-                          className="text-green-600 hover:text-green-900 p-1"
-                          title="תצוגה מקדימה"
-                        >
-                          <FaSearch />
-                        </button>
-                        <button
-                          onClick={() => handleEdit(template)}
-                          className="text-yellow-600 hover:text-yellow-900 p-1"
-                          title="עריכה"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          onClick={ () =>template.id&& handleDelete(template.id)}
-                          className="text-red-600 hover:text-red-900 p-1"
-                          title="מחיקה"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
+      onClick={() => handleView(template)}
+      className="text-blue-600 hover:text-blue-900 p-1"
+      title="צפייה"
+    >
+      <FaEye />
+    </button>
+    <button
+      onClick={() => handlePreview(template)}
+      className="text-green-600 hover:text-green-900 p-1"
+      title=" תצוגה וייצוא"
+    >
+      <FaFileExport />
+    </button>
+    <button
+      onClick={() => handleEdit(template)}
+      className="text-yellow-600 hover:text-yellow-900 p-1"
+      title="עריכה"
+    >
+      <FaEdit />
+    </button>
+    <button
+      onClick={ () =>template.id&& handleDelete(template.id)}
+      className="text-red-600 hover:text-red-900 p-1"
+      title="מחיקה"
+    >
+      <FaTrash />
+    </button>
+ </div>
                     </td>
                   </tr>
                 ))
