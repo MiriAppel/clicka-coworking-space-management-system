@@ -136,9 +136,14 @@ export const EmailTemplateTable = () => {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">ניהול תבניות דוא"ל</h2>
+      {/* כפתור */}
+      <div className="flex justify-end mb-4">
         <Button onClick={handleAddEmailTemplate}>+ הוסף תבנית דוא"ל</Button>
+      </div>
+      
+      {/* כותרת */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold">ניהול תבניות דוא"ל</h2>
       </div>
 
       <Table<EmailTemplate>

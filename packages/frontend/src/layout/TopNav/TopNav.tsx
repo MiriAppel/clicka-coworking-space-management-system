@@ -99,15 +99,7 @@ const TopNav = () => {
         </ul>
       )}
       {user && (
-        <div
-          style={{
-            marginLeft: 'auto',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            paddingRight: '16px',
-          }}
-        >
+        <div className={styles.userSection}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <img
               src="/user.png"

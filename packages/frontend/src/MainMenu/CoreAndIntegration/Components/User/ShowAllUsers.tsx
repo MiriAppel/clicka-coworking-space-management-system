@@ -115,24 +115,28 @@ export const UserTable = () => {
 
   return (
     <div className="p-6">
-      {/* כותרת וכפתור הוספה */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">ניהול משתמשים</h2>
+      {/* כפתורים */}
+      <div className="flex justify-end gap-3 mb-4">
         <Button
           variant="primary"
           onClick={handleAddUser}
-          className="flex items-center gap-2"
+          className="bg-cyan-600 hover:bg-cyan-700 text-white px-2 py-1 rounded-lg flex items-center gap-1 whitespace-nowrap transition-colors duration-200 shadow-md text-sm"
         >
-          <span>+</span>
-          Add New User
+          <span className="text-lg">+</span>
+          הוסף משתמש חדש
         </Button> 
         <Button
-        variant="primary"
-        onClick={() => window.location.href = '/registerUser'}
-        className="flex items-center gap-2"
-      >
-        <span>הרשם עם סיסמה</span>
-      </Button>
+          variant="primary"
+          onClick={() => window.location.href = '/registerUser'}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white px-2 py-1 rounded-lg whitespace-nowrap transition-colors duration-200 shadow-md text-sm"
+        >
+          הרשם עם סיסמה
+        </Button>
+      </div>
+      
+      {/* כותרת */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold">ניהול משתמשים</h2>
       </div>
       {/* קישור להרשמה עם סיסמה */}
      

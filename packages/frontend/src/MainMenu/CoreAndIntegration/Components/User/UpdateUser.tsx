@@ -12,12 +12,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 
 const schema = z.object({
-    firstName: z.string().nonempty("First name is required"),
-    lastName: z.string().nonempty("Last name is required"),
-    role: z.string().nonempty("Role is required"),
+    firstName: z.string().nonempty("שם פרטי הוא שדה חובה"),
+    lastName: z.string().nonempty("שם משפחה הוא שדה חובה"),
+    role: z.string().nonempty("תפקיד הוא שדה חובה"),
     active: z.boolean().optional(),
     acceptTerms: z.boolean().refine(val => val === true, {
-        message: "You need to accept the terms",
+        message: "יש לאשר את השינויים",
     }),
 });
 
@@ -75,38 +75,39 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
     };
 
     const roleOptions = [
-        { value: UserRole.ADMIN, label: "Admin" },
-        { value: UserRole.MANAGER, label: "Manager" },
-        { value: UserRole.SYSTEM_ADMIN, label: "System Admin" },
+        { value: UserRole.ADMIN, label: "מנהל" },
+        { value: UserRole.MANAGER, label: "מנהל מחלקה" },
+        { value: UserRole.SYSTEM_ADMIN, label: "מנהל מערכת" },
     ];
 
     return (
         <div className="max-w-2xl mx-auto p-6">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Update User</h2>
+                <h2 className="text-2xl font-bold">עדכון משתמש</h2>
                 {onClose && (
                     <Button variant="secondary" onClick={onClose}>
-                        Cancel
+                        ביטול
                     </Button>
                 )}
             </div>
 
             <Form
-                label="Update User Information"
+                label="עדכון פרטי משתמש"
                 schema={schema}
                 onSubmit={handleSubmit}
                 methods={methods}
                 className="space-y-4"
+                dir="rtl"
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <InputField
                         name="firstName"
-                        label="First Name"
+                        label="שם פרטי"
                         required
                     />
                     <InputField
                         name="lastName"
-                        label="Last Name"
+                        label="שם משפחה"
                         required
                     />
                 </div>
@@ -120,12 +121,12 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
 
                 <CheckboxField
                     name="active"
-                    label="Active User"
+                    label="משתמש פעיל"
                 />
 
                 <CheckboxField
                     name="acceptTerms"
-                    label="Confirm changes"
+                    label="אשר שינויים"
                     required
                 />
 
@@ -136,21 +137,21 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
                         disabled={isSubmitting || loading}
                         className="flex-1"
                     >
-                        {isSubmitting ? "Updating..." : "Update User"}
+                        {isSubmitting ? "מעדכן..." : "עדכן משתמש"}
                     </Button>
                 </div>
 
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-semibold text-gray-700 mb-2">Current User Info:</h4>
+                    <h4 className="font-semibold text-gray-700 mb-2">פרטי משתמש נוכחיים:</h4>
                     <div className="text-sm text-gray-600 space-y-1">
-                        <p><strong>Created:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
-                        <p><strong>Last Updated:</strong> {new Date(user.updatedAt).toLocaleDateString()}</p>
+                        <p><strong>נוצר:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
+                        <p><strong>עודכן לאחרונה:</strong> {new Date(user.updatedAt).toLocaleDateString()}</p>
                     </div>
                 </div>
 
                 {isSubmitting && (
                     <div className="bg-blue-50 border border-blue-200 rounded p-4">
-                        <p className="text-blue-800">Updating user, please wait...</p>
+                        <p className="text-blue-800">מעדכן משתמש, אנא המתן...</p>
                     </div>
                 )}
             </Form>

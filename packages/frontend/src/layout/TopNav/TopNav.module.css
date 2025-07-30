@@ -108,7 +108,7 @@
   direction: rtl;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -188,4 +188,11 @@
   top: 16px;
   right: 16px;
   cursor: pointer;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 50px;
 }

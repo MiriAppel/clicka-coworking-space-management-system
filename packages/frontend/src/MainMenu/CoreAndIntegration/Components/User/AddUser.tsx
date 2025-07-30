@@ -12,13 +12,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { showAlert } from '../../../../Common/Components/BaseComponents/ShowAlert';
 
 const schema = z.object({
-  email: z.string().email("Invalid Email").nonempty("EMAIL is required"),
-  firstName: z.string().nonempty("First name is required"),
-  lastName: z.string().nonempty("Last name is required"),
-  role: z.string().nonempty("Role is required"),
+  email: z.string().email("אימייל לא תקין").nonempty("אימייל הוא שדה חובה"),
+  firstName: z.string().nonempty("שם פרטי הוא שדה חובה"),
+  lastName: z.string().nonempty("שם משפחה הוא שדה חובה"),
+  role: z.string().nonempty("תפקיד הוא שדה חובה"),
   active: z.boolean().optional(),
   acceptTerms: z.boolean().refine(val => val === true, {
-    message: "You need to accept the terms",
+    message: "יש לאשר את התנאים",
   }),
 });
 
@@ -78,33 +78,34 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Add New User</h2>
+        <h2 className="text-2xl font-bold">הוספת משתמש חדש</h2>
         {onClose && (
           <Button variant="secondary" onClick={onClose}>
-            Cancel
+            ביטול
           </Button>
         )}
       </div>
 
       <Form
-        label="User Information"
+        label="פרטי משתמש"
         schema={schema}
         onSubmit={handleSubmit}
         methods={methods}
         className="space-y-4"
+        dir="rtl"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField name="firstName" label="First Name" required />
-          <InputField name="lastName" label="Last Name" required />
+          <InputField name="firstName" label="שם פרטי" required />
+          <InputField name="lastName" label="שם משפחה" required />
         </div>
 
-        <InputField name="email" label="Email" required type="email" />
+        <InputField name="email" label="אימייל" required type="email" />
 
         <SelectField name="role" label="Role" options={roleOptions} required />
 
-        <CheckboxField name="active" label="Active User" />
+        <CheckboxField name="active" label="משתמש פעיל" />
 
-        <CheckboxField name="acceptTerms" label="Accept the terms and conditions" required />
+        <CheckboxField name="acceptTerms" label="אשר את התנאים וההגבלות" required />
 
         <div className="flex gap-4 pt-4">
           <Button
@@ -113,7 +114,7 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
             disabled={isSubmitting || loading}
             className="flex-1"
           >
-            {isSubmitting ? "Creating..." : "Create User"}
+            {isSubmitting ? "יוצר..." : "צור משתמש"}
           </Button>
         </div>
       </Form>

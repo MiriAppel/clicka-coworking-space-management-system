@@ -14,18 +14,18 @@ export interface Menu {
 }
 
 export const menus: Menu[] = [
-  {
-    key: 'dashboard',
-    title: 'לוח בקרה',
-    icon: <Home size={18} style={{ marginLeft: 8 }} />,
-    items: [
-      { label: 'סקירה כללית', path: '/dashboard' },
-      { label: 'חוזים קרובים', path: '/dashboard/contracts' },
-      { label: 'תשלומים אחרונים', path: '/dashboard/payments' },
-      { label: 'מפת חללים', path: '/workspaceMap' },
-      { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
-    ]
-  },
+  // {
+  //   key: 'dashboard',
+  //   title: 'לוח בקרה',
+  //   icon: <Home size={18} style={{ marginLeft: 8 }} />,
+  //   items: [
+  //     { label: 'סקירה כללית', path: '/dashboard' },
+  //     { label: 'חוזים קרובים', path: '/dashboard/contracts' },
+  //     { label: 'תשלומים אחרונים', path: '/dashboard/payments' },
+  //     { label: 'מפת חללים', path: '/workspaceMap' },
+  //     { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
+  //   ]
+  // },
   {
     key: 'customers',
     title: 'לקוחות',
@@ -35,7 +35,7 @@ export const menus: Menu[] = [
       { label: 'לקוחות', path: '/leadAndCustomer/customers' },
       { label: 'חוזים', path: '/leadAndCustomer/contracts' },
       { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
-      { label: 'היסטוריית לקוח', path: '/customerHistory' }
+      // { label: 'היסטוריית לקוח', path: '/customerHistory' }
     ]
   },
   {
@@ -70,7 +70,7 @@ export const menus: Menu[] = [
     items: [
       { label: 'דוח תפוסה', path: '/occupancyReports' },
       { label: 'דוח כספי', path: 'billing/financeReports' },
-      { label: 'פעילות לקוחות', path: '/customerReports' }
+      // { label: 'פעילות לקוחות', path: '/customerReports' }
     ]
   },
   {
@@ -80,9 +80,9 @@ export const menus: Menu[] = [
     items: [
       { label: 'משתמשים', path: '/users' },
       { label: 'פעולות משתמשים', path: '/UserActions' },
-      { label: 'הרשאות', path: '/permissions' },
-      { label: 'הגדרות', path: '/settings' },
-      { label: 'אינטגרציות', path: '/integrations' },
+      // { label: 'הרשאות', path: '/permissions' },
+      // { label: 'הגדרות', path: '/settings' },
+      // { label: 'אינטגרציות', path: '/integrations' },
       { label: 'העלאת מסמכים', path: '/documentUpload' }
     ]
   },
@@ -93,17 +93,17 @@ export const menus: Menu[] = [
     items: [
       { label: 'תבניות מייל', path: '/emailTemplate' },
       { label: 'שליחת מיילים', path: '/sendEmails' },
-      { label: 'התראות', path: '/notifications' }
+      // { label: 'התראות', path: '/notifications' }
     ]
   },
-  {
-    key: 'support',
-    title: 'תמיכה',
-    icon: <HelpCircle size={18} style={{ marginLeft: 8 }} />,
-    items: [
-      { label: 'שאלות נפוצות', path: '/faq' },
-      { label: 'מדריכים', path: '/help' },
-      { label: 'צור קשר', path: '/contactSupport' }
-    ]
-  }
+  // {
+  //   key: 'support',
+  //   title: 'תמיכה',
+  //   icon: <HelpCircle size={18} style={{ marginLeft: 8 }} />,
+  //   items: [
+  //     { label: 'שאלות נפוצות', path: '/faq' },
+  //     { label: 'מדריכים', path: '/help' },
+  //     { label: 'צור קשר', path: '/contactSupport' }
+  //   ]
+  // }
 ];
