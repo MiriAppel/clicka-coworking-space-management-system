@@ -14,7 +14,7 @@ import {
   StatusChangeRequest,
   UpdateCustomerRequest,
 } from "shared-types";
-import { supabase } from '../db/supabaseClient'
+import { supabase } from "../db/supabaseClient";
 import { CustomerPeriodModel } from "../models/customerPeriod.model";
 import { ContractModel } from "../models/contract.model";
 import { contractService } from "../services/contract.service";
@@ -31,6 +31,8 @@ import { promises } from "node:dns";
 import { getDocumentById } from "./document.service";
 import { deleteFileFromDrive } from "./drive-service";
 import { ca } from "date-fns/locale";
+import * as XLSX from "xlsx"; //חדש
+
 export class customerService extends baseService<CustomerModel> {
   constructor() {
     super("customer");
@@ -39,30 +41,29 @@ export class customerService extends baseService<CustomerModel> {
   // const serviceDocument = new documentSer
 
   getAllCustomers = async (): Promise<CustomerModel[] | null> => {
-    console.log('getAllCustomers called');
+    console.log("getAllCustomers called");
     const customers = await this.getAll();
-    console.log('Raw customers from getAll():', customers);
-    console.log('Number of customers:', customers?.length || 0);
+    console.log("Raw customers from getAll():", customers);
+    console.log("Number of customers:", customers?.length || 0);
 
     const customersWithPayments = await Promise.all(
       customers.map(async (customer) => {
         if (customer.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
-          const paymentMethods = await serviceCustomerPaymentMethod
-            .getByCustomerId(customer.id!);
+          const paymentMethods =
+            await serviceCustomerPaymentMethod.getByCustomerId(customer.id!);
           customer.paymentMethods = paymentMethods || [];
           console.log("Customers fetched from DB:", customers);
         }
         return customer;
-      }),
+      })
     );
 
     const result = CustomerModel.fromDatabaseFormatArray(customersWithPayments);
-    console.log('Final result:', result);
-    console.log('Final result length:', result?.length || 0);
+    console.log("Final result:", result);
+    console.log("Final result length:", result?.length || 0);
     return result;
   };
-  
-  
+
   //מחזיר את כל הסטטוסים של הלקוח
   getAllCustomerStatus = async (): Promise<CustomerStatus[] | null> => {
     return Object.values(CustomerStatus) as CustomerStatus[];
@@ -70,13 +71,13 @@ export class customerService extends baseService<CustomerModel> {
 
   //לא הבנתי מה היא צריכה לעשות
   getCustomersToNotify = async (
-    id: ID,
+    id: ID
   ): Promise<GetCustomersRequest[] | null> => {
     return [];
   };
 
   createCustomer = async (
-    newCustomer: CreateCustomerRequest,
+    newCustomer: CreateCustomerRequest
   ): Promise<CustomerModel> => {
     console.log("in servise");
     console.log(newCustomer);
@@ -88,7 +89,7 @@ export class customerService extends baseService<CustomerModel> {
       idNumber: newCustomer.idNumber,
       businessName: newCustomer.businessName,
       businessType: newCustomer.businessType,
-      status: CustomerStatus.PENDING,
+      status: CustomerStatus.CREATED,
       currentWorkspaceType: newCustomer.currentWorkspaceType,
       workspaceCount: newCustomer.workspaceCount,
       contractSignDate: newCustomer.contractSignDate,
@@ -97,6 +98,7 @@ export class customerService extends baseService<CustomerModel> {
       notes: newCustomer.notes,
       invoiceName: newCustomer.invoiceName,
       paymentMethodType: newCustomer.paymentMethodType,
+      ip: newCustomer.ip,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       toDatabaseFormat() {
@@ -116,6 +118,7 @@ export class customerService extends baseService<CustomerModel> {
           notes: this.notes,
           invoice_name: this.invoiceName,
           payment_methods_type: this.paymentMethodType,
+          ip: this.ip,
           created_at: this.createdAt,
           updated_at: this.updatedAt,
         };
@@ -136,7 +139,8 @@ export class customerService extends baseService<CustomerModel> {
       signDate: newCustomer.contractSignDate,
       startDate: newCustomer.contractStartDate,
       //   endDate?: string;
-      terms: { //ערכים התחלתיים לבנתיים
+      terms: {
+        //ערכים התחלתיים לבנתיים
         workspaceType: newCustomer.currentWorkspaceType,
         workspaceCount: newCustomer.workspaceCount,
         duration: 1,
@@ -168,7 +172,6 @@ export class customerService extends baseService<CustomerModel> {
     };
     const serviceContract = new contractService();
     console.log("לפני היצירת חוזה");
-    
 
     const contract = await serviceContract.post(newContract);
 
@@ -183,8 +186,8 @@ export class customerService extends baseService<CustomerModel> {
         customerId: customer.id!,
         isActive: true,
         creditCardExpiry: newCustomer.paymentMethod?.creditCardExpiry,
-        creditCardHolderIdNumber: newCustomer.paymentMethod
-          ?.creditCardHolderIdNumber,
+        creditCardHolderIdNumber:
+          newCustomer.paymentMethod?.creditCardHolderIdNumber,
         creditCardHolderPhone: newCustomer.paymentMethod?.creditCardHolderPhone,
         creditCardNumber: newCustomer.paymentMethod?.creditCardNumber,
         createdAt: new Date().toISOString(),
@@ -203,16 +206,14 @@ export class customerService extends baseService<CustomerModel> {
         },
       };
 
-      const paymentMethod = await serviceCustomerPaymentMethod.post(
-        newPaymentMethod,
-      );
+      const paymentMethod =
+        await serviceCustomerPaymentMethod.post(newPaymentMethod);
 
       console.log("paymentMethod in service");
       console.log(paymentMethod);
     }
 
     console.log("📧 Customer created successfully:", customer);
-    
 
     return customer;
   };
@@ -225,8 +226,8 @@ export class customerService extends baseService<CustomerModel> {
       if (dataToUpdate.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
         // אם סוג התשלום הוא כרטיס אשראי, נעדכן את שיטת התשלום
         //אם כבר היה שיטת תשלום אז נעדכן, אחרת ניצור
-        const paymentMethods = await serviceCustomerPaymentMethod
-          .getByCustomerId(id);
+        const paymentMethods =
+          await serviceCustomerPaymentMethod.getByCustomerId(id);
         console.log("paymentMethods in updateCustomer", paymentMethods);
         if (paymentMethods && paymentMethods.length > 0) {
           // אם יש כבר שיטת תשלום, נעדכן אותה
@@ -243,9 +244,9 @@ export class customerService extends baseService<CustomerModel> {
 
           await serviceCustomerPaymentMethod.patch(
             customerPaymentMethodModel.partialToDatabaseFormat(
-              paymentMethodData,
+              paymentMethodData
             ),
-            paymentMethods[0].id!,
+            paymentMethods[0].id!
           );
         } else {
           // אם אין שיטת תשלום, ניצור חדשה
@@ -284,7 +285,7 @@ export class customerService extends baseService<CustomerModel> {
   // יצרית הודעת עזיבה של לקוח
   postExitNotice = async (
     exitNotice: RecordExitNoticeRequest,
-    id: ID,
+    id: ID
   ): Promise<void> => {
     const updateStatus: UpdateCustomerRequest = {
       status: CustomerStatus.PENDING,
@@ -397,7 +398,7 @@ export class customerService extends baseService<CustomerModel> {
     if (error) {
       console.error("❌ Supabase error:", error.message || error);
       return Promise.reject(
-        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`),
+        new Error(`Supabase error: ${error.message || JSON.stringify(error)}`)
       );
     }
 
@@ -406,13 +407,13 @@ export class customerService extends baseService<CustomerModel> {
     const customersWithPayments = await Promise.all(
       customers.map(async (customer) => {
         if (customer.payment_methods_type === PaymentMethodType.CREDIT_CARD) {
-          const paymentMethods = await serviceCustomerPaymentMethod
-            .getByCustomerId(customer.id!);
+          const paymentMethods =
+            await serviceCustomerPaymentMethod.getByCustomerId(customer.id!);
           customer.paymentMethods = paymentMethods || [];
         }
         return customer;
-      }),
-    );
+      })
+    );    
 
     return CustomerModel.fromDatabaseFormatArray(customersWithPayments);
   };
@@ -429,23 +430,20 @@ export class customerService extends baseService<CustomerModel> {
     await this.patch(customerToUpdate, id);
 
     const changeStautsData: StatusChangeRequest = {
-        newStatus: CustomerStatus.ACTIVE,
-        effectiveDate: new Date().toISOString(), // תאריך עדכון הסטטוס הוא התאריך הנוכחי
-        reason: "אימות מייל",
-        notifyCustomer: true,
-      }
+      newStatus: CustomerStatus.ACTIVE,
+      effectiveDate: new Date().toISOString(), // תאריך עדכון הסטטוס הוא התאריך הנוכחי
+      reason: "אימות מייל",
+      notifyCustomer: true,
+    };
 
     try {
-      await fetch(
-        `${process.env.API_URL}/customers/${id}/status-change`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(changeStautsData),
+      await fetch(`${process.env.API_URL}/customers/${id}/status-change`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(changeStautsData),
+      });
     } catch (error) {
       console.error("Error updating customer status:", error);
     }
@@ -453,11 +451,13 @@ export class customerService extends baseService<CustomerModel> {
     // Send contract email
     const serviceContract = new contractService();
     // Get only the most recent contract
-    const contracts = customerToUpdate.id ? await serviceContract.getAllContractsByCustomerId(customerToUpdate.id) : null;
+    const contracts = customerToUpdate.id
+      ? await serviceContract.getAllContractsByCustomerId(customerToUpdate.id)
+      : null;
     if (contracts && contracts.length > 0) {
       const latestContract = contracts[contracts.length - 1]; // Get most recent contract
       const urls: string[] = [];
-      
+
       // Check if latest contract has documents
       if (latestContract.documents && Array.isArray(latestContract.documents)) {
         for (const doc of latestContract.documents) {
@@ -466,10 +466,10 @@ export class customerService extends baseService<CustomerModel> {
             urls.push(document.url);
           }
         }
-      }          
-      
+      }
+
       if (urls.length > 0) {
-        await this.sendEmailWithContract(customerToUpdate, urls.join('\n'));
+        await this.sendEmailWithContract(customerToUpdate, urls.join("\n"));
       }
     }
 
@@ -480,7 +480,7 @@ export class customerService extends baseService<CustomerModel> {
   sendStatusChangeEmails = async (
     detailsForChangeStatus: StatusChangeRequest,
     id: ID,
-    token: any,
+    token: any
   ): Promise<void> => {
     const customer = await this.getById(id);
 
@@ -488,15 +488,15 @@ export class customerService extends baseService<CustomerModel> {
     console.log("Details for change status:", detailsForChangeStatus);
     await this.updateCustomer({ status: detailsForChangeStatus.newStatus }, id);
 
-    // סטטוסים שדורשים התראה לצוות 
+    // סטטוסים שדורשים התראה לצוות
     const notifyTeamStatuses = ["NOTICE_GIVEN", "EXITED", "ACTIVE", "CREATED"];
     const shouldNotifyTeam = notifyTeamStatuses.includes(
-      detailsForChangeStatus.newStatus,
+      detailsForChangeStatus.newStatus
     );
 
     //אם ללקוח יש מייל וזה true אז יש לשלוח התראה ללקוח
-    const shouldNotifyCustomer = detailsForChangeStatus.notifyCustomer &&
-      !!customer.email;
+    const shouldNotifyCustomer =
+      detailsForChangeStatus.notifyCustomer && !!customer.email;
 
     const emailPromises: Promise<any>[] = [];
 
@@ -525,15 +525,15 @@ export class customerService extends baseService<CustomerModel> {
 
     detailsForChangeStatus.effectiveDate = formattedDate;
 
-    const status = statusTranslations[detailsForChangeStatus.newStatus as CustomerStatus] ||
+    const status =
+      statusTranslations[detailsForChangeStatus.newStatus as CustomerStatus] ||
       detailsForChangeStatus.newStatus;
 
     // פונקציה לשליחת מייל לצוות
     const sendTeamEmail = async () => {
       try {
-        const template = await this.emailService.getTemplateByName(
-          "שינוי סטטוס - צוות",
-        );
+        const template =
+          await this.emailService.getTemplateByName("שינוי סטטוס - צוות");
 
         if (!template) {
           console.warn("Team email template not found");
@@ -542,11 +542,11 @@ export class customerService extends baseService<CustomerModel> {
         const renderedHtml = await this.emailService.renderTemplate(
           template.bodyHtml,
           {
-            "שם": customer.name,
-            "סטטוס": status,
-            "תאריך": formattedDate,
-            "סיבה": detailsForChangeStatus.reason || "ללא סיבה מצוינת",
-          },
+            שם: customer.name,
+            סטטוס: status,
+            תאריך: formattedDate,
+            סיבה: detailsForChangeStatus.reason || "ללא סיבה מצוינת",
+          }
         );
 
         console.log("Rendered HTML for team email:\n", renderedHtml);
@@ -559,7 +559,7 @@ export class customerService extends baseService<CustomerModel> {
             body: renderedHtml,
             isHtml: true,
           },
-          token,
+          token
         );
         console.log(template.subject);
 
@@ -568,7 +568,7 @@ export class customerService extends baseService<CustomerModel> {
           customer.name,
           detailsForChangeStatus.newStatus,
           detailsForChangeStatus.effectiveDate,
-          detailsForChangeStatus.reason,
+          detailsForChangeStatus.reason
         );
 
         console.log("Team email sent successfully:", response);
@@ -579,9 +579,8 @@ export class customerService extends baseService<CustomerModel> {
 
     // פונקציה לשליחת מייל ללקוח
     const sendCustomerEmail = async () => {
-      const template = await this.emailService.getTemplateByName(
-        "שינוי סטטוס - לקוח",
-      );
+      const template =
+        await this.emailService.getTemplateByName("שינוי סטטוס - לקוח");
       if (!template) {
         console.warn("Customer email template not found");
         return;
@@ -589,16 +588,16 @@ export class customerService extends baseService<CustomerModel> {
       const renderedHtml = await this.emailService.renderTemplate(
         template.bodyHtml,
         {
-          "שם": customer.name,
-          "סטטוס": status,
-          "תאריך": formattedDate,
-        },
+          שם: customer.name,
+          סטטוס: status,
+          תאריך: formattedDate,
+        }
       );
       console.log("HTML before sending:\n", renderedHtml);
       console.log(
         customer.name,
         detailsForChangeStatus.newStatus,
-        detailsForChangeStatus.effectiveDate,
+        detailsForChangeStatus.effectiveDate
       );
 
       return sendEmail(
@@ -609,7 +608,7 @@ export class customerService extends baseService<CustomerModel> {
           body: renderedHtml,
           isHtml: true,
         },
-        token,
+        token
       );
     };
 
@@ -618,19 +617,19 @@ export class customerService extends baseService<CustomerModel> {
       console.log(
         "Sending email to team for status change:",
         customer.name,
-        status,
+        status
       );
       emailPromises.push(
         sendTeamEmail().catch((err) => {
           console.error("שגיאה בשליחת מייל לצוות", err);
-        }),
+        })
       );
     }
     if (shouldNotifyCustomer) {
       emailPromises.push(
         sendCustomerEmail().catch((err) => {
           console.error("שגיאה בשליחת מייל ללקוח", err);
-        }),
+        })
       );
     }
 
@@ -638,18 +637,14 @@ export class customerService extends baseService<CustomerModel> {
     await Promise.all(emailPromises);
   };
 
-  CustomerAuthentication = async (
-    id: ID,
-    token: any,
-  ): Promise<void> => {
+  CustomerAuthentication = async (id: ID, token: any): Promise<void> => {
     const customer = await this.getById(id);
 
     // פונקציה לשליחת מייל לצוות
     const sendEmailToAuth = async () => {
       try {
-        const template = await this.emailService.getTemplateByName(
-          "אימות לקוח",
-        );
+        const template =
+          await this.emailService.getTemplateByName("אימות לקוח");
 
         if (!template) {
           console.warn("Team email template not found");
@@ -657,7 +652,7 @@ export class customerService extends baseService<CustomerModel> {
         }
         const renderedHtml = await this.emailService.renderTemplate(
           template.bodyHtml,
-          {},
+          {}
         );
 
         const response = await sendEmail(
@@ -668,7 +663,7 @@ export class customerService extends baseService<CustomerModel> {
             body: renderedHtml,
             isHtml: true,
           },
-          token,
+          token
         );
         console.log(template.subject);
 
@@ -689,9 +684,8 @@ export class customerService extends baseService<CustomerModel> {
       return;
     }
 
-    const template = await this.emailService.getTemplateByName(
-      "שליחת חוזה ללקוח",
-    );
+    const template =
+      await this.emailService.getTemplateByName("שליחת חוזה ללקוח");
     if (!template) {
       console.error("Contract email template not found");
       return;
@@ -700,9 +694,9 @@ export class customerService extends baseService<CustomerModel> {
     const renderedHtml = await this.emailService.renderTemplate(
       template.bodyHtml,
       {
-        "name": customer.name,
-        "link": link,
-      },
+        name: customer.name,
+        link: link,
+      }
     );
 
     await sendEmail(
@@ -713,24 +707,24 @@ export class customerService extends baseService<CustomerModel> {
         body: renderedHtml,
         isHtml: true,
       },
-      token,
+      token
     );
   };
-
 
   // מחיקת לקוח עם כל הנתונים הקשורים אליו כולל קבצים בדרייב
   deleteCustomerCompletely = async (customerId: ID): Promise<void> => {
     try {
       const token = await this.serviceUserToken.getSystemAccessToken();
       if (!token) {
-        console.warn('No token available for Drive operations');
+        console.warn("No token available for Drive operations");
       }
 
       // 1. קבלת כל המסמכים הקשורים ללקוח
       const serviceContract = new contractService();
-      const contracts = await serviceContract.getAllContractsByCustomerId(customerId);
+      const contracts =
+        await serviceContract.getAllContractsByCustomerId(customerId);
       const documentIds: string[] = [];
-      
+
       for (const contract of contracts) {
         if (contract.documents && Array.isArray(contract.documents)) {
           documentIds.push(...contract.documents);
@@ -740,17 +734,21 @@ export class customerService extends baseService<CustomerModel> {
       // 2. מחיקת קבצים מדרייב
       if (token && documentIds.length > 0) {
         const { data: documents } = await supabase
-          .from('document')
-          .select('google_drive_id')
-          .in('id', documentIds)
-          .not('google_drive_id', 'is', null);
-        
+          .from("document")
+          .select("google_drive_id")
+          .in("id", documentIds)
+          .not("google_drive_id", "is", null);
+
         if (documents) {
           for (const doc of documents) {
             try {
               await deleteFileFromDrive(doc.google_drive_id, token);
             } catch (error) {
-              console.warn('Failed to delete file from Drive:', doc.google_drive_id, error);
+              console.warn(
+                "Failed to delete file from Drive:",
+                doc.google_drive_id,
+                error
+              );
             }
           }
         }
@@ -758,7 +756,7 @@ export class customerService extends baseService<CustomerModel> {
 
       // 3. מחיקת מסמכים
       if (documentIds.length > 0) {
-        await supabase.from('document').delete().in('id', documentIds);
+        await supabase.from("document").delete().in("id", documentIds);
       }
 
       // 4. מחיקת חוזים
@@ -767,7 +765,10 @@ export class customerService extends baseService<CustomerModel> {
       }
 
       // 5. מחיקת תקופות לקוח
-      await supabase.from('customer_period').delete().eq('customer_id', customerId);
+      await supabase
+        .from("customer_period")
+        .delete()
+        .eq("customer_id", customerId);
 
       // 6. מחיקת שיטות תשלום
       await serviceCustomerPaymentMethod.deleteByCustomerId(customerId);
@@ -775,49 +776,50 @@ export class customerService extends baseService<CustomerModel> {
       // 7. מחיקת הלקוח עצמו
       await this.delete(customerId);
     } catch (error) {
-      console.error('Error in complete customer deletion:', error);
+      console.error("Error in complete customer deletion:", error);
       throw error;
     }
   };
 
   sendWellcomeMessageForEveryMember = async (name: string) => {
-    console.log('🎉 Starting welcome message for:', name);
+    console.log("🎉 Starting welcome message for:", name);
 
     const token = await this.serviceUserToken.getSystemAccessToken();
     if (!token) {
-      console.error('Token not available');
+      console.error("Token not available");
       return;
     }
 
     const template = await this.emailService.getTemplateByName("ברוכה הבאה");
     if (!template) {
-      console.error('Welcome email template not found');
+      console.error("Welcome email template not found");
       return;
     }
 
     const renderedHtml = await this.emailService.renderTemplate(
       template.bodyHtml,
-      { "name": name }
+      { name: name }
     );
 
     const customers = await this.getAll();
-    console.log('👥 Total customers found:', customers.length);
+    console.log("👥 Total customers found:", customers.length);
 
     const validEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const emails = [
       ...new Set(
         customers
           .map((c) => c.email)
-          .filter((email): email is string =>
-            typeof email === "string" &&
-            email.trim() !== "" &&
-            validEmailRegex.test(email.trim())
-          ),
+          .filter(
+            (email): email is string =>
+              typeof email === "string" &&
+              email.trim() !== "" &&
+              validEmailRegex.test(email.trim())
+          )
       ),
     ];
 
     if (emails.length === 0) {
-      console.warn('No valid email addresses found for customers');
+      console.warn("No valid email addresses found for customers");
       return;
     }
 
@@ -830,18 +832,193 @@ export class customerService extends baseService<CustomerModel> {
           body: renderedHtml,
           isHtml: true,
         },
-        token,
+        token
       );
-      console.log('Welcome emails sent successfully');
+      console.log("Welcome emails sent successfully");
     } catch (error) {
-      console.error('Failed to send welcome emails:', error);
+      console.error("Failed to send welcome emails:", error);
       throw error;
     }
   };
 
-
-
-  
+  importCustomersFromExcelBuffer = async (buffer: Buffer): Promise<void> => {
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rawData = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1 });
+    const [headerRow, ...dataRows] = rawData;
+    const headers = [
+      "שם",
+      "מספר עמדות",
+      "סוג עמדה",
+      "תאריך חתימת חוזה",
+      "תאריך כניסה",
+      "תאריך תחילת תשלום",
+      "הודעת עזיבה",
+      "תאריך יציאה",
+      "סיבת עזיבה",
+      "הערות חוזה",
+      "טלפון",
+      "מייל",
+      "ת.ז.",
+      "שם העסק",
+      "תחום העסק",
+      "הערות",
+      "מס' אשראי",
+      "תוקף",
+      "3 ספרות",
+      "ת.ז. בעל הכרטיס",
+      "טלפון בעל הכרטיס",
+      'חשבונית עסקה ע\"ש',
+    ];
+    function formatDate(value: any): string | null {
+      if (!value) return null;
+      if (typeof value === "number") {
+        const excelStartDate = new Date(1900, 0, 1);
+        const parsed = new Date(
+          excelStartDate.getTime() + (value - 2) * 86400000
+        );
+        return parsed.toISOString().split("T")[0];
+      }
+      const parsed = new Date(value);
+      return isNaN(parsed.getTime())
+        ? null
+        : parsed.toISOString().split("T")[0];
+    }
+    function normalizePhone(value: any): string {
+      let phoneStr = String(value ?? "").replace(/\D/g, "");
+      if (!phoneStr.startsWith("0")) {
+        phoneStr = "0" + phoneStr;
+      }
+      return phoneStr;
+    }
+    for (const row of dataRows) {
+      const rowObj: Record<string, any> = {};
+      if (row[0] === "שם" && row[1] === "מספר עמדות") continue;
+      headers.forEach((key, i) => {
+        rowObj[key] = row[i];
+      });
+      // :white_check_mark: בדיקה אם כל השורה ריקה
+      const isEmptyRow = Object.values(rowObj).every(
+        (val) => val === undefined || val === null || String(val).trim() === ""
+      );
+      if (isEmptyRow) continue;
+      // :white_check_mark: בדיקה אם השדות המרכזיים קיימים
+      if (
+        !rowObj["שם"] ||
+        !rowObj["מייל"] ||
+        !rowObj["טלפון"] ||
+        !rowObj["ת.ז."]
+      ) {
+        continue;
+      }
+      const email = rowObj["מייל"];
+      const idNumber = String(rowObj["ת.ז."]);
+      //  בדיקה אחת בלבד מול המסד – מייל או ת.ז
+      const { data: existingCustomer, error: checkError } = await supabase
+        .from("customer")
+        .select("id")
+        .or(`email.eq.${email},id_number.eq.${idNumber}`)
+        .maybeSingle();
+      if (checkError) {
+        console.error(":x: שגיאה בבדיקת כפילויות:", checkError.message);
+        continue;
+      }
+      let customerId: string;
+      if (!existingCustomer) {
+        //  הכנסת לקוח חדש
+        const customerData = {
+          name: rowObj["שם"],
+          phone: normalizePhone(rowObj["טלפון"]),
+          email,
+          id_number: idNumber,
+          business_name: rowObj["שם העסק"],
+          business_type: rowObj["תחום העסק"],
+          workspace_count: Number(rowObj["מספר עמדות"]) || 1,
+          notes: rowObj["הערות"] || null,
+          contract_sign_date: formatDate(rowObj["תאריך חתימת חוזה"]),
+          contract_start_date: formatDate(rowObj["תאריך כניסה"]),
+          billing_start_date: formatDate(rowObj["תאריך תחילת תשלום"]),
+          invoice_name: rowObj['חשבונית עסקה ע"ש'],
+          status: "ACTIVE",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        const { data: customerInsert, error: customerError } = await supabase
+          .from("customer")
+          .insert(customerData)
+          .select()
+          .single();
+        if (customerError || !customerInsert) {
+          console.error(":x: שגיאה בהכנסת לקוח:", customerError?.message);
+          continue;
+        }
+        customerId = customerInsert.id;
+        // :white_check_mark: הכנסת תקופת לקוח
+        const entryDate = formatDate(rowObj["תאריך כניסה"]);
+        if (entryDate) {
+          const { error: periodError } = await supabase
+            .from("customer_period")
+            .insert({
+              customer_id: customerId,
+              entry_date: entryDate,
+              exit_date: formatDate(rowObj["תאריך יציאה"]),
+              exit_notice_date: rowObj["הודעת עזיבה"] || null,
+              exit_reason: rowObj["סיבת עזיבה"] || null,
+              exit_reason_details: null,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            });
+          if (periodError) {
+            console.error(":x: שגיאה בהכנסת תקופת לקוח:", periodError.message);
+          }
+        }
+        console.log(":white_check_mark: לקוח הוזן בהצלחה:", rowObj["שם"]);
+      } else {
+        // :white_check_mark: הלקוח כבר קיים
+        customerId = existingCustomer.id;
+        console.warn(`:warning: לקוח ${email} כבר קיים – בדיקת פרטי תשלום`);
+      }
+      // :white_check_mark: הכנסת/עדכון נתוני תשלום אם קיימים
+      if (rowObj["מס' אשראי"]) {
+        const { data: existingPayment } = await supabase
+          .from("customer_payment_method")
+          .select("id")
+          .eq("customer_id", customerId)
+          .maybeSingle();
+        if (!existingPayment) {
+          // הכנסת פרטי תשלום חדשים
+          const paymentData = {
+            customer_id: customerId,
+            credit_card_number: String(rowObj["מס' אשראי"]),
+            credit_card_expiry: String(rowObj["תוקף"] || ""),
+            credit_card_holder_id_number: String(
+              rowObj["ת.ז. בעל הכרטיס"] || ""
+            ),
+            credit_card_holder_phone: normalizePhone(
+              rowObj["טלפון בעל הכרטיס"] || ""
+            ),
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          const { error: paymentError } = await supabase
+            .from("customer_payment_method")
+            .insert(paymentData);
+          if (paymentError) {
+            console.error(":x: שגיאה בהכנסת פרטי תשלום:", paymentError.message);
+          } else {
+            console.log(
+              `:white_check_mark: פרטי תשלום הוזנו ללקוח ${customerId}`
+            );
+          }
+        } else {
+          console.log(
+            `:information_source: ללקוח ${customerId} כבר קיימים פרטי תשלום – לא בוצע עדכון`
+          );
+        }
+      }
+    }
+  };
 }
 
 const serviceCustomer = new customerService();

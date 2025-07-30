@@ -43,8 +43,6 @@ interface AssignmentStoreState {
 
 
   // Actions
-    getAllSpaces: () => Promise<Space[]>;
-
   getAssignments: () => Promise<SpaceAssign[]>;
   createAssignment: (assignmentData: Omit<SpaceAssign, 'id'>) => Promise<SpaceAssign>;
   updateAssignment: (id: string | number, assignmentData: Partial<SpaceAssign>) => Promise<SpaceAssign>;
@@ -81,7 +79,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
   createAssignment: async (assignmentData: Omit<SpaceAssign, 'id'>) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.post<SpaceAssign>(`${BASE_API_URL}/createSpace', assignmentData`);
+      const response = await api.post<SpaceAssign>(`${BASE_API_URL}/createSpace`, assignmentData);
       const newAssignment = response.data;
       set((state) => ({
         assignments: [...state.assignments, newAssignment],
@@ -96,20 +94,7 @@ export const useAssignmentStore = create<AssignmentStoreState>((set, get) => ({
       throw error;
     }
   },
-getAllSpaces: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await api.get<Space[]>('/workspace/getAllWorkspace');
-      set({ spaces: response.data, loading: false });
-      return response.data;
-    } catch (error) {
-      const errorMessage = error instanceof AxiosError
-        ? error.message
-        : 'An unknown error occurred';
-      set({ error: errorMessage, loading: false });
-      throw error;
-    }
-  },
+
   /**
    * מביא את כל ההקצאות - משתמש ב-getAllSpaces (שבעצם מביא הקצאות)
    */
@@ -117,7 +102,8 @@ getAllSpaces: async () => {
     set({ loading: true, error: null });
     try {
       const response = await api.get<SpaceAssign[]>(`${BASE_API_URL}/getAllSpaces`);
-      set({ assignments: response.data, loading: false });
+      // set({ assignments: response.data, loading: false });
+      set({ assignments: Array.isArray(response.data) ? response.data : [], loading: false });
       return response.data;
     } catch (error) {
       const errorMessage = error instanceof AxiosError 
@@ -158,7 +144,7 @@ getAllSpaces: async () => {
   deleteAssignment: async (id: string | number) => {
     set({ loading: true, error: null });
     try {
-      await api.delete(`/space/deleteSpace/${id}`);
+      await api.delete(`${BASE_API_URL}/deleteSpace/${id}`);
       set((state) => ({
         assignments: state.assignments.filter((assignment) => assignment.id !== id),
         loading: false

@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { DocumentTemplate } from 'shared-types';
-import { axiosInstance } from '../../services/Axios';
+import { axiosInstance } from '../../Service/Axios';
 import{CreateDocumentTemplateRequest} from 'shared-types/template';
 
 

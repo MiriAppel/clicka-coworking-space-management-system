@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
@@ -9,14 +8,10 @@ import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAler
 import { ShowAlertWarn } from "../../../../Common/Components/BaseComponents/showAlertWarn";
 import { useCustomerStore } from "../../../../Stores/LeadAndCustomer/customerStore";
 import { ExpandableCustomerCard } from "../../../../Common/Components/BaseComponents/ExpandableCard";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-import {
-  CustomerStatus,
-  PaymentMethodType,
-  WorkspaceType,
-} from "shared-types";
+import { CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
 
 interface ValuesToTable {
   id: string;
@@ -66,19 +61,22 @@ export const CustomersList = () => {
   } = useCustomerStore();
 
   useEffect(() => {
-    fetchCustomersByPage()
+    fetchCustomersByPage();
   }, [fetchCustomersByPage]);
 
-
   const deleteCurrentCustomer = async (val: ValuesToTable) => {
-    const confirmed = await ShowAlertWarn('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?', 'לא ניתן לשחזר את המידע לאחר מחיקה.', "warning");
+    const confirmed = await ShowAlertWarn(
+      "האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?",
+      "לא ניתן לשחזר את המידע לאחר מחיקה.",
+      "warning"
+    );
     if (confirmed) {
       await deleteCustomer(val.id);
       showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
       const latestError = useCustomerStore.getState().error;
       if (latestError) {
-        const errorMessage = latestError || 'שגיאה בלתי צפויה';
-        console.error('Error:', errorMessage);
+        const errorMessage = latestError || "שגיאה בלתי צפויה";
+        console.error("Error:", errorMessage);
         showAlert("שגיאה במחיקת לקוח", errorMessage, "error");
       }
     }
@@ -92,9 +90,7 @@ export const CustomersList = () => {
 
   // הפונקציה שמטפלת בשינוי החיפוש
   const handleSearch = (term: string) => {
-    searchCustomersInPage(term)
-      .then(() => {
-      })
+    searchCustomersInPage(term).then(() => {});
   };
 
   const debouncedSearch = useRef(
@@ -102,32 +98,30 @@ export const CustomersList = () => {
   ).current;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
     const value = e.target.value;
 
     setSearchTerm(value);
     debouncedSearch(value);
-  }
+  };
 
-
-  const searchInApi = async (e: { key: string; }) => {
+  const searchInApi = async (e: { key: string }) => {
     //איך ידעו שבלחיצה על אנטר זה מחפש בשרת?...
     if (
-      (e.key === "Enter" && searchTerm.trim())
-      || customers.length === 0 // אין תוצאות בדף הנוכחי
+      (e.key === "Enter" && searchTerm.trim()) ||
+      customers.length === 0 // אין תוצאות בדף הנוכחי
     ) {
       console.log("🔍 חיפוש בשרת עם המחרוזת:", searchTerm);
 
-      await searchCustomersByText(searchTerm)
+      await searchCustomersByText(searchTerm);
       // .then(() => {
       //   console.log("✅ תוצאות שהגיעו מהשרת:", customers.length);
       // }).catch((error) => {
       //   console.error("שגיאה בחיפוש מהשרת:", error);
       // });
     }
-  }
+  };
 
-  const getCardData = () => {
+  const getCardData = () => {    
     return customers.map((c) => ({
       id: c.id!,
       name: c.name,
@@ -145,6 +139,7 @@ export const CustomersList = () => {
       notes: c.notes,
       invoiceName: c.invoiceName,
       paymentMethodType: c.paymentMethodType,
+      ip: c.ip,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
     }));
@@ -157,9 +152,25 @@ export const CustomersList = () => {
       </h2>
 
       <div className="flex items-center gap-4 mb-4">
-        <Button variant="primary" size="sm" onClick={() => navigate("new")} className="flex gap-1 items-center">
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => navigate("new")}
+          className="flex gap-1 items-center"
+        >
           ➕ הוספת לקוח חדש
         </Button>
+        <div className="flex items-center gap-4 mb-4">
+          <Button
+            onClick={() =>
+              navigate("/leadAndCustomer/Customers/UploadCustomersFile")
+            }
+            variant="primary"
+            size="sm"
+          >
+            יבוא לקוחות מקובץ אקסל
+          </Button>
+        </div>
         <ExportToExcel data={customers} fileName="לקוחות" />
       </div>
 
@@ -227,11 +238,3 @@ export const CustomersList = () => {
   );
 };
 
-// const formatDate = (dateString: DateISO | undefined) => {
-//   if (!dateString) return "לא זמין";
-//   const date = new Date(dateString);
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = String(date.getFullYear()).slice(-2);
-//   return `${day}/${month}/${year}`;
-// };

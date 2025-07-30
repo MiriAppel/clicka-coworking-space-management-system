@@ -1,31 +1,16 @@
 import React from 'react';
-import { Home, Users, Map, FileText, FileBarChart2, Settings, Mail, HelpCircle } from 'lucide-react';
-
+import { Users, Map, CreditCard , FileBarChart2, Settings, Mail } from 'lucide-react';
 export interface MenuItem {
   label: string;
   path: string;
 }
-
 export interface Menu {
   key: string;
   title: string;
   icon: React.ReactNode;
   items: MenuItem[];
 }
-
 export const menus: Menu[] = [
-  {
-    key: 'dashboard',
-    title: 'לוח בקרה',
-    icon: <Home size={18} style={{ marginLeft: 8 }} />,
-    items: [
-      { label: 'סקירה כללית', path: '/dashboard' },
-      { label: 'חוזים קרובים', path: '/dashboard/contracts' },
-      { label: 'תשלומים אחרונים', path: '/dashboard/payments' },
-      { label: 'מפת חללים', path: '/workspaceMap' },
-      { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
-    ]
-  },
   {
     key: 'customers',
     title: 'לקוחות',
@@ -35,7 +20,6 @@ export const menus: Menu[] = [
       { label: 'לקוחות', path: '/leadAndCustomer/customers' },
       { label: 'חוזים', path: '/leadAndCustomer/contracts' },
       { label: 'לגרף מקורות', path: '/leadAndCustomer/leads/LeadSourcesPieChart' },
-      { label: 'היסטוריית לקוח', path: '/customerHistory' }
     ]
   },
   {
@@ -53,13 +37,15 @@ export const menus: Menu[] = [
   },
   {
     key: 'billing',
-    title: 'חשבוניות',
-    icon: <FileText size={18} style={{ marginLeft: 8 }} />,
+    title: 'כספים',
+    icon: <CreditCard size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'חשבוניות', path: '/billing/invoiceManagement' },
       { label: 'גבייה', path: '/billing/collection' },
       { label: 'תשלומים', path: '/payments' },
       { label: 'הוצאות', path: '/expenses' },
+      { label: 'קופה קטנה', path: '/billing/expenses' },
+      { label: 'ספקים', path: '/vendor' },
       { label: 'תמחור', path: '/pricing' }
     ]
   },
@@ -82,8 +68,6 @@ export const menus: Menu[] = [
       { label: 'פעולות משתמשים', path: '/UserActions' },
       { label: 'הרשאות', path: '/permissions' },
       { label: 'הגדרות', path: '/settings' },
-      { label: 'אינטגרציות', path: '/integrations' },
-      { label: 'העלאת מסמכים', path: '/documentUpload' }
     ]
   },
   {
@@ -95,17 +79,12 @@ export const menus: Menu[] = [
       { label: 'תבניות מייל', path: '/emailTemplate' },
       { label: 'תבניות מסמכים', path: '/document-templates' },
       { label: 'שליחת מיילים', path: '/sendEmails' },
-      { label: 'התראות', path: '/notifications' }
     ]
   },
-  {
-    key: 'support',
-    title: 'תמיכה',
-    icon: <HelpCircle size={18} style={{ marginLeft: 8 }} />,
-    items: [
-      { label: 'שאלות נפוצות', path: '/faq' },
-      { label: 'מדריכים', path: '/help' },
-      { label: 'צור קשר', path: '/contactSupport' }
-    ]
-  }
 ];
+
+
+
+
+
+

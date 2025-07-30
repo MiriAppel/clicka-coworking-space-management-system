@@ -13,8 +13,15 @@ export const WorkspaceMap = () => {
 
     const { workSpaces, getAllWorkspace, getWorkspaceHistory } = useWorkSpaceStore();
     const { rooms, getAllRooms } = useRoomStore();
-    const uniqueStatus = Object.values(SpaceStatus);
-    const uniqueType = Object.values(WorkspaceType);
+    const uniqueStatus = Object.values(SpaceStatus).filter(status => status !== SpaceStatus.NONE);
+    const hiddenTypes = [
+        WorkspaceType.WALL,
+        WorkspaceType.DOOR_PASS,
+        WorkspaceType.BASE,
+        WorkspaceType.KLIKAH_CARD,
+        WorkspaceType.OPEN_SPACE
+    ];
+    const uniqueType = Object.values(WorkspaceType).filter(type => !hiddenTypes.includes(type));
     const [selectedStatus, setSelectedStatus] = useState("PLACEHOLDER");
     const [selectedType, setSelectedType] = useState("PLACEHOLDER");
     const [activeStatusSearch, setActiveStatusSearch] = useState(false);
@@ -25,6 +32,7 @@ export const WorkspaceMap = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [mapDimensions,] = useState({ width: 2840, height: 1060 });
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
     const [tooltip, setTooltip] = useState<{
         visible: boolean;
         x: number;
@@ -42,12 +50,31 @@ export const WorkspaceMap = () => {
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    // const [initialScale, setInitialScale] = useState(1);
-    // const [signal, setSignal] = useState(1);
+    // const [isLoading, setIsLoading] = useState(true);
+
+   useEffect(() => {
+    const loadData = async () => {
+        // setIsLoading(true);
+        await Promise.all([
+            getAllWorkspace(),
+            getAllRooms()
+        ]);
+        // setIsLoading(false);
+    };
+    loadData();
+
+    const updateSize = () => {
+        if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            setContainerSize({ width: rect.width, height: rect.height });
+        }
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+}, [getAllRooms,getAllWorkspace]);
 
     useEffect(() => {
-        getAllWorkspace();
-        getAllRooms()
         const updateSize = () => {
             if (containerRef.current) {
                 const rect = containerRef.current.getBoundingClientRect();
@@ -57,11 +84,8 @@ export const WorkspaceMap = () => {
         updateSize();
         window.addEventListener("resize", updateSize);
         return () => window.removeEventListener("resize", updateSize);
-    }, [getAllWorkspace,getAllRooms])
-    // useEffect(() => {
-    //     getAllWorkspace();
-    //     getAllRooms();
-    // }, [signal]);
+    }, [getAllWorkspace, getAllRooms])
+
     useEffect(() => {
         if (selectedStatus !== "" && selectedStatus !== "PLACEHOLDER") {
             setActiveStatusSearch(true);
@@ -258,7 +282,6 @@ export const WorkspaceMap = () => {
                     strokeWidth="1"
                     rx="2"
                 />
-                {/* מסך פנימי - צבע לפי סטטוס */}
                 <rect
                     x={centerX - 12}
                     y={centerY - 9}
@@ -268,7 +291,6 @@ export const WorkspaceMap = () => {
                         space.status === SpaceStatus.OCCUPIED ? '#f6c1bd' : '#f7d6a5'}
                     rx="1"
                 />
-                {/* בסיס */}
                 <rect
                     x={centerX - 3}
                     y={centerY + 8}
@@ -287,30 +309,13 @@ export const WorkspaceMap = () => {
             </g>
         );
     };
-    // const renderReceptionDesk = (space: Space) => {
-    //     const centerX = space.positionX + space.width / 2;
-    //     const centerY = space.positionY + space.height / 2;
-    //     return (
-    //         <g>
-    //             <path
-    //                 d={`M ${centerX - 18} ${centerY + 3} A 18 12 0 0 1 ${centerX + 18} ${centerY + 3} L ${centerX + 15} ${centerY + 8} L ${centerX - 15} ${centerY + 8} Z`}
-    //                 fill="#8B4513"
-    //                 stroke="#654321"
-    //                 strokeWidth="1"
-    //             />
-    //             <ellipse
-    //                 cx={centerX}
-    //                 cy={centerY}
-    //                 rx="18"
-    //                 ry="10"
-    //                 fill="#D2691E"
-    //                 stroke="#A0522D"
-    //                 strokeWidth="1"
-    //             />
-    //         </g>
-    //     );
-    // };
+
     return <div className="all">
+        {/* {isLoading && (
+    <div className="loading-overlay">
+        <div className="spinner"></div>
+    </div>
+)} */}
         <h1>{displayDate.toLocaleDateString()}</h1>
         {tooltip.visible && (
             <div
@@ -337,26 +342,25 @@ export const WorkspaceMap = () => {
             title={isSidebarOpen ? "הסתר תפריט" : "הצג תפריט"}
         >
             <MenuIcon />        </button>
-        {/* <div className="content">  */}
         <div className={`content ${!isSidebarOpen ? 'sidebarHidden' : ''}`}>
             <div className={`search ${!isSidebarOpen ? 'hidden' : ''}`}>                <div className='statusAndType'>
                 <h2>חיפוש וסינון</h2>
                 <label>סטטוס</label>
                 <select value={selectedStatus} onChange={(e) => { setSelectedStatus(e.target.value) }}>
-                    <option value="PLACEHOLDER" disabled>choose status to search</option>
+                    <option value="PLACEHOLDER" disabled>בחר ססטוס חלל לחיפוש</option>
                     {uniqueStatus.map((status, index) => {
                         return <option key={status} value={status}>{status}</option>
                     })}
                 </select>
                 <label>סוג</label>
                 <select value={selectedType} onChange={(e) => { setSelectedType(e.target.value) }}>
-                    <option value="PLACEHOLDER" disabled>choose type to search</option>
+                    <option value="PLACEHOLDER" disabled>בחר סוג חלל לחיפוש</option>
                     {uniqueType.map((type, index) => {
                         return <option key={type} value={type}>{type}</option>
                     })}
                 </select>
             </div>
-                <Button onClick={resetSearch} className="clearSearchBtn">Clear Search</Button>
+                <Button onClick={resetSearch} className="clearSearchBtn">אפס</Button>
                 <div className='displayDate'>
                     <h2>תצוגת מפה</h2>
                     <label>תאריך</label>
@@ -367,7 +371,7 @@ export const WorkspaceMap = () => {
                         }
                     }} />
                 </div>
-                <Button onClick={() => { navigate('/') }} className="backBtn">Back</Button>
+                <Button onClick={() => { navigate('/') }} className="backBtn">חזרה</Button>
             </div>
 
             <div className={`workspaceMap ${!isSidebarOpen ? 'fullWidth' : ''}`}>
@@ -388,6 +392,7 @@ export const WorkspaceMap = () => {
                                 <path d="M0,10 L10,0" stroke="#6c757d" strokeWidth="1" />
                             </pattern>
                         </defs>
+
                         {workSpaces.length > 0 &&
                             [...workSpaces]
                                 .sort((a, b) => (b.width * b.height) - (a.width * a.height))
@@ -405,25 +410,32 @@ export const WorkspaceMap = () => {
                                                     className={`space-rect ${getSpaceClass(w)}`}
                                                     style={{ opacity: isHighlighted ? 1 : 0.3 }}
                                                     onMouseEnter={(e) => {
+                                                        if (w.type === WorkspaceType.BASE) return;
                                                         e.stopPropagation();
                                                         const rect = e.currentTarget.getBoundingClientRect();
                                                         setTooltip({
                                                             visible: true,
                                                             x: rect.left + rect.width / 2,
                                                             y: rect.top - 10,
-                                                            content: `${w.name} - ${w.status} - ${w.description} - ${w.width}*${w.height}`
+                                                            content: ['door', 'wall', 'bathroom', 'kitchen', 'INACTIVE'].includes(getSpaceClass(w))
+                                                                ? w.name
+                                                                : `${w.name} - ${w.status} ${w.currentCustomerName ? `${w.currentCustomerName}` : ""},`
                                                         });
                                                     }}
                                                     onMouseLeave={() => setTooltip(prev => ({ ...prev, visible: false }))}
                                                     onClick={() => {
                                                         if (w.status === SpaceStatus.AVAILABLE) {
-                                                            if (w.type === WorkspaceType.PRIVATE_ROOM1 || w.type === WorkspaceType.DESK_IN_ROOM || w.type === WorkspaceType.COMPUTER_STAND) {
+                                                            if (w.type === WorkspaceType.PRIVATE_ROOM1 || w.type === WorkspaceType.PRIVATE_ROOM2 || w.type === WorkspaceType.PRIVATE_ROOM3) {
                                                                 navigate('/assignmentForm', { state: { space: w, displayDate } });
                                                             }
-                                                            else {
+                                                        }
+                                                        else if (w.status === SpaceStatus.OCCUPIED) {
+                                                            if (w.type === WorkspaceType.PRIVATE_ROOM1 || w.type === WorkspaceType.PRIVATE_ROOM2 || w.type === WorkspaceType.PRIVATE_ROOM3) {
+                                                                navigate('/customerChange', { state: { space: w, displayDate } });
                                                             }
                                                         }
                                                     }}
+
                                                 >
                                                     <rect
                                                         x={w.positionX}
@@ -447,7 +459,9 @@ export const WorkspaceMap = () => {
                                                     strokeWidth="2"
                                                     opacity={isHighlighted ? 1 : 0.3}
                                                     className={`space-rect ${getSpaceClass(w)}`}
+
                                                     onMouseEnter={(e) => {
+                                                        if (w.type === WorkspaceType.BASE) return;
                                                         e.stopPropagation();
                                                         const rect = e.currentTarget.getBoundingClientRect();
                                                         setTooltip({
@@ -466,6 +480,11 @@ export const WorkspaceMap = () => {
                                                         if (w.status === SpaceStatus.AVAILABLE) {
                                                             if (w.type === WorkspaceType.PRIVATE_ROOM1 || w.type === WorkspaceType.PRIVATE_ROOM2 || w.type === WorkspaceType.PRIVATE_ROOM3) {
                                                                 navigate('/assignmentForm', { state: { space: w, displayDate } });
+                                                            }
+                                                        }
+                                                        else if (w.status === SpaceStatus.OCCUPIED) {
+                                                            if (w.type === WorkspaceType.PRIVATE_ROOM1 || w.type === WorkspaceType.PRIVATE_ROOM2 || w.type === WorkspaceType.PRIVATE_ROOM3) {
+                                                                navigate('/customerChange', { state: { space: w, displayDate } });
                                                             }
                                                         }
                                                     }}
@@ -539,10 +558,6 @@ export const WorkspaceMap = () => {
                                     );
                                 })}
                         {rooms.length > 0 && rooms.map((r) => {
-                            // const hasActiveSearch = activeStatusSearch || activeTypeSearch;
-                            // const matchesStatusSearch = !activeStatusSearch || r.status === selectedStatus;
-                            // const matchesTypeSearch = !activeTypeSearch || r.type === selectedType;
-                            // const isHighlighted = !hasActiveSearch || (matchesStatusSearch && matchesTypeSearch);
                             return (
                                 <g key={r.id}>
                                     {r.width > 50 && r.height > 30 && (
@@ -629,6 +644,7 @@ export const WorkspaceMap = () => {
                 </div>
             </div>
         </div>
+
         <div
             className="minimap"
             style={{
@@ -667,11 +683,12 @@ export const WorkspaceMap = () => {
                     y={-pan.y / (scale * zoom)}
                     width={containerSize.width / (scale * zoom)}
                     height={containerSize.height / (scale * zoom)}
-                    fill="INACTIVE"
+                    fill="none"
                     stroke="red"
                     strokeWidth="2"
                 />
             </svg>
         </div>
+
     </div>
 }

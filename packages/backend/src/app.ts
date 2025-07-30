@@ -23,6 +23,7 @@ import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
+import documentTemplateRouter from './routes/document-template.route';
 import router from './routes';
 import documentRouter from './routes/document.routes';
 import invoiceRouter from './routes/invoice.route';
@@ -70,10 +71,7 @@ app.use('/api/emailTemplate', emailTemplateRouter);
 app.use('api/google-calendar', syncRouter);
 app.use('/api/calendar-sync', calendarSyncRouter);
 app.use('/api/book', bookRouter);
-app.use('/api/vendor', (req, res, next) => {
-  console.log('Vendor route hit:', req.method, req.originalUrl);
-  next();
-}, vendorRouter);
+app.use('/api/vendor', vendorRouter);
 app.use('/api/auth', routerAuth);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
@@ -81,10 +79,9 @@ app.use('/api/interaction', interactionRouter);
 app.use('/api/payment', routerPayment);
 app.use('/api/document', documentRouter);
 app.use('/api/invoices', invoiceRouter);
-app.use('/api/payments', paymentRoutes);
 app.use('/api/drive', driveRoutes);
 app.use('/api/translate', translationRouter);
-
+app.use('/api/documents/document_template', documentTemplateRouter);
 
 app.use('/api', router);
 app.get('/api/health', (req, res) => {
@@ -92,7 +89,11 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.log(err);
+  console.error('Error occurred:', {
+    message: err.message || 'Unknown error',
+    status: err.status || 500,
+    code: err.code || 'INTERNAL_SERVER_ERROR'
+  });
   res.status(err.status || 500).json({
     success: false,
     error: {
@@ -104,7 +105,11 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 });
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log(err);
+  console.error('Error occurred:', {
+    message: err.message || 'Unknown error',
+    status: err.status || 500,
+    code: err.code || 'INTERNAL_SERVER_ERROR'
+  });
   console.log(req);
   res.status(err.status || 500).json({
     success: false,

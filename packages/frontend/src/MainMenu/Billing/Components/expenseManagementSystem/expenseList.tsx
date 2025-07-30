@@ -70,7 +70,6 @@ export const ExpenseList = () => {
                 setPage((prev) => prev + 1);
             }
         });
-
         observer.observe(loaderRef.current);
         return () => observer.disconnect();
     }, [hasMore, isSearching]);
@@ -92,7 +91,7 @@ export const ExpenseList = () => {
             (expense) =>
                 expense.vendor_name?.toLowerCase().includes(term.toLowerCase()) ||
                 expense.description?.toLowerCase().includes(term.toLowerCase()) ||
-                expense.category?.toLowerCase().includes(term.toLowerCase())
+                String(expense.category)?.toLowerCase().includes(term.toLowerCase())
         );
 
         if (filtered.length > 0) {
@@ -127,7 +126,7 @@ export const ExpenseList = () => {
     const valuesToTable: ValuesToTable[] = expenses.map((expense) => ({
         id: expense.id!,
         vendor_name: expense.vendor_name,
-        category: expense.category,
+        category: expense.category ? String(expense.category) : "",
         amount: expense.amount,
         status: expense.status,
         date: new Date(expense.date).toLocaleDateString("he-IL"),

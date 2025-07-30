@@ -32,7 +32,7 @@ export interface UpdateDocumentTemplateRequest {
 export class DocumentService {
   
   // יצירת תבנית מסמך חדשה
-  async createDocumentTemplate(newDocuments: DocumentTemplateModel, customer_id: ID): Promise<DocumentTemplateModel> {
+  async createDocumentTemplate(newDocuments: DocumentTemplateModel): Promise<DocumentTemplateModel> {
     try {
       if (!newDocuments.template) {
         throw new Error('תוכן התבנית הוא שדה חובה');
@@ -45,7 +45,6 @@ export class DocumentService {
       const now = new Date().toISOString();
       
       const templateToInsert = {
-        customer_id: customer_id,
         type: newDocuments.type ?? "RECEIPT",
         language: newDocuments.language ?? 'english',
         template: newDocuments.template ?? "",
@@ -252,7 +251,6 @@ export class DocumentService {
     return {
       name: data.name,
       id: data.id,
-      customer_id: data.customer_id,
       type: data.type,
       language: data.language,
       template: data.template,
@@ -277,9 +275,9 @@ export const getActiveDocumentTemplates = async (): Promise<DocumentTemplateMode
   return await service.getActiveTemplates();
 };
 
-export const createDocumentTemplate = async (templateData: DocumentTemplateModel, customer_id: ID): Promise<DocumentTemplateModel> => {
+export const createDocumentTemplate = async (templateData: DocumentTemplateModel): Promise<DocumentTemplateModel> => {
   const service = new DocumentService();
-  return await service.createDocumentTemplate(templateData, customer_id);
+  return await service.createDocumentTemplate(templateData);
 };
 
 export const getDocumentTemplateById = async (id: string): Promise<DocumentTemplateModel | null> => {

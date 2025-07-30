@@ -23,7 +23,7 @@ export const Default: Story = {
     const methods = useForm();
     return (
       <FormProvider {...methods}> {/* עוטף את הקומפוננטה ב־FormProvider */}
-        <FileInputField {...args} />
+        {/* <FileInputField {...args} /> */}
       </FormProvider>
     );
   },

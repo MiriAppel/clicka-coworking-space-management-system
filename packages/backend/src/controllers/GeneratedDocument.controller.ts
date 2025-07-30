@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { GeneratedDocumentService, GeneratedDocumentFilter } from '../services/GeneratedDocument.service';
+import { GeneratedDocumentService, GeneratedDocumentFilter } from '../services/generate-d-template.service';
 import { ID } from 'shared-types';
 
 export class GeneratedDocumentController {
