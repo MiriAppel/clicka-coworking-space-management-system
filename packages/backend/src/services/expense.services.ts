@@ -45,11 +45,25 @@ export class ExpenseService extends baseService<ExpenseModel> {
     const from = (pageNum - 1) * limitNum;
     const to = from + limitNum - 1;
 
-    const { data, error } = await supabase
+    // שליפת מזהה קטגוריית קופה קטנה
+    const { data: pettyCashCategories } = await supabase
+      .from('expense_category')
+      .select('id')
+      .or('name.eq.קופה קטנה,name.eq.PETTY_CASH,name.eq.Petty Cash');
+
+    const pettyCashCategoryIds = pettyCashCategories?.map(cat => cat.id) || [];
+
+    let query = supabase
       .from("expense")
       .select("*")
-      .order("id", { ascending: false })
-      .range(from, to);
+      .order("id", { ascending: false });
+
+    // סינון הוצאות של קופה קטנה
+    if (pettyCashCategoryIds.length > 0) {
+      query = query.not('category_id', 'in', `(${pettyCashCategoryIds.join(',')})`);
+    }
+
+    const { data, error } = await query.range(from, to);
 
     console.log("Supabase data:", data);
     console.log("Supabase error:", error);
