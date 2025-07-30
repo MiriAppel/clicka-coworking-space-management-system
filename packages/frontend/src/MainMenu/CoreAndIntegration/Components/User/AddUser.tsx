@@ -61,9 +61,12 @@ export const AddUser = ({ onClose, onUserAdded }: AddUserProps) => {
         showAlert("", "המשתמש נוסף בהצלחה", "success");
         onUserAdded?.();
         onClose?.();
+      } else {
+        showAlert("שגיאה", "הוספת המשתמש נכשלה", "error");
       }
     } catch (error) {
         showAlert("שגיאה", "הוספת המשתמש נכשלה. נסה שוב", "error");
+        // לא סוגרים את המודאל כדי שהמשתמש יוכל לנסות שוב
     } finally {
       setIsSubmitting(false);
     }

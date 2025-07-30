@@ -61,6 +61,8 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
                 showAlert("", "המשתמש עודכן בהצלחה", "success");
                 onUserUpdated?.();
                 onClose?.();
+            } else {
+                showAlert("שגיאה", "עדכון המשתמש נכשל", "error");
             }
         } catch (error) {
             console.error("Error details:", {
@@ -69,15 +71,16 @@ export const UpdateUser = ({ user, onClose, onUserUpdated }: UpdateUserProps) =>
                 fullError: error
             });
             showAlert("שגיאה", "עדכון המשתמש נכשלה. נסה שוב", "error");
+            // לא סוגרים את המודאל כדי שהמשתמש יוכל לנסות שוב
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const roleOptions = [
-        { value: UserRole.ADMIN, label: "מנהל" },
-        { value: UserRole.MANAGER, label: "מנהל מחלקה" },
-        { value: UserRole.SYSTEM_ADMIN, label: "מנהל מערכת" },
+        { value: UserRole.ADMIN, label: "Admin" },
+        { value: UserRole.MANAGER, label: "Manager" },
+        { value: UserRole.SYSTEM_ADMIN, label: "System Admin" },
     ];
 
     return (

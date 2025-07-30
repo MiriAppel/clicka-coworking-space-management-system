@@ -91,23 +91,23 @@ export class AuditLogService {
 
       // הוספת פילטרים
       if (filters?.userEmail) {
-        query = query.eq('user_email', filters.userEmail);
+        query = query.ilike('user_email', `%${filters.userEmail}%`);
       }
 
       if (filters?.action) {
-        query = query.eq('action', filters.action);
+        query = query.eq('action', `%${filters.action}%`);
       }
 
       if (filters?.functionName) {
-        query = query.eq('function_name', filters.functionName);
+        query = query.ilike('function_name', `%${filters.functionName}%`);
       }
 
       if (filters?.startDate) {
-        query = query.gte('timestamp', filters.startDate);
+        query = query.gte('timestamp', `%${filters.startDate}%`);
       }
 
       if (filters?.endDate) {
-        query = query.lte('timestamp', filters.endDate);
+        query = query.lte('timestamp', `%${filters.endDate}%`);
       }
 
       // מיון לפי תאריך (החדשים ראשונים)

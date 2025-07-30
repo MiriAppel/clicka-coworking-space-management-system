@@ -24,6 +24,13 @@ export const UserTable = () => {
     getAllUsers();
   }, [getAllUsers]);
 
+  // טיפול בשגיאות - מציג אלרט ונשאר בטבלה
+  useEffect(() => {
+    if (error) {
+      showAlert("שגיאה", error, "error");
+    }
+  }, [error]);
+
   const handleUpdate = (user: User) => {
     setSelectedUser(user);
     setShowUpdateUser(true);
@@ -83,15 +90,7 @@ export const UserTable = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          Error: {error}
-        </div>
-      </div>
-    );
-  }
+  // הסרנו את ה-error return כדי שהטבלה תמיד תוצג
 
   // If you are displaying an add or update form
   if (showAddUser) {
