@@ -1,9 +1,9 @@
 import express from 'express';
 import * as customerController from '../controllers/customer.controller';
-import { UserRole } from 'shared-types'; 
-import { authorizeUser } from '../middlewares/authorizeUserMiddleware';
+import multer from 'multer';
 
 const routerCustomer = express.Router();
+const upload = multer({ storage: multer.memoryStorage() });
 
 // (GET)
 // routerCustomer.get('/by-page', customerController.getCustomersByPage);
@@ -27,6 +27,8 @@ routerCustomer.get('/:id', customerController.getCustomerById);
 routerCustomer.get('/:id/payment-methods',  customerController.getCustomerPaymentMethods);
 
 //(POST)
+routerCustomer.post('/upload/excel', upload.single('file'), customerController.postCustomersFromExcel);
+
 routerCustomer.post('/:id/exit-notice',  customerController.postExitNotice); 
 
 routerCustomer.post('/post-customer',  customerController.postCustomer); 

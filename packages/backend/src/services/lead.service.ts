@@ -3,6 +3,8 @@ import { LeadModel } from "../models/lead.model";
 import Papa, { parse } from "papaparse";
 import { ID, LeadSource, LeadStatus, UpdateLeadRequest } from "shared-types";
 import { supabase } from "../db/supabaseClient";
+import * as XLSX from 'xlsx';
+
 
 export class leadService extends baseService<LeadModel> {
   constructor() {
@@ -234,4 +236,102 @@ export class leadService extends baseService<LeadModel> {
 
     return data as LeadModel[];
   };
+  importLeadsFromExcelBuffer = async (buffer: Buffer): Promise<void> => {
+    const workbook = XLSX.read(buffer, { type: 'buffer' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rawData = XLSX.utils.sheet_to_json<any[]>(sheet, { header: 1 });
+    const [headerRow, ...dataRows] = rawData;
+    const headers = [
+      'שם', 'טלפון', 'מייל', 'תחום העסק', 'מה מעניין את הלקוח',
+      'איך ליצור קשר', 'תאריך ליד', 'תאריך שיחת מכירה', 'סטטוס', 'אופן פניה', 'הערות'
+    ];
+    // מפות כפי שהגדרת
+    const leadStatusMap: Record<string, string> = { /* כפי שהגדרת */ };
+    const leadSourceMap: Record<string, string> = { /* כפי שהגדרת */ };
+    const interestedInMap: Record<string, string> = { /* כפי שהגדרת */ };
+    // פונקציות עזר (formatDate ו-normalizePhone)
+    function formatDate(value: any): string | null {
+      if (!value) return null;
+      if (typeof value === 'number') {
+        const excelStartDate = new Date(1900, 0, 1);
+        const parsed = new Date(excelStartDate.getTime() + (value - 2) * 86400000);
+        return parsed.toISOString().split('T')[0];
+      }
+      const parsed = new Date(value);
+      return isNaN(parsed.getTime()) ? null : parsed.toISOString().split('T')[0];
+    }
+    function normalizePhone(value: any): string {
+      let phoneStr = String(value ?? '').replace(/\D/g, '');
+      if (!phoneStr.startsWith('0')) {
+        phoneStr = '0' + phoneStr;
+      }
+      return phoneStr;
+    }
+    for (const row of dataRows) {
+      if (row[0] === 'שם') continue;
+      const rowObj: Record<string, any> = {};
+      headers.forEach((key, i) => {
+        rowObj[key] = row[i];
+      });
+      const isEmptyRow = Object.values(rowObj).every(val => val === undefined || val === null || String(val).trim() === '');
+      if (isEmptyRow) continue;
+      if (!rowObj['שם'] || !rowObj['מייל'] || !rowObj['טלפון']) continue;
+      const status = leadStatusMap[(rowObj['סטטוס'] || '').toUpperCase()] || 'NEW';
+      const source = leadSourceMap[(rowObj['אופן פניה'] || '').toUpperCase()] || 'OTHER';
+      const interestedInRaw = (rowObj['מה מעניין את הלקוח'] || '').toUpperCase();
+      const interestedIn = interestedInMap[interestedInRaw] || 'OPEN_SPACE';
+      const lead = {
+        name: rowObj['שם'],
+        phone: normalizePhone(rowObj['טלפון']),
+        email: rowObj['מייל'],
+        business_type: rowObj['תחום העסק'] || null,
+        interested_in: interestedIn,
+        status,
+        source,
+        notes: rowObj['הערות'] || null,
+        id_number: rowObj['ת.ז.'] || 'UNKNOWN',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      const { error: insertError } = await supabase.from('leads').insert(lead);
+      if (insertError) {
+        console.error('Error inserting lead:', insertError.message);
+        continue;
+      }
+      console.log('Lead inserted:', lead.name);
+      const { data: insertedLead } = await supabase.from('leads').select('id').eq('email', lead.email).single();
+      if (!insertedLead) continue;
+      const leadId = insertedLead.id;
+      const entryDate = formatDate(rowObj['תאריך ליד']);
+      const contactDate = formatDate(rowObj['תאריך שיחת מכירה']);
+      const exitDate = formatDate(rowObj['תאריך יציאה']) || '1900-01-01';
+      if (entryDate && contactDate) {
+        const { error: periodError } = await supabase.from('lead_period').insert({
+          lead_id: leadId,
+          entry_date: entryDate,
+          contact_date: contactDate,
+          exit_date: exitDate,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+        if (periodError) console.error('Error inserting lead period:', periodError.message);
+      }
+      const interactionDate = formatDate(rowObj['תאריך ליד']);
+      if (!interactionDate) {
+        console.error('Missing interaction date');
+        continue;
+      }
+      const { error: interactionError } = await supabase.from('lead_interaction').insert({
+        lead_id: leadId,
+        date: interactionDate,
+        notes: rowObj['הערות'] || '',
+        type: rowObj['איך ליצור קשר'] || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+      if (interactionError) {
+        console.error('Error inserting lead interaction:', interactionError.message);
+      }
+    }
+  }
 }
