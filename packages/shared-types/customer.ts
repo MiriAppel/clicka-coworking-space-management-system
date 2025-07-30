@@ -30,6 +30,7 @@ export enum WorkspaceType {
   DESK_IN_ROOM = 'DESK_IN_ROOM',
   OPEN_SPACE = 'OPEN_SPACE',
   KLIKAH_CARD = 'KLIKAH_CARD',
+  KLIKAH_CARD_UPGRADED = 'KLIKAH_CARD_UPGRADED',
   DOOR_PASS = "DOOR_PASS",
   WALL = "WALL",
   COMPUTER_STAND = "COMPUTER_STAND",
@@ -133,6 +134,7 @@ export interface Customer {
   contractDocuments?: FileReference[];
   paymentMethods?: CustomerPaymentMethod[];
   paymentMethodType: PaymentMethodType;
+  ip: string;
   periods?: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -162,6 +164,7 @@ export interface CreateCustomerRequest {
     creditCardHolderPhone?: string;
   };
   paymentMethodType: PaymentMethodType;
+  ip: string;
   contractDocuments?: FileReference[];
 }
 

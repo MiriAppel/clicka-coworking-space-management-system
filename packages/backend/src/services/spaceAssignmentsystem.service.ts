@@ -1,6 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { RoomModel } from "../models/room.model";
-import { SpaceStatus, type DateRangeFilter, type ID, type OccupancyReportResponse, type Space } from "shared-types";
 import dotenv from 'dotenv';
 import { SpaceAssignmentModel } from '../models/spaceAssignment.model';
 dotenv.config();

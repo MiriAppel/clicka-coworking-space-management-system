@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useImperativeHandle, forwardRef } from "react";
+import { useEffect, useState, useImperativeHandle, forwardRef } from "react";
 import { useForm, FormProvider, useWatch } from "react-hook-form";
 //יבוא מהעיצובים הכללים 
 import { InputField } from "../../../Common/Components/BaseComponents/Input";
