@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import App from './App';
 import { AuthenticationScreen } from './MainMenu/CoreAndIntegration/Components/Login/AuthenticationScreen';
@@ -9,7 +9,7 @@ import VendorsList from './MainMenu/Billing/Components/Vendor-management/Vendors
 import { Vendor } from 'shared-types';
 import { ExcelUpload } from './MainMenu/LeadAndCustomer/Components/Leads/ UploadLeadsFile';
 import { ExcelCUpload } from './MainMenu/LeadAndCustomer/Components/Customers/UploadCustomersFile';
-import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
+import { BillingRouting } from './MainMenu/Billing/Components/billingRouting';
 // import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import { PaymentList } from './MainMenu/Billing/Components/paymentList';
@@ -38,6 +38,13 @@ import { RoomManager } from './MainMenu/Workspace/Components/RoomManager';
 // import { CreateExpenseModal } from './MainMenu/Billing/Components/expenseManagementSystem/expenseForm';
 import { WorkspaceMap } from './MainMenu/Workspace/Components/workspaceMap';
 import { CustomerChange } from './MainMenu/Workspace/Components/customerChange';
+import DocumentTemplate from './MainMenu/DocumentManagement/Components/DocumentTemplate';
+import { UpdateDocumentTemplate } from './MainMenu/DocumentManagement/Components/UpdateDocumentTemplate';
+import {ShowDocumentTemplate} from './MainMenu/DocumentManagement/Components/ShowDocumentTemplate';
+// import { PreviewDocumentTemplate } from './MainMenu/DocumentManagement/Components/PreviewDocumentTemplate';
+import AddDocumentTemplate from './MainMenu/DocumentManagement/Components/AddDocumentTemplate';
+import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
+import { DocumentTemplatePreviewPage } from './MainMenu/DocumentManagement/Components/DocumentTempExport';
 
 export const Routing = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -74,6 +81,23 @@ export const Routing = () => {
         <Route path="payments" element={<PaymentList />} />
         <Route path="payment-form" element={<PaymentForm />} />
         <Route path="vendor" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
+        <Route path="billing/*" element={<BillingRouting />} />
+        <Route path="expenses" element={<ExpenseList />} />
+        {/* <Route path="expenses/expense-form" element={<CreateExpenseForm />} /> */}
+        {/* <Route path="expenses/expense-form/:id" element={<CreateExpenseForm />} /> */}
+        <Route path="/workspaceMap" element={<WorkspaceMap />} />
+        <Route path="leadAndCustomer/*" element={<LeadAndCustomerRouting />} />
+        <Route path="assignmentForm" element={<AssignmentForm />} />
+        <Route path="bookingCalendar" element={<BookingCalendar roomId={""} roomName={""} />} />
+        <Route path="payments" element={<DocumentTemplate />} />
+        <Route path="/document-templates" element={<DocumentTemplate />} />
+        <Route path="document-templates/edit/:id" element={<UpdateDocumentTemplate />} />
+        <Route path="document-templates/view/:id" element={<ShowDocumentTemplate />} />
+        <Route path="document-templates/preview/:id" element={<DocumentTemplatePreviewPage />} />
+        <Route path="document-templates/add" element={<AddDocumentTemplate />} />
+        {/* <Route path="document-templates/preview/:id" element={<DocumentTemplate />} /> */}
+        <Route path="payment" element={<PaymentForm />} />
+        <Route path="vendors" element={<VendorsList vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/new" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         <Route path="vendors/:id/edit" element={<VendorForm vendors={vendors} setVendors={setVendors} />} />
         {/* <Route path="vendors/:id" element={<VendorSummary vendors={vendors} setVendors={setVendors} />} /> */}
@@ -95,8 +119,7 @@ export const Routing = () => {
         <Route path="/rooms" element={<RoomManager />} />
         <Route path="/documentUpload" element={< DocumentUpload />} />
         <Route path="/registerUser" element={<RegisterUser />} />
-
-        <Route path="/customerChange" element={<CustomerChange />} />
+        <Route path="/customerChange" element={<CustomerChange/>} />
       </Route>
 
 

@@ -182,6 +182,7 @@ import React, { useEffect, useState } from "react";
 import { Table, TableColumn } from "../../../../Common/Components/BaseComponents/Table";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
 import { AuditLogDetails } from "./AuditLogDetails";
+import { axiosInstance } from "../../../../Service/Axios";
 
 const AuditLogTable = () => {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
@@ -215,8 +216,8 @@ const AuditLogTable = () => {
         queryParams.append("endDate", `${date}T23:59:59.999Z`);
       }
 
-      const response = await fetch(`/api/audit-logs/AuditLogController?${queryParams.toString()}`);
-      const data = await response.json();
+      const response = await axiosInstance.get(`/audit-logs/AuditLogController?${queryParams.toString()}`);
+      const data = response.data;
 
       setAuditLogs(data);
     } catch (error) {

@@ -36,6 +36,7 @@
     "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
     "papaparse": "^5.5.3",
+    "puppeteer": "^24.15.0",
     "shared-types": "*",
     "supertest": "^7.1.4",
     "swagger-ui-express": "^5.0.1",

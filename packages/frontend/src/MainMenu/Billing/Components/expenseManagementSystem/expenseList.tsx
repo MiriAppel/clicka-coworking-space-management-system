@@ -99,7 +99,7 @@ export const ExpenseList = () => {
         } else {
             try {
                 const response = await axiosInstance.get("/expenses/filter", {
-                    params: { q: term, page: 1, limit: 50 },
+                    params: { q: term, page: 1, limit: 50, excludePettyCash: true },
                 });
                 setExpenses(response.data);
             } catch (error) {

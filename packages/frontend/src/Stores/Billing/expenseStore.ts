@@ -64,8 +64,7 @@
 // }));
 import { create } from "zustand";
 import type { ID, Expense, FileReference } from "shared-types";
-// משתנה לכתובת הבסיס של השרת מתוך ENV, עם ברירת מחדל
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
+import axiosInstance from '../../Service/Axios';
 interface ExpenseState {
   expenses: Expense[]; // מערך הוצאות
   selectedExpense?: Expense; // הוצאה נבחרת לפרטים או עריכה
@@ -102,74 +101,50 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
   expenseDocuments: [], // אין מסמכים בהתחלה
   loading: false, // לא בטעינה
   error: undefined, // ללא שגיאות
-  // --- שליפת כל ההוצאות לפי הנתיב שלך ---
   fetchExpenses: async () => {
     set({ loading: true });
     try {
-      const response = await fetch(`${API_BASE_URL}/api/expenses/getAll`);
-      if (!response.ok) throw new Error('Failed to fetch expenses');
-      const data = await response.json();
-      set({ expenses: data, loading: false, error: undefined });
+      const response = await axiosInstance.get('/expenses/getAll');
+      set({ expenses: response.data, loading: false, error: undefined });
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
   },
-  // --- שליפת פרטי הוצאה לפי ID לפי הנתיב שלך ---
   fetchExpenseDetails: async (expenseId: ID) => {
     set({ loading: true });
     try {
-      const response = await fetch(`${API_BASE_URL}/api/expenses/getExpenseById/${expenseId}`);
-      if (!response.ok) throw new Error('Failed to fetch expense details');
-      const data = await response.json();
-      set({ selectedExpense: data, loading: false, error: undefined });
+      const response = await axiosInstance.get(`/expenses/getExpenseById/${expenseId}`);
+      set({ selectedExpense: response.data, loading: false, error: undefined });
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
   },
-  // --- יצירת הוצאה חדשה לפי הנתיב שלך ---
   createExpense: async (expenseData: Expense) => {
     set({ loading: true });
     try {
-      const response = await fetch(`${API_BASE_URL}/api/expenses/createExpense`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(expenseData),
-      });
-      if (!response.ok) throw new Error('Failed to create expense');
-      const data = await response.json();
+      const response = await axiosInstance.post('/expenses/createExpense', expenseData);
       set({ loading: false, error: undefined });
-      return data;
+      return response.data;
     } catch (error: any) {
       set({ error: error.message, loading: false });
       return null;
     }
   },
-  // --- עדכון הוצאה קיימת לפי הנתיב שלך ---
   updateExpense: async (expenseId: ID, updatedExpenseData: Expense) => {
     set({ loading: true });
     try {
-      const response = await fetch(`${API_BASE_URL}/api/expenses/updateExpense/${expenseId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedExpenseData),
-      });
-      if (!response.ok) throw new Error('Failed to update expense');
-      const data = await response.json();
+      const response = await axiosInstance.put(`/expenses/updateExpense/${expenseId}`, updatedExpenseData);
       set({ loading: false, error: undefined });
-      return data;
+      return response.data;
     } catch (error: any) {
       set({ error: error.message, loading: false });
       return null;
     }
   },
-  // --- מחיקת הוצאה לפי הנתיב שלך ---
   deleteExpense: async (expenseId: ID) => {
     set({ loading: true });
     try {
-      const response = await fetch(`${API_BASE_URL}/api/expenses/deleteExpense/${expenseId}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to delete expense');
+      await axiosInstance.delete(`/expenses/deleteExpense/${expenseId}`);
       set({ loading: false, error: undefined });
     } catch (error: any) {
       set({ error: error.message, loading: false });
@@ -180,20 +155,12 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
     // כרגע הדפסה בלבד, אפשר להוסיף קריאה אמיתית במידה ויש נתיב מתאים
     console.log(`Fetching documents for expense ${expenseId}`);
   },
-  // --- סימון הוצאה כבתשלום לפי הנתיב שלך ---
   updateExpenseStatus: async (expenseId: ID, status: string) => {
     set({ loading: true });
     try {
-      // כאן הנתיב שלך: markExpenseAsPaid
-      const response = await fetch(`${API_BASE_URL}/api/expenses/markExpenseAsPaid/${expenseId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      });
-      if (!response.ok) throw new Error('Failed to update expense status');
-      const data = await response.json();
+      const response = await axiosInstance.put(`/expenses/markExpenseAsPaid/${expenseId}`, { status });
       set({ loading: false, error: undefined });
-      return data;
+      return response.data;
     } catch (error: any) {
       set({ error: error.message, loading: false });
       return null;
@@ -242,16 +209,11 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
       expense.purchaser_name.toLowerCase().includes(purchaserName.toLowerCase())
     );
   },
-  // --- שליפת הוצאות קופה קטנה ---
   fetchPettyCashExpenses: async () => {
     set({ loading: true });
     try {
-      console.log('Fetching petty cash from:', `${API_BASE_URL}expenses/petty-cash`);
-      const response = await fetch(`${API_BASE_URL}expenses/petty-cash`);
-      console.log('Response status:', response.status);
-      if (!response.ok) throw new Error('Failed to fetch petty cash expenses');
-      const data = await response.json();
-      set({ expenses: data, loading: false, error: undefined });
+      const response = await axiosInstance.get('/expenses/petty-cash');
+      set({ expenses: response.data, loading: false, error: undefined });
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
