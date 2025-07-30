@@ -4,7 +4,7 @@
 // מבצעת פרורציה אם צריך.
 // מחשבת סה"כ, מע"מ, וסה"כ לתשלום.
 // מחזירה פירוט לכל חלל ולחשבונית.
-import { PricingTier, ID, DateISO, BillingItemType, InvoiceStatus, WorkspaceType, SpaceStatus } from '../../../shared-types'; // ייבוא טיפוסים רלוונטיים
+import { PricingTier, ID, DateISO, BillingItemType, InvoiceStatus, WorkspaceType, SpaceStatus } from 'shared-types'; // ייבוא טיפוסים רלוונטיים
 import { differenceInCalendarDays, startOfMonth, endOfMonth } from 'date-fns'; // פונקציות עזר לתאריכים
 import { VAT_RATE } from '../constants'; // קבוע מע"מ
 import { InvoiceItemModel, InvoiceModel } from '../models/invoice.model'; // מודלים של חשבונית ופריט חשבונית
