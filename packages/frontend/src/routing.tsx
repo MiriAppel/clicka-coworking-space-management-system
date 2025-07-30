@@ -44,6 +44,7 @@ import ShowDocumentTemplate from './MainMenu/DocumentManagement/Components/ShowD
 import { PreviewDocumentTemplate } from './MainMenu/DocumentManagement/Components/PreviewDocumentTemplate';
 import AddDocumentTemplate from './MainMenu/DocumentManagement/Components/AddDocumentTemplate';
 import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
+import { DocumentTemplatePreviewPage } from './MainMenu/DocumentManagement/Components/DocumentTempExport';
 
 export const Routing = () => {
   const [vendors, setVendors] = useState<Vendor[]>([]);
@@ -92,7 +93,7 @@ export const Routing = () => {
         <Route path="/document-templates" element={<DocumentTemplate />} />
         <Route path="document-templates/edit/:id" element={<UpdateDocumentTemplate />} />
         <Route path="document-templates/view/:id" element={<ShowDocumentTemplate />} />
-        <Route path="document-templates/preview/:id" element={<PreviewDocumentTemplate />} />
+        <Route path="document-templates/preview/:id" element={<DocumentTemplatePreviewPage />} />
         <Route path="document-templates/add" element={<AddDocumentTemplate />} />
         {/* <Route path="document-templates/preview/:id" element={<DocumentTemplate />} /> */}
         <Route path="payment" element={<PaymentForm />} />
