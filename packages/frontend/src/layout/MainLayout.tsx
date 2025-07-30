@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import TopNav from './TopNav/TopNav';
 import { Outlet, useNavigate } from 'react-router-dom';
 const shortcutMap: Record<string, string> = {

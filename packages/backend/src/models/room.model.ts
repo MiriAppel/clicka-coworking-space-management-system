@@ -1,4 +1,4 @@
-import { RoomFeature, RoomType, RoomStatus, Room } from "shared-types/booking";
+import {  RoomType, RoomStatus, Room } from "shared-types/booking";
 import { ID, DateISO } from "shared-types/core";
 
 export class RoomModel implements Room {

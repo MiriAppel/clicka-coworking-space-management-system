@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import { SendEmail, SendEmailRequest } from "shared-types/google";
+import { SendEmail } from "shared-types/google";
 import { UserTokenService } from "./userTokenService";
 import { EmailTemplateService } from "./emailTemplate.service";
 import { customerService } from "./customer.service";
