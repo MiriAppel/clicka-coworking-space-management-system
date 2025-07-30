@@ -38,6 +38,7 @@ export const InterestedCustomerRegistration: React.FC = () => {
       notes: data.notes,
       invoiceName: data.invoiceName,
       paymentMethodType: data.paymentMethodType,
+      ip: data.ip,
       paymentMethod:
         data.paymentMethodType === PaymentMethodType.CREDIT_CARD
           ? {
