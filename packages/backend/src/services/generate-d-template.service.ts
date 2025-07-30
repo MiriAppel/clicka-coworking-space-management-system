@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { GeneratedDocument } from 'shared-types';
-import { DocumentService } from './document.service';
+import { DocumentService } from './document-template.service.ts';
 import { ID, DateISO ,FileReference} from 'shared-types';
 import puppeteer from 'puppeteer';
 import * as fs from 'fs/promises';
