@@ -76,6 +76,7 @@ export const menus: Menu[] = [
     icon: <Mail size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'תבניות מייל', path: '/emailTemplate' },
+      { label: 'תבניות מסמכים', path: '/document-templates' },
       { label: 'שליחת מיילים', path: '/sendEmails' },
     ]
   },

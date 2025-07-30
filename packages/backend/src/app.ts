@@ -23,6 +23,7 @@ import routerMap from './routes/workspaceMap.route';
 import { setupSwagger } from './docs/swagger';
 import routerReport from './routes/Reports.route';
 import vendorRouter from './routes/vendor.router';
+import documentTemplateRouter from './routes/document-template.route';
 import router from './routes';
 import documentRouter from './routes/document.routes';
 import invoiceRouter from './routes/invoice.route';
@@ -81,7 +82,7 @@ app.use('/api/invoices', invoiceRouter);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/drive', driveRoutes);
 app.use('/api/translate', translationRouter);
-
+app.use('/api/documents/document_template', documentTemplateRouter);
 
 app.use('/api', router);
 app.get('/api/health', (req, res) => {
