@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { FileReference, ID } from 'shared-types';
+import { ID } from 'shared-types';
 import { Readable } from 'stream';
 import { UserTokenService } from './userTokenService';
 import { DocumentModel } from '../models/document.model';

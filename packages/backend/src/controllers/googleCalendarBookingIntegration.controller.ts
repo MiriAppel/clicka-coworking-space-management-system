@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import * as CalendarService from '../services/googleCalendarBookingIntegration.service ';
 import * as calendarUpdate from '../services/calendar-service'
-import { CalendarSync } from 'shared-types/calendarSync';
-import type { CalendarEventInput, ID, StatusChangeRequest, UpdateGoogleCalendarEventRequest } from 'shared-types';
-import { CalendarSyncModel } from '../models/calendarSync.model';
-import { validateEventInput } from '../utils/validateEventInput';
+// import { CalendarSync } from 'shared-types/calendarSync';
+import type {  ID, UpdateGoogleCalendarEventRequest } from 'shared-types';
+// import { CalendarSyncModel } from '../models/calendarSync.model';
+// import { validateEventInput } from '../utils/validateEventInput';
 import { BookingModel } from '../models/booking.model';
 import { BookingService } from '../services/booking.service';
 import { UserTokenService } from '../services/userTokenService';
