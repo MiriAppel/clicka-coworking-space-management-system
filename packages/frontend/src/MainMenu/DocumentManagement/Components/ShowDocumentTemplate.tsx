@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDocumentTemplateStore } from '../../../Stores/DocumentManagement/DocumentTemplateStore';
 
-const ShowDocumentTemplate: React.FC = () => {
+export const ShowDocumentTemplate: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
    const renderPreview = () => {

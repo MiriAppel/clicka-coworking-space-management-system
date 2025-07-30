@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import  DocumentTemplate  from '../Components/DocumentTemplate';
 import  AddDocumentTemplate  from '../Components/AddDocumentTemplate';
 import { UpdateDocumentTemplate } from '../Components/UpdateDocumentTemplate';
-import ShowDocumentTemplate from '../Components/ShowDocumentTemplate';
+import {ShowDocumentTemplate} from '../Components/ShowDocumentTemplate';
 import { PreviewDocumentTemplate } from './PreviewDocumentTemplate';
 
 // הגדרת כל הנתיבים הקשורים לניהול תבניות מסמכים
