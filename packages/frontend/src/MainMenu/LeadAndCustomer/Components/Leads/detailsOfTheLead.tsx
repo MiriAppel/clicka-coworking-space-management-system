@@ -18,10 +18,7 @@ export const DetailsOfTheLead = () => {
         phone: '0501234567',
         email: 'yossi@example.com',
         businessType: 'סטארטאפ',
-        interestedIn: [
-            WorkspaceType.PRIVATE_ROOM1,
-            WorkspaceType.DESK_IN_ROOM
-        ],
+        interestedIn: WorkspaceType.BASE,
         source: LeadSource.WEBSITE,
         status: LeadStatus.NEW,
         contactDate: new Date().toISOString(), // תאריך יצירת הקשר

@@ -51,6 +51,9 @@ const schema = z.object({
     contractDocuments: z.array(z.any()).optional(),
     ProfilePicture: z.any().optional(),
     requireEmailVerification: z.boolean().optional(),
+    ip: z.string().optional().refine(val => {
+        return !val || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(val);
+    }, { message: "כתובת IP לא תקינה" }),
 }).superRefine((data, ctx) => {
     if (data.paymentMethodType === PaymentMethodType.CREDIT_CARD) {
         if (!data.creditCardNumber || !/^\d{16}$/.test(data.creditCardNumber)) {
@@ -98,8 +101,6 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
     onSubmit,
     title = "רישום לקוח חדש",
     subtitle = "מלא את הפרטים החסרים",
-    isEditMode = false
-
 }) => {
 
     const [currentStep, setCurrentStep] = useState<number>(0);
@@ -108,6 +109,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
         resolver: zodResolver(schema),
         defaultValues: {
             ...defaultValues,
+            idNumber: defaultValues?.idNumber || "",
             workspaceCount: 1,
             notes: defaultValues?.notes || "",
             contractSignDate: defaultValues?.contractSignDate || new Date().toISOString().split("T")[0],
@@ -143,7 +145,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
     // }, [lead, methods]);
 
     const stepFieldNames = [
-        ["name", "phone", "email", "idNumber", "businessName", "businessType", "notes", "ProfilePicture"] as const,
+        ["name", "phone", "email", "idNumber", "businessName", "businessType", "notes", "ProfilePicture","ip"] as const,
         ["currentWorkspaceType", "workspaceCount", "contractSignDate", "contractStartDate", "billingStartDate", "contractDocuments"] as const,
         ["paymentMethodType", "invoiceName", "creditCardNumber", "creditCardExpiry", "creditCardHolderIdNumber", "creditCardHolderPhone"] as const,
     ];
@@ -175,6 +177,7 @@ export const CustomerRegistrationForm: React.FC<CustomerRegistrationFormProps> =
                     <InputField name="notes" label="הערות" />
                     <InputField name="businessName" label="שם העסק" required />
                     <InputField name="businessType" label="סוג העסק" required />
+                    <InputField name='ip' label='כתובת IP'/>
                 </>
             )
         },
