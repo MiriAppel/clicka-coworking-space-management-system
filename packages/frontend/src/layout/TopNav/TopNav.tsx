@@ -6,29 +6,20 @@ import { useMediaQuery } from 'react-responsive';
 import { menus } from '../menuData';
 import { T } from '../../Common/Service/T';
 import logo from '../Assets/Klika Logo.jpg';
-import { useAuthStore } from '../../Stores/CoreAndIntegration/useAuthStore';
-import { LogoutButton } from '../../MainMenu/CoreAndIntegration/Components/Login/LogoutButton';
-
-
+import { Link } from 'react-router-dom';
 const TopNav = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [clickedMenuKey, setClickedMenuKey] = useState<string>('');
-  const { user } = useAuthStore();
-  console.log('user: ', user)
-
   const isMenuOpen = (menu: string) =>
     openMenu === menu || (hoveredMenu === menu && !openMenu);
-
   const toggleMenu = (menu: string) => {
     setOpenMenu(prev => (prev === menu ? null : menu));
   };
-
   const [mobileOpen, setMobileOpen] = useState(false);
-  const isMobile = useMediaQuery({ maxWidth: 970 });
-
+  const isMobile = useMediaQuery({ maxWidth: 1000 });
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
@@ -38,15 +29,13 @@ const TopNav = () => {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
-
   return (
     <nav className={styles.topNav} ref={navRef}>
       {!isMobile && (
-        <div className={styles.logoWrapper}>
-          <img src={logo} alt="Clicka Logo" className={styles.logo} />
-        </div>
+<Link to="/" className={styles.logoWrapper}>
+  <img src={logo} alt="Clicka Logo" className={styles.logo} />
+</Link>
       )}
-
       {isMobile && !mobileOpen && (
         <button
           onClick={() => setMobileOpen(true)}
@@ -59,14 +48,14 @@ const TopNav = () => {
       {isMobile && (
         <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
       )}
-
       {!isMobile && (
         <ul className={styles.navList}>
           {menus.map(menu => (
             <li
               key={menu.key}
-              className={`${styles.navItem} ${clickedMenuKey === menu.key ? styles.activeLink : ''
-                }`}
+              className={`${styles.navItem} ${
+                clickedMenuKey === menu.key ? styles.activeLink : ''
+              }`}
               onMouseEnter={() => setHoveredMenu(menu.key)}
               onMouseLeave={() => setHoveredMenu(null)}
             >
@@ -98,33 +87,7 @@ const TopNav = () => {
           ))}
         </ul>
       )}
-      {user && (
-        <div
-          style={{
-            marginLeft: 'auto',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            paddingRight: '16px',
-          }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <img
-              src="/user.png"
-              alt="avatar"
-              style={{ width: 25, height: 25, borderRadius: '10%', objectFit: 'cover' }}
-            />
-            <span style={{ fontSize: 14, color: '#000', marginTop: 4 }}>
-              {user.firstName} {user.lastName}
-            </span>
-          </div>
-          <LogoutButton></LogoutButton>
-        </div>
-      )}
     </nav>
-
   );
-
 };
-
 export default TopNav;
