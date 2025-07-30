@@ -101,7 +101,11 @@ toDatabaseFormat() {
       required_approval: this.RequiredApproval,
       free_hours_for_klikca_card: this.FreeHoursForKlikcaCard,
       next_maintenance_date: this.nextMaintenanceDate,
-      workspace_map_id:this.workspaceMapId, 
+      workspace_map_id:this.workspaceMapId,
+      position_x: this.positionX,
+      position_y: this.positionY,
+      width: this.width,
+      height: this.height,
        createdat: this.createdAt,
        updatedat: this.updatedAt
     };

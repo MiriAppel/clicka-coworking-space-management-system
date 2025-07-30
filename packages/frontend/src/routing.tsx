@@ -96,8 +96,7 @@ export const Routing = () => {
         <Route path="/petty-cash" element={<PettyCashPage />} />
         <Route path="/documentUpload" element={< DocumentUpload />} />
         <Route path="/registerUser" element={<RegisterUser />} />
-
-        <Route path="/customerChange" element={<CustomerChange />} />
+        <Route path="/customerChange" element={<CustomerChange/>} />
       </Route>
 
 

@@ -226,7 +226,6 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
       });
     }
   },
-
   // --- איפוס טופס ---
   resetForm: () => {
     set({ selectedExpense: undefined, error: undefined });

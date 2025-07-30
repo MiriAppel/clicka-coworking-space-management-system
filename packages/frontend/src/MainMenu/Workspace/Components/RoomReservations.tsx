@@ -343,10 +343,12 @@ export const RoomReservations = forwardRef<RoomReservationsRef, RoomReservations
           if(result){
             methods.reset();
             onSubmit?.();
+            navigate (-1);
           }
           if (resultCalendar) {
         }
       } catch (err) {
+
       }
     };
 //הטופס הזמנת חדרים
