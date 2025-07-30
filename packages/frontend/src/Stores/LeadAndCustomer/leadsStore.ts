@@ -1,4 +1,4 @@
-import { Lead, LeadInteraction } from "shared-types";
+import { CreateLeadRequest, Lead, LeadInteraction } from "shared-types";
 import { UUIDTypes } from "uuid";
 import { create } from "zustand";
 interface LeadsState {
@@ -12,7 +12,7 @@ interface LeadsState {
     fetchLeads: () => Promise<void>;
     handleSelectLead: (leadId: string | null) => void;
     handleDeleteLead: (leadId: string) => Promise<void>;
-    handleCreateLead: (lead: Lead) => Promise<Lead>;
+    handleCreateLead: (lead: CreateLeadRequest) => Promise<Lead | undefined>;
     handleCreateInteraction: (lead: Lead) => Promise<Response>;
     handleUpdateLead: (leadId: string, lead: Partial<Lead>) => Promise<Lead>;
     resetSelectedLead: () => void;
@@ -21,15 +21,15 @@ interface LeadsState {
     setIsEditModalOpen: (flag: boolean) => void;
     setEditingInteraction: (interaction: LeadInteraction | null) => void;
     handleDeleteInteraction: (interactionId: string) => Promise<void>;
- // --- תוספות להעלאת קובץ אקסל ---
-  uploadFile: File | null;
-  uploadStatus: "idle" | "uploading" | "success" | "error";
-  uploadMessage: string;
-  setUploadFile: (file: File | null) => void;
-  uploadExcelFile: () => Promise<void>;
+    // --- תוספות להעלאת קובץ אקסל ---
+    uploadFile: File | null;
+    uploadStatus: "idle" | "uploading" | "success" | "error";
+    uploadMessage: string;
+    setUploadFile: (file: File | null) => void;
+    uploadExcelFile: () => Promise<void>;
 }
 const BASE_API_URL = `${process.env.REACT_APP_API_URL}/leads`;
-export const useLeadsStore = create<LeadsState>((set,get) => ({
+export const useLeadsStore = create<LeadsState>((set, get) => ({
     leads: [],
     selectedLead: null,
     loading: false,
@@ -37,14 +37,14 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
     showGraphForId: null,
     isEditModalOpen: false,
     editingInteraction: null,
-  // --- סטייטים לתוספות העלאת קובץ אקסל ---
-  uploadFile: null,
-  uploadStatus: "idle",
-  uploadMessage: "",
+    // --- סטייטים לתוספות העלאת קובץ אקסל ---
+    uploadFile: null,
+    uploadStatus: "idle",
+    uploadMessage: "",
     fetchLeads: async () => {
         set({ loading: true, error: undefined });
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/leads`);
+            const response = await fetch(BASE_API_URL);
             if (!response.ok) {
                 throw new Error("Failed to fetch leads");
             }
@@ -66,40 +66,79 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
         }));
     },
     handleDeleteLead: async (leadId: UUIDTypes) => {
-        // Delete lead logic here
-    },
-    handleCreateLead: async (lead: Lead) => {
-        // Create lead logic here
-        return lead; // Return the created lead
-    },
-  handleUpdateLead: async (leadId: UUIDTypes, lead: Partial<Lead>): Promise<Lead> => {
-    set({ loading: true, error: undefined });
-    try {
-      const response = await fetch(`${BASE_API_URL}/${leadId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(lead),
-      });
-      if (!response.ok) {
-        let errorMsg = "Failed to update customer";
+        set({ loading: true, error: undefined });
         try {
-          const errorBody = await response.json();
-          errorMsg = errorBody?.error?.details || errorBody?.error?.message || errorBody?.message || errorMsg;
-        } catch (e) { }
-        throw new Error(errorMsg);
-      }
-      const updatedLead: Lead = await response.json();
-      await useLeadsStore.getState().fetchLeads();
-      return updatedLead;
-    } catch (error: any) {
-      set({ error: error.message || "שגיאה בעדכון מתעניין", loading: false });
-      throw error; // חשוב לזרוק את השגיאה כדי שההבטחה תיכשל ולא תחזור undefined
-    } finally {
-      set({ loading: false });
-    }
-  },
+            const response = await fetch(`${BASE_API_URL}/${leadId}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) {
+                throw new Error("Failed to delete lead");
+            }
+            await useLeadsStore.getState().fetchLeads(); 
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה במחיקת מתעניין", loading: false });
+        } finally {
+            set({ loading: false });
+        }
+    },
+    handleCreateLead: async (lead: CreateLeadRequest) => {
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch(BASE_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(lead),
+            });
+            if (!response.ok) {
+                let errorMsg = "Failed to create lead";
+                try {
+                    const errorBody = await response.json();
+                    errorMsg = errorBody?.error?.details || errorBody?.error?.message || errorBody?.message || errorMsg;
+                } catch (e) { }
+                console.log(errorMsg);
+                throw new Error(errorMsg);
+            }
+            const newLead: Lead = await response.json();
+            await useLeadsStore.getState().fetchLeads();
+            return newLead;
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה ביצירת מתעניין", loading: false });
+            console.log(error)
+            return undefined;
+        } finally {
+            set({ loading: false });
+        }
+    },
+    handleUpdateLead: async (leadId: UUIDTypes, lead: Partial<Lead>): Promise<Lead> => {
+        set({ loading: true, error: undefined });
+        try {
+            const response = await fetch(`${BASE_API_URL}/${leadId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(lead),
+            });
+            if (!response.ok) {
+                let errorMsg = "Failed to update customer";
+                try {
+                    const errorBody = await response.json();
+                    errorMsg = errorBody?.error?.details || errorBody?.error?.message || errorBody?.message || errorMsg;
+                } catch (e) { }
+                throw new Error(errorMsg);
+            }
+            const updatedLead: Lead = await response.json();
+            await useLeadsStore.getState().fetchLeads();
+            return updatedLead;
+        } catch (error: any) {
+            set({ error: error.message || "שגיאה בעדכון מתעניין", loading: false });
+            throw error; // חשוב לזרוק את השגיאה כדי שההבטחה תיכשל ולא תחזור undefined
+        } finally {
+            set({ loading: false });
+        }
+    },
     resetSelectedLead: () => {
         set({ selectedLead: null, isEditModalOpen: false, editingInteraction: null });
     },
@@ -195,50 +234,50 @@ export const useLeadsStore = create<LeadsState>((set,get) => ({
             console.error("Error deleting interaction:", error);
         }
     }
-,
-//--- תוספות להעלאת קובץ אקסל ---
-  setUploadFile: (file: File | null) => {
-    set({
-      uploadFile: file,
-      uploadStatus: "idle",
-      uploadMessage: "",
-    });
-  },
-  uploadExcelFile: async () => {
-    const file = get().uploadFile;
-    if (!file) {
-      set({ uploadStatus: "error", uploadMessage: "אין קובץ להעלאה" });
-      return;
-    }
-    set({ uploadStatus: "uploading", uploadMessage: "מעלה את הקובץ..." });
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/leads/upload/excel`, {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
+    ,
+    //--- תוספות להעלאת קובץ אקסל ---
+    setUploadFile: (file: File | null) => {
         set({
-          uploadStatus: "error",
-          uploadMessage: err.message || "שגיאה בהעלאת הקובץ",
+            uploadFile: file,
+            uploadStatus: "idle",
+            uploadMessage: "",
         });
-        return;
-      }
-      const data = await res.json();
-      set({
-        uploadStatus: "success",
-        uploadMessage: data.message || "הקובץ הועלה בהצלחה",
-      });
-      // ריענון רשימת הלידים לאחר ההעלאה
-      await get().fetchLeads();
-    } catch (error: any) {
-      set({
-        uploadStatus: "error",
-        uploadMessage: error.message || "שגיאה לא צפויה בהעלאת הקובץ",
-      });
-    }
-  },
+    },
+    uploadExcelFile: async () => {
+        const file = get().uploadFile;
+        if (!file) {
+            set({ uploadStatus: "error", uploadMessage: "אין קובץ להעלאה" });
+            return;
+        }
+        set({ uploadStatus: "uploading", uploadMessage: "מעלה את הקובץ..." });
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+            const res = await fetch(`${process.env.REACT_APP_API_URL}/leads/upload/excel`, {
+                method: "POST",
+                body: formData,
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                set({
+                    uploadStatus: "error",
+                    uploadMessage: err.message || "שגיאה בהעלאת הקובץ",
+                });
+                return;
+            }
+            const data = await res.json();
+            set({
+                uploadStatus: "success",
+                uploadMessage: data.message || "הקובץ הועלה בהצלחה",
+            });
+            // ריענון רשימת הלידים לאחר ההעלאה
+            await get().fetchLeads();
+        } catch (error: any) {
+            set({
+                uploadStatus: "error",
+                uploadMessage: error.message || "שגיאה לא צפויה בהעלאת הקובץ",
+            });
+        }
+    },
 }
 ));

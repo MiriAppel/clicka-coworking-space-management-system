@@ -17,6 +17,8 @@ import {
   FileText,
   ScrollText,
 } from "lucide-react";
+import { ShowAlertWarn } from "../../../../Common/Components/BaseComponents/showAlertWarn";
+import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
 type SortField = "name" | "status" | "createdAt" | "updatedAt" | "lastInteraction";
 type AlertCriterion = "noRecentInteraction" | "statusIsNew" | "oldLead";
 export const LeadInteractions = () => {
@@ -46,7 +48,7 @@ export const LeadInteractions = () => {
     fetchLeads().then(() => {
       allLeadsRef.current = useLeadsStore.getState().leads;
     });
-  }, [page,fetchLeads]);
+  }, [page, fetchLeads]);
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !isSearching) {
@@ -56,44 +58,62 @@ export const LeadInteractions = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isSearching]);
-    const handleSearch = (term: string, status: string = "") => {
-  setSearchTerm(term);
-  setStatus(status);
-  setPage(1);
-  // אין טקסט ואין סטטוס => החזר הכל
-  if (!term.trim() && !status.trim()) {
-    setIsSearching(false);
-    useLeadsStore.setState({ leads: allLeadsRef.current });
-    return;
-  }
-  // :white_check_mark: אם כל הלידים טעונים (לא פונים לשרת בכלל)
-  if (allLeadsRef.current.length > 0) {
-    const filtered = allLeadsRef.current.filter((l) => {
-      const matchesTerm =
-        !term.trim() ||
-        l.name?.toLowerCase().includes(term.toLowerCase()) ||
-        l.phone?.includes(term) ||
-        l.email?.toLowerCase().includes(term.toLowerCase());
-      const matchesStatus = !status.trim() ||
-        l.status?.toLowerCase().trim() === status.toLowerCase().trim();
-      return matchesTerm && matchesStatus;
-    });
-    setIsSearching(true);
-    useLeadsStore.setState({ leads: filtered });
-    return;
-  }
-  // :white_check_mark: אם אין את כל הלידים טעונים => fallback לשרת
-  fetch(`${process.env.REACT_APP_API_URL}leads/search?q=${term}&status=${status}`)
-    .then((res) => res.json())
-    .then((data: Lead[]) => {
+
+  const deleteCurrentLead = async (leadId: string) => {
+    const confirmed = await ShowAlertWarn(
+      "האם אתה בטוח שברצונך למחוק את המתעניין לצמיתות?",
+      "לא ניתן לשחזר את המידע לאחר מחיקה.",
+      "warning"
+    );
+    if (confirmed) {
+      await handleDeleteLead(leadId);
+      showAlert("מחיקה", "לקוח נמחק בהצלחה", "success");
+      const latestError = useLeadsStore.getState().error;
+      if (latestError) {
+        const errorMessage = latestError || "שגיאה בלתי צפויה";
+        console.error("Error:", errorMessage);
+        showAlert("שגיאה במחיקת מתעניין", errorMessage, "error");
+      }
+    }
+  };
+  const handleSearch = (term: string, status: string = "") => {
+    setSearchTerm(term);
+    setStatus(status);
+    setPage(1);
+    // אין טקסט ואין סטטוס => החזר הכל
+    if (!term.trim() && !status.trim()) {
+      setIsSearching(false);
+      useLeadsStore.setState({ leads: allLeadsRef.current });
+      return;
+    }
+    // :white_check_mark: אם כל הלידים טעונים (לא פונים לשרת בכלל)
+    if (allLeadsRef.current.length > 0) {
+      const filtered = allLeadsRef.current.filter((l) => {
+        const matchesTerm =
+          !term.trim() ||
+          l.name?.toLowerCase().includes(term.toLowerCase()) ||
+          l.phone?.includes(term) ||
+          l.email?.toLowerCase().includes(term.toLowerCase());
+        const matchesStatus = !status.trim() ||
+          l.status?.toLowerCase().trim() === status.toLowerCase().trim();
+        return matchesTerm && matchesStatus;
+      });
       setIsSearching(true);
-      useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
-    })
-    .catch((err) => {
-      console.error("שגיאה בחיפוש מהשרת:", err);
-      useLeadsStore.setState({ leads: [] });
-    });
-};
+      useLeadsStore.setState({ leads: filtered });
+      return;
+    }
+    // :white_check_mark: אם אין את כל הלידים טעונים => fallback לשרת
+    fetch(`${process.env.REACT_APP_API_URL}leads/search?q=${term}&status=${status}`)
+      .then((res) => res.json())
+      .then((data: Lead[]) => {
+        setIsSearching(true);
+        useLeadsStore.setState({ leads: data.length > 0 ? data : [] });
+      })
+      .catch((err) => {
+        console.error("שגיאה בחיפוש מהשרת:", err);
+        useLeadsStore.setState({ leads: [] });
+      });
+  };
   const isAlert = (lead: Lead): boolean => {
     switch (alertCriterion) {
       case "noRecentInteraction":
@@ -138,7 +158,7 @@ export const LeadInteractions = () => {
   return (
     <div className="p-6">
       <h2 className="text-3xl font-bold text-center text-blue-600 mb-4">מתעניינים</h2>
-           <SearchLeads
+      <SearchLeads
         term={searchTerm}
         setTerm={setSearchTerm}
         status={status}        // :white_check_mark: הוספה
@@ -185,7 +205,7 @@ export const LeadInteractions = () => {
           </select>
         </div>
         <Button
-          onClick={() => navigate("interestedCustomerRegistration")}
+          onClick={() => navigate("newLead")}
           variant="primary"
           size="sm"
         >
@@ -209,7 +229,7 @@ export const LeadInteractions = () => {
             if (selectedLead?.id === lead.id) resetSelectedLead();
             else handleSelectLead(lead.id!);
           }}
-          onDelete={() => handleDeleteLead(lead.id!)}
+          onDelete={() => deleteCurrentLead(lead.id!)}
           onRegister={() => handleRegistration(lead)}
           children={
             selectedLead?.id === lead.id && <LeadInteractionDetails />
@@ -259,9 +279,8 @@ const LeadCard = ({
   const initials = lead.name?.charAt(0).toUpperCase() || "?";
   return (
     <div
-      className={`rounded-xl border shadow p-5 mb-4 bg-white transition-all duration-300 cursor-pointer ${
-        isSelected ? "bg-blue-100 border-blue-300" : isAlert ? "border-red-500 bg-red-50" : ""
-      }`}
+      className={`rounded-xl border shadow p-5 mb-4 bg-white transition-all duration-300 cursor-pointer ${isSelected ? "bg-blue-100 border-blue-300" : isAlert ? "border-red-500 bg-red-50" : ""
+        }`}
       onClick={() => {
         setOpen(!open);
         onClick();

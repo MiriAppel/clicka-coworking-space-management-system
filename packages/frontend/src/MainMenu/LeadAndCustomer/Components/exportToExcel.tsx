@@ -20,8 +20,13 @@ export const ExportToExcel: React.FC<ExportToExcelProps> = ({ data, fileName }) 
     };
 
     return (
-        <Button variant="primary" size="sm" onClick={handleExport}>
-            <DownloadIcon />
+        <Button 
+            variant="primary" 
+            size="sm" 
+            onClick={handleExport}
+            className="flex items-center gap-1 h-8"
+        >
+            <DownloadIcon style={{ fontSize: 16 }} />
             יצוא נתונים לאקסל
         </Button>
     );

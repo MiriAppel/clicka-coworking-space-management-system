@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './TopNav.module.css';
 import MobileMenu from '../MobileMenu/MobileMenu';
 import { useMediaQuery } from 'react-responsive';
@@ -42,9 +42,9 @@ const TopNav = () => {
   return (
     <nav className={styles.topNav} ref={navRef}>
       {!isMobile && (
-        <div className={styles.logoWrapper}>
+        <Link to="/" className={styles.logoWrapper}>
           <img src={logo} alt="Clicka Logo" className={styles.logo} />
-        </div>
+        </Link>
       )}
 
       {isMobile && !mobileOpen && (

@@ -9,7 +9,7 @@ import {
   // createOrUpdatePricingTier,              // לא בשימוש בקובץ הזה (אפשר למחוק אם לא צריך)
   createPricingTierWithHistory,           // יצירת תמחור חדש עם היסטוריה
   updatePricingTierPricing,               // עדכון תמחור קיים
-  deleteLoungePricing                     // מחיקת רשומת תמחור מסוג לאונג'
+  deletePricingTier                       // מחיקת רשומת תמחור workspace
 } from '../../../Service/pricing.service';
 
 import {
@@ -85,7 +85,7 @@ export const useWorkspacePricingStore = create<WorkspacePricingState>((set, get)
   delete: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      await deleteLoungePricing(id);          // מחיקה
+      await deletePricingTier(id);            // מחיקה
       set({ loading: false });
       alert('המחיר נמחק בהצלחה!');
       // await get().fetch(); // רענון נתונים (אם נדרש)

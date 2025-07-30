@@ -44,6 +44,7 @@ export const NewCustomerPage: React.FC = () => {
             notes: data.notes,
             invoiceName: data.invoiceName,
             paymentMethodType: data.paymentMethodType,
+            ip: data.ip,
             paymentMethod: data.paymentMethodType === PaymentMethodType.CREDIT_CARD ? {
                 creditCardNumber: data.creditCardNumber,
                 creditCardExpiry: data.creditCardExpiry,
@@ -56,8 +57,8 @@ export const NewCustomerPage: React.FC = () => {
         console.log(customerRequest);
 
         try {
-            const customer:Customer | undefined = await createCustomer(customerRequest);
-console.log("new customer created in newCustomer:", customer);
+            const customer: Customer | undefined = await createCustomer(customerRequest);
+            console.log("new customer created in newCustomer:", customer);
 
             let latestError = useCustomerStore.getState().error;
             if (latestError) {

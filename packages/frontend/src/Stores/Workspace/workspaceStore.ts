@@ -2,7 +2,6 @@ import { create } from "zustand";
 import axiosInstance from "../../Service/Axios";
 import { ID, Space, SpaceStatus } from "shared-types";
 
-//הצהרות
 interface WorkSpaceState {
     workSpaces: Space[];
     maps: any[];
@@ -111,7 +110,7 @@ export const useWorkSpaceStore = create<WorkSpaceState>((set, get) => ({
             return response.data; // החזר את המערך
         } catch (error) {
             console.error("Error fetching workspace maps:", error);
-            return []; // במקרה של שגיאה החזר מערך ריק
+            return [];
         }
     },
 }));

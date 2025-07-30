@@ -1,18 +1,15 @@
 import React from 'react';
-import { Home, Users, Map, FileText, FileBarChart2, Settings, Mail, HelpCircle } from 'lucide-react';
-
+import { Users, Map, CreditCard , FileBarChart2, Settings, Mail } from 'lucide-react';
 export interface MenuItem {
   label: string;
   path: string;
 }
-
 export interface Menu {
   key: string;
   title: string;
   icon: React.ReactNode;
   items: MenuItem[];
 }
-
 export const menus: Menu[] = [
   // {
   //   key: 'dashboard',
@@ -43,7 +40,7 @@ export const menus: Menu[] = [
     title: 'חללים',
     icon: <Map size={18} style={{ marginLeft: 8 }} />,
     items: [
-      {label: 'ניהול חדרים', path: '/rooms' },
+      {label: 'חדרים', path: '/rooms' },
       { label: 'מפה', path: '/workspaceMap' },
       { label: 'הקצאות', path: '/assignmentTable' },
       { label: 'ישיבות', path: '/bookingCalendar' },
@@ -53,13 +50,15 @@ export const menus: Menu[] = [
   },
   {
     key: 'billing',
-    title: 'חשבוניות',
-    icon: <FileText size={18} style={{ marginLeft: 8 }} />,
+    title: 'כספים',
+    icon: <CreditCard size={18} style={{ marginLeft: 8 }} />,
     items: [
       { label: 'חשבוניות', path: '/billing/invoiceManagement' },
       { label: 'גבייה', path: '/billing/collection' },
       { label: 'תשלומים', path: '/payments' },
       { label: 'הוצאות', path: '/expenses' },
+      { label: 'קופה קטנה', path: '/billing/expenses' },
+      { label: 'ספקים', path: '/vendor' },
       { label: 'תמחור', path: '/pricing' }
     ]
   },

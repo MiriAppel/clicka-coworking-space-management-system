@@ -121,7 +121,7 @@ export const CustomersList = () => {
     }
   };
 
-  const getCardData = () => {
+  const getCardData = () => {    
     return customers.map((c) => ({
       id: c.id!,
       name: c.name,
@@ -139,6 +139,7 @@ export const CustomersList = () => {
       notes: c.notes,
       invoiceName: c.invoiceName,
       paymentMethodType: c.paymentMethodType,
+      ip: c.ip,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
     }));
@@ -159,18 +160,18 @@ export const CustomersList = () => {
         >
           ➕ הוספת לקוח חדש
         </Button>
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            onClick={() =>
-              navigate("/leadAndCustomer/Customers/UploadCustomersFile")
-            }
-            variant="primary"
-            size="sm"
-          >
-            יבוא לקוחות מקובץ אקסל
-          </Button>
+        <Button
+          onClick={() =>
+            navigate("/leadAndCustomer/Customers/UploadCustomersFile")
+          }
+          variant="primary"
+          size="sm"
+        >
+          יבוא לקוחות מקובץ אקסל
+        </Button>
+        <div className="flex items-center">
+          <ExportToExcel data={customers} fileName="לקוחות" />
         </div>
-        <ExportToExcel data={customers} fileName="לקוחות" />
       </div>
 
       <br />
@@ -237,11 +238,3 @@ export const CustomersList = () => {
   );
 };
 
-// const formatDate = (dateString: DateISO | undefined) => {
-//   if (!dateString) return "לא זמין";
-//   const date = new Date(dateString);
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = String(date.getFullYear()).slice(-2);
-//   return `${day}/${month}/${year}`;
-// };

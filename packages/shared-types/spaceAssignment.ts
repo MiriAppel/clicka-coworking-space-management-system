@@ -1,15 +1,15 @@
-// סטטוס של השמה
 export enum AssignmentStatus {
   ACTIVE = 'ACTIVE',
   ENDED = 'ENDED',
-  SUSPENDED = 'SUSPENDED'
+  SUSPENDED = 'SUSPENDED',
+  INACTIVE = 'INACTIVE',
 }
 
 // Space model
 export interface SpaceAssign {
   id?: string;
   workspaceId: string;
-  customerId: string;
+  customerId?: string;
   assignedDate: Date;
   unassignedDate?: Date;
   daysOfWeek?: number[];

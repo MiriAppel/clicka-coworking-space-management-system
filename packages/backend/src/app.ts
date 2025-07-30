@@ -74,10 +74,7 @@ app.use('/api/emailTemplate', emailTemplateRouter);
 app.use('/api/google-calendar', syncRouter);
 app.use('/api/calendar-sync', calendarSyncRouter);
 app.use('/api/book', bookRouter);
-app.use('/api/vendor', (req, res, next) => {
-  console.log('Vendor route hit:', req.method, req.originalUrl);
-  next();
-}, vendorRouter);
+app.use('/api/vendor', vendorRouter);
 app.use('/api/expenses', expenseRouter);
 app.use('/api/reports', routerReport);
 app.use('/api/interaction', interactionRouter);
