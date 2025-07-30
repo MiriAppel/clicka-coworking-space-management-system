@@ -643,9 +643,9 @@ useEffect(() => {
         </div>
 
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">שמור</button>
-        <button type="button" onClick={() => setShowPreview(!showPreview)} className="bg-gray-500 text-white px-4 py-2 ml-2 rounded">
+        {/* <button type="button" onClick={() => setShowPreview(!showPreview)} className="bg-gray-500 text-white px-4 py-2 ml-2 rounded">
           תצוגה מקדימה
-        </button>
+        </button> */}
       </form>
 
       {showPreview && (

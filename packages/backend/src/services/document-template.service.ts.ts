@@ -45,6 +45,7 @@ export class DocumentService {
       const now = new Date().toISOString();
       
       const templateToInsert = {
+        name: newDocuments.name,
         type: newDocuments.type ?? "RECEIPT",
         language: newDocuments.language ?? 'english',
         template: newDocuments.template ?? "",
