@@ -600,7 +600,14 @@ useEffect(() => {
           <option value="hebrew">עברית</option>
           <option value="english">אנגלית</option>
         </select>
-        <a href="https://wordtohtml.net/" className="text-blue-500 hover:underline">ליצירת תוכן תבנית לחץ כאן עצב תוכן והעתק קוד</a>
+       <a
+  href="https://wordtohtml.net/"
+  className="text-blue-500 hover:underline"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  ליצירת תוכן תבנית לחץ כאן עצב תוכן והעתק קוד
+</a>
          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
                                 <h4 className="font-semibold text-blue-800 mb-2">עצות לכתיבת תבניות:</h4>
                                 <ul className="text-sm text-blue-700 space-y-1">
