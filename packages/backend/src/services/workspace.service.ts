@@ -1,5 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
+import { RoomModel } from "../models/room.model";
 import type { ID, PricingTier } from "shared-types";
 import { WorkspaceModel } from '../models/workspace.model'
 import dotenv from 'dotenv';
@@ -14,14 +15,14 @@ function logUserActivity(userId: string, action: string) {
   console.log(`[Activity Log] ${userId}: ${action}`);
 }
 export class WorkspaceService {
-async  createWorkspace(Workspace: WorkspaceModel): Promise<WorkspaceModel | null> {
-        console.log('📦 Inserting Workspace:', Workspace.toDatabaseFormat());
-        const { data, error } = await supabase
-          .from('workspace')
-          .insert([Workspace.toDatabaseFormat()])
-          .select()
-          .single();
-       if (error) {
+  async createWorkspace(Workspace: WorkspaceModel): Promise<WorkspaceModel | null> {
+    console.log('📦 Inserting Workspace:', Workspace.toDatabaseFormat());
+    const { data, error } = await supabase
+      .from('workspace')
+      .insert([Workspace.toDatabaseFormat()])
+      .select()
+      .single();
+    if (error) {
       console.log('❌ Supabase Insert Error:', error); // ✅ הוספתי הדפסה מפורטת
       throw new Error(`Failed to create workspace: ${error.message}`);
     }
@@ -32,6 +33,8 @@ async  createWorkspace(Workspace: WorkspaceModel): Promise<WorkspaceModel | null
   }
   //קבלת כל החדרים
   //החזרת כל החדרים מהמסד נתונים
+
+
   async getAllWorkspace() {
     try {
       const { data, error } = await supabase
@@ -50,47 +53,26 @@ async  createWorkspace(Workspace: WorkspaceModel): Promise<WorkspaceModel | null
     }
   }
 
-async getPricingTiersByWorkspaceType(workspaceType: string): Promise<PricingTier[] | null> {
-    const { data, error } = await supabase
-      .from('pricing_tiers') // שם הטבלה שבה מאוחסנות מדרגות התמחור
-      .select('*')
-      .eq('workspace_type', workspaceType); // הנחתי שיש עמודה בשם workspace_type
-
-    if (error) {
-      console.error('Error fetching pricing tiers for workspace type:', error);
-      return null;
-    }
-
-    // המרת הנתונים למודל PricingTier
-    const pricingTiers = data.map(tier => PricingTierModel.fromDatabaseFormat(tier));
-    return pricingTiers;
-  }
-
-
-
   //עדכון חדר
   //בעדכון Room.status= לא פעיל יש להוסיף בדיקה האם קימת הזמנה עתידית אם כן לשלוח שגיאה
   //ב-Controller לעדכון תכונות / ציוד: לפני שמוחקים — לבדוק אם יש Booking.
   //בשמשנים discountedHourlyRate או hourlyRate צריך לשמור את המחיר בזמן ההזמנה ולהזמנות קימות לא לשנות מחיר אוטומטי
-  async updateWorkspace(id: string, updatedData: WorkspaceModel): Promise<WorkspaceModel | null> {
 
+  async updateWorkspace(id: string, updatedData: WorkspaceModel): Promise<WorkspaceModel | null> {
     const { data, error } = await supabase
       .from('workspace')
       .update([updatedData.toDatabaseFormat()])
       .eq('id', id)
       .select()
       .single();
-
     if (error) {
       console.error('Error updating room:', error);
       return null;
     }
     const workspce = WorkspaceModel.fromDatabaseFormat(data);
-    // רישום פעילות המשתמש
-    //logUserActivity(feature.description, 'feature updated');
-    // מחזיר את המשתמש המעודכן
     return workspce;
   }
+  
   //מחיקת חדר
   async deleteWorkspace(id: string) {
     const { error } = await supabase
@@ -108,7 +90,6 @@ async getPricingTiersByWorkspaceType(workspaceType: string): Promise<PricingTier
     return true;
   }
 
-  //קבלת  חדר
   async getworkspaceById(id: string) {
     const { data, error } = await supabase
       .from('workspace')
@@ -120,14 +101,35 @@ async getPricingTiersByWorkspaceType(workspaceType: string): Promise<PricingTier
       console.error('Error fetching workspace:', error);
       return null;
     }
-
     const workspace = WorkspaceModel.fromDatabaseFormat(data);
-
-    // logUserActivity(feature.id? feature.id:feature.description, 'User fetched by ID');
-
     return workspace;
   }
-  async getWorkspacesByCustomerId(customerId: ID): Promise<WorkspaceModel[] | null> {
+
+
+  //טיפול בכשלים באינטגרציה עם יומן גוגל
+  //יש לבדוק אם ההרשאות תקינות ואם TOKEN בתוקפו 
+  //וכן יש לבדוק אם הפגשיה נשמרת
+  async integrationWithGoogle(id: any) {
+    //להשתמש ב-try,catch
+    //לשמור שגיאות במסד נתונים
+    //לשלוח הודעות למנהל במקרה של כשל
+  }
+  async getPricingTiersByWorkspaceType(workspaceType: string): Promise<PricingTier[] | null> {
+    const { data, error } = await supabase
+      .from('pricing_tiers') // שם הטבלה שבה מאוחסנות מדרגות התמחור
+      .select('*')
+      .eq('workspace_type', workspaceType); // הנחתי שיש עמודה בשם workspace_type
+
+    if (error) {
+      console.error('Error fetching pricing tiers for workspace type:', error);
+      return null;
+    }
+
+    // המרת הנתונים למודל PricingTier
+    const pricingTiers = data.map(tier => PricingTierModel.fromDatabaseFormat(tier));
+    return pricingTiers;
+  }
+    async getWorkspacesByCustomerId(customerId: ID): Promise<WorkspaceModel[] | null> {
     const { data, error } = await supabase
       .from('workspace') // שם הטבלה ב-Supabase
       .select('*')
@@ -140,15 +142,5 @@ async getPricingTiersByWorkspaceType(workspaceType: string): Promise<PricingTier
 
     const workspaces = WorkspaceModel.fromDatabaseFormatArray(data); // המרת הנתונים למודל
     return workspaces;
-  }
-
-  
-  //טיפול בכשלים באינטגרציה עם יומן גוגל
-  //יש לבדוק אם ההרשאות תקינות ואם TOKEN בתוקפו 
-  //וכן יש לבדוק אם הפגשיה נשמרת
-  async integrationWithGoogle(id: any) {
-    //להשתמש ב-try,catch
-    //לשמור שגיאות במסד נתונים
-    //לשלוח הודעות למנהל במקרה של כשל
   }
 }
