@@ -647,7 +647,7 @@ export class customerService extends baseService<CustomerModel> {
           {}
         );
 
-        const response = await sendEmail(
+        await sendEmail(
           "me",
           {
             to: [customer.email ?? ""],
