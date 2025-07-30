@@ -9,7 +9,7 @@ import VendorsList from './MainMenu/Billing/Components/Vendor-management/Vendors
 import { Vendor } from 'shared-types';
 import { ExcelUpload } from './MainMenu/LeadAndCustomer/Components/Leads/ UploadLeadsFile';
 import { ExcelCUpload } from './MainMenu/LeadAndCustomer/Components/Customers/UploadCustomersFile';
-import { BillingRouting } from './MainMenu/Billing/Components/BillingRouting';
+import { BillingRouting } from './MainMenu/Billing/Components/billingRouting';
 // import { ExpenseList } from './MainMenu/Billing/Components/expenseManagementSystem/expenseList';
 import PaymentForm from './MainMenu/Billing/Components/invoice-generation-engine/PaymentForm';
 import { PaymentList } from './MainMenu/Billing/Components/paymentList';
