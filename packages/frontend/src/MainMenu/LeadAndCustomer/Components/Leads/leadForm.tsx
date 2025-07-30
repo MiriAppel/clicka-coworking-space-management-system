@@ -5,45 +5,42 @@ import { Form } from "../../../../Common/Components/BaseComponents/Form";
 import { InputField } from "../../../../Common/Components/BaseComponents/Input";
 import { SelectField } from "../../../../Common/Components/BaseComponents/Select";
 import { Button } from "../../../../Common/Components/BaseComponents/Button";
-import axios from "axios";
-import { LeadSource, WorkspaceType } from "shared-types";
+import { CreateLeadRequest, Lead, LeadSource, WorkspaceType } from "shared-types";
 import { useNavigate } from "react-router-dom";
 import { showAlert } from "../../../../Common/Components/BaseComponents/ShowAlert";
+import { useLeadsStore } from "../../../../Stores/LeadAndCustomer/leadsStore";
 
 const workspaceTypeOptions = [
-    { value: WorkspaceType.PRIVATE_ROOM1, label: 'חדר פרטי' },
-    { value: WorkspaceType.PRIVATE_ROOM2, label: 'חדר של שתיים' },
-    { value: WorkspaceType.PRIVATE_ROOM3, label: 'חדר של שלוש' },
-    { value: WorkspaceType.DESK_IN_ROOM, label: 'שולחן בחדר' },
-    { value: WorkspaceType.OPEN_SPACE, label: 'אופן ספייס' },
-    { value: WorkspaceType.KLIKAH_CARD, label: 'כרטיס קליקה' },
+  { value: WorkspaceType.PRIVATE_ROOM1, label: 'חדר פרטי' },
+  { value: WorkspaceType.PRIVATE_ROOM2, label: 'חדר של שתיים' },
+  { value: WorkspaceType.PRIVATE_ROOM3, label: 'חדר של שלוש' },
+  { value: WorkspaceType.DESK_IN_ROOM, label: 'שולחן בחדר' },
+  { value: WorkspaceType.OPEN_SPACE, label: 'אופן ספייס' },
+  { value: WorkspaceType.KLIKAH_CARD, label: 'כרטיס קליקה' },
 ];
 
 const leadSourceOptions = [
-    { value: LeadSource.WEBSITE, label: 'אתר אינטרנט' },
-    { value: LeadSource.REFERRAL, label: 'הפניה' },
-    { value: LeadSource.SOCIAL_MEDIA, label: 'רשתות חברתיות' },
-    { value: LeadSource.EVENT, label: 'אירוע' },
-    { value: LeadSource.PHONE, label: 'טלפון' },
-    { value: LeadSource.WALK_IN, label: 'הגעה פיזית' },
-    { value: LeadSource.EMAIL, label: 'אימייל' },
-    { value: LeadSource.OTHER, label: 'אחר' },
+  { value: LeadSource.WEBSITE, label: 'אתר אינטרנט' },
+  { value: LeadSource.REFERRAL, label: 'הפניה' },
+  { value: LeadSource.SOCIAL_MEDIA, label: 'רשתות חברתיות' },
+  { value: LeadSource.EVENT, label: 'אירוע' },
+  { value: LeadSource.PHONE, label: 'טלפון' },
+  { value: LeadSource.WALK_IN, label: 'הגעה פיזית' },
+  { value: LeadSource.EMAIL, label: 'אימייל' },
+  { value: LeadSource.OTHER, label: 'אחר' },
 ];
 
 // סכימת zod
 const schema = z.object({
-  idNumber: z.string().min(9, "תעודת זהות חייבת להכיל 9 ספרות").max(9),
-  name: z.string().regex(/^[א-ת]{2,}\s[א-ת]{2,}$/, "יש להזין שם פרטי ומשפחה עם רווח ביניהם"),
+  name: z.string().nonempty("חובה למלא שם"),
   phone: z.string().regex(/^0\d{9}$/, "מספר טלפון לא תקין"),
   email: z.string().email("אימייל לא תקין"),
   businessType: z.string().min(2, "מינימום 2 תווים").refine(val =>
     !(/([a-zA-Z].*[א-ת])|([א-ת].*[a-zA-Z])/.test(val)), "אין לערבב עברית ואנגלית"),
-  interestedIn: z.nativeEnum(WorkspaceType).optional(),
+  interestedIn: z.nativeEnum(WorkspaceType),
   source: z.nativeEnum(LeadSource).refine(val => !!val, { message: "חובה למלא מקור פנייה" }),
-  contactDate: z.string().optional(),
   followUpDate: z.string().optional(),
   notes: z.string().optional(),
-  interactions: z.string().optional(),
 });
 
 type LeadFormData = z.infer<typeof schema>;
@@ -52,11 +49,10 @@ export const LeadForm = () => {
   const methods = useForm<LeadFormData>({
     resolver: zodResolver(schema),
     mode: "onChange",
-    defaultValues: {
-      interactions: "[]",
-    }
   });
   const navigate = useNavigate();
+
+  const { handleCreateLead, loading } = useLeadsStore();
 
   const { reset } = methods;
   // const { watch, reset } = methods;
@@ -104,14 +100,30 @@ export const LeadForm = () => {
 
   const onSubmit = async (data: LeadFormData) => {
     try {
-      const response = await axios.post("/api/leads", data);
-      console.log("הנתונים נשלחו בהצלחה:", response.data);
+      const leadRequest: CreateLeadRequest = {
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        businessType: data.businessType,
+        interestedIn: data.interestedIn,
+        source: data.source,
+        followUpDate: data.followUpDate,
+        notes: data.notes,
+      };
+
+      const lead: Lead | undefined = await handleCreateLead(leadRequest);
+      let latestError = useLeadsStore.getState().error;
+      if (latestError) {
+        showAlert("שגיאה ביצירת מתעניין", latestError, "error");
+        return;
+      }
+      console.log("הנתונים נשלחו בהצלחה:", lead);
       reset();
       showAlert("", "המתעניין נוסף בהצלחה", "success");
       navigate(-1);
     } catch (error: Error | any) {
       console.error("שגיאה בשליחת הטופס:", error);
-      showAlert("שגיאה ביצירת לקוח", error.message || "שגיאה בלתי צפויה", "error");
+      showAlert("שגיאה ביצירת מתעניין", error.message || "שגיאה בלתי צפויה", "error");
     }
   };
 
@@ -125,8 +137,7 @@ export const LeadForm = () => {
         onSubmit={onSubmit}
         methods={methods}
       >
-        <InputField name="idNumber" label="תעודת זהות" required />
-        <InputField name="name" label="שם מלא" required />
+        <InputField name="name" label="שם" required />
         <InputField name="phone" label="טלפון" required />
         <InputField name="email" label="אימייל" required />
         <InputField name="businessType" label="סוג עסק" required />
@@ -134,8 +145,9 @@ export const LeadForm = () => {
           name="interestedIn"
           label="מתעניין ב"
           options={workspaceTypeOptions}
+          required
         />
-        
+
         <SelectField
           name="source"
           label="מקור פנייה"
@@ -152,16 +164,20 @@ export const LeadForm = () => {
             { value: "converted", label: "הומר ללקוח" },
           ]}
         /> */}
-        <InputField name="contactDate" label="תאריך יצירת קשר" type="date" />
         <InputField name="followUpDate" label="תאריך מעקב" type="date" />
         <InputField name="notes" label="הערות" type="textarea" />
 
-        <input type="hidden" {...methods.register("interactions")} />
 
         <div className="flex justify-end mt-4">
           <Button type="submit" variant="primary" size="sm">שלח</Button>
         </div>
       </Form>
+       {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+                </div>
+            )}
     </div>
+    
   );
 };

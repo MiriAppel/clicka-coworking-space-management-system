@@ -18,6 +18,7 @@ import {
   Coins,
   BadgePercent,
   Camera,
+  Globe
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CustomerStatus, PaymentMethodType, WorkspaceType } from "shared-types";
@@ -41,6 +42,7 @@ export interface CustomerCardProps {
   notes?: string;
   invoiceName?: string;
   paymentMethodType?: PaymentMethodType;
+  ip: string;
   createdAt?: string;
   updatedAt?: string;
   onEdit: (id: string) => void;
@@ -74,7 +76,7 @@ const workspaceTypeLabels: Record<WorkspaceType, string> = {
   WALL: "קיר",
   COMPUTER_STAND: "עמדת מחשב",
   RECEPTION_DESK: "דלפק קבלה",
-  BASE:"בסיס"
+  BASE: "בסיס"
 
 };
 
@@ -127,6 +129,7 @@ export const ExpandableCustomerCard = ({
   notes,
   invoiceName,
   paymentMethodType,
+  ip,
   createdAt,
   updatedAt,
   onEdit,
@@ -238,6 +241,9 @@ export const ExpandableCustomerCard = ({
             <Coins size={14} /> תשלום: {paymentMethodLabels[paymentMethodType!] || "לא זמין"}
           </div>
           <div className="flex items-center gap-2">
+            <Globe size={14} /> כתובת IP: {ip || "לא זמין"} {/* הוספת שדה ה-IP */}
+          </div>
+          <div className="flex items-center gap-2">
             <Calendar size={14} /> נוצר: {formatDate(createdAt)}
           </div>
           <div className="flex items-center gap-2">
@@ -246,8 +252,7 @@ export const ExpandableCustomerCard = ({
 
           <div className="flex flex-wrap justify-between items-center mt-4 gap-2">
             <div className="flex gap-3 text-blue-600 font-medium text-sm">
-              <button onClick={() => navigate(`/${id}/dashboard`)}>לוח בקרה</button>
-              <button onClick={() => navigate(`${id}/contract`, { state: { customerName: name }})}>חוזה לקוח</button>
+              <button onClick={() => navigate(`${id}/contract`, { state: { customerName: name } })}>חוזה לקוח</button>
             </div>
             <div className="flex gap-2">
               <Button

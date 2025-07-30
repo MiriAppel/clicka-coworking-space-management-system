@@ -89,7 +89,7 @@ export class customerService extends baseService<CustomerModel> {
       idNumber: newCustomer.idNumber,
       businessName: newCustomer.businessName,
       businessType: newCustomer.businessType,
-      status: CustomerStatus.PENDING,
+      status: CustomerStatus.CREATED,
       currentWorkspaceType: newCustomer.currentWorkspaceType,
       workspaceCount: newCustomer.workspaceCount,
       contractSignDate: newCustomer.contractSignDate,
@@ -98,6 +98,7 @@ export class customerService extends baseService<CustomerModel> {
       notes: newCustomer.notes,
       invoiceName: newCustomer.invoiceName,
       paymentMethodType: newCustomer.paymentMethodType,
+      ip: newCustomer.ip,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       toDatabaseFormat() {
@@ -117,6 +118,7 @@ export class customerService extends baseService<CustomerModel> {
           notes: this.notes,
           invoice_name: this.invoiceName,
           payment_methods_type: this.paymentMethodType,
+          ip: this.ip,
           created_at: this.createdAt,
           updated_at: this.updatedAt,
         };
@@ -411,7 +413,7 @@ export class customerService extends baseService<CustomerModel> {
         }
         return customer;
       })
-    );
+    );    
 
     return CustomerModel.fromDatabaseFormatArray(customersWithPayments);
   };
