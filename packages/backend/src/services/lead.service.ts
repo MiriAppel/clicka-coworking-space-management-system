@@ -1,7 +1,7 @@
 import { baseService } from "./baseService";
 import { LeadModel } from "../models/lead.model";
 import Papa, { parse } from "papaparse";
-import { ID, LeadSource, LeadStatus, UpdateLeadRequest } from "shared-types";
+import { CreateLeadRequest, ID, LeadSource, LeadStatus, UpdateLeadRequest } from "shared-types";
 import { supabase } from "../db/supabaseClient";
 import * as XLSX from 'xlsx';
 
@@ -12,8 +12,25 @@ export class leadService extends baseService<LeadModel> {
   }
 
   getAllLeads = async (): Promise<LeadModel[] | null> => {
-    const leads = await this.getAll();
-    return LeadModel.fromDatabaseFormatArray(leads); // המרה לסוג UserModel
+
+
+    const { data, error } = await supabase
+    .from("leads")
+    .select("*, lead_interaction(*)");
+
+    // console.log(data);
+
+    if (!data || data.length === 0) {
+      console.log(` אין נתונים בטבלה leads`);
+      return []; // תחזירי מערך ריק במקום לזרוק שגיאה
+    }
+
+    if (error) {
+      console.error("שגיאה בשליפת נתונים:", error);
+      throw error;
+    }
+
+    return LeadModel.fromDatabaseFormatArray(data); // המרה לסוג UserModel
   };
 
   getSourcesLeadById = async (id: string): Promise<LeadSource[]> => {
@@ -155,10 +172,10 @@ export class leadService extends baseService<LeadModel> {
     if (error) console.log(error);
   };
 
-  createLead = async (newLead: any): Promise<LeadModel> => {
+  createLead = async (newLead: CreateLeadRequest): Promise<LeadModel> => {
     // יצירת אובייקט LeadModel
     const leadData: LeadModel = {
-      idNumber: newLead.idNumber,
+      idNumber: "UNKNOWN",
       name: newLead.name,
       phone: newLead.phone,
       email: newLead.email,
@@ -166,9 +183,9 @@ export class leadService extends baseService<LeadModel> {
       interestedIn: newLead.interestedIn,
       source: newLead.source,
       status: LeadStatus.NEW, // או כל סטטוס רלוונטי אחר
-      contactDate: newLead.contactDate,
+      contactDate: new Date().toISOString(),
       followUpDate: newLead.followUpDate,
-      notes: newLead.notes,
+      notes: newLead.notes || "",
       interactions: [], // אם יש אינטראקציות, תוכל להעביר אותן כאן
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

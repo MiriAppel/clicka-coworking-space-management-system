@@ -30,7 +30,7 @@ export class baseService<T> {
     console.log("🧾 טבלה:", this.tableName);
 
     let query = supabase.from(this.tableName).select("*");
-    
+
     // אם זה טבלת customer, נוסיף מיון לפי created_at
     if (this.tableName === 'customer') {
       query = query.order('created_at', { ascending: false });
@@ -90,7 +90,7 @@ export class baseService<T> {
     let dataForInsert = dataToAdd;
     console.log("tableName:", this.tableName);
 
-   if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
+    if (typeof (dataToAdd as any).toDatabaseFormat === "function") {
       dataForInsert = (dataToAdd as any).toDatabaseFormat();
       console.log(dataForInsert);
     }
@@ -123,9 +123,9 @@ export class baseService<T> {
     const createdRecord = data?.[0];
 
     if (this.tableName === "customer") {
-      try{
-      await sendEmailToConfrim(emailToSave, createdRecord.id);
-console.log("📧 after send email Confirmation email sent to:", emailToSave);
+      try {
+        await sendEmailToConfrim(emailToSave, createdRecord.id);
+        console.log("📧 after send email Confirmation email sent to:", emailToSave);
 
       }
       catch (error) {

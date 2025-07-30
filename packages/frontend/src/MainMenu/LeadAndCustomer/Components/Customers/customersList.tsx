@@ -121,7 +121,7 @@ export const CustomersList = () => {
     }
   };
 
-  const getCardData = () => {
+  const getCardData = () => {    
     return customers.map((c) => ({
       id: c.id!,
       name: c.name,
@@ -139,6 +139,7 @@ export const CustomersList = () => {
       notes: c.notes,
       invoiceName: c.invoiceName,
       paymentMethodType: c.paymentMethodType,
+      ip: c.ip,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
     }));
@@ -237,11 +238,3 @@ export const CustomersList = () => {
   );
 };
 
-// const formatDate = (dateString: DateISO | undefined) => {
-//   if (!dateString) return "לא זמין";
-//   const date = new Date(dateString);
-//   const day = String(date.getDate()).padStart(2, "0");
-//   const month = String(date.getMonth() + 1).padStart(2, "0");
-//   const year = String(date.getFullYear()).slice(-2);
-//   return `${day}/${month}/${year}`;
-// };

@@ -133,6 +133,7 @@ export interface Customer {
   contractDocuments?: FileReference[];
   paymentMethods?: CustomerPaymentMethod[];
   paymentMethodType: PaymentMethodType;
+  ip: string;
   periods?: CustomerPeriod[];
   createdAt: DateISO;
   updatedAt: DateISO;
@@ -162,6 +163,7 @@ export interface CreateCustomerRequest {
     creditCardHolderPhone?: string;
   };
   paymentMethodType: PaymentMethodType;
+  ip: string;
   contractDocuments?: FileReference[];
 }
 
