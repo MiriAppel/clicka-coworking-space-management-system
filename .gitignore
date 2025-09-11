@@ -3,7 +3,7 @@ node_modules/
 npm-debug.log
 yarn-error.log
 yarn-debug.log
-yarn.lock
+package-lock.json
 
 # Build
 dist/
@@ -39,3 +39,14 @@ coverage/
 .supabase/
 *storybook.log
 storybook-static
+
+# TypeScript
+*.tsbuildinfo
+
+# Yarn
+.yarn/cache/
+.yarn/unplugged/
+.yarn/install-state.gz
+
+# Temporary files
+tatus
