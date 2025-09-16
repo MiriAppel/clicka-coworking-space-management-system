@@ -1,122 +1,164 @@
 # Clicka Co-working Space Management System
-A comprehensive platform for managing all aspects of the Clicka women's co-working space in Bnei Brak, from workspace management to customer relationships and billing.
+React TypeScript & Node.js full-stack co-working management platform for live client. Features CRM, automated billing, workspace allocation, Google API integrations. Production deployment on Cloudflare and Render.
 
-## Project Overview
-This project provides an integrated digital solution for Clicka to manage their co-working space. The system replaces manual, file-based processes with a streamlined platform that handles lead tracking, customer management, workspace allocation, meeting room bookings, billing, and comprehensive reporting.
+## 🚀 Project Overview
 
-## Key Components
-- **Backend API:** Node TypeScript service deployed on Render
-- **Frontend Application:** React TypeScript application deployed on Vercel
-- **Database:** Supabase PostgreSQL
-- **Integrations:** Google Auth, Google Calendar, Google Drive, Gmail
+A comprehensive digital solution for managing all aspects of women's co-working spaces. The system replaces manual, file-based processes with a streamlined platform that handles lead tracking, customer management, workspace allocation, meeting room bookings, billing, and comprehensive reporting.
 
-## Team Structure
-The project is divided into four specialized teams:
+## 🛠️ Tech Stack
 
-1. **Core & Integration Team:** Authentication, Google integration, shared components, and deployment
-2. **Lead & Customer Team:** Lead management, customer profiles, contract management, and history tracking
-3. **Workspace Team:** Workspace inventory, interactive map, meeting room booking, and occupancy tracking
-4. **Billing Team:** Pricing configuration, invoice generation, payment tracking, and financial reporting
+- **Frontend:** React with TypeScript, Material-UI
+- **Backend:** Node.js with Express, TypeScript
+- **Database:** PostgreSQL via Supabase
+- **Authentication:** Google OAuth
+- **Integrations:** Google Calendar, Google Drive, Gmail APIs
+- **Deployment:** Cloudflare (Frontend), Render (Backend)
 
-## Documentation
-### Project Documentation
+## ✨ Key Features
 
-- [High-Level Design Document](https://docs.google.com/document/d/1svaiktE0Rf3LF9yKHL_gPI6uXSc49hKQ7gu3AlgMA9A/edit) - Contains user roles, system components, project timeline, and wireframes
+### 🎯 Lead & Customer Management
+- Lead tracking and conversion pipeline
+- Customer profiles and contract management
+- Interaction history and communication logs
+- File upload and document management
 
-### Team-Specific PRDs
+### 🏢 Workspace Management
+- Interactive workspace mapping
+- Real-time occupancy tracking
+- Meeting room booking system
+- Space assignment and inventory management
 
-- [Core & Integration Team PRD](https://docs.google.com/document/d/1zY0obLnfAxFCcjhbrUWT6YQrnnYyVebWMYno9TBXh3g/edit) - Detailed requirements for the Core & Integration team
-- [Lead & Customer Team PRD](https://docs.google.com/document/d/1Bb54Wl1Sht-LuXd7P-cez7w9SruZA9e-fIM7LnjnWBY/edit) - Detailed requirements for the Lead & Customer team
-- [Workspace Team PRD](https://docs.google.com/document/d/1VOJploYM8rujgqBFKP4iauCVlFr2xx2p1Q5-qhrI9cI/edit) - Detailed requirements for the Workspace team
-- [Billing Team PRD](https://docs.google.com/document/d/1mSwUL5TC2BKnVCzCVBGFSM0tQHYWiYSGutr2q4MQqJg/edit) - Detailed requirements for the Billing team
+### 💰 Billing & Financial Management
+- Automated invoice generation
+- Prorated pricing calculations
+- Payment tracking and collection
+- Comprehensive financial reporting
+- Expense management system
 
-### API Documentation
-The API documentation is generated from the TypeScript definitions. You can view it [here:](types)
+### 🔧 Core Features
+- Google OAuth authentication
+- Role-based access control
+- Email template management
+- Document template system
+- Audit logging
 
-### Project Structure
+## 🏗️ Architecture
+
 ```
 ├── packages/
-│   ├── backend/           # Backend API
-│   ├── frontend/          # Frontend application
-├── types/                 # Shared types
-└── README.md
+│ ├── backend/           # Node.js API server
+│ ├── frontend/          # React application
+│ └── shared-types/      # TypeScript type definitions
 ```
 
-## Development Setup
+**Monorepo Structure:**
+- **4 specialized development teams**
+- **Shared TypeScript types** for consistency
+- **Modular architecture** with clear separation of concerns
+
+## 👥 Team Structure
+
+The project was developed using **Agile methodology** by **4 specialized teams:**
+
+1. **Core & Integration Team** - Authentication, Google integration, shared components
+2. **Lead & Customer Team** - CRM functionality, customer management
+3. **Workspace Team** - Space management, booking system, occupancy tracking
+4. **Billing Team** - Financial management, invoicing, payment processing
+
+*Note: Live demo unavailable due to client confidentiality*
+
+## 🚀 Getting Started
+
 ### Prerequisites
+- Node.js (v16+)
+- Yarn
+- Supabase account
+- Google Cloud Console project
 
-- Node.js
-- yarn
-- Supabase CLI
-- Git
+### Installation
 
-### Local Development
-
-1. Clone the repository:
-```bash
-git clone https://github.com/diversi-tech/clicka
-cd clicka
+1. **Clone the repository**
+```
+git clone https://github.com/MiriAppel/clicka-coworking-space-management-system.git
+cd clicka-coworking-space-management-system
 ```
 
-2. Install dependencies:
+2. **Install dependencies**
 ```
 yarn install
 ```
 
-3. Set up environment variables:
+3. **Set up environment variables**
 ```
 cp packages/backend/.env.example packages/backend/.env
 cp packages/frontend/.env.example packages/frontend/.env
 ```
-Update the variables with your local configuration.
 
-4. Start the development server:
+4. **Start development servers**
 ```
-# In one terminal:
-yarn start:backend
-
-# In another terminal:
-yarn start:frontend
+yarn workspace clicka-backend dev
+yarn workspace clicka-frontend start
 ```
 
-### Backend (Render)
-The API is hosted on Render. To deploy:
+## 🔧 Environment Variables
 
-1. Connect your Render account to the GitHub repository
-2. Configure the build command: `yarn workspace clicka-backend build`
-3. Configure the start command: `yarn workspace clicka-backend start`
-4. Set the required environment variables in the Render dashboard
+Configure the following environment variables with your actual values:
 
-### Frontend (Vercel)
-The frontend application is hosted on Vercel. To deploy:
+### Backend (.env)
+```
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_anon_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+JWT_SECRET=your_jwt_secret
+```
 
-1. Connect your Vercel account to the GitHub repository
-2. Configure the build command: `yarn workspace clicka-frontend build`
-3. Set the required environment variables in the Vercel dashboard
-4. Deploy to production
+### Frontend (.env)
+```
+REACT_APP_API_URL=http://localhost:3001/api
+REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
+```
 
-### Database (Supabase)
-The database is hosted on Supabase. To set up:
+## 📦 Available Scripts
+```
+# Development
+yarn start:backend          # Start backend server
+yarn start:frontend         # Start frontend server
 
-1. Create a new project in Supabase
-2. Run the migration scripts: `yarn run migrate`
-3. Update your environment variables with the Supabase connection details
+# Build
+yarn build                  # Build all packages
 
-## Contributing
+# Type checking
+yarn workspace shared-types build
+```
 
-1. Create a new branch for your feature: `git checkout -b feature/your-feature-name`
-2. Commit your changes: `git commit -m "Add feature description"`
-3. Push to the branch: `git push origin feature/your-feature-name`
-4. Submit a pull request
+## 🌟 Highlights
 
-### Development Guidelines
+- **Enterprise-grade architecture** with proper separation of concerns
+- **Comprehensive testing** with Jest and React Testing Library
+- **Professional documentation** with detailed API specs
+- **Production deployment** on cloud platforms
+- **Team collaboration** with 4 specialized development teams
 
-- Follow the API contract defined in the shared types
-- Use the mock data during initial development
-- Notify other teams of any breaking changes to APIs
-- Write unit tests for critical functionality
-- Use the shared UI component library for consistent styling
-- Implement proper RTL (Right-to-Left) support for Hebrew
+## 🔒 Security Features
 
-## License
-This project is private and proprietary. Unauthorized copying, distribution, or use is strictly prohibited.
+- JWT-based authentication
+- Role-based access control
+- Audit logging for all user actions
+- Input validation and sanitization
+
+## 📈 Business Impact
+
+This system transformed manual, file-based processes into a streamlined digital platform, enabling:
+- **Automated invoice generation**
+- **Real-time workspace management**
+- **Comprehensive business tracking**
+- **Enhanced customer experience**
+
+## 🤝 Contributing
+
+This project was developed as part of a professional development program with multiple team members contributing to different aspects of the system.
+
+---
+
+**Built with ❤️ by a professional development team**
